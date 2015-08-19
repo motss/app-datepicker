@@ -1,0 +1,28 @@
+{
+  "name": "jv-datepicker",
+  "version": "0.1.0",
+  "authors": [
+    "motss <wes_ngrongsen@hotmail.com>"
+  ],
+  "description": "A Polymer's Custom Element Datepicker based on Google's Material Design.",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "seed"
+  ],
+  "main": "jv-datepicker.html",
+  "license": "https://github.com/motss/jv-datepicker/blob/master/LICENSE.txt",
+  "homepage": "https://github.com/motss/jv-datepicker/",
+  "ignore": [
+    "/.*",
+    "/test/",
+    "/demo/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"
+  }
+}
