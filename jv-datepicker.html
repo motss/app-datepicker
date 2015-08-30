@@ -330,7 +330,7 @@ Example:
                         <div></div>
                         <div id$="[[_computeDayId(item)]]"
                              class$="{{_computeDayStyle(item, index)}}"
-                             disabled$="{{_computeDisableDay(index)}}"
+                             disabled$="{{_computeDisabledAttr(index)}}"
                              on-tap="_selectDate">{{item}}</div>
                         <div></div>
                       </span>
@@ -393,7 +393,7 @@ Example:
       // arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].
       startDay: {
         type: Number,
-        value: 0
+        value: 3
       },
       disableDays: {
         type: Array,
@@ -404,7 +404,7 @@ Example:
       weekdays: {
         type: Array,
         value: function() {
-          return this._computeWeekdays(this.startDay);
+          return [];
         }
       },
       days: {
@@ -467,7 +467,7 @@ Example:
       },
       selectedView: {
         type: String,
-        value: 'year'
+        value: 'calendar'
       },
       years: {
         type: Array,
@@ -490,10 +490,9 @@ Example:
       //
       // This is the point where you should make modifications to the DOM (when
       // necessary), or kick off any processes the element wants to perform.
-      // this.weekdays = this._computeWeekdays(this.startDay);
-      // this.selectedDate = this.todayDate = new Date().getDate();
-      // this.todayMonth = new Date().getMonth();
-      // this.todayYear = new Date().getFullYear();
+
+      this.weekdays = this._computeWeekdays(this.startDay);
+      this._shiftDisabledDays(this.disableDays, this.startDay);
       this._computeMonthYear(this.mthOffset);
     },
 
@@ -513,7 +512,7 @@ Example:
       // Use this to clean up anything you did in `attached`.
     },
 
-    // Element Behavior
+    // Element Behaviorset
 
     /**
      * The `jv-datepicker-lasers` event is fired whenever `fireLasers` is called.
@@ -532,6 +531,7 @@ Example:
 
     _computeWeekdays: function (startDay) {
       var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      // console.log(startDay);
       if (startDay > 0 && startDay < 7) {
         for (var i = 0; i < startDay; i++) {
           arrayWeek.push(arrayWeek.shift());
@@ -546,7 +546,8 @@ Example:
           pushElem,
           firstYear = this.todayYear,
           firstMonth = this.todayMonth,
-          firstDayOfMonth = new Date(firstYear, firstMonth, 1).getDay(),
+          startDay = this.startDay < 0 || this.startDay > 7? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
+          firstDayOfMonth = new Date(firstYear, firstMonth, 1).getDay() - startDay,
           totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth);
 //          totalDay = firstDayOfMonth > 3? 42: 35; // 31 + firstDayOfMonth + (7 - (31 + firstDayOfMonth)%7);
 
@@ -726,17 +727,36 @@ Example:
     },
 
     _isDisabledDay: function (date) {
-      var isDisabled = false;
-      this.disableDays.forEach(function (el, idx, arr) {
-        isDisabled = isDisabled || (date === el);
-      });
-      return isDisabled;
+      var startDay = this.startDay;
+
+      if (this.disableDays) {
+        return this.disableDays.some(function (el) {
+          // console.log(date + ' vs ' + el + ': ' + (date === el));
+          return date === el;
+        });
+      }
     },
 
-    _computeDisableDay: function (whichDay) {
-      return this._isDisabledDay(whichDay);
-    }
+    _validateDisableDays: function(disableDaysArr) {
+      return disableDaysArr.every(function(el){
+        return el >= 0 && el < 7; // check if disableDays has value between 0 and 6;
+      });
+    },
 
+    _computeDisabledAttr: function (whichDay) {
+      return this._isDisabledDay(whichDay);
+    },
+
+    _shiftDisabledDays: function(disableDaysArr, startDay) {
+      if (this._validateDisableDays(disableDaysArr)){
+        disableDaysArr.forEach(function(el) {
+          disableDaysArr.push((disableDaysArr.shift() + startDay + 1 )%7);
+        });
+      }else {
+        this.setAttribute('disable-days', JSON.stringify('invalidArr'));
+      }
+      // no return value as array mutation occurs inside function.
+    }
   });
 
 </script>
