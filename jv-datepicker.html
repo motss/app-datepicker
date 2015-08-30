@@ -429,7 +429,7 @@ Example:
       selectedMonth: {
         type: String,
         value: function() {
-          return this._computeMonth(newDate.getMonth());
+          return this._computeMonth(newDate.getMonth(), true);
         }
       },
       oldDate: Number,
@@ -597,10 +597,10 @@ Example:
         // when select a date on the calendar, 4 things are needed to be changed:
         // a) Weekday b) Month c) Date d) Year
         console.log(this.todayYear + ', ' + this.todayMonth + ', ' + this.todayDate);
-        // this.selectedWeekday = ;
-        // this.selectedMonth = ;
+        this.selectedMonth = this._computeMonth(this.todayMonth, true);
         this.selectedDate = parseInt(ev.target.textContent);
         this.selectedYear = this.todayYear;
+        this.selectedWeekday = this._computeWeekday(new Date(this.todayYear, this.todayMonth, this.selectedDate).getDay());
         this._styleSelected.bind(ev.target, true).apply();
       }
     },
@@ -643,13 +643,16 @@ Example:
       this.selectedMonthYear = this._computeMonth(this.todayMonth) + ' ' + this.todayYear;
     },
 
-    _computeMonth: function(monthIdx) {
-      var monthName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-      return monthName[monthIdx];
+    _computeMonth: function(monthIdx, to_slice) {
+      var selectedMth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIdx];
+      if (to_slice) {
+        selectedMth = selectedMth.slice(0, 3);
+      }
+      return selectedMth;
     },
 
     _computeWeekday: function(weekdayIdx) {
-      var weekdayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+      return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][weekdayIdx];
     },
 
     _prevMonth: function () {
