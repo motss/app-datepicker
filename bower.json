@@ -20,7 +20,10 @@
     "/demo/"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "iron-media-query": "PolymerElements/iron-media-query#~1.0.2",
+    "paper-icon-button": "PolymerElements/paper-icon-button#~1.0.3",
+    "neon-animation": "PolymerElements/neon-animation#~1.0.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"

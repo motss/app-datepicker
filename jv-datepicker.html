@@ -8,6 +8,14 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-media-query/iron-media-query.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-ripple/paper-ripple.html">
+<link rel="import" href="../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../iron-list/iron-list.html">
 
 <!--
 An element providing a solution to no problem in particular.
@@ -20,85 +28,476 @@ Example:
 -->
 <dom-module id="jv-datepicker">
 
-  <style>
-    :host {
+  <style is="custom-style">
+    :host, #datepickerContainer {
+      /* based on Galaxy Nexus which has a resolution of 360 by 460 at 2dppx */
+      /* max-height = 640 - 64 = 576px */
+      /* max-width = 320 - 32 = 288px */
       display: block;
-      box-sizing: border-box;
+      max-height: calc(100vh - 32px);
+      max-width: calc(100vw - 32px - 32px);
+      /*min-height: 576px;*/
+      min-width: 288px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      @apply(--paper-font-common-base);
+      @apply(--paper-font-common-expensive-kerning);
     }
 
-    .author img {
-      float: left;
-      margin-right: 5px;
-      max-height: 100px;
-      max-width: 100px;
+    :host div, neon-animated-pages {
+      /* allows all <div> to fill up the whole width */
+      width: 100%;
     }
+
+    /* to be removed soon */
+    div {
+      /*border: 1px solid;*/
+    }
+
+    /* to be removed soon */
+    #monthYear span, paper-icon-button {
+      /*border: 1px solid blue;*/
+    }
+
+    /* layout-ing containers */
+    #datepickerContainer, #selectionView {
+      @apply(--layout-vertical);
+      @apply(--layout-center-center);
+    }
+
+    #selectionView {
+      /*background: var(--google-green-500);*/
+      background: var(--paper-teal-500);
+      color: #ffffff;
+      text-align: center;
+    }
+
+    /* #weekdayContainer */
+    #weekdayContainer {
+      /*background: var(--google-green-700);*/
+      background: var(--paper-teal-700);
+      padding-bottom: 6px;
+    }
+
+    /* #dateContainer */
+    #dateContainer {
+      padding: 12px 0;
+    }
+
+    /* #month */
+    #month {
+      text-transform: uppercase;
+      font-size: 27px;
+    }
+
+    /* #year */
+    #year {
+      font-size: 25px;
+    }
+
+    /* #day */
+    #day {
+      font-size: 90px;
+    }
+
+    /* #monthYear */
+    #monthYear {
+      padding: 3px 0;
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+    }
+
+    /* #selectedMonthYear */
+    #selectedMonthYear {
+      text-align: center;
+      @apply(--layout-flex-auto);
+    }
+
+    /* #weekdays */
+    #weekdays {
+      text-align: center;
+      padding: 3px 0;
+      @apply(--layout-horizontal);
+    }
+
+    /* #weekdays span */
+    #weekdays span {
+      @apply(--layout-flex-2);
+    }
+
+    /* #buttonContainer */
+    #buttonContainer {
+      @apply(--layout-horizontal);
+      @apply(--layout-end-justified);
+    }
+
+    /* paper-button */
+    paper-button {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      color: var(--paper-teal-500);
+    }
+
+    paper-button /deep/ .keyboard-focus {
+      font-weight: normal;
+    }
+
+    /* week[n] */
+    /*div[id^="week"] {*/
+      /*@apply(--layout-horizontal);*/
+
+    /*}*/
+
+    /*div[id^="week"] span {*/
+      /*text-align: center;*/
+      /*@apply(--layout-flex-2);*/
+    /*}*/
+
+    /* weeContaienr */
+    .week-container {
+      /*border: 1px solid red;*/
+      padding: 3px 0;
+      text-align: center;
+      @apply(--layout-horizontal);
+      @apply(--layout-center-center);
+      min-height: calc(22px + 6px);
+    }
+
+    /* .day-container */
+    .day-container {
+      /*border: 1px solid blue;*/
+      @apply(--layout);
+      @apply(--layout-center-center);
+      @apply(--layout-flex-2)
+    }
+
+    /* .day */
+    .day {
+      min-width: 22px;
+      min-height: 22px;
+      font-size: 12px;
+      @apply(--layout);
+      @apply(--layout-center-center);
+    }
+
+    /* .day-selected */
+    div .day-selected {
+      background: var(--paper-teal-500, #009688);
+      color: #ffffff;
+      border-radius: 50%;
+      /*width: 22px;*/
+      /*height: 22px;*/
+      /*font-size: 12px;*/
+      margin-left: auto;
+      margin-right: auto;
+      padding: 3px;
+    }
+
+    /* is-today */
+    .is-today {
+      color: var(--paper-teal-500, #009688);
+    }
+
+    /* @@@################################################## */
+    /* messy styling... cleanup needed... */
+    /*iron-list */
+    iron-list {
+      /*@apply(--layout-center-center);*/
+      /*width: 100%;*/
+      /*background: var(--paper-grey-200, #eee);*/
+    }
+
+    .item-list {
+      /*border: 1px solid green;
+      background: #ffffff;
+      @apply(--layout-horizontal);*/
+    }
+
+    .item {
+      margin: 0 auto;
+      max-width: 35px;
+      padding: 24px 16px;
+    }
+
+    .year-selected {
+      color: #ffffff;
+      background: var(--paper-teal-500, #009688);
+      border-radius: 50%;
+    }
+
+    neon-animated-pages {
+      /*width: 100%;*/
+      height: 275px; /* neon-animated-pages has zero height, explicitly height is set.*/
+    }
+
+    /* #yearContainer */
+    #yearContainer, #dayContainer {
+      position: relative;
+    }
+
+    #yearContainer {
+      top: 1px;
+    }
+
+    /* expand-family-group */
+    #expandContainer, #yearView {
+      @apply(--layout-vertical);
+      @apply(--layout-center-center);
+    }
+
+    #expandMoreGroup, #expandLessGroup, #expandYear {
+      width: initial;
+      padding: 3px 0;
+      margin-left: 30px;
+    }
+
+    #expandYear {
+      font-size: 70px;
+      margin: 3px 0;
+    }
+
+    .is-disabled {
+      color: var(--paper-grey-500, #9e9e9e);
+    }
+
   </style>
 
   <template>
-    <h1>&lt;jv-datepicker&gt;</h1>
-    <content></content>
-    <p class="author">
-      <img src="{{author.image}}">
-      Cheers,<br/>
-      <span class="name">{{author.name}}</span>
-    </p>
+    <iron-media-query query="(max-width: 420px)" query-matches="{{potrait}}"></iron-media-query>
+
+    <!-- Datepicker Container-->
+    <div id="datepickerContainer">
+
+        <!-- View Container -->
+        <div id="viewContainer" class$="{{_computeContainerCls(potrait)}}">
+          <!-- Selection View-->
+          <div id="selectionView">
+            <!-- Weekday -->
+            <div id="weekdayContainer">
+              <span id="weekday">{{selectedWeekday}}</span>
+            </div>
+
+            <!-- Date (Month, Day, Year)-->
+            <div id="dateContainer">
+              <!-- Month -->
+              <div id="monthContainer">
+                <span id="month">{{selectedMonth}}</span>
+              </div>
+
+              <!-- Day -->
+              <div id="dayContainer">
+                <!-- to be removed -->
+                <paper-ripple fit on-tap="_goCalView"></paper-ripple>
+                <span id="day">{{selectedDate}}</span>
+              </div>
+
+              <!-- Year -->
+              <div id="yearContainer">
+                <!-- to be removed -->
+                <paper-ripple fit on-tap="_goYearView"></paper-ripple>
+                <span id="year">{{selectedYear}}</span>
+              </div>
+            </div>
+          </div>
+
+          <neon-animated-pages id="datepicker-pages" selected="{{selectedView}}" attr-for-selected="data-view">
+            <!-- Calendar View-->
+            <div id="calendarView" data-view="calendar">
+              <!-- monthYear -->
+              <div id="monthYear">
+                <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
+                <span id="selectedMonthYear">
+                  <span>{{selectedMonthYear}}</span>
+                </span>
+                <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
+              </div>
+
+              <!-- weeks -->
+              <div id="weekdays">
+                <template is="dom-repeat" items="{{weekdays}}">
+                  <span>{{item}}</span>
+                </template>
+              </div>
+
+              <!-- days -->
+              <div id="days">
+                <template is="dom-repeat" items="{{days}}" as="day">
+                  <div id$="[[_computeWeekId(index)]]" class="week-container">
+                    <template is="dom-repeat" items="{{day}}">
+                      <span class="day-container">
+                        <div></div>
+                        <div id$="[[_computeDayId(item)]]"
+                             class$="{{_computeDayStyle(item, index)}}"
+                             disabled$="{{_computeDisableDay(index)}}"
+                             on-tap="_selectDate">{{item}}</div>
+                        <div></div>
+                      </span>
+                    </template>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Year View -->
+            <!-- year list -->
+            <!-- <div id="yearView" data-view="year" on-scroll="_displayScroll" class="fit vertical layout">
+              <iron-list id="yearList" items='[[years]]' class="flex"> -->
+            <div id="yearView" data-view="year" on-scroll="_displayScroll">
+              <div id="expandContainer">
+                <div id="expandLessGroup">
+                  <paper-icon-button icon="expand-less" on-tap="_prevCentury"></paper-icon-button>
+                  <paper-icon-button icon="expand-less" on-tap="_prevDecade"></paper-icon-button>
+                  <paper-icon-button icon="expand-less" on-tap="_prevYear"></paper-icon-button>
+                </div>
+                <div id="expandYear" class="relative">
+                  <paper-ripple id="expandRipple" fit on-tap="_changeYear"></paper-ripple>
+                  <span>{{todayYear}}</span>
+                </div>
+                <div id="expandMoreGroup">
+                  <paper-icon-button icon="expand-more" on-tap="_nextCentury"></paper-icon-button>
+                  <paper-icon-button icon="expand-more" on-tap="_nextDecade"></paper-icon-button>
+                  <paper-icon-button icon="expand-more" on-tap="_nextYear"></paper-icon-button>
+                </div>
+              </div>
+            </div>
+          </neon-animated-pages>
+        </div>
+
+      <!-- Button Container-->
+      <div id="buttonContainer">
+        <paper-button id="cancel">cancel</paper-button>
+        <paper-button id="ok">ok</paper-button>
+      </div>
+    </div>
   </template>
 
 </dom-module>
 
 <script>
 
+  var newDate = new Date();
+
   Polymer({
 
     is: 'jv-datepicker',
 
+    hostAttributes: {
+      'role': 'datepicker',
+      'tabindex': '-1'
+    },
+
     properties: {
-
-      /**
-       * `fancy` indicates that the element should don a monocle and tophat,
-       * while checking its pocket watch.
-       */
-      fancy: Boolean,
-
-      /**
-       * Describes the author of the element, but is really just an excuse to
-       * show off JSDoc annotations.
-       *
-       * @type {{name: string, image: string}}
-       */
-      author: {
-        type: Object,
-        // Use `value` to provides a default value for a property, by setting it
-        // on your element's prototype.
-        //
-        // If you provide a function, as we do here, Polymer will call that
-        // _per element instance_.
-        //
-        // We do that to ensure that each element gets its own copy of the
-        // value, rather than having it shared across all instances (via the
-        // prototype).
-        value: function() {
-          return {
-            name:  'Dimitri Glazkov',
-            image: 'http://addyosmani.com/blog/wp-content/uploads/2013/04/unicorn.jpg',
-          };
+      // `Sunday` is the starting day of the week.
+      // arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].
+      startDay: {
+        type: Number,
+        value: 0
+      },
+      disableDays: {
+        type: Array,
+        value: function () {
+          return [];
         }
       },
-
+      weekdays: {
+        type: Array,
+        value: function() {
+          return this._computeWeekdays(this.startDay);
+        }
+      },
+      days: {
+        type: Array,
+        value: function() {
+          return [];
+        }
+      },
+      selectedWeekday: {
+        type: String,
+        value: function() {
+          return this._computeWeekday(newDate.getDay());
+        }
+      },
+      selectedDate: {
+        type: Number,
+        value: function() {
+          return newDate.getDate();
+        },
+        observer: '_selectedDateChanged'
+      },
+      selectedMonth: {
+        type: String,
+        value: function() {
+          return this._computeMonth(newDate.getMonth());
+        }
+      },
+      oldDate: Number,
+      todayDate: {
+        type: Number,
+        value: function() {
+          return newDate.getDate();
+        }
+      },
+      todayMonth: {
+        type: Number,
+        value: function() {
+          return newDate.getMonth();
+        },
+        observer: '_todayMonthChanged'
+      },
+      selectedYear: {
+        type: Number,
+        value: function (){
+          return newDate.getFullYear();
+        }
+      },
+      todayYear: {
+        type: Number,
+        value: function() {
+          return newDate.getFullYear();
+        }
+      },
+      selectedMonthYear: String,
+      mthOffset: {
+        type: Number,
+        value: 0,
+        notify: true,
+        observer: '_computeMonthYear'
+      },
+      selectedView: {
+        type: String,
+        value: 'year'
+      },
+      years: {
+        type: Array,
+        value: function() {
+          var i = 1581, res = [];
+          while (i++ < 2100) {
+            res.push(i);
+          }
+          return res;
+        }
+      }
     },
 
     // Element Lifecycle
 
-    ready: function() {
+    ready: function () {
       // `ready` is called after all elements have been configured, but
       // propagates bottom-up. This element's children are ready, but parents
       // are not.
       //
       // This is the point where you should make modifications to the DOM (when
       // necessary), or kick off any processes the element wants to perform.
+      // this.weekdays = this._computeWeekdays(this.startDay);
+      // this.selectedDate = this.todayDate = new Date().getDate();
+      // this.todayMonth = new Date().getMonth();
+      // this.todayYear = new Date().getFullYear();
+      this._computeMonthYear(this.mthOffset);
     },
 
-    attached: function() {
+    attached: function () {
       // `attached` fires once the element and its parents have been inserted
       // into a document.
       //
@@ -107,7 +506,7 @@ Example:
       // loading resources, etc).
     },
 
-    detached: function() {
+    detached: function () {
       // The analog to `attached`, `detached` fires when the element has been
       // removed from a document.
       //
@@ -123,25 +522,216 @@ Example:
      * @detail {{sound: String}}
      */
 
-    /**
-     * Sometimes it's just nice to say hi.
-     *
-     * @param {string} greeting A positive greeting.
-     * @return {string} The full greeting.
-     */
-    sayHello: function(greeting) {
-      var response = greeting || 'Hello World!';
-      return 'jv-datepicker says, ' + response;
+    _computeContainerCls: function (potrait) {
+      if (potrait) {
+        return 'layout vertical center-center';
+      } else {
+        return 'layout horizontal center-center';
+      }
     },
 
-    /**
-     * Attempts to destroy this element's enemies with an any beam of light!
-     *
-     * Or, at least, dispatches an event in the vain hope that someone else will
-     * do the zapping.
-     */
-    fireLasers: function() {
-      this.fire('jv-datepicker-lasers', {sound: 'Pew pew!'});
+    _computeWeekdays: function (startDay) {
+      var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      if (startDay > 0 && startDay < 7) {
+        for (var i = 0; i < startDay; i++) {
+          arrayWeek.push(arrayWeek.shift());
+        }
+      }
+      return arrayWeek;
+    },
+
+    _computeDays: function () {
+      var arrayDays = [],
+          arrayWeeks = [],
+          pushElem,
+          firstYear = this.todayYear,
+          firstMonth = this.todayMonth,
+          firstDayOfMonth = new Date(firstYear, firstMonth, 1).getDay(),
+          totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth);
+//          totalDay = firstDayOfMonth > 3? 42: 35; // 31 + firstDayOfMonth + (7 - (31 + firstDayOfMonth)%7);
+
+        for (var i = 1, j = 0; i <= totalDay; i++, j++) {
+          pushElem = i;
+
+          if (firstDayOfMonth >= i) {
+            pushElem = '';
+          }else {
+            pushElem = (pushElem - firstDayOfMonth) > 31? '': pushElem - firstDayOfMonth;
+          }
+
+          arrayWeeks.push(pushElem);
+          if (j >= 6) {
+            arrayDays.push(arrayWeeks);
+            j = -1; // if set j to 0, totalDay needs to add 1;
+            arrayWeeks = [];
+          }
+        }
+//      return arrayDays;
+      this.days = arrayDays;
+    },
+
+    _computeWeekId: function (idx) {
+      return 'week' + idx;
+    },
+
+//    _computeWeekNumber: function () {
+//      var now = new Date(),
+//          onejan = new Date(now.getFullYear(), 0, 1);
+//          weekNumber = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+//      return weekNumber;
+//    },
+
+    _selectedDateChanged: function (newValue, oldValue) {
+      this.oldDate = oldValue;
+      this.selectedDate = newValue;
+
+      // remove oldValue's classList
+      if (oldValue) {
+        this._styleSelected.bind(document.querySelector('#day' + oldValue)).apply();
+      }
+    },
+
+    _selectDate: function (ev) {
+      var target = ev.target;
+      if (!target.attributes['disabled'] && ev.target.textContent) {
+        // when select a date on the calendar, 4 things are needed to be changed:
+        // a) Weekday b) Month c) Date d) Year
+        console.log(this.todayYear + ', ' + this.todayMonth + ', ' + this.todayDate);
+        // this.selectedWeekday = ;
+        // this.selectedMonth = ;
+        this.selectedDate = parseInt(ev.target.textContent);
+        this.selectedYear = this.todayYear;
+        this._styleSelected.bind(ev.target, true).apply();
+      }
+    },
+
+    _styleSelected: function (addCls) {
+      if (addCls) {
+        this.classList.add('day-selected');
+      }else {
+        this.classList.remove('day-selected');
+      }
+    },
+
+    _computeDayStyle: function (date, whichDay) {
+      var cls = 'day',
+          today = new Date(),
+          tm = today.getMonth(),
+          ty = today.getFullYear();
+
+      // only today's date is selected...
+      if (date === this.todayDate && this.todayMonth === tm && this.todayYear === ty) {
+        cls = cls + ' is-today';
+      }
+      if (this._isDisabledDay(whichDay)) {
+        cls = cls + ' is-disabled';
+      }
+
+      return cls;
+    },
+
+    _computeDayId: function (idx) {
+      return 'day' + idx;
+    },
+
+    _computeMonthYear: function () {
+      this.todayMonth = (this.todayMonth + this.mthOffset) < 0? 11: (this.todayMonth + this.mthOffset)%12;
+
+      this.mthOffset = 0;
+      // render calendar once `todayMonth` changes...
+      this._computeDays();
+      this.selectedMonthYear = this._computeMonth(this.todayMonth) + ' ' + this.todayYear;
+    },
+
+    _computeMonth: function(monthIdx) {
+      var monthName = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      return monthName[monthIdx];
+    },
+
+    _computeWeekday: function(weekdayIdx) {
+      var weekdayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    },
+
+    _prevMonth: function () {
+      this.mthOffset--;
+    },
+
+    _nextMonth: function () {
+      this.mthOffset++;
+    },
+
+    _todayMonthChanged: function (newValue, oldValue) {
+      if (oldValue === 0 && newValue === 11){
+        this.todayYear--;
+      }else if(oldValue === 11 && newValue === 0){
+        this.todayYear++;
+      }
+    },
+
+    _computeTotalDay: function (firstDayOfMonth, firstYear, firstMonth) {
+      var totalDay = 31;
+
+          if (firstMonth%2 === 0){
+            if (firstMonth === 2) {
+              totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
+            }else {
+              totalDay = 30;
+            }
+          }
+
+      return (totalDay + firstDayOfMonth)>35? 42: 35;
+    },
+
+    _goYearView: function () {
+      this.selectedView = 'year';
+    },
+
+    _goCalView: function () {
+      this.todayYear = this.selectedYear;
+      this.selectedView = 'calendar';
+    },
+
+    _prevCentury: function () {
+      this.todayYear = this.todayYear - 100;
+    },
+
+    _prevDecade: function () {
+      this.todayYear = this.todayYear - 10;
+    },
+
+    _prevYear: function () {
+      this.todayYear--;
+    },
+
+    _nextCentury: function () {
+      this.todayYear = this.todayYear + 100;
+    },
+
+    _nextDecade: function () {
+      this.todayYear = this.todayYear + 10;
+    },
+
+    _nextYear: function () {
+      this.todayYear++;
+    },
+
+    _changeYear: function (ev) {
+      this.selectedYear = this.todayYear;
+      this._computeMonthYear();
+      this._computeDays();
+      this.selectedView = 'calendar';
+    },
+
+    _isDisabledDay: function (date) {
+      var isDisabled = false;
+      this.disableDays.forEach(function (el, idx, arr) {
+        isDisabled = isDisabled || (date === el);
+      });
+      return isDisabled;
+    },
+
+    _computeDisableDay: function (whichDay) {
+      return this._isDisabledDay(whichDay);
     }
 
   });
