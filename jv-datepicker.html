@@ -276,54 +276,54 @@ Example:
           <div id="selectionView">
             <!-- Weekday -->
             <div id="weekdayContainer">
-              <span id="weekday">{{selectedWeekday}}</span>
+              <span id="weekday">{{_selectedWeekday}}</span>
             </div>
 
             <!-- Date (Month, Day, Year)-->
             <div id="dateContainer">
               <!-- Month -->
               <div id="monthContainer">
-                <span id="month">{{selectedMonth}}</span>
+                <span id="month">{{_selectedMonth}}</span>
               </div>
 
               <!-- Day -->
               <div id="dayContainer">
                 <!-- to be removed -->
                 <paper-ripple fit on-tap="_goCalView"></paper-ripple>
-                <span id="day">{{selectedDate}}</span>
+                <span id="day">{{_selectedDate}}</span>
               </div>
 
               <!-- Year -->
               <div id="yearContainer">
                 <!-- to be removed -->
                 <paper-ripple fit on-tap="_goYearView"></paper-ripple>
-                <span id="year">{{selectedYear}}</span>
+                <span id="year">{{_selectedYear}}</span>
               </div>
             </div>
           </div>
 
-          <neon-animated-pages id="datepicker-pages" selected="{{selectedView}}" attr-for-selected="data-view">
+          <neon-animated-pages id="datepicker-pages" selected="{{_selectedView}}" attr-for-selected="data-view">
             <!-- Calendar View-->
             <div id="calendarView" data-view="calendar">
               <!-- monthYear -->
               <div id="monthYear">
                 <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
                 <span id="selectedMonthYear">
-                  <span>{{selectedMonthYear}}</span>
+                  <span>{{_selectedMonthYear}}</span>
                 </span>
                 <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
               </div>
 
               <!-- weeks -->
               <div id="weekdays">
-                <template is="dom-repeat" items="{{weekdays}}">
+                <template is="dom-repeat" items="{{_weekdays}}">
                   <span>{{item}}</span>
                 </template>
               </div>
 
               <!-- days -->
               <div id="days">
-                <template is="dom-repeat" items="{{days}}" as="day">
+                <template is="dom-repeat" items="{{_days}}" as="day">
                   <div id$="[[_computeWeekId(index)]]" class="week-container">
                     <template is="dom-repeat" items="{{day}}">
                       <span class="day-container">
@@ -353,7 +353,7 @@ Example:
                 </div>
                 <div id="expandYear" class="relative">
                   <paper-ripple id="expandRipple" fit on-tap="_changeYear"></paper-ripple>
-                  <span>{{todayYear}}</span>
+                  <span>{{_todayYear}}</span>
                 </div>
                 <div id="expandMoreGroup">
                   <paper-icon-button icon="expand-more" on-tap="_nextCentury"></paper-icon-button>
@@ -393,7 +393,7 @@ Example:
       // arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].
       startDay: {
         type: Number,
-        value: 3
+        value: 0
       },
       disableDays: {
         type: Array,
@@ -401,84 +401,84 @@ Example:
           return [];
         }
       },
-      weekdays: {
+      _weekdays: {
         type: Array,
         value: function() {
           return [];
         }
       },
-      days: {
+      _days: {
         type: Array,
         value: function() {
           return [];
         }
       },
-      selectedWeekday: {
+      _selectedWeekday: {
         type: String,
         value: function() {
           return this._computeWeekday(newDate.getDay());
         }
       },
-      selectedDate: {
+      _selectedDate: {
         type: Number,
         value: function() {
           return newDate.getDate();
         },
         observer: '_selectedDateChanged'
       },
-      selectedMonth: {
+      _selectedMonth: {
         type: String,
         value: function() {
           return this._computeMonth(newDate.getMonth(), true);
         }
       },
-      oldDate: Number,
-      todayDate: {
+      _oldDate: Number,
+      _todayDate: {
         type: Number,
         value: function() {
           return newDate.getDate();
         }
       },
-      todayMonth: {
+      _todayMonth: {
         type: Number,
         value: function() {
           return newDate.getMonth();
         },
         observer: '_todayMonthChanged'
       },
-      selectedYear: {
+      _selectedYear: {
         type: Number,
         value: function (){
           return newDate.getFullYear();
         }
       },
-      todayYear: {
+      _todayYear: {
         type: Number,
         value: function() {
           return newDate.getFullYear();
         }
       },
-      selectedMonthYear: String,
-      mthOffset: {
+      _selectedMonthYear: String,
+      _mthOffset: {
         type: Number,
         value: 0,
         notify: true,
         observer: '_computeMonthYear'
       },
-      selectedView: {
+      _selectedView: {
         type: String,
         value: 'calendar'
-      },
-      years: {
-        type: Array,
-        value: function() {
-          var i = 1581, res = [];
-          while (i++ < 2100) {
-            res.push(i);
-          }
-          return res;
-        }
       }
+      // _years: {
+      //   type: Array,
+      //   value: function() {
+      //     var i = 1581, res = [];
+      //     while (i++ < 2100) {
+      //       res.push(i);
+      //     }
+      //     return res;
+      //   }
+      // }
     },
 
     // Element Lifecycle
@@ -491,9 +491,9 @@ Example:
       // This is the point where you should make modifications to the DOM (when
       // necessary), or kick off any processes the element wants to perform.
 
-      this.weekdays = this._computeWeekdays(this.startDay);
+      this._weekdays = this._computeWeekdays(this.startDay);
       this._shiftDisabledDays(this.disableDays, this.startDay);
-      this._computeMonthYear(this.mthOffset);
+      this._computeMonthYear(this._mthOffset);
     },
 
     attached: function () {
@@ -544,13 +544,13 @@ Example:
       var arrayDays = [],
           arrayWeeks = [],
           pushElem,
-          firstYear = this.todayYear,
-          firstMonth = this.todayMonth,
+          firstYear = this._todayYear,
+          firstMonth = this._todayMonth,
           startDay = this.startDay < 0 || this.startDay > 7? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
-          firstDayOfMonth = new Date(firstYear, firstMonth, 1).getDay() - startDay,
+          preFirstDay = new Date(firstYear, firstMonth, 1).getDay() - startDay,
+          firstDayOfMonth = (preFirstDay) < 0? 6: preFirstDay,
           totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth);
 //          totalDay = firstDayOfMonth > 3? 42: 35; // 31 + firstDayOfMonth + (7 - (31 + firstDayOfMonth)%7);
-
         for (var i = 1, j = 0; i <= totalDay; i++, j++) {
           pushElem = i;
 
@@ -568,7 +568,7 @@ Example:
           }
         }
 //      return arrayDays;
-      this.days = arrayDays;
+      this._days = arrayDays;
     },
 
     _computeWeekId: function (idx) {
@@ -583,8 +583,8 @@ Example:
 //    },
 
     _selectedDateChanged: function (newValue, oldValue) {
-      this.oldDate = oldValue;
-      this.selectedDate = newValue;
+      this._oldDate = oldValue;
+      this._selectedDate = newValue;
 
       // remove oldValue's classList
       if (oldValue) {
@@ -597,11 +597,11 @@ Example:
       if (!target.attributes['disabled'] && ev.target.textContent) {
         // when select a date on the calendar, 4 things are needed to be changed:
         // a) Weekday b) Month c) Date d) Year
-        console.log(this.todayYear + ', ' + this.todayMonth + ', ' + this.todayDate);
-        this.selectedMonth = this._computeMonth(this.todayMonth, true);
-        this.selectedDate = parseInt(ev.target.textContent);
-        this.selectedYear = this.todayYear;
-        this.selectedWeekday = this._computeWeekday(new Date(this.todayYear, this.todayMonth, this.selectedDate).getDay());
+        console.log(this._todayYear + ', ' + this._todayMonth + ', ' + this._todayDate);
+        this._selectedMonth = this._computeMonth(this._todayMonth, true);
+        this._selectedDate = parseInt(ev.target.textContent);
+        this._selectedYear = this._todayYear;
+        this._selectedWeekday = this._computeWeekday(new Date(this._todayYear, this._todayMonth, this._selectedDate).getDay());
         this._styleSelected.bind(ev.target, true).apply();
       }
     },
@@ -621,7 +621,7 @@ Example:
           ty = today.getFullYear();
 
       // only today's date is selected...
-      if (date === this.todayDate && this.todayMonth === tm && this.todayYear === ty) {
+      if (date === this._todayDate && this._todayMonth === tm && this._todayYear === ty) {
         cls = cls + ' is-today';
       }
       if (this._isDisabledDay(whichDay)) {
@@ -636,12 +636,13 @@ Example:
     },
 
     _computeMonthYear: function () {
-      this.todayMonth = (this.todayMonth + this.mthOffset) < 0? 11: (this.todayMonth + this.mthOffset)%12;
+      var preTodayMth = this._todayMonth + this._mthOffset;
+      this._todayMonth = (preTodayMth) < 0? 11: (preTodayMth)%12;
 
-      this.mthOffset = 0;
+      this._mthOffset = 0;
       // render calendar once `todayMonth` changes...
       this._computeDays();
-      this.selectedMonthYear = this._computeMonth(this.todayMonth) + ' ' + this.todayYear;
+      this._selectedMonthYear = this._computeMonth(this._todayMonth) + ' ' + this._todayYear;
     },
 
     _computeMonth: function(monthIdx, to_slice) {
@@ -657,73 +658,71 @@ Example:
     },
 
     _prevMonth: function () {
-      this.mthOffset--;
+      this._mthOffset--;
     },
 
     _nextMonth: function () {
-      this.mthOffset++;
+      this._mthOffset++;
     },
 
     _todayMonthChanged: function (newValue, oldValue) {
       if (oldValue === 0 && newValue === 11){
-        this.todayYear--;
+        this._todayYear--;
       }else if(oldValue === 11 && newValue === 0){
-        this.todayYear++;
+        this._todayYear++;
       }
     },
 
     _computeTotalDay: function (firstDayOfMonth, firstYear, firstMonth) {
       var totalDay = 31;
-
-          if (firstMonth%2 === 0){
-            if (firstMonth === 2) {
-              totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
-            }else {
-              totalDay = 30;
-            }
-          }
-
+      if (firstMonth%2 === 0){
+        if (firstMonth === 2) {
+          totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
+        }else {
+          totalDay = 30;
+        }
+      }
       return (totalDay + firstDayOfMonth)>35? 42: 35;
     },
 
     _goYearView: function () {
-      this.selectedView = 'year';
+      this._selectedView = 'year';
     },
 
     _goCalView: function () {
-      this.todayYear = this.selectedYear;
-      this.selectedView = 'calendar';
+      this._todayYear = this._selectedYear;
+      this._selectedView = 'calendar';
     },
 
     _prevCentury: function () {
-      this.todayYear = this.todayYear - 100;
+      this._todayYear = this._todayYear - 100;
     },
 
     _prevDecade: function () {
-      this.todayYear = this.todayYear - 10;
+      this._todayYear = this._todayYear - 10;
     },
 
     _prevYear: function () {
-      this.todayYear--;
+      this._todayYear--;
     },
 
     _nextCentury: function () {
-      this.todayYear = this.todayYear + 100;
+      this._todayYear = this._todayYear + 100;
     },
 
     _nextDecade: function () {
-      this.todayYear = this.todayYear + 10;
+      this._todayYear = this._todayYear + 10;
     },
 
     _nextYear: function () {
-      this.todayYear++;
+      this._todayYear++;
     },
 
     _changeYear: function (ev) {
-      this.selectedYear = this.todayYear;
+      this._selectedYear = this._todayYear;
       this._computeMonthYear();
       this._computeDays();
-      this.selectedView = 'calendar';
+      this._selectedView = 'calendar';
     },
 
     _isDisabledDay: function (date) {
