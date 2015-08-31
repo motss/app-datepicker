@@ -13,6 +13,8 @@
 - disabledDays implemented with changes of startDay.
 - new feature to change startingDay.
 - new feature to regenerate calendar based on new startingDay as well as for the new weekdays.
+- new feature to validate incoming disableDays array elements and reflect the attribute value with error message.
+- new feature to notify user of invalid disableDays attribute by reflecting the error message.
 
 [PENDING]
 - new feature to show week numbers.
