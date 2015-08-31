@@ -32,12 +32,18 @@
 - when startDay > 7, day 1 is missing from the calendar, same goes to startDay less than 0.
 - [FALSE_REPORT] totalDay was not computed correctly.
 
+* 1.2.2
+- Hide all private properties while showing only the public prop => release v1.2.2.
+
 [FIXED]
 * v1.1.3
 - showing, updating the wrong and confused day, month, date, year by separating them with selected-* and today-* properties.
 
 * v1.2.0
 - disabledDays was not implemented properly with change of startDay.
+
+* 1.2.1
+- firstDayOfMonth had negative number after deducting startDay, rendered calendar to not display wrongly.
 
 [KNOWN BUGS]
 * v1.1.3
