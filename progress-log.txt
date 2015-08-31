@@ -45,6 +45,9 @@
 * 1.2.1
 - firstDayOfMonth had negative number after deducting startDay, rendered calendar to not display wrongly.
 
+* 1.2.3
+- firstMonth actually starts from 0 instead of 1 which broke _computeTotalDay.
+
 [KNOWN BUGS]
 * v1.1.3
 - none.

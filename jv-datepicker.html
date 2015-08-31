@@ -549,15 +549,17 @@ Example:
           startDay = this.startDay < 0 || this.startDay > 7? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
           preFirstDay = new Date(firstYear, firstMonth, 1).getDay() - startDay,
           firstDayOfMonth = (preFirstDay) < 0? 6: preFirstDay,
-          totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth);
+          totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth),
+          totalRow = (totalDay + firstDayOfMonth)>35? 42: 35;
+
 //          totalDay = firstDayOfMonth > 3? 42: 35; // 31 + firstDayOfMonth + (7 - (31 + firstDayOfMonth)%7);
-        for (var i = 1, j = 0; i <= totalDay; i++, j++) {
+        for (var i = 1, j = 0; i <= totalRow; i++, j++) {
           pushElem = i;
 
           if (firstDayOfMonth >= i) {
             pushElem = '';
           }else {
-            pushElem = (pushElem - firstDayOfMonth) > 31? '': pushElem - firstDayOfMonth;
+            pushElem = (pushElem - firstDayOfMonth) > totalDay? '': pushElem - firstDayOfMonth;
           }
 
           arrayWeeks.push(pushElem);
@@ -675,14 +677,15 @@ Example:
 
     _computeTotalDay: function (firstDayOfMonth, firstYear, firstMonth) {
       var totalDay = 31;
-      if (firstMonth%2 === 0){
-        if (firstMonth === 2) {
-          totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
-        }else {
-          totalDay = 30;
-        }
+      if (firstMonth === 1) {
+        totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
       }
-      return (totalDay + firstDayOfMonth)>35? 42: 35;
+
+      if (firstMonth === 3 || firstMonth === 5 || firstMonth === 8 || firstMonth === 10) {
+          totalDay = 30;
+      }
+      return totalDay;
+      // return (totalDay + firstDayOfMonth)>35? 42: 35;
     },
 
     _goYearView: function () {
@@ -757,5 +760,4 @@ Example:
       // no return value as array mutation occurs inside function.
     }
   });
-
 </script>
