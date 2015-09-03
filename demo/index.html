@@ -30,20 +30,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /*@apply(--layout-horizontal);*/
     }
 
-    .android-status-bar, .android-nav-bar, .address-bar, .content{
+    .android-status-bar, .android-nav-bar, .address-bar, .iphone-status-bar,  .content{
       position: relative;
       display: block;
       background: #000000;
       text-align: center;
     }
 
-    .android-status-bar, .android-nav-bar {
+    .android-status-bar, .android-nav-bar, .iphone-status-bar {
       color: #ffffff;
     }
 
     .android-status-bar {
       top: 0;
       min-height: 25px;
+    }
+
+    .iphone-status-bar {
+      top: 0;
+      min-height: 20px;
     }
 
     .android-nav-bar {
@@ -63,21 +68,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @apply(--layout-flex-auto);
       @apply(--layout-center-center);
     }
+
+    .iphone-content {
+      max-height: calc(480px - 20px - 50px);
+    }
+
+    .iphone-4{
+      max-height: calc(320px - 70px);
+    }
   </style>
 </head>
 <body>
 <template is="dom-bind">
 
-  <!-- <div class="android-status-bar">
+  <!-- <div class="iphone-status-bar">
     Android Status Bar
   </div>
   <div class="address-bar">
     Address Bar
   </div> -->
-  <!-- <div class="content"> -->
+  <!-- <div class="content iphone-4"> -->
     <jv-datepicker start-day="1" disable-days="[0, 6]"></jv-datepicker>
-  <!-- </div>
-  <div class="android-nav-bar">
+  <!-- </div> -->
+  <!-- <div class="android-nav-bar">
     Android Navigation Bar
   </div> -->
 </template>

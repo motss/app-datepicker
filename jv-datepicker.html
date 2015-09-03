@@ -64,9 +64,10 @@ Example:
       max-width: calc(100vw - 32px - 32px);
     }
 
-    #datepickerContainer, #datepickerContainer div, neon-animated-pages {
+    #datepickerContainer, #datepickerContainer div {
       /*width: calc(360px - 64px);*/
-      width: 296px;
+      width: calc(100vw - 64px);
+      position: relative
     }
 
     /* to be removed soon */
@@ -288,8 +289,145 @@ Example:
       }
     }
 
-    /* mobile-small */
-    
+    /* IP4, IP5 Portrait */
+    /* IP4 status bar - 20px */
+    /* IP4 nav-bar - 50px */
+    /* IP4 viewport height - 410px */
+    @media all and (min-width: 0) and (max-width: 359px) and (max-height: 480px) and (orientation: portrait) {
+      :host, #datepickerContainer {
+        max-height: calc(410px - 32px);
+      }
+
+      #dateContainer {
+        padding: 3px 0;
+        @apply(--layout-horizontal);
+      }
+
+      neon-animated-pages {
+        height: 200px;
+      }
+
+      #days {
+        max-height: calc(200px - 46px - 25px);
+      }
+    }
+
+    @media all and (max-width: 359px) and (min-height: 481px) and (max-height: 568px) and (orientation: portrait) {
+      :host, #datepickerContainer {
+        max-height: calc(498px - 32px);
+      }
+
+      #dateContainer {
+        padding: 6px 0;
+        @apply(--layout-vertical);
+      }
+
+      neon-animated-pages {
+        height: calc(498px - 32px - 25px - 178px - 42px);
+      }
+
+      #days {
+        max-height: calc(221px - 46px - 25px);
+      }
+    }
+
+    /* N7 2013 Portrait and 800px PC landscape */
+    @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
+      :host, #datepickerContainer {
+        max-width: 360px;
+        max-height: 640px;
+      }
+
+      #datepickerContainer, #datepickerContainer div {
+        width: 360px;
+      }
+
+      #viewContainer {
+        max-height: calc(640px - 42px);
+        @apply(--layout-vertical);
+      }
+
+      neon-animated-pages {
+        height: calc(640px - 42px - 215px);
+      }
+    }
+
+    /* N7 2013 landscape and 800px PC landscape */
+    @media all and (min-width: 800px) and (orientation: landscape) {
+      :host, #datepickerContainer {
+        max-height: 360px;
+        max-width: 640px;
+      }
+
+      #viewContainer, #selectionView, neon-animated-pages {
+        max-width: 640px;
+        max-height: calc(360px - 42px);
+      }
+
+      #selectionView, #selectionView div {
+        max-width: calc(640px - 300px);
+      }
+
+      #dateContainer {
+        max-height: calc(360px - 42px - 25px);
+      }
+
+      neon-animated-pages, #calendarView, #calendarView div, #yearView,
+      #yearView #expandContainer {
+        max-width: 300px;
+      }
+
+      #buttonContainer {
+        max-width: 640px;
+      }
+    }
+
+    /* min-width 640px mobile landscape */
+    @media all and (min-width: 481px) and (orientation: landscape) {
+       neon-animated-pages, neon-animated-pages #calendarView, #calendarView div, neon-animated-pages #yearView, #yearView div {
+        width: 296px;
+      }
+    }
+
+    /* IP4 and IP5 landscape */
+    @media all and (min-width: 480px) and (max-width: 568px) and (orientation: landscape) {
+      #selectionView, #selectionView div {
+        max-width: calc(100vw - 64px - 296px);
+        max-height: calc(100vh - 32px - 42px);
+      }
+
+      neon-animated-pages div {
+        max-width: 296px;
+      }
+
+      #selectionView #dateContainer {
+        height: calc(100vh - 32px - 42px - 25px - 6px);
+      }
+
+      #weekdayContainer {
+        padding-bottom: 0;
+      }
+
+      #monthContainer, #yearContainer {
+        height: 20px;
+      }
+
+      #monthContainer span, #yearContainer span {
+        font-size: 20px;
+      }
+
+      #dayContainer {
+        height: 93px;
+      }
+
+      #dayContainer span {
+        font-size: 80px;
+      }
+
+      #dateContainer {
+        padding: 6px 0;
+      }
+    }
 
     /* Used to solve position issue when yearContainer is selected */
     /*#yearContainer {
@@ -304,13 +442,13 @@ Example:
   </style>
 
   <template>
-    <iron-media-query query="(max-width: 420px)" query-matches="{{potrait}}"></iron-media-query>
+    <iron-media-query query="(orientation: portrait)" query-matches="{{portrait}}"></iron-media-query>
 
     <!-- Datepicker Container-->
     <div id="datepickerContainer">
 
         <!-- View Container -->
-        <div id="viewContainer" class$="{{_computeContainerCls(potrait)}}">
+        <div id="viewContainer" class$="{{_computeContainerCls(portrait)}}">
           <!-- Selection View-->
           <div id="selectionView">
             <!-- Weekday -->
@@ -560,12 +698,20 @@ Example:
      * @detail {{sound: String}}
      */
 
-    _computeContainerCls: function (potrait) {
-      if (potrait) {
-        return 'layout vertical center-center';
-      } else {
-        return 'layout horizontal center-center';
+    _computeContainerCls: function (portrait) {
+      var cls = 'layout vertical center-center';
+
+      if (!portrait) {
+        cls = 'layout horizontal center-center';
       }
+
+      console.log(portrait);
+      return cls;
+      // if (potrait) {
+      //   return 'layout vertical center-center';
+      // } else {
+      //   return 'layout horizontal center-center';
+      // }
     },
 
     _computeWeekdays: function (startDay) {

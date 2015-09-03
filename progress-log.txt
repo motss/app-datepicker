@@ -16,6 +16,11 @@
 - new feature to validate incoming disableDays array elements and reflect the attribute value with error message.
 - new feature to notify user of invalid disableDays attribute by reflecting the error message.
 
+* 1.2.5
+- redesigned on new layout based on Android's Chrome to ensure it fit exactly on mobile device.
+- Chrome Stable & Chrome Dev updated with new resolution on all mobile devices. Things got messed up immediately.
+- Added basic support for 800x600 PC screen and above, too!
+
 [PENDING]
 - new feature to show week numbers.
 - redesign a full animated datepicker.
@@ -35,6 +40,9 @@
 * 1.2.2
 - Hide all private properties while showing only the public prop => release v1.2.2.
 
+* 1.2.4
+- Updated base CSS styling.
+
 [FIXED]
 * v1.1.3
 - showing, updating the wrong and confused day, month, date, year by separating them with selected-* and today-* properties.
@@ -48,9 +56,9 @@
 * 1.2.3
 - firstMonth actually starts from 0 instead of 1 which broke _computeTotalDay.
 
+* 1.2.4
+- added missing 'Saturday' to be displayed when being selected.
+
 [KNOWN BUGS]
 * v1.1.3
 - none.
-
-* 1.
-- redesigned on new layout based on Android's Chrome to ensure it fit exactly on mobile device.
