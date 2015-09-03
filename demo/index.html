@@ -21,20 +21,65 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style is="custom-style">
     html, body, div {
       @apply(--layout-vertical);
-      @apply(--layout-center-center);
+      /*@apply(--layout-center-justified);*/
+      @apply(--layout-fit);
+      margin: 0;
     }
 
     div {
-      @apply(--layout-horizontal);
+      /*@apply(--layout-horizontal);*/
+    }
+
+    .android-status-bar, .android-nav-bar, .address-bar, .content{
+      position: relative;
+      display: block;
+      background: #000000;
+      text-align: center;
+    }
+
+    .android-status-bar, .android-nav-bar {
+      color: #ffffff;
+    }
+
+    .android-status-bar {
+      top: 0;
+      min-height: 25px;
+    }
+
+    .android-nav-bar {
+      bottom: 0;
+      min-height: 48px;
+    }
+
+    .address-bar {
+      min-height: 50px;
+      background: #e0e0e0;
+    }
+
+    .content {
+      max-height: calc(640px - 25px - 48px - 50px);
+      background: #ffffff;
+      @apply(--layout);
+      @apply(--layout-flex-auto);
+      @apply(--layout-center-center);
     }
   </style>
 </head>
-<body unresolved class="container">
+<body>
 <template is="dom-bind">
 
-  <div>
-    <jv-datepicker start-day="1" disable-days="[0, 6]"></jv-datepicker>
+  <!-- <div class="android-status-bar">
+    Android Status Bar
   </div>
+  <div class="address-bar">
+    Address Bar
+  </div> -->
+  <!-- <div class="content"> -->
+    <jv-datepicker start-day="1" disable-days="[0, 6]"></jv-datepicker>
+  <!-- </div>
+  <div class="android-nav-bar">
+    Android Navigation Bar
+  </div> -->
 </template>
 
 </body>

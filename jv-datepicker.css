@@ -1,0 +1,180 @@
+@media all and (min-width: 0) and (max-width: 359px) and (max-resolution: 2dppx) and (orientation: portrait) {
+      :host {
+        /* 20px status bar */
+        /* 40px navigation bar */
+        /* 16px interval in between for top and bottom */
+        /* 32px interval in between for left and right */
+        max-height: calc(100vh - 32px);
+        max-width: calc(100vw - 32px - 32px);
+      }
+
+      #calendar-selection {
+        /*width: 252px;*/
+        width: 100%;
+      }
+
+      #views {
+        height: 100%;
+        width: 256px;
+      }
+
+      #calendar {
+        max-height: calc(100vh - 32px - 168px - 30px);
+      }
+    }
+
+    /* mobile-large */
+    @media all and (min-width: 360px) and (min-resolution: 3dppx) and (orientation: portrait) {
+      :host {
+        /* 20px status bar */
+        /* 40px navigation bar */
+        /* 16px interval in between for top and bottom */
+        /* 32px interval in between for left and right */
+        max-height: calc(100vh - 32px);
+        max-width: calc(100vw - 32px - 32px);
+      }
+
+      #calendar-selection {
+        /*width: 252px;*/
+        width: 100%;
+        background: #009688;
+      }
+
+      #views {
+        height: 100%;
+        width: 256px;
+      }
+
+      #calendar {
+        max-height: calc(100vh - 32px - 168px - 30px);
+      }
+    }
+
+    /* mobile-small-landscape */
+    @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {
+      :host {
+        /* 20px status bar */
+        /* 40px navigation bar */
+        /* 16px interval in between for top and bottom */
+        /* 32px interval in between for left and right */
+        max-height: calc(100vh - 2em);
+        max-width: calc(100vw - 4em);
+      }
+
+      #calendar-selection, #calendar {
+        max-height: calc(100vh - 2em - 1.875em);
+      }
+
+      #calendar-selection {
+        background: #009688;
+      }
+
+      .selectedWeekday {
+        font-size: 14px;
+      }
+
+      #selectedMonth, #selectedYear {
+        /*padding: 6px 0;*/
+      }
+
+      #selectedDay {
+        padding: 3px 0;
+      }
+
+      .selectedMonth, .selectedYear {
+        font-size: 23px;
+        line-height: 34px;
+      }
+
+      .selectedDay {
+        font-size: 80px;
+        line-height: 70px;
+      }
+    }
+
+    /* mobile-large-landscape */
+    @media all and (min-width: 481px) and (orientation: landscape) {
+      :host {
+        max-height: calc(100vh - 2em);
+        max-width: calc(100vw - 4em);
+      }
+
+      #calendar-selection, #calendar {
+        max-height: calc(100vh - 2em - 1.875em);
+      }
+
+      #calendar-selection {
+        background: #009688;
+      }
+
+      .selectedWeekday {
+        font-size: 14px;
+      }
+
+      #selectedMonth, #selectedYear {
+        padding: 6px 0;
+      }
+
+      #selectedDay {
+        padding: 3px 0;
+      }
+
+      .selectedMonth, .selectedYear {
+        font-size: 23px;
+        line-height: 44px;
+      }
+
+      .selectedDay {
+        font-size: 80px;
+        line-height: 70px;
+      }
+    }
+
+    /* mobile-large-landscape above 640px */
+    @media all and (min-width: 640px) and (orientation: landscape) {
+      :host {
+        max-height: calc(100vh - 2em);
+        max-width: calc(100vw - 4em);
+      }
+
+      #calendar-selection, #calendar {
+        max-height: calc(100vh - 2em - 1.875em);
+      }
+
+      #calendar-selection {
+        background: #009688;
+      }
+
+      #selectedWeekdayHeader {
+        padding: 1px;
+      }
+
+      .selectedWeekday {
+        font-size: 22px;
+      }
+
+      #selectedMonth, #selectedYear {
+        padding: 3px 0;
+      }
+
+      #selectedDay {
+        padding: 28px 0;
+      }
+
+      .selectedMonth, .selectedYear {
+        font-size: 40px;
+        line-height: 40px;
+      }
+
+      .selectedDay {
+        font-size: 140px;
+        line-height: 121px;
+      }
+    }
+
+    /* desktop-large */
+    @media all and (min-width: 1281px) and (max-width: 1600px) {
+
+    }
+    /* desktop-xlarge */
+    @media all and (min-width: 1601px) and (max-width: 1920px) { }

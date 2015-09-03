@@ -1,0 +1,12 @@
+:host
+'-jv-datepicker
+  |-datepickerContainer
+  |   |-selectionView
+  |   '-neon-animated-pages
+  |       |-calendarView
+  |       |   |-monthYear
+  |       |   |-weekdays
+  |       |   '-days
+  |       '-yearView
+  |           '-expandContainer
+  '-buttonContainer
