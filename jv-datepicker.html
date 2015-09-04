@@ -545,7 +545,7 @@ Example:
       <!-- Button Container-->
       <div id="buttonContainer">
         <paper-button id="cancel">cancel</paper-button>
-        <paper-button id="ok" on-tap="_bindDate">ok</paper-button>
+        <paper-button id="ok" on-tap="_formatDate">ok</paper-button>
       </div>
     </div>
   </template>
@@ -647,7 +647,11 @@ Example:
         value: 'year'
       },
       _tempYear: Number,
-      format: String
+      format: String,
+      bindDate: {
+        type: String,
+        notify: true
+      }
       // _years: {
       //   type: Array,
       //   value: function() {
@@ -960,13 +964,13 @@ Example:
       // no return value as array mutation occurs inside function.
     },
 
-    _bindDate: function() {
-      // var dateformat = this.format;
-      var dateformat = "yyyy-mm-dd";
-      var monthformat = ['m', 'mo', 'mm', 'mmm', 'mmmm'],
-          dayformat = ['d', 'do', 'dd'],
-          yearformat = ['yy', 'yyyy'],
-          yearreg = dateformat.match(/y/gi),
+    _formatDate: function() {
+      var dateformat = this.format;
+      // var dateformat = "yyyy-mm-dd";
+      // var monthformat = ['m', 'mo', 'mm', 'mmm', 'mmmm'],
+      //     dayformat = ['d', 'do', 'dd'],
+      //     yearformat = ['yy', 'yyyy'],
+      var yearreg = dateformat.match(/y/gi),
           dayreg = dateformat.match(/d/gi),
           monthreg = dateformat.match(/m/gi);
 
@@ -981,11 +985,13 @@ Example:
 
       // regexp day
       if (dayreg) {
-        if (dayreg === 1 && this._selectedDate < 10) {
+        if (dayreg.length === 1 && this._selectedDate < 10) {
           dateformat = dateformat.replace(/d/gi, '3');
+        }else if (dayreg.length === 2){
+          dateformat = dateformat.replace(/[d]+/gi, '30');
         }else {
+          dateformat = dateformat.replace(/[do]+/gi, '30th');
         }
-          dateformat = dateformat.replace(/d[d|o]+/gi, '30');
       }
 
       // regexp month
@@ -1005,6 +1011,10 @@ Example:
         }
       }
 
+      // parse formatted date
+      this.bindDate = dateformat;
+
+      console.log(dateformat);
       console.log(this._selectedYear);
       console.log(this._selectedMonth);
       console.log(this._selectedDate);
