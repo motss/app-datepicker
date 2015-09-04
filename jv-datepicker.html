@@ -545,7 +545,7 @@ Example:
       <!-- Button Container-->
       <div id="buttonContainer">
         <paper-button id="cancel">cancel</paper-button>
-        <paper-button id="ok">ok</paper-button>
+        <paper-button id="ok" on-tap="_bindDate">ok</paper-button>
       </div>
     </div>
   </template>
@@ -646,7 +646,8 @@ Example:
         type: String,
         value: 'year'
       },
-      _tempYear: Number
+      _tempYear: Number,
+      format: String
       // _years: {
       //   type: Array,
       //   value: function() {
@@ -785,7 +786,6 @@ Example:
       if (!target.attributes['disabled'] && ev.target.textContent) {
         // when select a date on the calendar, 4 things are needed to be changed:
         // a) Weekday b) Month c) Date d) Year
-        console.log(this._todayYear + ', ' + this._todayMonth + ', ' + this._todayDate);
         this._selectedMonth = this._computeMonth(this._todayMonth, true);
         this._selectedDate = parseInt(ev.target.textContent);
         this._selectedYear = this._todayYear;
@@ -958,6 +958,56 @@ Example:
         this.setAttribute('disable-days', JSON.stringify('invalidArr'));
       }
       // no return value as array mutation occurs inside function.
+    },
+
+    _bindDate: function() {
+      // var dateformat = this.format;
+      var dateformat = "yyyy-mm-dd";
+      var monthformat = ['m', 'mo', 'mm', 'mmm', 'mmmm'],
+          dayformat = ['d', 'do', 'dd'],
+          yearformat = ['yy', 'yyyy'],
+          yearreg = dateformat.match(/y/gi),
+          dayreg = dateformat.match(/d/gi),
+          monthreg = dateformat.match(/m/gi);
+
+      // regexp year
+      if (yearreg) {
+        if (yearreg.length > 2) {
+          dateformat = dateformat.replace(/y+/gi, '2015');
+        }else {
+          dateformat = dateformat.replace(/y{1,2}/gi, '15');
+        }
+      }
+
+      // regexp day
+      if (dayreg) {
+        if (dayreg === 1 && this._selectedDate < 10) {
+          dateformat = dateformat.replace(/d/gi, '3');
+        }else {
+        }
+          dateformat = dateformat.replace(/d[d|o]+/gi, '30');
+      }
+
+      // regexp month
+      if (monthreg) {
+        if (monthreg.length === 1 && this._selectedMonth < 10) {
+          dateformat = dateformat.replace(/m/gi, '3');
+        }else if (monthreg.length > 3){
+          dateformat = dateformat.replace(/[mo]+/gi, 'March');
+        }else if (monthreg.length > 2) {
+          dateformat = dateformat.replace(/[mo]+/gi, this._selectedMonth);
+        }else {
+          if (dateformat.match(/[m]+/gi)) {
+            dateformat = dateformat.replace(/[m]+/gi, '03');
+          }else {
+            dateformat = dateformat.replace(/[mo]+/gi, '3rd');
+          }
+        }
+      }
+
+      console.log(this._selectedYear);
+      console.log(this._selectedMonth);
+      console.log(this._selectedDate);
     }
   });
 </script>
