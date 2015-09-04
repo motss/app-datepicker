@@ -645,7 +645,8 @@ Example:
       _selectedView: {
         type: String,
         value: 'year'
-      }
+      },
+      _tempYear: Number
       // _years: {
       //   type: Array,
       //   value: function() {
@@ -874,12 +875,26 @@ Example:
     },
 
     _goYearView: function () {
-      this._selectedView = 'year';
+      if (this._selectedView === 'year') {
+        return;
+      }else {
+        // save initial value of _todayYear into _tempYear.
+        // if no select any year, reset _todayYear to initial value from _tempYear.
+        this._tempYear = this._todayYear;
+        this._selectedView = 'year';
+      }
     },
 
     _goCalView: function () {
-      this._todayYear = this._selectedYear;
-      this._selectedView = 'calendar';
+      if (this._selectedView === 'calendar') {
+        return;
+      }else {
+        // set _todayYear to its initial value from _tempYear.
+        // if onFirstLoad is at 'calendar' page, _tempYear is undefined, hence
+        // set _selectedYear instead.
+        this._todayYear = this._tempYear || this._selectedYear;
+        this._selectedView = 'calendar';
+      }
     },
 
     _prevCentury: function () {
