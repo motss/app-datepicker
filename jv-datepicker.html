@@ -977,45 +977,46 @@ Example:
       // regexp year
       if (yearreg) {
         var _formattedYear = this._selectedYear;
-        if (yearreg.length > 2) {
-          // dateformat = dateformat.replace(/y+/gi, '2015');
-          dateformat = dateformat.replace(/y+/gi, _formattedYear);
-        }else {
-          // dateformat = dateformat.replace(/y{1,2}/gi, '15');
-          dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
+        switch (yearreg.length) {
+          case 2:
+            dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
+            break;
+          default:
+            dateformat = dateformat.replace(/[y]+[y|o]*/gi, _formattedYear);
         }
       }
 
       // regexp day
       if (dayreg) {
         var _formattedDay = this._selectedDate;
-        if (dayreg.length === 1 && this._selectedDate < 10) {
-          // dateformat = dateformat.replace(/d/gi, '3');
-          dateformat = dateformat.replace(/d/gi, '0' + _formattedDay);
+        if (dayreg.length === 1) {
+          dateformat = dateformat.replace(/d/gi, _formattedDay);
         }else if (dayreg.length === 2){
-          // dateformat = dateformat.replace(/[d]+/gi, '30');
-          dateformat = dateformat.replace(/[d]+/gi, _formattedDay);
-        }else {
-          // dateformat = dateformat.replace(/[do]+/gi, '30th');
-          var suffixOrdinal, cardinalNumber = _formattedDay%10;
-          switch (cardinalNumber) {
-            case 1:
-              suffixOrdinal = 'st';
-              break;
-            case 2:
-              suffixOrdinal = 'nd';
-              break;
-            case 3:
-              suffixOrdinal = 'rd';
-              break;
-            default:
-              suffixOrdinal = 'th';
-          }
           if (_formattedDay < 10) {
-            dateformat = dateformat.replace(/[do]+/gi, '0' + _formattedDay + suffixOrdinal);
+            dateformat = dateformat.replace(/[d]+/gi, '0' + _formattedDay);
           }else {
-            dateformat = dateformat.replace(/[do]+/gi, _formattedDay + suffixOrdinal);
+            dateformat = dateformat.replace(/[d]+/gi, _formattedDay);
           }
+        }else {
+          var suffixOrdinal, cardinalNumber = _formattedDay%10;
+          if (_formattedDay === 11 || _formattedDay === 12 || _formattedDay === 13) {
+            suffixOrdinal = 'th';
+          }else {
+            switch (cardinalNumber) {
+              case 1:
+                suffixOrdinal = 'st';
+                break;
+              case 2:
+                suffixOrdinal = 'nd';
+                break;
+              case 3:
+                suffixOrdinal = 'rd';
+                break;
+              default:
+                suffixOrdinal = 'th';
+            }
+          }
+          dateformat = dateformat.replace(/[d]+[o]+/gi, _formattedDay + suffixOrdinal);
         }
       }
 
@@ -1023,18 +1024,19 @@ Example:
       if (monthreg) {
         var _numberedMonth = this._todayMonth, _formattedMonth;
         if (monthreg.length === 1) {
-          dateformat = dateformat.replace(/m/gi, _numberedMonth);
+          dateformat = dateformat.replace(/m/gi, _numberedMonth + 1);
         }else if (monthreg.length > 3){
           _formattedMonth = this._computeMonth(_numberedMonth);
-          dateformat = dateformat.replace(/[mo]+/gi, _formattedMonth);
+          dateformat = dateformat.replace(/[m]+[m|o]*/gi, _formattedMonth);
         }else if (monthreg.length > 2) {
-          dateformat = dateformat.replace(/[mo]+/gi, this._selectedMonth);
+          dateformat = dateformat.replace(/[m]+[m|o]*/gi, this._selectedMonth);
         }else {
           // console.log('mo not existed: ' + _formattedMonth);
-          if (_numberedMonth < 10) {
-            dateformat = dateformat.replace(/[m]+/gi, '0' + _numberedMonth);
+          if ((_numberedMonth + 1) < 10) {
+            console.log('zero prefix');
+            dateformat = dateformat.replace(/[m]+/gi, '0' + (_numberedMonth + 1));
           }else {
-            dateformat = dateformat.replace(/[mo]+/gi, _numberedMonth);
+            dateformat = dateformat.replace(/[m]+[o]+/gi, _numberedMonth + 1);
           }
         }
       }
