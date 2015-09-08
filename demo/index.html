@@ -18,6 +18,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
   <link rel="import" href="../jv-datepicker.html">
+  <link rel="import" href="../jv-datepicker-dialog.html">
   <style is="custom-style">
     html, body, div {
       @apply(--layout-vertical);
@@ -79,7 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 </head>
 <body>
-<template is="dom-bind" id="app">
+<!-- <template is="dom-bind" id="app"> -->
 
   <!-- <div class="iphone-status-bar">
     Android Status Bar
@@ -88,12 +89,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Address Bar
   </div> -->
   <!-- <div class="content iphone-4"> -->
-    <jv-datepicker start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker>
+    <!-- <jv-datepicker start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker> -->
+    <paper-button data-dialog="dialog" onclick="openDatepicker(event)">datepicker dialog</paper-button>
+    <jv-datepicker-dialog id="dialog" start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
   <!-- </div> -->
   <!-- <div class="android-nav-bar">
     Android Navigation Bar
   </div> -->
-</template>
-
+<!-- </template> -->
+<script>
+  function openDatepicker(ev) {
+    var button = ev.target;
+    while (!button.hasAttribute('data-dialog') && button !== document.body) {
+      button = button.parentElement;
+    }
+    if (!button.hasAttribute('data-dialog')) {
+      return;
+    }
+    var id = button.getAttribute('data-dialog');
+    var dialog = document.getElementById('dialog');
+    if (dialog) {
+      console.log(dialog);
+      dialog.open();
+    }
+  }
+</script>
 </body>
 </html>

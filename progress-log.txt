@@ -21,12 +21,15 @@
 - Chrome Stable & Chrome Dev updated with new resolution on all mobile devices. Things got messed up immediately.
 - Added basic support for 800x600 PC screen and above, too!
 
+* 1.2.12
+- bindDate method is completed with more robust date format options.
+
 [PENDING]
 - new feature to show week numbers.
 - redesign a full animated datepicker.
 
-* 1.2.7
-- bindDate method on the works.
+* 1.2.
+- Working extremely hard on jv-datepicker-dialog.
 
 [COMPLETED]
 * v1.1.3
