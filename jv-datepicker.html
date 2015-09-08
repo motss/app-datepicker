@@ -647,7 +647,12 @@ Example:
         value: 'year'
       },
       _tempYear: Number,
-      format: String,
+      format: {
+        type: String,
+        value: function() {
+          return 'yyyy-mm-dd';
+        }
+      },
       bindDate: {
         type: String,
         notify: true
@@ -966,10 +971,6 @@ Example:
 
     _formatDate: function() {
       var dateformat = this.format;
-      // var dateformat = "yyyy-mm-dd";
-      // var monthformat = ['m', 'mo', 'mm', 'mmm', 'mmmm'],
-      //     dayformat = ['d', 'do', 'dd'],
-      //     yearformat = ['yy', 'yyyy'],
       var yearreg = dateformat.match(/y/gi),
           dayreg = dateformat.match(/d/gi),
           monthreg = dateformat.match(/m/gi);
@@ -983,6 +984,7 @@ Example:
                 dateformat.match(/^yy[$-/:-?{-~!"^_`\[\]]/) ||
                 dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy$/)) {
               dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
+              break;
             }
           default:
             dateformat = dateformat.replace(/[o]*[y]+[y|o]*/gi, _formattedYear);
@@ -994,9 +996,16 @@ Example:
         var _formattedDay = this._selectedDate;
         switch (dayreg.length) {
           case 1:
-            if (!dateformat.match(/[d][o][^\w\s]/gi)) {
+            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]d[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/^d[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/[$-/:-?{-~!"^_`\[\]]d$/)) {
               dateformat = dateformat.replace(/d/gi, _formattedDay);
-            }else {
+              break;
+            }
+
+            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]do[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/^do[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/[$-/:-?{-~!"^_`\[\]]do$/)) {
               var _suffixOrdinal, _cardinalNumber = _formattedDay%10;
               if (_formattedDay === 11 || _formattedDay === 12 || _formattedDay === 13) {
                 _suffixOrdinal = 'th';
@@ -1015,20 +1024,18 @@ Example:
                     _suffixOrdinal = 'th';
                 }
               }
-              dateformat = dateformat.replace(/[d]+[o]+/gi, _formattedDay + _suffixOrdinal);
+              dateformat = dateformat.replace(/[o]*[d]+[o]+/gi, _formattedDay + _suffixOrdinal);
+              break;
             }
-            break;
           case 2:
-            if (!dateformat.match(/[d][o][^\w\s]/gi)) {
-              if (_formattedDay < 10) {
-                dateformat = dateformat.replace(/[d]+/gi, '0' + _formattedDay);
-              }else {
-                dateformat = dateformat.replace(/[d]+/gi, _formattedDay);
-              }
+            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/^dd[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd$/)) {
+                dateformat = dateformat.replace(/[d]+/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
               break;
             }
           default:
-            dateformat = dateformat.replace(/[d]+[d|0]*/gi, _formattedDay);
+            dateformat = dateformat.replace(/[o]*[d]+[d|0]*/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
         }
       }
 
@@ -1037,29 +1044,30 @@ Example:
         var _numberedMonth = this._todayMonth, _formattedMonth;
         switch (monthreg.length) {
           case 1:
-            if (!dateformat.match(/[m][o][^\w\s]/gi)) {
+            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/^m[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/[$-/:-?{-~!"^_`\[\]]m$/)) {
               dateformat = dateformat.replace(/m/gi, _numberedMonth + 1);
               break;
             }
           case 2:
           case 3:
           case 4:
-            if (!dateformat.match(/[m][o][^\w\s]/gi)) {
+            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/^m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
+                dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}$/)) {
               _formattedMonth = _numberedMonth + 1;
               if (monthreg.length === 2) {
-                if (_formattedMonth < 10) {
-                  dateformat = dateformat.replace(/[m]+/gi, '0' + _formattedMonth);
-                }else {
-                  dateformat = dateformat.replace(/[m]+/gi, _formattedMonth);
-                }
+                dateformat = dateformat.replace(/[m]+/gi, _formattedMonth.toString().replace(/^(\d)$/gi, '0$1'));
               }else if (monthreg.length === 3) {
                 dateformat = dateformat.replace(/[m]+/gi, this._selectedMonth);
               }else {
                 dateformat = dateformat.replace(/[m]+/gi, this._computeMonth(_numberedMonth));
               }
+              break;
             }
           default:
-            dateformat = dateformat.replace(/[m]+[o]*/gi, _numberedMonth + 1);
+            dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
         }
       }
 
