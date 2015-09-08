@@ -976,37 +976,65 @@ Example:
 
       // regexp year
       if (yearreg) {
+        var _formattedYear = this._selectedYear;
         if (yearreg.length > 2) {
-          dateformat = dateformat.replace(/y+/gi, '2015');
+          // dateformat = dateformat.replace(/y+/gi, '2015');
+          dateformat = dateformat.replace(/y+/gi, _formattedYear);
         }else {
-          dateformat = dateformat.replace(/y{1,2}/gi, '15');
+          // dateformat = dateformat.replace(/y{1,2}/gi, '15');
+          dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
         }
       }
 
       // regexp day
       if (dayreg) {
+        var _formattedDay = this._selectedDate;
         if (dayreg.length === 1 && this._selectedDate < 10) {
-          dateformat = dateformat.replace(/d/gi, '3');
+          // dateformat = dateformat.replace(/d/gi, '3');
+          dateformat = dateformat.replace(/d/gi, '0' + _formattedDay);
         }else if (dayreg.length === 2){
-          dateformat = dateformat.replace(/[d]+/gi, '30');
+          // dateformat = dateformat.replace(/[d]+/gi, '30');
+          dateformat = dateformat.replace(/[d]+/gi, _formattedDay);
         }else {
-          dateformat = dateformat.replace(/[do]+/gi, '30th');
+          // dateformat = dateformat.replace(/[do]+/gi, '30th');
+          var suffixOrdinal, cardinalNumber = _formattedDay%10;
+          switch (cardinalNumber) {
+            case 1:
+              suffixOrdinal = 'st';
+              break;
+            case 2:
+              suffixOrdinal = 'nd';
+              break;
+            case 3:
+              suffixOrdinal = 'rd';
+              break;
+            default:
+              suffixOrdinal = 'th';
+          }
+          if (_formattedDay < 10) {
+            dateformat = dateformat.replace(/[do]+/gi, '0' + _formattedDay + suffixOrdinal);
+          }else {
+            dateformat = dateformat.replace(/[do]+/gi, _formattedDay + suffixOrdinal);
+          }
         }
       }
 
       // regexp month
       if (monthreg) {
-        if (monthreg.length === 1 && this._selectedMonth < 10) {
-          dateformat = dateformat.replace(/m/gi, '3');
+        var _numberedMonth = this._todayMonth, _formattedMonth;
+        if (monthreg.length === 1) {
+          dateformat = dateformat.replace(/m/gi, _numberedMonth);
         }else if (monthreg.length > 3){
-          dateformat = dateformat.replace(/[mo]+/gi, 'March');
+          _formattedMonth = this._computeMonth(_numberedMonth);
+          dateformat = dateformat.replace(/[mo]+/gi, _formattedMonth);
         }else if (monthreg.length > 2) {
           dateformat = dateformat.replace(/[mo]+/gi, this._selectedMonth);
         }else {
-          if (dateformat.match(/[m]+/gi)) {
-            dateformat = dateformat.replace(/[m]+/gi, '03');
+          // console.log('mo not existed: ' + _formattedMonth);
+          if (_numberedMonth < 10) {
+            dateformat = dateformat.replace(/[m]+/gi, '0' + _numberedMonth);
           }else {
-            dateformat = dateformat.replace(/[mo]+/gi, '3rd');
+            dateformat = dateformat.replace(/[mo]+/gi, _numberedMonth);
           }
         }
       }
