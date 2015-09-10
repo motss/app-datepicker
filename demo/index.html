@@ -1,105 +1,110 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>jv-datepicker Demo</title>
+  <title>jv-datepicker demo</title>
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="../../paper-styles/paper-styles.html">
+  <link rel="import" href="../../paper-styles/demo-pages.html">
   <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 
   <link rel="import" href="../jv-datepicker.html">
   <link rel="import" href="../jv-datepicker-dialog.html">
   <style is="custom-style">
-    html, body, div {
-      @apply(--layout-vertical);
-      /*@apply(--layout-center-justified);*/
-      @apply(--layout-fit);
-      margin: 0;
+    .horizontal-section {
+      min-width: 130px;
     }
 
-    div {
-      /*@apply(--layout-horizontal);*/
-    }
-
-    .android-status-bar, .android-nav-bar, .address-bar, .iphone-status-bar,  .content{
-      position: relative;
+    paper-button {
       display: block;
-      background: #000000;
-      text-align: center;
-    }
-
-    .android-status-bar, .android-nav-bar, .iphone-status-bar {
-      color: #ffffff;
-    }
-
-    .android-status-bar {
-      top: 0;
-      min-height: 25px;
-    }
-
-    .iphone-status-bar {
-      top: 0;
-      min-height: 20px;
-    }
-
-    .android-nav-bar {
-      bottom: 0;
-      min-height: 48px;
-    }
-
-    .address-bar {
-      min-height: 50px;
-      background: #e0e0e0;
-    }
-
-    .content {
-      max-height: calc(640px - 25px - 48px - 50px);
-      background: #ffffff;
-      @apply(--layout);
-      @apply(--layout-flex-auto);
-      @apply(--layout-center-center);
-    }
-
-    .iphone-content {
-      max-height: calc(480px - 20px - 50px);
-    }
-
-    .iphone-4{
-      max-height: calc(320px - 70px);
+      margin-bottom: 24px;
     }
   </style>
 </head>
-<body>
-<!-- <template is="dom-bind" id="app"> -->
+<body unresolved>
+<template is="dom-bind" id="app">
+  <div class="horizontal-section-container">
+    <div>
+      <h4>Regular</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="regular" data-dialog="regular" on-tap="_openDatepicker">regular</paper-button>
+      </section>
+    </div>
 
-  <!-- <div class="iphone-status-bar">
-    Android Status Bar
+    <div>
+      <h4>Start Day</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="sunday" data-dialog="sunday" on-tap="_openDatepicker">sunday</paper-button>
+        <paper-button tab-index="0" id="monday" data-dialog="monday" on-tap="_openDatepicker">monday</paper-button>
+        <paper-button tab-index="0" id="tuesday" data-dialog="tuesday" on-tap="_openDatepicker">tuesday</paper-button>
+        <paper-button tab-index="0" id="wednesday" data-dialog="wednesday" on-tap="_openDatepicker">wednesday</paper-button>
+        <paper-button tab-index="0" id="thursday" data-dialog="thursday" on-tap="_openDatepicker">thursday</paper-button>
+        <paper-button tab-index="0" id="friday" data-dialog="friday" on-tap="_openDatepicker">friday</paper-button>
+        <paper-button tab-index="0" id="saturday" data-dialog="saturday" on-tap="_openDatepicker">saturday</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Disable Day (s)</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="one" data-dialog="one" on-tap="_openDatepicker">one day</paper-button>
+        <paper-button tab-index="0" id="weekends" data-dialog="weekends" on-tap="_openDatepicker">weekends</paper-button>
+        <paper-button tab-index="0" id="three" data-dialog="three" on-tap="_openDatepicker">three days</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Disable Day (s)</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="one" data-dialog="one" on-tap="_openDatepicker">one day</paper-button>
+        <paper-button tab-index="0" id="weekends" data-dialog="weekends" on-tap="_openDatepicker">weekends</paper-button>
+        <paper-button tab-index="0" id="three" data-dialog="three" on-tap="_openDatepicker">three days</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Date Format Options - Year</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="yyyy" data-dialog="yyyy" on-tap="_openDatepicker">yyyy</paper-button>
+        <paper-button tab-index="0" id="yy" data-dialog="yy" on-tap="_openDatepicker">yy</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Date Format Options - Month</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="mmmm" data-dialog="mmmm" on-tap="_openDatepicker">mmmm</paper-button>
+        <paper-button tab-index="0" id="mmm" data-dialog="mmm" on-tap="_openDatepicker">mmm</paper-button>
+        <paper-button tab-index="0" id="mm" data-dialog="mm" on-tap="_openDatepicker">mm</paper-button>
+        <paper-button tab-index="0" id="m" data-dialog="m" on-tap="_openDatepicker">m</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Date Format Options - Day</h4>
+      <section class="horizontal-section">
+        <paper-button tab-index="0" id="do" data-dialog="do" on-tap="_openDatepicker">do</paper-button>
+        <paper-button tab-index="0" id="dd" data-dialog="dd" on-tap="_openDatepicker">dd</paper-button></paper-button>
+        <paper-button tab-index="0" id="d" data-dialog="d" on-tap="_openDatepicker">d</paper-button>
+      </section>
+    </div>
+
+    <div>
+      <h4>Datepicker w/o dialog</h4>
+      <section class="horizontal-section">
+        <span>Selected Date: </span>
+      </section>
+    </div>
+
+    <section>
+      <jv-datepicker-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
+    </section>
   </div>
-  <div class="address-bar">
-    Address Bar
-  </div> -->
-  <!-- <div class="content iphone-4"> -->
-    <!-- <jv-datepicker start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker> -->
-    <paper-button data-dialog="dialog" onclick="openDatepicker(event)">datepicker dialog</paper-button>
-    <jv-datepicker-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-    start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
-  <!-- </div> -->
-  <!-- <div class="android-nav-bar">
-    Android Navigation Bar
-  </div> -->
-<!-- </template> -->
+</template>
 <script>
-  function openDatepicker(ev) {
+  app._openDatepicker = function(ev) {
     var button = ev.target;
     while (!button.hasAttribute('data-dialog') && button !== document.body) {
       button = button.parentElement;
@@ -110,7 +115,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     var id = button.getAttribute('data-dialog');
     var dialog = document.getElementById('dialog');
     if (dialog) {
-      console.log(dialog);
       dialog.open();
     }
   }

@@ -573,8 +573,8 @@ Example:
       <div id="buttonContainer">
         <!-- <paper-button id="cancel">cancel</paper-button>
         <paper-button id="ok" on-tap="_formatDate">ok</paper-button> -->
-        <paper-button on-tap="_buttonAction" dialog-dismiss>Decline</paper-button>
-        <paper-button on-tap="_buttonAction" dialog-confirm autofocus>Accept</paper-button>
+        <paper-button dialog-dismiss>cancel</paper-button>
+        <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
       </div>
     </div>
   </template>
@@ -590,8 +590,7 @@ Example:
     is: 'jv-datepicker',
 
     hostAttributes: {
-      'role': 'datepicker',
-      'tabindex': '-1'
+      'role': 'datepicker'
     },
 
     properties: {
