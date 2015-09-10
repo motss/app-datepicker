@@ -40,6 +40,7 @@ Example:
       /* max-viewport-height w/  addr-bar: 501px vs 485px*/
       /* max-viewport-height w/o addr-bar: 548px vs 532px */
       display: block;
+      position: relative;
       height: 100%;
       width: 100%;
       /*min-height: 576px;*/
@@ -48,14 +49,15 @@ Example:
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-
+/**/
       @apply(--paper-font-common-base);
       @apply(--paper-font-common-expensive-kerning);
       /*@apply(--layout-vertical);
       @apply(--layout-center-center);*/
 
-      margin: auto;
-      background: #e0e0e0;
+      /*margin: auto;*/
+      /*padding-bottom: 8px;*/
+      background: #ffffff;
     }
 
     :host, #datepickerContainer {
@@ -143,6 +145,7 @@ Example:
 
     /* #buttonContainer */
     #buttonContainer {
+      /*top: -8px;*/
       @apply(--layout-horizontal);
       @apply(--layout-end-justified);
     }
@@ -216,12 +219,21 @@ Example:
     }
 
     neon-animated-pages {
-      height: calc(100vh - 32px - 215px - 42px);
+      /*height: calc(100vh - 32px - 215px - 42px);*/
+      height: calc(100vh - 32px - 215px - 50px);
       /*height: 275px;*/ /* neon-animated-pages has zero height, explicitly height is set.*/
     }
 
+    #calendarView {
+      overflow: hidden;
+    }
+
     #days {
-      max-height: calc(100vh - 32px - 215px - 42px - 46px - 25px);
+      /*max-height: calc(100vh - 32px - 215px - 42px - 46px - 25px);*/
+      max-height: calc(100vh - 32px - 215px - 50px - 46px - 25px);
+      /*padding: 0 16px 16px 0;*/
+      padding-right: 16px;
+      -webkit-overflow-scrolling: touch;
       overflow: auto;
     }
 
@@ -269,19 +281,23 @@ Example:
 
       /* layout-ing containers */
       #datepickerContainer, #selectionView {
-        max-height: calc(100vh - 32px - 42px);
+        /*max-height: calc(100vh - 32px - 42px);*/
+        max-height: calc(100vh - 32px - 50px);
       }
 
       #viewContainer, neon-animated-pages {
-        height: calc(100vh - 32px - 42px);
+        /*height: calc(100vh - 32px - 42px);*/
+        height: calc(100vh - 32px - 50px);
       }
 
       #dateContainer {
-        height: calc(100vh - 32px - 42px - 25px);
+        /*height: calc(100vh - 32px - 42px - 25px);*/
+        height: calc(100vh - 32px - 50px - 25px);
       }
 
       #days {
-        max-height: calc(100vh - 32px - 42px - 46px - 25px);
+        /*max-height: calc(100vh - 32px - 42px - 46px - 25px);*/
+        max-height: calc(100vh - 32px - 50px - 46px - 25px);
       }
 
       div #buttonContainer {
@@ -295,7 +311,8 @@ Example:
     /* IP4 viewport height - 410px */
     @media all and (min-width: 0) and (max-width: 359px) and (max-height: 480px) and (orientation: portrait) {
       :host, #datepickerContainer {
-        max-height: calc(410px - 32px);
+        /*max-height: calc(410px - 32px);*/
+        /*max-height: calc(100vh - 32px);*/
       }
 
       #dateContainer {
@@ -304,17 +321,19 @@ Example:
       }
 
       neon-animated-pages {
-        height: 200px;
+        /*height: 200px;*/
+        height: calc(100vh - 50px - 136px - 32px);
       }
 
       #days {
-        max-height: calc(200px - 46px - 25px);
+        /*max-height: calc(200px - 46px - 25px);*/
+        max-height: calc(100vh - 136px - 46px - 25px - 50px - 32px);
       }
     }
 
     @media all and (max-width: 359px) and (min-height: 481px) and (max-height: 568px) and (orientation: portrait) {
       :host, #datepickerContainer {
-        max-height: calc(498px - 32px);
+        /*max-height: calc(498px - 32px);*/
       }
 
       #dateContainer {
@@ -323,67 +342,17 @@ Example:
       }
 
       neon-animated-pages {
-        height: calc(498px - 32px - 25px - 178px - 42px);
+        /*height: calc(498px - 32px - 25px - 178px - 42px);*/
+        height: calc(100vh - 32px - 203px - 50px);
       }
 
       #days {
-        max-height: calc(221px - 46px - 25px);
-      }
-    }
-
-    /* N7 2013 Portrait and 800px PC landscape */
-    @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
-      :host, #datepickerContainer {
-        max-width: 360px;
-        max-height: 640px;
-      }
-
-      #datepickerContainer, #datepickerContainer div {
-        width: 360px;
-      }
-
-      #viewContainer {
-        max-height: calc(640px - 42px);
-        @apply(--layout-vertical);
-      }
-
-      neon-animated-pages {
-        height: calc(640px - 42px - 215px);
-      }
-    }
-
-    /* N7 2013 landscape and 800px PC landscape */
-    @media all and (min-width: 800px) and (orientation: landscape) {
-      :host, #datepickerContainer {
-        max-height: 360px;
-        max-width: 640px;
-      }
-
-      #viewContainer, #selectionView, neon-animated-pages {
-        max-width: 640px;
-        max-height: calc(360px - 42px);
-      }
-
-      #selectionView, #selectionView div {
-        max-width: calc(640px - 300px);
-      }
-
-      #dateContainer {
-        max-height: calc(360px - 42px - 25px);
-      }
-
-      neon-animated-pages, #calendarView, #calendarView div, #yearView,
-      #yearView #expandContainer {
-        max-width: 300px;
-      }
-
-      #buttonContainer {
-        max-width: 640px;
+        max-height: calc(100vh - 32px - 203px - 50px - 46px - 25px);
       }
     }
 
     /* min-width 640px mobile landscape */
-    @media all and (min-width: 481px) and (orientation: landscape) {
+    @media all and (min-width: 481px) and (max-width: 799px) and (orientation: landscape) {
        neon-animated-pages, neon-animated-pages #calendarView, #calendarView div, neon-animated-pages #yearView, #yearView div {
         width: 296px;
       }
@@ -393,7 +362,8 @@ Example:
     @media all and (min-width: 480px) and (max-width: 568px) and (orientation: landscape) {
       #selectionView, #selectionView div {
         max-width: calc(100vw - 64px - 296px);
-        max-height: calc(100vh - 32px - 42px);
+        /*max-height: calc(100vh - 32px - 42px);*/
+        max-height: calc(100vh - 32px - 50px);
       }
 
       neon-animated-pages div {
@@ -401,7 +371,8 @@ Example:
       }
 
       #selectionView #dateContainer {
-        height: calc(100vh - 32px - 42px - 25px - 6px);
+        /*height: calc(100vh - 32px - 42px - 25px - 6px);*/
+        height: calc(100vh - 32px - 50px - 25px - 6px);
       }
 
       #weekdayContainer {
@@ -426,6 +397,62 @@ Example:
 
       #dateContainer {
         padding: 6px 0;
+      }
+    }
+
+
+    /* N7 2013 Portrait and 800px PC potrait */
+    @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
+      :host, #datepickerContainer {
+        max-width: 360px;
+        max-height: 640px;
+      }
+
+      #datepickerContainer, #datepickerContainer div {
+        width: 360px;
+      }
+
+      #viewContainer {
+        /*max-height: calc(640px - 42px);*/
+        max-height: calc(640px - 50px);
+        @apply(--layout-vertical);
+      }
+
+      neon-animated-pages {
+        /*height: calc(640px - 42px - 215px);*/
+        height: calc(640px - 50px - 215px);
+      }
+    }
+
+    /* N7 2013 landscape and 800px PC landscape */
+    @media all and (min-width: 800px) and (orientation: landscape) {
+      :host, #datepickerContainer {
+        max-height: 360px;
+        max-width: 640px;
+      }
+
+      #viewContainer, #selectionView, neon-animated-pages {
+        max-width: 640px;
+        /*max-height: calc(360px - 42px);*/
+        max-height: calc(360px - 50px);
+      }
+
+      #selectionView, #selectionView div {
+        max-width: calc(640px - 300px);
+      }
+
+      #dateContainer {
+        /*max-height: calc(360px - 42px - 25px);*/
+        max-height: calc(360px - 50px - 25px);
+      }
+
+      neon-animated-pages, #calendarView, #calendarView div, #yearView,
+      #yearView #expandContainer {
+        max-width: 300px;
+      }
+
+      #buttonContainer {
+        max-width: 640px;
       }
     }
 
@@ -544,8 +571,10 @@ Example:
 
       <!-- Button Container-->
       <div id="buttonContainer">
-        <paper-button id="cancel">cancel</paper-button>
-        <paper-button id="ok" on-tap="_formatDate">ok</paper-button>
+        <!-- <paper-button id="cancel">cancel</paper-button>
+        <paper-button id="ok" on-tap="_formatDate">ok</paper-button> -->
+        <paper-button on-tap="_buttonAction" dialog-dismiss>Decline</paper-button>
+        <paper-button on-tap="_buttonAction" dialog-confirm autofocus>Accept</paper-button>
       </div>
     </div>
   </template>
@@ -1077,6 +1106,10 @@ Example:
       console.log(this._selectedYear);
       console.log(this._selectedMonth);
       console.log(this._selectedDate);
+    },
+
+    _buttonAction: function(ev) {
+      console.log(ev.target + ' is clicked!');
     }
   });
 </script>

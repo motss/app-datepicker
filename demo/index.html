@@ -91,7 +91,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <!-- <div class="content iphone-4"> -->
     <!-- <jv-datepicker start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker> -->
     <paper-button data-dialog="dialog" onclick="openDatepicker(event)">datepicker dialog</paper-button>
-    <jv-datepicker-dialog id="dialog" start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
+    <jv-datepicker-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+    start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
   <!-- </div> -->
   <!-- <div class="android-nav-bar">
     Android Navigation Bar

@@ -10,24 +10,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="./jv-datepicker.html">
-<link rel="import" href="../paper-dialog/paper-dialog.html">
+<!-- <link rel="import" href="../paper-dialog/paper-dialog.html"> -->
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
 <link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
 
 <dom-module id="jv-datepicker-dialog">
   <style>
     :host {
       display: block;
+      height: calc(100vh - 32px);
+      width: calc(100vw - 64px);
+      background: var(--paper-dialog-background-color, --primary-background-color);
+      color: var(--paper-dialog-color, --primary-text-color);
+
+      @apply(--shadow-elevation-16dp);
+    }
+
+    /* N7 2013 Portrait and 800px PC potrait */
+    @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
+      :host {
+        width: 360px;
+        height: 640px;
+      }
+    }
+
+    /* N7 2013 landscape and 800px PC landscape */
+    @media all and (min-width: 800px) and (orientation: landscape) {
+      :host {
+        height: 360px;
+        width: 640px;
+      }
     }
   </style>
-  <template>
-    <!-- <paper-dialog> -->
-      <!-- <h2>Dialog Title</h2> -->
-      <jv-datepicker></jv-datepicker>
-      <!-- <paper-dialog-scrollable>
 
-      </paper-dialog-scrollable> -->
-    <!-- </paper-dialog> -->
+  <template>
+    <jv-datepicker></jv-datepicker>
   </template>
   <script>
   (function() {
