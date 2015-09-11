@@ -30,16 +30,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* N7 2013 Portrait and 800px PC potrait */
     @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
       :host {
-        width: 360px;
-        height: 640px;
+        max-width: 360px;
+        min-height: 640px;
       }
     }
 
     /* N7 2013 landscape and 800px PC landscape */
     @media all and (min-width: 800px) and (orientation: landscape) {
       :host {
-        height: 360px;
-        width: 640px;
+        max-width: 640px;
+        min-height: 360px;
       }
     }
   </style>
