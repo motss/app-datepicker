@@ -34,6 +34,9 @@
 * 1.2.
 - Working extremely hard on polishing jv-datepicker-dialog.
 
+* 1.3.
+- incremental minor version for adding dialog feature.
+
 [COMPLETED]
 * v1.1.3
 - new year selectable page.
@@ -70,6 +73,18 @@
 
 * 1.2.6
 - revise the behaviour of _todayDate when no year is selected at 'calendar' page.
+
+* 1.2.16 [CASESTUDY]
+- set jv-datepicker-dialog to position: absolute, so that the element to always stay on top of the iron-overlay regardless of being wrapped inside or around a wrapper or other element;
+- set height/ width to calc();
+- set max-height/ max-width to limit the element;
+
+* 1.2.17
+- _shiftDisabledDays method shifted wrongly && solved by computing on a new prop instead of writing back into its original prop;
+- _computeWeekdays && _computeDays needed to be executed for every change of values of properties.
+- _computeDays produces wrong result.
+- disableDays = [8, 1] breaks the code at line 985 caused by this.setAttribute('disable-days', JSON-stringify('invalidArr')) && fixed by checking if it is an Array.
+ - removed JSON-stringify('invalidArr');
 
 [KNOWN BUGS]
 * v1.1.3

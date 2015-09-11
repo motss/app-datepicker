@@ -606,6 +606,7 @@ Example:
           return [];
         }
       },
+      _shiftedDisableDays: Array,
       _weekdays: {
         type: Array,
         value: function() {
@@ -672,7 +673,7 @@ Example:
       },
       _selectedView: {
         type: String,
-        value: 'year'
+        value: 'calendar'
       },
       _tempYear: Number,
       format: {
@@ -737,6 +738,12 @@ Example:
      * @detail {{sound: String}}
      */
 
+
+
+    observers: [
+      '_propChanged(startDay, disableDays, format)'
+    ],
+
     _computeContainerCls: function (portrait) {
       var cls = 'layout vertical center-center';
 
@@ -755,7 +762,7 @@ Example:
     _computeWeekdays: function (startDay) {
       var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       // console.log(startDay);
-      if (startDay > 0 && startDay < 7) {
+      if (this._validateStartDay(startDay)) {
         for (var i = 0; i < startDay; i++) {
           arrayWeek.push(arrayWeek.shift());
         }
@@ -769,9 +776,8 @@ Example:
           pushElem,
           firstYear = this._todayYear,
           firstMonth = this._todayMonth,
-          startDay = this.startDay < 0 || this.startDay > 7? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
-          preFirstDay = new Date(firstYear, firstMonth, 1).getDay() - startDay,
-          firstDayOfMonth = (preFirstDay) < 0? 6: preFirstDay,
+          startDay = !this._validateStartDay(this.startDay)? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
+          firstDayOfMonth = (new Date(firstYear, firstMonth, 1).getDay() + 7 - startDay)%7,
           totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth),
           totalRow = (totalDay + firstDayOfMonth)>35? 42: 35;
 
@@ -965,20 +971,23 @@ Example:
     },
 
     _isDisabledDay: function (date) {
-      var startDay = this.startDay;
-
-      if (this.disableDays) {
-        return this.disableDays.some(function (el) {
-          // console.log(date + ' vs ' + el + ': ' + (date === el));
+      if (this._shiftedDisableDays) {
+        return this._shiftedDisableDays.some(function (el) {
           return date === el;
         });
       }
     },
 
     _validateDisableDays: function(disableDaysArr) {
-      return disableDaysArr.every(function(el){
-        return el >= 0 && el < 7; // check if disableDays has value between 0 and 6;
-      });
+      if (Array.isArray(disableDaysArr)) {
+        return disableDaysArr.every(function(el){
+          return el >= 0 && el < 7; // check if disableDays has value between 0 and 6;
+        });
+      }
+    },
+
+    _validateStartDay: function(startDay) {
+      return startDay >= 0 && startDay < 7;
     },
 
     _computeDisabledAttr: function (whichDay) {
@@ -986,12 +995,14 @@ Example:
     },
 
     _shiftDisabledDays: function(disableDaysArr, startDay) {
-      if (this._validateDisableDays(disableDaysArr)){
+      if (this._validateDisableDays(disableDaysArr) && this._validateStartDay(startDay)){
+        var temp = [];
         disableDaysArr.forEach(function(el) {
-          disableDaysArr.push((disableDaysArr.shift() + startDay + 1 )%7);
+          temp.push((el + 7 - startDay)%7);
         });
+        this._shiftedDisableDays = temp;
       }else {
-        this.setAttribute('disable-days', JSON.stringify('invalidArr'));
+        this.setAttribute('disable-days', 'invalidArr');
       }
       // no return value as array mutation occurs inside function.
     },
@@ -1107,8 +1118,11 @@ Example:
       console.log(this._selectedDate);
     },
 
-    _buttonAction: function(ev) {
-      console.log(ev.target + ' is clicked!');
-    }
+    _propChanged: function(startDay, disableDays, format) {
+      // console.log('prop-changed');
+      this._weekdays = this._computeWeekdays(startDay);
+      this._shiftDisabledDays(disableDays, startDay);
+      this._computeDays();
+    },
   });
 </script>

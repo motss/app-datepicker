@@ -8,17 +8,41 @@
   <link rel="import" href="../../paper-styles/paper-styles.html">
   <link rel="import" href="../../paper-styles/demo-pages.html">
   <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../paper-radio-group/paper-radio-group.html">
+  <link rel="import" href="../../paper-radio-button/paper-radio-button.html">
+  <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
 
   <link rel="import" href="../jv-datepicker.html">
   <link rel="import" href="../jv-datepicker-dialog.html">
   <style is="custom-style">
+    :root {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+
     .horizontal-section {
       min-width: 130px;
+    }
+
+    paper-button:hover {
+      @apply(--shadow-elevation-3dp);
     }
 
     paper-button {
       display: block;
       margin-bottom: 24px;
+    }
+
+    paper-radio-button, paper-checkbox {
+      display: block;
+      padding-bottom: 40px;
+      width: 130px;
+    }
+
+    hr {
+      margin-bottom: 40px;
+      border-color: #616161;
     }
   </style>
 </head>
@@ -28,66 +52,74 @@
     <div>
       <h4>Regular</h4>
       <section class="horizontal-section">
-        <paper-button tab-index="0" id="regular" data-dialog="regular" on-tap="_openDatepicker">regular</paper-button>
+        <paper-button tab-index="0" id="regular" data-dialog="dialog" on-tap="_openDatepicker">regular</paper-button>
       </section>
     </div>
 
     <div>
       <h4>Start Day</h4>
       <section class="horizontal-section">
-        <paper-button tab-index="0" id="sunday" data-dialog="sunday" on-tap="_openDatepicker">sunday</paper-button>
-        <paper-button tab-index="0" id="monday" data-dialog="monday" on-tap="_openDatepicker">monday</paper-button>
-        <paper-button tab-index="0" id="tuesday" data-dialog="tuesday" on-tap="_openDatepicker">tuesday</paper-button>
-        <paper-button tab-index="0" id="wednesday" data-dialog="wednesday" on-tap="_openDatepicker">wednesday</paper-button>
-        <paper-button tab-index="0" id="thursday" data-dialog="thursday" on-tap="_openDatepicker">thursday</paper-button>
-        <paper-button tab-index="0" id="friday" data-dialog="friday" on-tap="_openDatepicker">friday</paper-button>
-        <paper-button tab-index="0" id="saturday" data-dialog="saturday" on-tap="_openDatepicker">saturday</paper-button>
+        <paper-radio-group selected="{{startDay}}">
+          <paper-radio-button name="0" label="sunday">sunday</paper-radio-button>
+          <paper-radio-button name="1" label="monday">monday</paper-radio-button>
+          <paper-radio-button name="2" label="tuesday">tuesday</paper-radio-button>
+          <paper-radio-button name="3" label="wednesday">wednesday</paper-radio-button>
+          <paper-radio-button name="4" label="thursday">thursday</paper-radio-button>
+          <paper-radio-button name="5" label="friday">friday</paper-radio-button>
+          <paper-radio-button name="6" label="saturday">saturday</paper-radio-button>
+        </paper-radio-group>
+        <hr>
+        <paper-button tab-index="0" id="start" data-dialog="dialog" on-tap="_openDatepicker">{{dayStart}}</paper-button>
       </section>
     </div>
 
     <div>
       <h4>Disable Day (s)</h4>
       <section class="horizontal-section">
-        <paper-button tab-index="0" id="one" data-dialog="one" on-tap="_openDatepicker">one day</paper-button>
+        <div>
+          <paper-checkbox>sunday</paper-checkbox>
+          <paper-checkbox>monday</paper-checkbox>
+          <paper-checkbox>tuesday</paper-checkbox>
+          <paper-checkbox>wednesday</paper-checkbox>
+          <paper-checkbox>thursday</paper-checkbox>
+          <paper-checkbox>friday</paper-checkbox>
+          <paper-checkbox>saturday</paper-checkbox>
+        </div>
+        <hr>
+        <paper-button tab-index="0" id="multidays" data-dialog="multidays" on-tap="_openDatepicker">show selected</paper-button>
         <paper-button tab-index="0" id="weekends" data-dialog="weekends" on-tap="_openDatepicker">weekends</paper-button>
-        <paper-button tab-index="0" id="three" data-dialog="three" on-tap="_openDatepicker">three days</paper-button>
       </section>
     </div>
 
     <div>
-      <h4>Disable Day (s)</h4>
-      <section class="horizontal-section">
-        <paper-button tab-index="0" id="one" data-dialog="one" on-tap="_openDatepicker">one day</paper-button>
-        <paper-button tab-index="0" id="weekends" data-dialog="weekends" on-tap="_openDatepicker">weekends</paper-button>
-        <paper-button tab-index="0" id="three" data-dialog="three" on-tap="_openDatepicker">three days</paper-button>
-      </section>
-    </div>
-
-    <div>
-      <h4>Date Format Options - Year</h4>
-      <section class="horizontal-section">
-        <paper-button tab-index="0" id="yyyy" data-dialog="yyyy" on-tap="_openDatepicker">yyyy</paper-button>
-        <paper-button tab-index="0" id="yy" data-dialog="yy" on-tap="_openDatepicker">yy</paper-button>
-      </section>
-    </div>
-
-    <div>
-      <h4>Date Format Options - Month</h4>
-      <section class="horizontal-section">
-        <paper-button tab-index="0" id="mmmm" data-dialog="mmmm" on-tap="_openDatepicker">mmmm</paper-button>
-        <paper-button tab-index="0" id="mmm" data-dialog="mmm" on-tap="_openDatepicker">mmm</paper-button>
-        <paper-button tab-index="0" id="mm" data-dialog="mm" on-tap="_openDatepicker">mm</paper-button>
-        <paper-button tab-index="0" id="m" data-dialog="m" on-tap="_openDatepicker">m</paper-button>
-      </section>
-    </div>
-
-    <div>
-      <h4>Date Format Options - Day</h4>
-      <section class="horizontal-section">
-        <paper-button tab-index="0" id="do" data-dialog="do" on-tap="_openDatepicker">do</paper-button>
-        <paper-button tab-index="0" id="dd" data-dialog="dd" on-tap="_openDatepicker">dd</paper-button></paper-button>
-        <paper-button tab-index="0" id="d" data-dialog="d" on-tap="_openDatepicker">d</paper-button>
-      </section>
+      <h4>Date Format Options</h4>
+        <section class="horizontal-section">
+          <div>
+            <h4>Year</h4>
+            <paper-radio-group selected="{{yearFormat}}">
+              <paper-radio-button name="yyyy" label="yyyy">yyyy</paper-radio-button>
+              <paper-radio-button name="yy" label="yy">yy</paper-radio-button>
+            </paper-radio-group>
+            <hr>
+            <h4>Month</h4>
+            <paper-radio-group selected="{{monthFormat}}">
+              <paper-radio-button name="mmmm" label="mmmm">mmmm</paper-radio-button>
+              <paper-radio-button name="mmm" label="mmm">mmm</paper-radio-button>
+              <paper-radio-button name="mm" label="mm">mm</paper-radio-button>
+              <paper-radio-button name="m" label="m">m</paper-radio-button>
+            </paper-radio-group>
+            <hr>
+            <h4>Day</h4>
+            <paper-radio-group selected="{{dayFormat}}">
+              <paper-radio-button name="do" label="do">do</paper-radio-button>
+              <paper-radio-button name="dd" label="dd">dd</paper-radio-button>
+              <paper-radio-button name="d" label="d">d</paper-radio-button>
+            </paper-radio-group>
+            <hr>
+            <paper-button tab-index="0" id="dayFormat" data-dialog="dayFormat" on-tap="_openDatepicker">choose date</paper-button>
+          </div>
+        </section>
+      </div>
     </div>
 
     <div>
@@ -99,11 +131,49 @@
 
     <section>
       <jv-datepicker-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-      start-day="1" disable-days="[0, 6]" format="mmm-yyyy-d" bind-date="{{displayDate}}"></jv-datepicker-dialog>
+      start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{displayDate}}"></jv-datepicker-dialog>
     </section>
   </div>
 </template>
 <script>
+  app.startDay = 0;
+  app.disableDays = [1, 6];
+  app.format = 'yyyy-mm-dd';
+  app.dayStart = 'sunday';
+
+  document.addEventListener('selected-changed', function(ev) {
+    var day = parseInt(ev.detail.value);
+    app.dayStart = app._dayStart(day);
+  }, true);
+
+  app._dayStart = function(day) {
+    switch (day) {
+      case 0:
+        return 'sunday';
+        break;
+      case 1:
+        return 'monday';
+        break;
+      case 2:
+        return 'tuesday';
+        break;
+      case 3:
+        return 'wednesday';
+        break;
+      case 4:
+        return 'thursday';
+        break;
+      case 5:
+        return 'friday';
+        break;
+      case 6:
+        return 'saturday';
+        break;
+      default:
+        return 'sunday';
+    }
+  };
+
   app._openDatepicker = function(ev) {
     var button = ev.target;
     while (!button.hasAttribute('data-dialog') && button !== document.body) {
@@ -113,7 +183,7 @@
       return;
     }
     var id = button.getAttribute('data-dialog');
-    var dialog = document.getElementById('dialog');
+    var dialog = document.getElementById(id);
     if (dialog) {
       dialog.open();
     }

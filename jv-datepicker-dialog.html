@@ -19,6 +19,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <style>
     :host {
       display: block;
+      position: absolute;
       height: calc(100vh - 32px);
       width: calc(100vw - 64px);
       background: var(--paper-dialog-background-color, --primary-background-color);
@@ -30,27 +31,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     /* N7 2013 Portrait and 800px PC potrait */
     @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
       :host {
-        max-width: 360px;
-        min-height: 640px;
+        width: 360px;
+        height: calc(100vh / 1.5);
+        max-height: 640px;
       }
     }
 
     /* N7 2013 landscape and 800px PC landscape */
     @media all and (min-width: 800px) and (orientation: landscape) {
       :host {
+        width: calc(100vw / 1.5);
         max-width: 640px;
-        min-height: 360px;
+        height: 360px;
       }
     }
   </style>
 
   <template>
-    <jv-datepicker></jv-datepicker>
+    <jv-datepicker start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{bindDate}}"></jv-datepicker>
+    <span>{{startDay}}</span>
   </template>
   <script>
   (function() {
     Polymer({
       is: 'jv-datepicker-dialog',
+
+      properties: {
+        startDay: Number,
+        disableDays: Array,
+        format: String,
+        bindDate: String
+      },
 
       behaviors: [
         Polymer.PaperDialogBehavior,
