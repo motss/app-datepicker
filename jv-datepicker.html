@@ -533,7 +533,7 @@ Example:
                       <span class="day-container">
                         <div></div>
                         <div id$="[[_computeDayId(item)]]"
-                             class$="{{_computeDayStyle(item, index)}}"
+                             class$="{{_computeDayStyle(item, index, _disableCls)}}"
                              disabled$="{{_computeDisabledAttr(index)}}"
                              on-tap="_selectDate">{{item}}</div>
                         <div></div>
@@ -598,13 +598,15 @@ Example:
       // arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].
       startDay: {
         type: Number,
-        value: 0
+        value: 0,
+        notify: true
       },
       disableDays: {
         type: Array,
         value: function () {
           return [];
-        }
+        },
+        notify: true
       },
       _shiftedDisableDays: Array,
       _weekdays: {
@@ -668,7 +670,6 @@ Example:
       _mthOffset: {
         type: Number,
         value: 0,
-        notify: true,
         observer: '_computeMonthYear'
       },
       _selectedView: {
@@ -680,11 +681,17 @@ Example:
         type: String,
         value: function() {
           return 'yyyy-mm-dd';
-        }
+        },
+        notify: true
       },
       bindDate: {
         type: String,
+        value: '2015-09-31',
         notify: true
+      },
+      _disableCls: {
+        type: Boolean,
+        value: false
       }
       // _years: {
       //   type: Array,
@@ -708,9 +715,9 @@ Example:
       // This is the point where you should make modifications to the DOM (when
       // necessary), or kick off any processes the element wants to perform.
 
-      this._weekdays = this._computeWeekdays(this.startDay);
-      this._shiftDisabledDays(this.disableDays, this.startDay);
-      this._computeMonthYear(this._mthOffset);
+      // this._weekdays = this._computeWeekdays(this.startDay);
+      // this._shiftDisabledDays(this.disableDays, this.startDay);
+      // this._computeMonthYear(this._mthOffset);
     },
 
     attached: function () {
@@ -816,10 +823,9 @@ Example:
     _selectedDateChanged: function (newValue, oldValue) {
       this._oldDate = oldValue;
       this._selectedDate = newValue;
-
       // remove oldValue's classList
       if (oldValue) {
-        this._styleSelected.bind(document.querySelector('#day' + oldValue)).apply();
+        this._styleSelected.bind(this.$.days.querySelector('#day' + oldValue))();
       }
     },
 
@@ -832,12 +838,14 @@ Example:
         this._selectedDate = parseInt(ev.target.textContent);
         this._selectedYear = this._todayYear;
         this._selectedWeekday = this._computeWeekday(new Date(this._todayYear, this._todayMonth, this._selectedDate).getDay());
-        this._styleSelected.bind(ev.target, true).apply();
+        this._styleSelected.bind(ev.target, true)();
       }
     },
 
     _styleSelected: function (addCls) {
+      // console.log('style-selected');
       if (addCls) {
+        // console.log('style-selected-add');
         this.classList.add('day-selected');
       }else {
         this.classList.remove('day-selected');
@@ -1108,21 +1116,24 @@ Example:
             dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
         }
       }
-
       // parse formatted date
       this.bindDate = dateformat;
 
-      console.log(dateformat);
-      console.log(this._selectedYear);
-      console.log(this._selectedMonth);
-      console.log(this._selectedDate);
+      //fireDate
+      this.fire('format-date', {date: dateformat});
+
+      console.log(this.bindDate);
+      // console.log(dateformat);
+      // console.log(this._selectedYear);
+      // console.log(this._selectedMonth);
+      // console.log(this._selectedDate);
     },
 
     _propChanged: function(startDay, disableDays, format) {
-      // console.log('prop-changed');
       this._weekdays = this._computeWeekdays(startDay);
       this._shiftDisabledDays(disableDays, startDay);
       this._computeDays();
-    },
+      this._disableCls = !this._disableCls; // workaround to force _computeDayStyle to execute on the dom;
+    }
   });
 </script>

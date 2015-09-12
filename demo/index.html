@@ -42,7 +42,18 @@
 
     hr {
       margin-bottom: 40px;
-      border-color: #616161;
+      border-color: var(--divider-color, #e0e0e0);
+    }
+
+    .display-date {
+      text-align: justify;
+      padding-bottom: 20px;
+    }
+
+    .display-date > span {
+      font-style: oblique;
+      font-weight: bolder;
+      color: var(--dark-primary-color, #303f9f);
     }
   </style>
 </head>
@@ -52,14 +63,14 @@
     <div>
       <h4>Regular</h4>
       <section class="horizontal-section">
-        <paper-button tab-index="0" id="regular" data-dialog="dialog" on-tap="_openDatepicker">regular</paper-button>
+        <paper-button tab-index="0" id="regular" data-dialog="regularDialog" on-tap="_openDatepicker">regular</paper-button>
       </section>
     </div>
 
     <div>
       <h4>Start Day</h4>
       <section class="horizontal-section">
-        <paper-radio-group selected="{{startDay}}">
+        <paper-radio-group id="start" selected="{{startDay}}">
           <paper-radio-button name="0" label="sunday">sunday</paper-radio-button>
           <paper-radio-button name="1" label="monday">monday</paper-radio-button>
           <paper-radio-button name="2" label="tuesday">tuesday</paper-radio-button>
@@ -69,25 +80,26 @@
           <paper-radio-button name="6" label="saturday">saturday</paper-radio-button>
         </paper-radio-group>
         <hr>
-        <paper-button tab-index="0" id="start" data-dialog="dialog" on-tap="_openDatepicker">{{dayStart}}</paper-button>
+        <paper-button tab-index="0" id="start" data-dialog="startDialog" on-click="_openDatepicker">{{dayStart}}</paper-button>
       </section>
     </div>
 
     <div>
       <h4>Disable Day (s)</h4>
       <section class="horizontal-section">
-        <div>
-          <paper-checkbox>sunday</paper-checkbox>
-          <paper-checkbox>monday</paper-checkbox>
-          <paper-checkbox>tuesday</paper-checkbox>
-          <paper-checkbox>wednesday</paper-checkbox>
-          <paper-checkbox>thursday</paper-checkbox>
-          <paper-checkbox>friday</paper-checkbox>
-          <paper-checkbox>saturday</paper-checkbox>
+        <div on-tap="checkboxHandler">
+          <paper-checkbox checked="{{sun}}">sunday</paper-checkbox>
+          <paper-checkbox checked="{{mon}}">monday</paper-checkbox>
+          <paper-checkbox checked="{{tue}}">tuesday</paper-checkbox>
+          <paper-checkbox checked="{{wed}}">wednesday</paper-checkbox>
+          <paper-checkbox checked="{{thu}}">thursday</paper-checkbox>
+          <paper-checkbox checked="{{fri}}">friday</paper-checkbox>
+          <paper-checkbox checked="{{sat}}">saturday</paper-checkbox>
+          <span>{{sunday}}</span>
         </div>
         <hr>
-        <paper-button tab-index="0" id="multidays" data-dialog="multidays" on-tap="_openDatepicker">show selected</paper-button>
-        <paper-button tab-index="0" id="weekends" data-dialog="weekends" on-tap="_openDatepicker">weekends</paper-button>
+        <paper-button tab-index="0" id="multidays" data-dialog="disableDialog" on-click="_openDatepicker">show selected</paper-button>
+        <paper-button tab-index="0" id="weekends" data-dialog="weekendsDialog" on-click="_openDatepicker">weekends</paper-button>
       </section>
     </div>
 
@@ -96,13 +108,13 @@
         <section class="horizontal-section">
           <div>
             <h4>Year</h4>
-            <paper-radio-group selected="{{yearFormat}}">
+            <paper-radio-group id="year" selected="{{yearFormat}}">
               <paper-radio-button name="yyyy" label="yyyy">yyyy</paper-radio-button>
               <paper-radio-button name="yy" label="yy">yy</paper-radio-button>
             </paper-radio-group>
             <hr>
             <h4>Month</h4>
-            <paper-radio-group selected="{{monthFormat}}">
+            <paper-radio-group id="month" selected="{{monthFormat}}">
               <paper-radio-button name="mmmm" label="mmmm">mmmm</paper-radio-button>
               <paper-radio-button name="mmm" label="mmm">mmm</paper-radio-button>
               <paper-radio-button name="mm" label="mm">mm</paper-radio-button>
@@ -110,13 +122,19 @@
             </paper-radio-group>
             <hr>
             <h4>Day</h4>
-            <paper-radio-group selected="{{dayFormat}}">
+            <paper-radio-group id="day" selected="{{dayFormat}}">
               <paper-radio-button name="do" label="do">do</paper-radio-button>
               <paper-radio-button name="dd" label="dd">dd</paper-radio-button>
               <paper-radio-button name="d" label="d">d</paper-radio-button>
             </paper-radio-group>
             <hr>
-            <paper-button tab-index="0" id="dayFormat" data-dialog="dayFormat" on-tap="_openDatepicker">choose date</paper-button>
+            <div class="display-date">
+              bind-date: <span>{{displayBind}}</span>
+            </div>
+            <div class="display-date">
+              fire-date: <span>{{displayDate}}</span>
+            </div>
+            <paper-button tab-index="0" id="dayFormat" data-dialog="formatDialog" on-click="_openDatepicker">choose date</paper-button>
           </div>
         </section>
       </div>
@@ -130,20 +148,87 @@
     </div>
 
     <section>
-      <jv-datepicker-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-      start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{displayDate}}"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="regularDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="startDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      start-day="{{startDay}}" disable-days="[0,6]"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="disableDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      start-day="0" disable-days="{{disableDays}}"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="weekendsDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      start-day="0" disable-days="[0, 6]"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="formatDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal format="{{format}}" bind-date="{{displayBind}}" on-format-date="_formatDate"></jv-datepicker-dialog>
     </section>
   </div>
 </template>
 <script>
+  var app = document.querySelector('#app');
   app.startDay = 0;
-  app.disableDays = [1, 6];
+  app.disableDays = [];
   app.format = 'yyyy-mm-dd';
   app.dayStart = 'sunday';
+  app.yearFormat = 'yyyy';
+  app.monthFormat = 'mm';
+  app.dayFormat = 'dd';
+  app.displayDate = initializeDate();
+  app.displayBind = initializeDate();
+
+  function initializeDate(){
+    var year = new Date().getFullYear(),
+        month = new Date().getMonth() + 1,
+        day = new Date().getDate();
+    return year + '-' + ('00'+month).slice(-2) + '-' + day;
+  };
+
+
+  app._formatDate = function(ev, de, se) {
+    app.displayDate = de.date;
+  };
+
+  app.checkboxHandler = function() {
+    var disableArr = [],
+    disableObj = {
+      sun: this.sun,
+      mon: this.mon,
+      tue: this.tue,
+      wed: this.wed,
+      thu: this.thu,
+      fri: this.fri,
+      sat: this.sat
+    };
+    Object.keys(disableObj).forEach(function(el, idx) {
+      if (disableObj[el]) {
+        disableArr.push(idx);
+      }
+    });
+    this.disableDays = disableArr;
+  };
 
   document.addEventListener('selected-changed', function(ev) {
-    var day = parseInt(ev.detail.value);
-    app.dayStart = app._dayStart(day);
+    var target = ev.target, targetId, targetValue;
+
+    if (!target.hasAttribute('id')) {
+      return;
+    }
+
+    targetId = target.getAttribute('id');
+    targetValue = ev.detail.value;
+    switch (targetId) {
+      case 'start':
+        var day = parseInt(targetValue);
+        this.dayStart = app._dayStart(day);
+        break;
+      case 'year':
+        app.format = app.format.replace(/^[y]+/gi, targetValue);
+        break;
+      case 'month':
+        app.format = app.format.replace(/[m]+/gi, targetValue);
+        break;
+      case 'day':
+        app.format = app.format.replace(/[d]+[o]*/gi, targetValue);
+        break;
+      default:
+        console.log('Error');
+    }
   }, true);
 
   app._dayStart = function(day) {
@@ -180,6 +265,7 @@
       button = button.parentElement;
     }
     if (!button.hasAttribute('data-dialog')) {
+      console.log('return');
       return;
     }
     var id = button.getAttribute('data-dialog');

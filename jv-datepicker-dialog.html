@@ -49,7 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   <template>
     <jv-datepicker start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{bindDate}}"></jv-datepicker>
-    <span>{{startDay}}</span>
+    <span>{{bindDate}}</span>
   </template>
   <script>
   (function() {
@@ -60,7 +60,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         startDay: Number,
         disableDays: Array,
         format: String,
-        bindDate: String
+        bindDate: {
+          type: String,
+          notify: true // to make two-way data-binding possible!
+        }
       },
 
       behaviors: [
