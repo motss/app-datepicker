@@ -1,6 +1,6 @@
 {
   "name": "jv-datepicker",
-  "version": "1.2.18",
+  "version": "1.2.19",
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
@@ -27,6 +27,7 @@
     "paper-icon-button": "PolymerElements/paper-icon-button#~1.0.3",
     "paper-radio-button": "PolymerElements/paper-radio-button#~1.0.7",
     "paper-radio-group": "PolymerElements/paper-radio-group#~1.0.4",
+    "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.7",
     "polymer": "Polymer/polymer#^1.0.0"
   },
   "devDependencies": {

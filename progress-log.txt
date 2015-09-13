@@ -94,6 +94,11 @@
 - added _disableCls to ensure that _computeDayStyle to execute whenever disableDays changes in value;
 - multiple selected date on the calendar page on more than 1 datepicker element, due to document.querySelector returned the wrong element since more than 1 datepicker element have the same id - solved by pro tip http://goo.gl/pevSdY;
 
+* v1.2.19
+- IP4, IP5 display issue (solved by removing a line at css styling dateContainer);
+- in jv-datepicker, set min-width for all devices and separate min-width for N7 and above;
+- set section's width to 96% which wrapping jv-datepicker in demo needs to resize to fit every content;
+
 
 
 [KNOWN BUGS]
@@ -111,3 +116,17 @@
 * 1.2.18
 - added _disableCls to ensure that _computeDayStyle to execute whenever disableDays changes in value;
 - multiple selected date on the calendar page on more than 1 datepicker element, due to document.querySelector returned the wrong element since more than 1 datepicker element have the same id
+
+[TEST DEVICE CHECK]
+DEVICES       1.2.19
+Galaxy Nexus    *
+LG G3           *
+IP4             *
+IP5             *
+IP6             *
+IP6+            *
+N4              *
+N5              *
+N6              *
+N7              *
+N10             *

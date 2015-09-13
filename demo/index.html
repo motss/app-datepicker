@@ -8,6 +8,7 @@
   <link rel="import" href="../../paper-styles/paper-styles.html">
   <link rel="import" href="../../paper-styles/demo-pages.html">
   <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+  <link rel="import" href="../../iron-media-query/iron-media-query.html">
   <link rel="import" href="../../paper-radio-group/paper-radio-group.html">
   <link rel="import" href="../../paper-radio-button/paper-radio-button.html">
   <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
@@ -55,10 +56,27 @@
       font-weight: bolder;
       color: var(--dark-primary-color, #303f9f);
     }
+
+    .pick-date {
+      margin: 20px 0;
+    }
+
+    .wrap-datepicker {
+      overflow: auto;
+      width: 96%;
+      min-width: 300px;
+      max-width: 96%;
+    }
+
+    jv-datepicker {
+      @apply(--shadow-elevation-6dp);
+    }
   </style>
 </head>
 <body unresolved>
 <template is="dom-bind" id="app">
+  <iron-media-query query="(orientation: portrait)" query-matches="{{portrait}}">
+  </iron-media-query>
   <div class="horizontal-section-container">
     <div>
       <h4>Regular</h4>
@@ -142,8 +160,12 @@
 
     <div>
       <h4>Datepicker w/o dialog</h4>
-      <section class="horizontal-section">
-        <span>Selected Date: </span>
+      <section class="horizontal-section wrap-datepicker">
+        <jv-datepicker id="normalDatepicker" portrait="{{portrait}}" bind-date="{{normalSelected}}"></jv-datepicker>
+        <div class="pick-date">Selected Date (Press OK after selecting a date):</div>
+        <div class="display-date">
+          <span>{{normalSelected}}</span>
+        </div>
       </section>
     </div>
 
@@ -171,6 +193,21 @@
   app.dayFormat = 'dd';
   app.displayDate = initializeDate();
   app.displayBind = initializeDate();
+  app.dateOrientation = 'portrait';
+
+  window.addEventListener('WebComponentsReady', function(e) {
+    app.getOrientation();
+  });
+
+  app.getOrientation = function() {
+    console
+    if (app.portrait !== undefined) {
+      app.dateOrientation = app.portrait? 'portrait': 'landscape';
+      if (app.portrait) {
+        // document.querySelector('jv-datepicker').style.width = '360px';
+      }
+    }
+  };
 
   function initializeDate(){
     var year = new Date().getFullYear(),
@@ -178,7 +215,6 @@
         day = new Date().getDate();
     return year + '-' + ('00'+month).slice(-2) + '-' + day;
   };
-
 
   app._formatDate = function(ev, de, se) {
     app.displayDate = de.date;
