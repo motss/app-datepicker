@@ -12,6 +12,7 @@
   <link rel="import" href="../../paper-radio-group/paper-radio-group.html">
   <link rel="import" href="../../paper-radio-button/paper-radio-button.html">
   <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
 
   <link rel="import" href="../jv-datepicker.html">
   <link rel="import" href="../jv-datepicker-dialog.html">
@@ -68,8 +69,28 @@
       max-width: 96%;
     }
 
+    .datepicker-boilerplate {
+      width: 100%;
+      border: 1px solid #cfd8dc;
+      color: #607d8b;
+      display: block;
+      height: 32px;
+      -webkit-flex-shrink: 0;
+      flex-shrink: 0;
+      padding: 10px 4px;
+      margin: 0 13px 12px;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
     jv-datepicker {
       @apply(--shadow-elevation-6dp);
+    }
+
+    .code-section div {
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -169,6 +190,37 @@
       </section>
     </div>
 
+    <div>
+      <h4>Element's Boilerplate</h4>
+      <section class="horizontal-section code-section" on-iron-change="genCode">
+        <div>
+          <paper-toggle-button data-toggle="dialog" checked="{{takeDialog}}"></paper-toggle-button>
+          <span>{{takeElement}}</span>
+        </div>
+        <div>
+          <paper-toggle-button data-toggle="start" checked="{{takeStartDay}}"></paper-toggle-button>
+          <span>startDay</span>
+        </div>
+        <div>
+          <paper-toggle-button data-toggle="disable" checked="{{takeDisableDays}}"></paper-toggle-button>
+          <span>disableDays</span>
+        </div>
+        <div>
+          <paper-toggle-button data-toggle="format" checked="{{takeFormat}}"></paper-toggle-button>
+          <span>format</span>
+        </div>
+        <div>
+          <paper-toggle-button data-toggle="bind" checked="{{takeBindDate}}"></paper-toggle-button>
+          <span>bindDate</span>
+        </div>
+        <div>
+          <paper-toggle-button data-toggle="fire" checked="{{takeFormatDate}}"></paper-toggle-button>
+          <span>onFormatDate</span>
+        </div>
+        <input class="datepicker-boilerplate" value="{{dateCode}}" title="jv-datepicker-boilerplate" readonly onclick="this.select();">
+      </section>
+    </div>
+
     <section>
       <jv-datepicker-dialog id="regularDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
       start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
@@ -195,18 +247,80 @@
   app.displayBind = initializeDate();
   app.dateOrientation = 'portrait';
 
-  window.addEventListener('WebComponentsReady', function(e) {
-    app.getOrientation();
+  app.dateCode = '<jv-datepicker-dialog modal></jv-datepicker-dialog>';
+  app.takeDialog = true;
+  app.takeStartDay = false;
+  app.takeDisableDays = false;
+  app.takeFormat = false;
+  app.takeBindDate = false;
+  app.takeFormatDate = false;
+  app.takeElement = 'jv-datepicker-dialog';
+
+  window.addEventListener('WebComponentsReady', function(ev) {
+    // do nothing now...
   });
 
-  app.getOrientation = function() {
-    console
-    if (app.portrait !== undefined) {
-      app.dateOrientation = app.portrait? 'portrait': 'landscape';
-      if (app.portrait) {
-        // document.querySelector('jv-datepicker').style.width = '360px';
+  app.genCode = function(ev){
+    var target = ev.target;
+
+    if (!target.hasAttribute('data-toggle')) {
+      return;
+    }
+
+    if (!app.dateCode) {
+      return;
+    }
+
+    var toggleId = target.getAttribute('data-toggle'),
+        toggleCheck = target.checked,
+        newCodeStr = app.dateCode;
+    switch (toggleId) {
+      case 'dialog':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, '', true);
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' modal');
+        break;
+      case 'start':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' start-day=""');
+        break;
+      case 'disable':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' disable-days=""');
+        break;
+      case 'format':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' format=""');
+        break;
+      case 'bind':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' bind-date=""');
+        break;
+      case 'fire':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' on-format-date=""');
+        break;
+      default:
+    }
+    if(newCodeStr) {
+      app.dateCode = newCodeStr;
+    }
+  };
+
+  function modifyCode(toggle, str, insertion, tag) {
+    var modifiedStr = '';
+    if (toggle) {
+      if (tag) {
+        modifiedStr = str.replace(/(jv-datepicker)/gi, 'jv-datepicker-dialog');
+      }else {
+        var findAssertPoint = str.indexOf('>'),
+            firstPartStr, lastParStr;
+        firstPartStr = str.substring(0, findAssertPoint);
+        lastParStr = str.substring(findAssertPoint);
+        modifiedStr = firstPartStr.concat(insertion, lastParStr);
+      }
+    }else {
+      if (tag) {
+        modifiedStr = str.replace(/(jv-datepicker-dialog)/gi, 'jv-datepicker');
+      }else {
+        modifiedStr = str.replace(insertion, '');
       }
     }
+    return modifiedStr;
   };
 
   function initializeDate(){
@@ -301,7 +415,6 @@
       button = button.parentElement;
     }
     if (!button.hasAttribute('data-dialog')) {
-      console.log('return');
       return;
     }
     var id = button.getAttribute('data-dialog');
