@@ -460,6 +460,14 @@ Example:
       #buttonContainer {
         max-width: 640px;
       }
+
+      #dayContainer, #yearContainer, paper-icon-button, paper-button, .day:not([disabled]) {
+        cursor: pointer;
+      }
+
+      .day.is-disabled {
+        cursor: not-allowed;
+      }
     }
 
     /* Used to solve position issue when yearContainer is selected */
@@ -837,7 +845,7 @@ Example:
 
     _selectDate: function (ev) {
       var target = ev.target;
-      if (!target.attributes['disabled'] && ev.target.textContent) {
+      if (!target.hasAttribute('disabled') && ev.target.textContent) {
         // when select a date on the calendar, 4 things are needed to be changed:
         // a) Weekday b) Month c) Date d) Year
         this._selectedMonth = this._computeMonth(this._todayMonth, true);
@@ -868,7 +876,8 @@ Example:
       if (date === this._todayDate && this._todayMonth === tm && this._todayYear === ty) {
         cls = cls + ' is-today';
       }
-      if (this._isDisabledDay(whichDay)) {
+      // only day is disabled...
+      if (!date || this._isDisabledDay(whichDay)) {
         cls = cls + ' is-disabled';
       }
 

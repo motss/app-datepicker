@@ -32,6 +32,7 @@
 - To add a feature to genearte and copy boilerplate code;
 
 
+
 [PENDING]
 - new feature to show week numbers.
 - redesign a full animated datepicker.
@@ -98,6 +99,8 @@
 - in jv-datepicker, set min-width for all devices and separate min-width for N7 and above;
 - set section's width to 96% which wrapping jv-datepicker in demo needs to resize to fit every content;
 
+* 1.4.2
+- fixed for non-selectable days to have cursor: not-allowed via CSS on N7 and above;
 
 
 [KNOWN BUGS]
