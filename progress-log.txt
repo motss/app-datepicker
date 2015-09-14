@@ -103,12 +103,20 @@
 - fixed for non-selectable days to have cursor: not-allowed via CSS on N7 and above;
 
 
+* v1.4.
+- added @-moz-document url-prefix() to fix display issue on Mozilla Firefox;
+- remove position: absolute on jv-datepicker-dialog to fix position issue of jv-datepicker-dialog on Mozilla Firefox and seemed to have fixed on Google Chrome as well;
+- Responsive Mode on Mozilla Firefox does not fit the screen to browser, considered as fixed ATM for the dialog's positioning;
+
+
+
 [KNOWN BUGS]
 * v1.1.3
 - none.
 
 * v1.4.
-- added @-moz-document url-prefix() to fix display issue on Mozilla Firefox;
+- cursor CSS missing on Mozilla Firefox;
+
 
 * v1.4.
 - neon-animation has something to do with the transition animation;
