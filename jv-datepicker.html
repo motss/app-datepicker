@@ -6,7 +6,6 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
-
 <!--
 An custom Polymer element created to provide a datepicker element that is more compelling and rich with features.
 
@@ -40,127 +39,83 @@ At the end of the demo, there is a section where user can play around with to ge
 
   <style is="custom-style">
     :host {
-      /* based on Galaxy Nexus which has a resolution of 360 by 460 at 2dppx */
-      /* max-height = 640 - 64 = 576px */
-      /* max-width = 320 - 32 = 288px */
-      /* based on Troy's Galaxy Nexus, */
-      /* combined height of all bars: 640 - 567 = 73px */
-      /* iframe w/  addr-bar: 567px */
-      /* iframe w/o addr-bar: 517px */
-      /* max-viewport-height w/  addr-bar: 501px vs 485px*/
-      /* max-viewport-height w/o addr-bar: 548px vs 532px */
       display: block;
       position: relative;
       height: 100%;
       width: 100%;
-      /*min-height: 576px;*/
-      /*min-width: 576px;*/
+      background: #ffffff;
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-/**/
       @apply(--paper-font-common-base);
       @apply(--paper-font-common-expensive-kerning);
-      /*@apply(--layout-vertical);
-      @apply(--layout-center-center);*/
-
-      /*margin: auto;*/
-      /*padding-bottom: 8px;*/
-      background: #ffffff;
     }
 
     :host, #datepickerContainer {
-      /*max-height: calc(517px - 32px);*/
       max-height: calc(100vh - 32px);
-      max-width: calc(100vw - 32px - 32px);
+      max-width: calc(100vw - 64px);
     }
 
     #datepickerContainer, #datepickerContainer div {
-      /*width: calc(360px - 64px);*/
       width: calc(100vw - 64px);
       position: relative
     }
 
-    /* to be removed soon */
-    div {
-      /*border: 1px solid;*/
-    }
-
-    /* layout-ing containers */
-    #datepickerContainer, #selectionView {
-      /*@apply(--layout-vertical);
-      @apply(--layout-center-center);*/
-    }
-
     #selectionView {
-      /*background: var(--google-green-500);*/
       background: var(--paper-teal-500, #009688);
       color: #ffffff;
       text-align: center;
-      /*min-height: 215px;*/
     }
 
-    /* #weekdayContainer */
     #weekdayContainer {
       background: var(--paper-teal-700, #00796b);
       padding-bottom: 6px;
     }
 
-    /* #dateContainer */
     #dateContainer {
       padding: 12px 0;
     }
 
-    /* #month */
     #month {
       text-transform: uppercase;
       font-size: 27px;
     }
 
-    /* #year */
     #year {
       font-size: 25px;
     }
 
-    /* #day */
     #day {
       font-size: 90px;
     }
 
-    /* #monthYear */
     #monthYear {
       padding: 3px 0;
       @apply(--layout-horizontal);
       @apply(--layout-center-center);
     }
 
-    /* #selectedMonthYear */
     #selectedMonthYear {
       text-align: center;
       @apply(--layout-flex-auto);
     }
 
-    /* #weekdays */
     #weekdays {
       text-align: center;
       padding: 3px 0;
       @apply(--layout-horizontal);
     }
 
-    /* #weekdays span */
     #weekdays span {
       @apply(--layout-flex-2);
     }
 
-    /* #buttonContainer */
     #buttonContainer {
-      /*top: -8px;*/
       @apply(--layout-horizontal);
       @apply(--layout-end-justified);
     }
 
-    /* paper-button */
     paper-button {
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       color: var(--paper-teal-500);
@@ -170,20 +125,7 @@ At the end of the demo, there is a section where user can play around with to ge
       font-weight: normal;
     }
 
-    /* week[n] */
-    /*div[id^="week"] {*/
-      /*@apply(--layout-horizontal);*/
-
-    /*}*/
-
-    /*div[id^="week"] span {*/
-      /*text-align: center;*/
-      /*@apply(--layout-flex-2);*/
-    /*}*/
-
-    /* .week-contaienr */
     .week-container {
-      /*border: 1px solid red;*/
       padding: 3px 0;
       text-align: center;
       min-height: calc(22px + 6px);
@@ -191,15 +133,11 @@ At the end of the demo, there is a section where user can play around with to ge
       @apply(--layout-center-center);
     }
 
-    /* .day-container */
     .day-container {
-      /*border: 1px solid blue;*/
       @apply(--layout);
-      /*@apply(--layout-center-center);*/
       @apply(--layout-flex-2);
     }
 
-    /* .day */
     .day {
       min-width: 22px;
       min-height: 22px;
@@ -208,7 +146,6 @@ At the end of the demo, there is a section where user can play around with to ge
       @apply(--layout-center-center);
     }
 
-    /* .day-selected */
     div .day-selected {
       background: var(--paper-teal-500, #009688);
       color: #ffffff;
@@ -218,20 +155,16 @@ At the end of the demo, there is a section where user can play around with to ge
       padding: 3px;
     }
 
-    /* to style today */
     .is-today {
       color: var(--paper-teal-500, #009688);
     }
 
-    /* to style disabled days */
     .is-disabled {
       color: var(--paper-grey-500, #9e9e9e);
     }
 
     neon-animated-pages {
-      /*height: calc(100vh - 32px - 215px - 42px);*/
       height: calc(100vh - 32px - 215px - 50px);
-      /*height: 275px;*/ /* neon-animated-pages has zero height, explicitly height is set.*/
     }
 
     #calendarView {
@@ -239,20 +172,16 @@ At the end of the demo, there is a section where user can play around with to ge
     }
 
     #days {
-      /*max-height: calc(100vh - 32px - 215px - 42px - 46px - 25px);*/
       max-height: calc(100vh - 32px - 215px - 50px - 46px - 25px);
-      /*padding: 0 16px 16px 0;*/
       padding-right: 16px;
       -webkit-overflow-scrolling: touch;
       overflow: auto;
     }
 
-    /* #yearContainer */
     #yearContainer, #dayContainer {
       position: relative;
     }
 
-    /* expand-family-group */
     #yearView {
       @apply(--layout-vertical);
       @apply(--layout-center-center);
@@ -285,38 +214,25 @@ At the end of the demo, there is a section where user can play around with to ge
       :host, #datepickerContainer {
         min-height: calc(100vh - 32px);
         min-width: calc(100vw - 64px);
-        /*max-height: calc(100vh - 32px);
-        max-width: calc(100vw - 32px - 32px);*/
-      }
-
-      #datepickerContainer, #datepickerContainer div {
-        /*width: calc(360px - 64px);*/
       }
 
       #selectionView div{
         width: calc(100vw - 64px - 296px);
-        /*max-width: calc(100vw - 64px - 296px);*/
-        /*max-width: calc(640px - 64px - 296px);*/
       }
 
-      /* layout-ing containers */
       #datepickerContainer, #selectionView {
-        /*max-height: calc(100vh - 32px - 42px);*/
         max-height: calc(100vh - 32px - 50px);
       }
 
       #viewContainer, neon-animated-pages {
-        /*height: calc(100vh - 32px - 42px);*/
         height: calc(100vh - 32px - 50px);
       }
 
       #dateContainer {
-        /*height: calc(100vh - 32px - 42px - 25px);*/
         height: calc(100vh - 32px - 50px - 25px);
       }
 
       #days {
-        /*max-height: calc(100vh - 32px - 42px - 46px - 25px);*/
         max-height: calc(100vh - 32px - 50px - 46px - 25px);
       }
 
@@ -326,14 +242,8 @@ At the end of the demo, there is a section where user can play around with to ge
     }
 
     /* IP4, IP5 Portrait */
-    /* IP4 status bar - 20px */
-    /* IP4 nav-bar - 50px */
-    /* IP4 viewport height - 410px */
     @media all and (min-width: 0) and (max-width: 359px) and (max-height: 480px) and (orientation: portrait) {
-      :host, #datepickerContainer {
-        /*max-height: calc(410px - 32px);*/
-        /*max-height: calc(100vh - 32px);*/
-      }
+      /*:host, #datepickerContainer {}*/
 
       #dateContainer {
         padding: 3px 0;
@@ -341,20 +251,16 @@ At the end of the demo, there is a section where user can play around with to ge
       }
 
       neon-animated-pages {
-        /*height: 200px;*/
         height: calc(100vh - 50px - 136px - 32px);
       }
 
       #days {
-        /*max-height: calc(200px - 46px - 25px);*/
         max-height: calc(100vh - 136px - 46px - 25px - 50px - 32px);
       }
     }
 
     @media all and (max-width: 359px) and (min-height: 481px) and (max-height: 568px) and (orientation: portrait) {
-      :host, #datepickerContainer {
-        /*max-height: calc(498px - 32px);*/
-      }
+      /*:host, #datepickerContainer {}*/
 
       #dateContainer {
         padding: 6px 0;
@@ -362,7 +268,6 @@ At the end of the demo, there is a section where user can play around with to ge
       }
 
       neon-animated-pages {
-        /*height: calc(498px - 32px - 25px - 178px - 42px);*/
         height: calc(100vh - 32px - 203px - 50px);
       }
 
@@ -382,17 +287,11 @@ At the end of the demo, there is a section where user can play around with to ge
     @media all and (min-width: 480px) and (max-width: 568px) and (orientation: landscape) {
       #selectionView, #selectionView div {
         max-width: calc(100vw - 64px - 296px);
-        /*max-height: calc(100vh - 32px - 42px);*/
         max-height: calc(100vh - 32px - 50px);
       }
 
       neon-animated-pages div {
         max-width: 296px;
-      }
-
-      #selectionView #dateContainer {
-        /*height: calc(100vh - 32px - 42px - 25px - 6px);*/
-        /*height: calc(100vh - 32px - 50px - 25px - 6px);*/
       }
 
       #weekdayContainer {
@@ -435,13 +334,11 @@ At the end of the demo, there is a section where user can play around with to ge
       }
 
       #viewContainer {
-        /*max-height: calc(640px - 42px);*/
         max-height: calc(640px - 50px);
         @apply(--layout-vertical);
       }
 
       neon-animated-pages {
-        /*height: calc(640px - 42px - 215px);*/
         height: calc(640px - 50px - 215px);
       }
     }
@@ -457,7 +354,6 @@ At the end of the demo, there is a section where user can play around with to ge
 
       #viewContainer, #selectionView, neon-animated-pages {
         max-width: 640px;
-        /*max-height: calc(360px - 42px);*/
         max-height: calc(360px - 50px);
       }
 
@@ -466,7 +362,6 @@ At the end of the demo, there is a section where user can play around with to ge
       }
 
       #dateContainer {
-        /*max-height: calc(360px - 42px - 25px);*/
         max-height: calc(360px - 50px - 25px);
       }
 
@@ -487,17 +382,6 @@ At the end of the demo, there is a section where user can play around with to ge
         cursor: not-allowed;
       }
     }
-
-    /* Used to solve position issue when yearContainer is selected */
-    /*#yearContainer {
-      top: 1px;
-    }*/
-
-    /* Used when it's desktop mode */
-    /*#dayContainer, #yearContainer, paper-icon-button, paper-button, .day:not([disabled]) {
-      cursor: pointer;
-    }*/
-
   </style>
 
   <template>
@@ -505,33 +389,22 @@ At the end of the demo, there is a section where user can play around with to ge
 
     <!-- Datepicker Container-->
     <div id="datepickerContainer">
-
         <!-- View Container -->
         <div id="viewContainer" class$="{{_computeContainerCls(portrait)}}">
           <!-- Selection View-->
           <div id="selectionView">
-            <!-- Weekday -->
             <div id="weekdayContainer">
               <span id="weekday">{{_selectedWeekday}}</span>
             </div>
-
-            <!-- Date (Month, Day, Year)-->
             <div id="dateContainer">
-              <!-- Month -->
               <div id="monthContainer">
                 <span id="month">{{_selectedMonth}}</span>
               </div>
-
-              <!-- Day -->
               <div id="dayContainer">
-                <!-- to be removed -->
                 <paper-ripple fit on-tap="_goCalView"></paper-ripple>
                 <span id="day">{{_selectedDate}}</span>
               </div>
-
-              <!-- Year -->
               <div id="yearContainer">
-                <!-- to be removed -->
                 <paper-ripple fit on-tap="_goYearView"></paper-ripple>
                 <span id="year">{{_selectedYear}}</span>
               </div>
@@ -541,7 +414,6 @@ At the end of the demo, there is a section where user can play around with to ge
           <neon-animated-pages id="datepicker-pages" selected="{{_selectedView}}" attr-for-selected="data-view">
             <!-- Calendar View-->
             <div id="calendarView" data-view="calendar">
-              <!-- monthYear -->
               <div id="monthYear">
                 <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
                 <span id="selectedMonthYear">
@@ -550,14 +422,11 @@ At the end of the demo, there is a section where user can play around with to ge
                 <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
               </div>
 
-              <!-- weeks -->
               <div id="weekdays">
                 <template is="dom-repeat" items="{{_weekdays}}">
                   <span>{{item}}</span>
                 </template>
               </div>
-
-              <!-- days -->
               <div id="days">
                 <template is="dom-repeat" items="{{_days}}" as="day">
                   <div id$="[[_computeWeekId(index)]]" class="week-container">
@@ -577,9 +446,6 @@ At the end of the demo, there is a section where user can play around with to ge
             </div>
 
             <!-- Year View -->
-            <!-- year list -->
-            <!-- <div id="yearView" data-view="year" on-scroll="_displayScroll" class="fit vertical layout">
-              <iron-list id="yearList" items='[[years]]' class="flex"> -->
             <div id="yearView" data-view="year" on-scroll="_displayScroll">
               <div id="expandContainer">
                 <div id="expandLessGroup">
@@ -603,8 +469,6 @@ At the end of the demo, there is a section where user can play around with to ge
 
       <!-- Button Container-->
       <div id="buttonContainer">
-        <!-- <paper-button id="cancel">cancel</paper-button>
-        <paper-button id="ok" on-tap="_formatDate">ok</paper-button> -->
         <paper-button dialog-dismiss>cancel</paper-button>
         <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
       </div>
@@ -625,7 +489,6 @@ At the end of the demo, there is a section where user can play around with to ge
       'role': 'datepicker'
     },
 
-    /*`Sunday` is the starting day of the week. arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].*/
     properties: {
       startDay: {
         type: Number,
@@ -721,51 +584,11 @@ At the end of the demo, there is a section where user can play around with to ge
         type: Boolean,
         value: false
       }
-      // _years: {
-      //   type: Array,
-      //   value: function() {
-      //     var i = 1581, res = [];
-      //     while (i++ < 2100) {
-      //       res.push(i);
-      //     }
-      //     return res;
-      //   }
-      // }
     },
-
     // Element Lifecycle
-
-    ready: function () {
-      // `ready` is called after all elements have been configured, but
-      // propagates bottom-up. This element's children are ready, but parents
-      // are not.
-      //
-      // This is the point where you should make modifications to the DOM (when
-      // necessary), or kick off any processes the element wants to perform.
-
-      // this._weekdays = this._computeWeekdays(this.startDay);
-      // this._shiftDisabledDays(this.disableDays, this.startDay);
-      // this._computeMonthYear(this._mthOffset);
-    },
-
-    attached: function () {
-      // `attached` fires once the element and its parents have been inserted
-      // into a document.
-      //
-      // This is a good place to perform any work related to your element's
-      // visual state or active behavior (measuring sizes, beginning animations,
-      // loading resources, etc).
-    },
-
-    detached: function () {
-      // The analog to `attached`, `detached` fires when the element has been
-      // removed from a document.
-      //
-      // Use this to clean up anything you did in `attached`.
-    },
+    // ready: function () {},attached: function () {},detached: function () {},
 
     // Element Behaviorset
-
     /**
      * The `format-date` event is fired whenever `_formatDate` is called.
      *
@@ -773,30 +596,20 @@ At the end of the demo, there is a section where user can play around with to ge
      * @detail {{date: String}}
      */
 
-
-
     observers: [
       '_propChanged(startDay, disableDays, format)'
     ],
 
     _computeContainerCls: function (portrait) {
       var cls = 'layout vertical center-center';
-
       if (!portrait) {
         cls = 'layout horizontal center-center';
       }
-
       return cls;
-      // if (potrait) {
-      //   return 'layout vertical center-center';
-      // } else {
-      //   return 'layout horizontal center-center';
-      // }
     },
 
     _computeWeekdays: function (startDay) {
       var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-      // console.log(startDay);
       if (this._validateStartDay(startDay)) {
         for (var i = 0; i < startDay; i++) {
           arrayWeek.push(arrayWeek.shift());
@@ -811,29 +624,25 @@ At the end of the demo, there is a section where user can play around with to ge
           pushElem,
           firstYear = this._todayYear,
           firstMonth = this._todayMonth,
-          startDay = !this._validateStartDay(this.startDay)? 0: this.startDay%7, // startDay must be within 0 and 6, else normalize to 0.
+          startDay = !this._validateStartDay(this.startDay)? 0: this.startDay%7,
           firstDayOfMonth = (new Date(firstYear, firstMonth, 1).getDay() + 7 - startDay)%7,
           totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth),
           totalRow = (totalDay + firstDayOfMonth)>35? 42: 35;
+      for (var i = 1, j = 0; i <= totalRow; i++, j++) {
+        pushElem = i;
 
-//          totalDay = firstDayOfMonth > 3? 42: 35; // 31 + firstDayOfMonth + (7 - (31 + firstDayOfMonth)%7);
-        for (var i = 1, j = 0; i <= totalRow; i++, j++) {
-          pushElem = i;
-
-          if (firstDayOfMonth >= i) {
-            pushElem = '';
-          }else {
-            pushElem = (pushElem - firstDayOfMonth) > totalDay? '': pushElem - firstDayOfMonth;
-          }
-
-          arrayWeeks.push(pushElem);
-          if (j >= 6) {
-            arrayDays.push(arrayWeeks);
-            j = -1; // if set j to 0, totalDay needs to add 1;
-            arrayWeeks = [];
-          }
+        if (firstDayOfMonth >= i) {
+          pushElem = '';
+        }else {
+          pushElem = (pushElem - firstDayOfMonth) > totalDay? '': pushElem - firstDayOfMonth;
         }
-//      return arrayDays;
+        arrayWeeks.push(pushElem);
+        if (j >= 6) {
+          arrayDays.push(arrayWeeks);
+          j = -1;
+          arrayWeeks = [];
+        }
+      }
       this._days = arrayDays;
     },
 
@@ -841,17 +650,9 @@ At the end of the demo, there is a section where user can play around with to ge
       return 'week' + idx;
     },
 
-//    _computeWeekNumber: function () {
-//      var now = new Date(),
-//          onejan = new Date(now.getFullYear(), 0, 1);
-//          weekNumber = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-//      return weekNumber;
-//    },
-
     _selectedDateChanged: function (newValue, oldValue) {
       this._oldDate = oldValue;
       this._selectedDate = newValue;
-      // remove oldValue's classList
       if (oldValue) {
         this._styleSelected.bind(this.$.days.querySelector('#day' + oldValue))();
       }
@@ -860,8 +661,6 @@ At the end of the demo, there is a section where user can play around with to ge
     _selectDate: function (ev) {
       var target = ev.target;
       if (!target.hasAttribute('disabled') && ev.target.textContent) {
-        // when select a date on the calendar, 4 things are needed to be changed:
-        // a) Weekday b) Month c) Date d) Year
         this._selectedMonth = this._computeMonth(this._todayMonth, true);
         this._selectedDate = parseInt(ev.target.textContent);
         this._selectedYear = this._todayYear;
@@ -871,9 +670,7 @@ At the end of the demo, there is a section where user can play around with to ge
     },
 
     _styleSelected: function (addCls) {
-      // console.log('style-selected');
       if (addCls) {
-        // console.log('style-selected-add');
         this.classList.add('day-selected');
       }else {
         this.classList.remove('day-selected');
@@ -885,16 +682,12 @@ At the end of the demo, there is a section where user can play around with to ge
           today = new Date(),
           tm = today.getMonth(),
           ty = today.getFullYear();
-
-      // only today's date is selected...
       if (date === this._todayDate && this._todayMonth === tm && this._todayYear === ty) {
         cls = cls + ' is-today';
       }
-      // only day is disabled...
       if (!date || this._isDisabledDay(whichDay)) {
         cls = cls + ' is-disabled';
       }
-
       return cls;
     },
 
@@ -905,9 +698,7 @@ At the end of the demo, there is a section where user can play around with to ge
     _computeMonthYear: function () {
       var preTodayMth = this._todayMonth + this._mthOffset;
       this._todayMonth = (preTodayMth) < 0? 11: (preTodayMth)%12;
-
       this._mthOffset = 0;
-      // render calendar once `todayMonth` changes...
       this._computeDays();
       this._selectedMonthYear = this._computeMonth(this._todayMonth) + ' ' + this._todayYear;
     },
@@ -950,15 +741,12 @@ At the end of the demo, there is a section where user can play around with to ge
           totalDay = 30;
       }
       return totalDay;
-      // return (totalDay + firstDayOfMonth)>35? 42: 35;
     },
 
     _goYearView: function () {
       if (this._selectedView === 'year') {
         return;
       }else {
-        // save initial value of _todayYear into _tempYear.
-        // if no select any year, reset _todayYear to initial value from _tempYear.
         this._tempYear = this._todayYear;
         this._selectedView = 'year';
       }
@@ -968,9 +756,6 @@ At the end of the demo, there is a section where user can play around with to ge
       if (this._selectedView === 'calendar') {
         return;
       }else {
-        // set _todayYear to its initial value from _tempYear.
-        // if onFirstLoad is at 'calendar' page, _tempYear is undefined, hence
-        // set _selectedYear instead.
         this._todayYear = this._tempYear || this._selectedYear;
         this._selectedView = 'calendar';
       }
@@ -1018,7 +803,7 @@ At the end of the demo, there is a section where user can play around with to ge
     _validateDisableDays: function(disableDaysArr) {
       if (Array.isArray(disableDaysArr)) {
         return disableDaysArr.every(function(el){
-          return el >= 0 && el < 7; // check if disableDays has value between 0 and 6;
+          return el >= 0 && el < 7;
         });
       }
     },
@@ -1041,7 +826,6 @@ At the end of the demo, there is a section where user can play around with to ge
       }else {
         this.setAttribute('disable-days', 'invalidArr');
       }
-      // no return value as array mutation occurs inside function.
     },
 
     _formatDate: function() {
@@ -1145,24 +929,22 @@ At the end of the demo, there is a section where user can play around with to ge
             dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
         }
       }
-      // parse formatted date
+      // bind and fire formatted date
       this.bindDate = dateformat;
-
-      //fireDate
       this.fire('format-date', {date: dateformat});
-
-      console.log(this.bindDate);
-      // console.log(dateformat);
-      // console.log(this._selectedYear);
-      // console.log(this._selectedMonth);
-      // console.log(this._selectedDate);
     },
 
     _propChanged: function(startDay, disableDays, format) {
       this._weekdays = this._computeWeekdays(startDay);
       this._shiftDisabledDays(disableDays, startDay);
       this._computeDays();
-      this._disableCls = !this._disableCls; // workaround to force _computeDayStyle to execute on the dom;
+      this._disableCls = !this._disableCls;
     }
+//    _computeWeekNumber: function () {
+//      var now = new Date(),
+//          onejan = new Date(now.getFullYear(), 0, 1);
+//          weekNumber = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+//      return weekNumber;
+//    }
   });
 </script>
