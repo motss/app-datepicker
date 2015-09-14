@@ -1,12 +1,3 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
@@ -15,16 +6,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
-<link rel="import" href="../iron-list/iron-list.html">
 
 <!--
-An element providing a solution to no problem in particular.
+An custom Polymer element created to provide a datepicker element that is more compelling and rich with features.
 
 Example:
 
-    <jv-datepicker></jv-datepicker>
+    <jv-datepicker><jv-datepicker>
+    <jv-datepicker-dialog modal></jv-datepicker-dialog>
 
-@demo
+`jv-datepicker` provides a regular datepicker element.
+While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
+
+### Event handling
+
+`paper-swipe` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date and bind it to your own property, say the `selectedDate` property in the example provided below.
+
+Example:
+
+    <jv-datepicker on-format-date="{{selectedDate}}"></jv-datepicker>
+
+    <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
+
+### Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`
+
+At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!
+
+@author motss
+@element jv-datepicker, jv-datepicker-dialog
+@demo demo/index.html
 -->
 <dom-module id="jv-datepicker">
 
@@ -260,6 +270,14 @@ Example:
     #expandYear {
       font-size: 70px;
       padding: 3px 0;
+    }
+
+    /* workaround for Mozilla Firefox */
+    @-moz-document url-prefix(){
+      span.day-container {
+        /*max-width: calc(296px/ 7.3);*/
+        max-width: calc((100vw - 64px - 280px)/ 7.3);
+      }
     }
 
     /* Google Galaxy Nexus @ landscape */
@@ -607,20 +625,17 @@ Example:
       'role': 'datepicker'
     },
 
+    /*`Sunday` is the starting day of the week. arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].*/
     properties: {
-      // `Sunday` is the starting day of the week.
-      // arrayWeek = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`].
       startDay: {
         type: Number,
-        value: 0,
-        notify: true
+        value: 0
       },
       disableDays: {
         type: Array,
         value: function () {
           return [];
-        },
-        notify: true
+        }
       },
       _shiftedDisableDays: Array,
       _weekdays: {
@@ -695,8 +710,7 @@ Example:
         type: String,
         value: function() {
           return 'yyyy-mm-dd';
-        },
-        notify: true
+        }
       },
       bindDate: {
         type: String,
@@ -753,10 +767,10 @@ Example:
     // Element Behaviorset
 
     /**
-     * The `jv-datepicker-lasers` event is fired whenever `fireLasers` is called.
+     * The `format-date` event is fired whenever `_formatDate` is called.
      *
-     * @event jv-datepicker-lasers
-     * @detail {{sound: String}}
+     * @event format-date
+     * @detail {{date: String}}
      */
 
 

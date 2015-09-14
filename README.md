@@ -1,56 +1,90 @@
 # jv-datepicker
 
-An element providing a starting point for your own reusable Polymer elements.
+See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
 
+An custom Polymer element created to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
-## Dependencies
+Example:
 
-Element dependencies are managed via [Bower](http://bower.io/). You can
-install that via:
+    <jv-datepicker><jv-datepicker>
+    <jv-datepicker-dialog modal></jv-datepicker-dialog>
 
-    npm install -g bower
+`jv-datepicker` provides a regular datepicker element.
+While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-Then, go ahead and download the element's dependencies:
+### Event handling
 
-    bower install
+`paper-swipe` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
 
+Example:
 
-## Playing With Your Element
+    <jv-datepicker on-format-date="{{selectedDate}}"></jv-datepicker>
 
-If you wish to work on your element in isolation, we recommend that you use
-[Polyserve](https://github.com/PolymerLabs/polyserve) to keep your element's
-bower dependencies in line. You can install it via:
+    <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
 
-    npm install -g polyserve
+## Demo
+[Click here go the demo app](http://motss.github.io/jv-datepicker/components/jv-datepicker/demo/index.html)
 
-And you can run it via:
+### Attributes
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>bindDate</th>
+<td>String</td>
+<td>2015-09-31</td>
+<td>Return selected date via user interaction.</td>
+</tr>
+<tr>
+<th>disableDays</th>
+<td>Array</td>
+<td>[]</td>
+<td>Input any number from 0 (Sunday) to 6 (Saturday) to disable any day.</td>
+</tr>
+<tr>
+<th>format</th>
+<td>String</td>
+<td>yyyy-mm-dd</td>
+<td>Input date format string for the selected date.</td>
+</tr>
+<tr>
+<th>startDay</th>
+<td>Number</td>
+<td>0</td>
+<td>Input any number from 0 (Sunday) to 6 (Saturday) as the first day of the week.</td>
+</tr>
+</tbody>
+</table>
 
-    polyserve
+## Getting Started
 
-Once running, you can preview your element at
-`http://localhost:8080/components/jv-datepicker/`, where `jv-datepicker` is the name of the directory containing it.
+1. Install with bower  
+`bower install --save jv-datepicker`
 
+2. Load the web component and the dependencies
 
-## Testing Your Element
+For `jv-datepicker`,
 
-Simply navigate to the `/test` directory of your element to run its tests. If
-you are using Polyserve: `http://localhost:8080/components/jv-datepicker/test/`
+```html
+<link rel="import" href="path-to-bower-components/jv-datepicker/jv-datepicker.html">
+```
+For `jv-datepicker-dialog`,
 
-### web-component-tester
+```html
+<link rel="import" href="path-to-bower-components/jv-datepicker/jv-datepicker-dialog.html">
+```
 
-The tests are compatible with [web-component-tester](https://github.com/Polymer/web-component-tester).
-Install it via:
+3. Markup with &lt;jv-datepicker&gt&lt;/jv-datepicker&gt or &lt;/jv-datepicker-dialog&gt;
 
-    npm install -g web-component-tester
+4. Done
 
-Then, you can run your tests on _all_ of your local browsers via:
+### Supported Browsers
 
-    wct
-
-#### WCT Tips
-
-`wct -l chrome` will only run tests in chrome.
-
-`wct -p` will keep the browsers alive after test runs (refresh to re-run).
-
-`wct test/some-file.html` will test only the files you specify.
+[Same as Polymer](http://www.polymer-project.org/resources/compatibility.html)

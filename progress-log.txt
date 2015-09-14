@@ -107,6 +107,12 @@
 * v1.1.3
 - none.
 
+* v1.4.
+- added @-moz-document url-prefix() to fix display issue on Mozilla Firefox;
+
+* v1.4.
+- neon-animation has something to do with the transition animation;
+
 
 
 [CASESTUDY]
