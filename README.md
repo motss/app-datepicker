@@ -14,7 +14,7 @@ While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog
 
 ### Event handling
 
-`paper-swipe` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
+`jv-datepicker` or `jv-datepicker-dialog` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
 
 Example:
 
