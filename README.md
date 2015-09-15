@@ -1,4 +1,6 @@
 # jv-datepicker
+![jv-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/9871233/c9e33d04-5bc4-11e5-8af9-d93d080d8815.PNG)
+![jv-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG)
 
 See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
 
