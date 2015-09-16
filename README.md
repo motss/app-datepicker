@@ -4,7 +4,7 @@
 
 See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
 
-An custom Polymer element created to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
+An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
 Example:
 
