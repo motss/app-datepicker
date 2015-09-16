@@ -124,6 +124,9 @@
 - Removed calc() with viewport's height and width in jv-datepicker-dialog and set explicit height and width;
 - Removed all changes made on CSS's height and width in jv-datepicker at version 1.4.11;
 
+* 1.4.13
+- Removed position: fixed on jv-datepicker-dialog;
+
 
 
 [KNOWN BUGS]
