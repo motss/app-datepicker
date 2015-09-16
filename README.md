@@ -83,7 +83,7 @@ For `jv-datepicker-dialog`,
 <link rel="import" href="path-to-bower-components/jv-datepicker/jv-datepicker-dialog.html">
 ```
 
-3. Markup with &lt;jv-datepicker&gt&lt;/jv-datepicker&gt or &lt;/jv-datepicker-dialog&gt;
+3. Markup with &lt;jv-datepicker&gt;&lt;/jv-datepicker&gt; or &lt;/jv-datepicker-dialog&gt;
 
 4. Done
 
