@@ -112,6 +112,18 @@
 - cursor CSS missing on Mozilla Firefox - now setting .day to have cursor: pointer and overrides those .day.is-disabled with cursor: not-allowed;
 - override .is-disabled when the day happens to fall on a .is-diabled day, so the .is-today will be more prominent and distinguishable;
 
+* v1.4.10
+- fixed text color for today's date when it's being selected;
+
+* 1.4.11
+- Fixed selectable disabled days by adding _disableCls to re-compute all the classes;
+- Fixed dialog's height issue on N7 and above portrait mode using calc() on width and height in CSS;
+- Added position: fixed to jv-datepicker-dialog since the dialog sometimes positioned itself at the bottom of page with position: static;
+
+* 1.4.12
+- Removed calc() with viewport's height and width in jv-datepicker-dialog and set explicit height and width;
+- Removed all changes made on CSS's height and width in jv-datepicker at version 1.4.11;
+
 
 
 [KNOWN BUGS]
@@ -134,16 +146,16 @@
 - multiple selected date on the calendar page on more than 1 datepicker element, due to document.querySelector returned the wrong element since more than 1 datepicker element have the same id
 
 [TEST DEVICE CHECK]
-OS                      FF/GC/OP
-DEVICES       1.2.19      1.4.7
-Galaxy Nexus    *           *
-LG G3           *           *
-IP4             *           *
-IP5             *           *
-IP6             *           *
-IP6+            *           *
-N4              *           *
-N5              *           *
-N6              *           *
-N7              *           *
-N10             *           *
+OS                      FF/GC/OP  FF/GC/OP
+DEVICES       1.2.19      1.4.7    1.4.12
+Galaxy Nexus    *           *        *
+LG G3           *           *        *
+IP4             *           *        *
+IP5             *           *        *
+IP6             *           *        *
+IP6+            *           *        *
+N4              *           *        *
+N5              *           *        *
+N6              *           *        *
+N7              *           *        *
+N10             *           *        *
