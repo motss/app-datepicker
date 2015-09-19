@@ -127,6 +127,10 @@
 * 1.4.13
 - Removed position: fixed on jv-datepicker-dialog;
 
+* 1.4.14
+- Fixed app.dayStart not changing value && Fixed toggle button for jv-datepicker-dialog/ jv-datepicker;
+- In codegen, only one toggle button while others should use paper-checkbox which make more sense;
+
 
 
 [KNOWN BUGS]
