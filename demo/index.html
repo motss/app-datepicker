@@ -39,8 +39,12 @@
 
     paper-radio-button, paper-checkbox {
       display: block;
-      padding-bottom: 40px;
       width: 130px;
+    }
+
+    div paper-checkbox {
+      margin-top: 12px;
+      margin-bottom: 20px;
     }
 
     hr {
@@ -93,6 +97,12 @@
     .code-section div {
       margin: 20px 0;
     }
+
+    .note {
+      font-size: 10px;
+      font-style: italic;
+      color: #727272;
+    }
   </style>
 </head>
 <body unresolved>
@@ -135,7 +145,6 @@
           <paper-checkbox checked="{{thu}}">thursday</paper-checkbox>
           <paper-checkbox checked="{{fri}}">friday</paper-checkbox>
           <paper-checkbox checked="{{sat}}">saturday</paper-checkbox>
-          <span>{{sunday}}</span>
         </div>
         <hr>
         <paper-button tab-index="0" id="multidays" data-dialog="disableDialog" on-click="_openDatepicker">show selected</paper-button>
@@ -196,27 +205,32 @@
       <section class="horizontal-section code-section" on-iron-change="genCode">
         <div>
           <paper-toggle-button data-toggle="dialog" checked="{{takeDialog}}"></paper-toggle-button>
-          <span>{{takeElement}}</span>
+          <span>{{takeElement}}<span class="note">&emsp;//Note: Toggle between non-dialog and dialog element.</span></span>
         </div>
         <div>
-          <paper-toggle-button data-toggle="start" checked="{{takeStartDay}}"></paper-toggle-button>
-          <span>startDay</span>
+          <paper-checkbox data-toggle="start" checked="{{takeStartDay}}">
+            <span>startDay</span>
+          </paper-checkbox>
         </div>
         <div>
-          <paper-toggle-button data-toggle="disable" checked="{{takeDisableDays}}"></paper-toggle-button>
-          <span>disableDays</span>
+          <paper-checkbox data-toggle="disable" checked="{{takeDisableDays}}">
+            <span>disableDays</span>
+          </paper-checkbox>
         </div>
         <div>
-          <paper-toggle-button data-toggle="format" checked="{{takeFormat}}"></paper-toggle-button>
-          <span>format</span>
+          <paper-checkbox data-toggle="format" checked="{{takeFormat}}">
+            <span>format</span>
+          </paper-checkbox>
         </div>
         <div>
-          <paper-toggle-button data-toggle="bind" checked="{{takeBindDate}}"></paper-toggle-button>
-          <span>bindDate</span>
+          <paper-checkbox data-toggle="bind" checked="{{takeBindDate}}">
+            <span>bindDate</span>
+          </paper-checkbox>
         </div>
         <div>
-          <paper-toggle-button data-toggle="fire" checked="{{takeFormatDate}}"></paper-toggle-button>
-          <span>onFormatDate</span>
+          <paper-checkbox data-toggle="fire" checked="{{takeFormatDate}}">
+            <span>onFormatDate</span>
+          </paper-checkbox>
         </div>
         <input class="datepicker-boilerplate" value="{{dateCode}}" title="jv-datepicker-boilerplate" readonly onclick="this.select();">
       </section>
@@ -273,6 +287,7 @@
         newCodeStr = app.dateCode;
     switch (toggleId) {
       case 'dialog':
+        app.takeElement = toggleCheck? 'jv-datepicker-dialog': 'jv-datepicker';
         newCodeStr = modifyCode(toggleCheck, newCodeStr, '', true);
         newCodeStr = modifyCode(toggleCheck, newCodeStr, ' modal');
         break;
@@ -362,7 +377,7 @@
     switch (targetId) {
       case 'start':
         var day = parseInt(targetValue);
-        this.dayStart = app._dayStart(day);
+        app.dayStart = app._dayStart(day);
         break;
       case 'year':
         app.format = app.format.replace(/^[y]+/gi, targetValue);
