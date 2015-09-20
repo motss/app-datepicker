@@ -1,6 +1,6 @@
 {
   "name": "jv-datepicker",
-  "version": "1.4.14",
+  "version": "1.4.15",
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
@@ -19,12 +19,13 @@
     "motss"
   ],
   "main": "jv-datepicker.html",
-  "license": "https://github.com/motss/jv-datepicker/blob/master/LICENSE.txt",
+  "license": "MIT",
   "homepage": "https://github.com/motss/jv-datepicker/",
   "ignore": [
     "/.*",
     "/test/",
-    "/demo/"
+    "LICENSE",
+    "README.md"
   ],
   "dependencies": {
     "iron-media-query": "PolymerElements/iron-media-query#~1.0.2",
