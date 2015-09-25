@@ -31,6 +31,72 @@ Example:
 
 At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!
 
+### Styling
+
+Style the datepicker with CSS as you would a normal DOM element.
+
+    jv-datepicker {
+      --jv-datepicker-button-color: #80CBC4;
+      --jv-datepicker-button-ink-color: #80CBC4;
+      --jv-datepicker-icon-button-color: #ffff00;
+      --jv-datepicker-icon-button-ink-color: #ffff00;
+      --jv-datepicker-selected-day-bg: #80CBC4;
+      --jv-datepicker-selected-day-color: #555555;
+      --jv-datepicker-today-color: #80CBC4;
+      --jv-datepicker-disabled-color: #ffff00;
+      --jv-datepicker-selection-color: #ffffff;
+      --jv-datepicker-selection-bg: #555555;
+      --jv-datepicker-weekday-bg: #555555;
+      --jv-datepicker-bg: #424242;
+      --jv-datepicker-calendar-text-color: #ffffff;
+      --jv-datepicker-calendar-bg: #424242;
+      --jv-datepicker-selection-ripple-color: #ffff00;
+      --jv-datepicker-weekdays-color: #c6c6c6;
+    }
+
+    jv-datepicker-dialog#darkThemedDialog {
+      --jv-datepicker-button-color: #80CBC4;
+      --jv-datepicker-button-ink-color: #80CBC4;
+      --jv-datepicker-icon-button-color: #ffff00;
+      --jv-datepicker-icon-button-ink-color: #ffff00;
+      --jv-datepicker-selected-day-bg: #80CBC4;
+      --jv-datepicker-selected-day-color: #555555;
+      --jv-datepicker-today-color: #80CBC4;
+      --jv-datepicker-disabled-color: #ffff00;
+      --jv-datepicker-selection-color: #ffffff;
+      --jv-datepicker-selection-bg: #555555;
+      --jv-datepicker-weekday-bg: #555555;
+      --jv-datepicker-bg: #424242;
+      --jv-datepicker-calendar-text-color: #ffffff;
+      --jv-datepicker-calendar-bg: #424242;
+      --jv-datepicker-selection-ripple-color: #ffff00;
+      --jv-datepicker-weekdays-color: #c6c6c6;
+    }
+
+By default, the datepicker is in light theme and now you are able to style almost all possible sections of the datepicker with your own choices of color.
+
+The following custom properties and mixins are also available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--jv-datepicker-bg` | Background color of the datepicker | #ffffff
+`--jv-datepicker-selection-bg` | Background color of the display section (selectionView) | #009688
+`--jv-datepicker-selection-color` | Text color of the display section (selectionView) | #ffffff
+`--jv-datepicker-weekday-bg` | Background color of the weekday in display section (selectionView) | #00796b
+`--jv-datepicker-selection-ripple-color` | Ripple color in display section (selectionView) | Default color of `paper-ripple`
+`--jv-datepicker-icon-button-color` | Color of `chevron-left` and `chevron-right` | #737373
+`--jv-datepicker-icon-button-ink-color` | Ripple color of `chevron-left` and `chevron-right` | Default ripple color of `paper-icon-button`
+`--jv-datepicker-calendar-bg` | Background color of calendar section | #fafafa
+`--jv-datepicker-calendar-text-color` | Text color of calendar section | #000000
+`--jv-datepicker-weekdays-color` | Text color of weekdays | #9b9b9b
+`--jv-datepicker-today-color` | Text color of today's day | #009688
+`--jv-datepicker-day-selected-bg` | Background color of selected day | #009688
+`--jv-datepicker-selected-day-color` | Text color of selected day | #ffffff
+`--jv-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
+`--jv-datepicker-button-color` | Text color of action buttons | #009688
+`--jv-datepicker-button-ink-color` | Ripple color of action buttons | Default ripple color
+`--jv-datepicker` | Mixin applied to the datepicker | {}
+
 @author motss
 @element jv-datepicker, jv-datepicker-dialog
 @demo demo/index.html
@@ -150,7 +216,7 @@ At the end of the demo, there is a section where user can play around with to ge
       }
 
       div .day.day-selected {
-        background: var(--jv-datepicker-day-selected-bg, #009688);
+        background: var(--jv-datepicker-selected-day-bg, #009688);
         color: var(--jv-datepicker-selected-day-color, #ffffff);
         border-radius: 50%;
         margin-left: auto;
@@ -172,7 +238,7 @@ At the end of the demo, there is a section where user can play around with to ge
 
       #calendarView, #yearView {
         color: var(--jv-datepicker-calendar-text-color, #000000);
-        background: var(--jv-datepicker-calendar-bg, #ffffff);
+        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
       }
 
       #calendarView {
