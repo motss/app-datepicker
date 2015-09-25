@@ -103,6 +103,27 @@
       font-style: italic;
       color: #727272;
     }
+
+    /* mixin */
+    jv-datepicker-dialog#colorDialog {
+      /*--jv-datepicker {}*/
+      --jv-datepicker-button-color: #80CBC4;
+      --jv-datepicker-button-ink-color: #80CBC4;
+      --jv-datepicker-icon-button-color: #ffff00;
+      --jv-datepicker-icon-button-ink-color: #ffff00;
+      --jv-datepicker-day-selected-bg: #80CBC4;
+      --jv-datepicker-selected-day-color: #555555;
+      --jv-datepicker-today-color: #80CBC4;
+      --jv-datepicker-disabled-color: #ffff00;
+      --jv-datepicker-selection-text-color: #ffffff;
+      --jv-datepicker-selection-bg: #555555;
+      --jv-datepicker-weekday-bg: #555555;
+      --jv-datepicker-bg: #424242;
+      --jv-datepicker-calendar-text-color: #ffffff;
+      --jv-datepicker-calendar-bg: #424242;
+      --jv-datepicker-selection-ripple-color: #ffff00;
+      --jv-datepicker-weekdays-color: #c6c6c6;
+    }
   </style>
 </head>
 <body unresolved>
@@ -113,7 +134,8 @@
     <div>
       <h4>Regular</h4>
       <section class="horizontal-section">
-        <paper-button tab-index="0" id="regular" data-dialog="regularDialog" on-tap="_openDatepicker">regular</paper-button>
+        <paper-button tab-index="0" id="regular" data-dialog="regularDialog" on-click="_openDatepicker">regular</paper-button>
+        <paper-button tab-index="0" id="color" data-dialog="colorDialog" on-click="_openDatepicker">dark-themed</paper-button>
       </section>
     </div>
 
@@ -237,7 +259,9 @@
     </div>
 
     <section>
-      <jv-datepicker-dialog id="regularDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
+      <jv-datepicker-dialog id="colorDialog" entry-animation="scale-up-animation" modal  exit-animation="fade-out-animation"
+      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="regularDialog" entry-animation="scale-up-animation" modal  exit-animation="fade-out-animation"
       start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="startDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
       start-day="{{startDay}}" disable-days="[0,6]"></jv-datepicker-dialog>
