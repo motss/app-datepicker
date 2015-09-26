@@ -13,6 +13,8 @@ Example:
 
     <jv-datepicker><jv-datepicker>
     <jv-datepicker-dialog modal></jv-datepicker-dialog>
+    <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
+    <jv-datepicker-dialog></jv-datepicker-dialog>
 
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
