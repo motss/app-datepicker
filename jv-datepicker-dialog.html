@@ -33,7 +33,7 @@
   </style>
 
   <template>
-    <jv-datepicker start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{bindDate}}"></jv-datepicker>
+    <jv-datepicker start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{bindDate}}" reset-date="{{resetDate}}"></jv-datepicker>
     <span>{{bindDate}}</span>
   </template>
   <script>
@@ -48,7 +48,8 @@
         bindDate: {
           type: String,
           notify: true
-        }
+        },
+        resetDate: Boolean
       },
 
       behaviors: [

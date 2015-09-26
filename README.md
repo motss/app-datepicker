@@ -67,6 +67,12 @@ Example:
 <td>0</td>
 <td>Input any number from 0 (Sunday) to 6 (Saturday) as the first day of the week.</td>
 </tr>
+<tr>
+<th>resetDate</th>
+<td>Boolean</td>
+<td>false</td>
+<td>Reset calendar to current month and year.</td>
+</tr>
 </tbody>
 </table>
 

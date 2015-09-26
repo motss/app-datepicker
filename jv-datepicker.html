@@ -563,7 +563,8 @@ Custom property | Description | Default
         </div>
 
       <!-- Button Container-->
-      <div id="buttonContainer">
+      <div id="buttonContainer" on-tap="_onBtnTap">
+        <paper-button dialog-today>today</paper-button>
         <paper-button dialog-dismiss>cancel</paper-button>
         <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
       </div>
@@ -678,6 +679,10 @@ Custom property | Description | Default
       _disableCls: {
         type: Boolean,
         value: false
+      },
+      resetDate: {
+        type: Boolean,
+        value: false
       }
     },
     // Element Lifecycle
@@ -768,7 +773,9 @@ Custom property | Description | Default
       if (addCls) {
         this.classList.add('day-selected');
       }else {
-        this.classList.remove('day-selected');
+        if (this) {
+          this.classList.remove('day-selected');
+        }
       }
     },
 
@@ -1027,6 +1034,9 @@ Custom property | Description | Default
       // bind and fire formatted date
       this.bindDate = dateformat;
       this.fire('format-date', {date: dateformat});
+      if (this.resetDate) {
+        this._resetDate();
+      }
     },
 
     _propChanged: function(startDay, disableDays, format) {
@@ -1034,6 +1044,31 @@ Custom property | Description | Default
       this._shiftDisabledDays(disableDays, startDay);
       this._computeDays();
       this._disableCls = !this._disableCls;
+    },
+
+    _resetDate: function() {
+      this._todayYear = new Date().getFullYear();
+      this._todayMonth = new Date().getMonth();
+      this._computeMonthYear();
+    },
+
+    _onBtnTap: function(ev) {
+      var target = ev.target;
+      while (target && target !== 'paper-button') {
+        if (target.hasAttribute) {
+          if (target.hasAttribute('dialog-today')) {
+            this._resetDate();
+            break;
+          }else if (target.hasAttribute('dialog-dismiss')) {
+            console.log(this.resetDate);
+            if (this.resetDate) {
+              this._resetDate();
+              break;
+            }
+          }
+        }
+        target = target.parentNode;
+      }
     }
 //    _computeWeekNumber: function () {
 //      var now = new Date(),

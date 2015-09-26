@@ -104,6 +104,10 @@
       color: #727272;
     }
 
+    .normal {
+      width: initial;
+    }
+
     /* mixin */
     jv-datepicker-dialog#colorDialog {
       /*--jv-datepicker {}*/
@@ -138,6 +142,7 @@
         <paper-button tab-index="0" id="color" data-dialog="colorDialog" on-tap="_openDatepicker">dark theme</paper-button>
         <paper-button tab-index="0" id="backdrop" data-dialog="backdropDialog" on-tap="_openDatepicker">with-backdrop</paper-button>
         <paper-button tab-index="0" id="simple" data-dialog="simpleDialog" on-tap="_openDatepicker">Simple</paper-button>
+        <paper-button tab-index="0" id="reset" data-dialog="resetDialog" on-tap="_openDatepicker">reset date</paper-button></paper-button>
       </section>
     </div>
 
@@ -266,11 +271,18 @@
             <span>onFormatDate</span>
           </paper-checkbox>
         </div>
+        <div>
+          <paper-checkbox class="normal" data-toggle="reset" checked="{{takeReset}}">
+            <span>resetDate<span class="note">&emsp;//Note: Check if you want to reset the calendar to current month and year.</span></span>
+          </paper-checkbox>
+        </div>
         <input class="datepicker-boilerplate" value="{{dateCode}}" title="jv-datepicker-boilerplate" readonly onclick="this.select();">
       </section>
     </div>
 
     <section>
+      <jv-datepicker-dialog id="resetDialog" entry-animation="scale-up-animation"  exit-animation="fade-out-animation"
+      start-day="0" disable-days="[0,6]" reset-date></jv-datepicker-dialog>
       <jv-datepicker-dialog id="simpleDialog" entry-animation="scale-up-animation"  exit-animation="fade-out-animation"
       start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="backdropDialog" entry-animation="scale-up-animation" with-backdrop  exit-animation="fade-out-animation"
@@ -311,6 +323,7 @@
   app.takeFormatDate = false;
   app.takeModal = true;
   app.takeBackdrop = false;
+  app.takeReset = false;
   app.takeElement = 'jv-datepicker-dialog';
 
   app.genCode = function(ev){
@@ -359,6 +372,9 @@
         break;
       case 'backdrop':
         newCodeStr = modifyCode(toggleCheck, newCodeStr, ' with-backdrop');
+        break;
+      case 'reset':
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' reset-date');
         break;
       default:
     }
