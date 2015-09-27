@@ -1,4 +1,5 @@
 [![GitHub version](https://badge.fury.io/gh/motss%2Fjv-datepicker.svg)](http://badge.fury.io/gh/motss%2Fjv-datepicker)
+[![Bower version](https://badge.fury.io/bo/jv-datepicker.svg)](http://badge.fury.io/bo/jv-datepicker)
 
 # jv-datepicker
 ![light-themed-jv-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/10119266/ce6d5b0e-64c3-11e5-843d-1310de755315.png)
