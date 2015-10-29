@@ -31,11 +31,36 @@
       .selection-view {
         background: var(--jv-datepicker-selection-bg, #009688);
         color: var(--jv-datepicker-selection-color, #ffffff);
-        text-align: center;
+        font-weight: bold;
+        text-align: left;
+        padding: 24px 24px 20px;
+      }
+
+      .selection-view .year-selected {
+        color: #b2dfdb;
+        margin-top: -6px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .selection-view .date-selected {
+        color: #b2dfdb;
+        margin-top: 6px;
+        font-size: 26px;
+        cursor: pointer;
+      }
+
+      .selection-view .iron-selector-selection-view .date-selected div {
+        margin-top: 6px;
+        display: inline-block;
+      }
+
+      iron-selector div.selection-view-iron-selector.iron-selected {
+        color: #FEFEFE;
       }
 
       .calendar-view {
-
+        padding: 0 14px;
       }
 
       .pages {
@@ -65,13 +90,12 @@
       }
 
       .days-content {
-
       }
 
       .week-row {
-        vertical-align: middle;
         text-align: center;
-        min-height: 34px;
+        min-height: 33px;
+        /*vertical-align: middle;*/
       }
 
       .week-row:nth-child(2n+1) {
@@ -221,14 +245,14 @@
         position: relative;
       }
 
-      #yearView {
+      /*#yearView {
         @apply(--layout-vertical);
         @apply(--layout-center-center);
-      }
+      }*/
 
-      #yearView #expandContainer * {
+      /*#yearView #expandContainer * {
         width: initial;
-      }
+      }*/
 
       #expandMoreGroup, #expandLessGroup, #expandYear {
         text-align: center;
@@ -311,7 +335,7 @@
         .calendar-view {
           min-width: 343px;
         }
-        
+
         .pages {
           /*min-width: 343px;*/
         }
