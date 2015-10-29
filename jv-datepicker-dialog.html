@@ -2,84 +2,98 @@
 <link rel="import" href="./jv-datepicker.html">
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+<link rel="import" href="jv-datepicker-dialog-theme.html">
 
 <dom-module id="jv-datepicker-dialog">
-  <style>
-    :host {
-      display: block;
-      height: calc(100vh - 32px);
-      width: calc(100vw - 64px);
-      background: var(--paper-dialog-background-color, --primary-background-color);
-      color: var(--paper-dialog-color, --primary-text-color);
-
-      @apply(--shadow-elevation-16dp);
-    }
-
-    /* N7 2013 Portrait and 800px PC potrait */
-    @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
-      :host {
-        width: 360px;
-        height: 640px;
-      }
-    }
-
-    /* N7 2013 landscape and 800px PC landscape */
-    @media all and (min-width: 800px) and (orientation: landscape) {
-      :host {
-        width: 640px;
-        height: 360px;
-      }
-    }
-  </style>
-
   <template>
-    <jv-datepicker start-day="{{startDay}}" disable-days="{{disableDays}}" format="{{format}}" bind-date="{{bindDate}}" reset-date="{{resetDate}}"></jv-datepicker>
-    <span>{{bindDate}}</span>
+    <style include="jv-datepicker-dialog-theme"></style>
+
+    <!-- Main codes starts here -->
+    <div class="container layout vertical flex-auto">
+      <!-- jv-datepicker's code -->
+      <!-- <div class="flex auto" style="background: #9e9e9e;">
+
+      </div> -->
+      <jv-datepicker class="flex-auto layout vertical content"
+                     start-day="{{startDay}}"
+                     disable-days="{{disableDays}}"
+                     format="{{format}}"
+                     bind-date="{{bindDate}}"
+                     reset-date="{{resetDate}}"></jv-datepicker>
+
+      <!-- Dialog buttons -->
+      <div id="buttonContainer" on-tap="_onBtnTap" class="buttons layout horizontal">
+        <paper-button dialog-today>today</paper-button>
+        <paper-button dialog-dismiss>cancel</paper-button>
+        <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
+      </div>
+    </div>
   </template>
+
   <script>
-  (function() {
-    Polymer({
-      is: 'jv-datepicker-dialog',
+    (function() {
+      Polymer({
+        is: 'jv-datepicker-dialog',
 
-      properties: {
-        startDay: Number,
-        disableDays: Array,
-        format: String,
-        bindDate: {
-          type: String,
-          notify: true
+        properties: {
+          startDay: Number,
+          disableDays: Array,
+          format: String,
+          bindDate: {
+            type: String,
+            notify: true
+          },
+          resetDate: Boolean
         },
-        resetDate: Boolean
-      },
 
-      behaviors: [
-        Polymer.PaperDialogBehavior,
-        Polymer.NeonAnimationRunnerBehavior
-      ],
+        behaviors: [
+          Polymer.PaperDialogBehavior,
+          Polymer.NeonAnimationRunnerBehavior
+        ],
 
-      listeners: {
-        'neon-animation-finish': '_onNeonAnimationFinish'
-      },
-      _renderOpened: function() {
-        if (this.withBackdrop) {
-          this.backdropElement.open();
+        listeners: {
+          'neon-animation-finish': '_onNeonAnimationFinish'
+        },
+        _renderOpened: function() {
+          if (this.withBackdrop) {
+            this.backdropElement.open();
+          }
+          this.playAnimation('entry');
+        },
+        _renderClosed: function() {
+          if (this.withBackdrop) {
+            this.backdropElement.close();
+          }
+          this.playAnimation('exit');
+        },
+        _onNeonAnimationFinish: function() {
+          if (this.opened) {
+            this._finishRenderOpened();
+          } else {
+            this._finishRenderClosed();
+          }
+        },
+
+        _onBtnTap: function(ev) {
+          var target = ev.target;
+          while (target && target !== 'paper-button') {
+            if (target.hasAttribute) {
+              if (target.hasAttribute('dialog-today')) {
+                this._resetDate();
+                break;
+              }else if (target.hasAttribute('dialog-dismiss')) {
+                console.log(this.resetDate);
+                if (this.resetDate) {
+                  this._resetDate();
+                  break;
+                }
+              }
+            }
+            target = target.parentNode;
+          }
         }
-        this.playAnimation('entry');
-      },
-      _renderClosed: function() {
-        if (this.withBackdrop) {
-          this.backdropElement.close();
-        }
-        this.playAnimation('exit');
-      },
-      _onNeonAnimationFinish: function() {
-        if (this.opened) {
-          this._finishRenderOpened();
-        } else {
-          this._finishRenderClosed();
-        }
-      }
-    });
-  })();
+      });
+    })();
   </script>
 </dom-module>

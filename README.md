@@ -22,7 +22,7 @@ Example:
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-### Event handling
+## Event handling
 
 `jv-datepicker` or `jv-datepicker-dialog` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
 
@@ -33,9 +33,9 @@ Example:
     <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
 
 ## Demo
-[Click here go the demo app + code boilerplate generator](http://motss.github.io/jv-datepicker/components/jv-datepicker/demo/index.html)
+[Click here go the demo app + code boilerplate generator](http://motss.github.io/jv-datepicker/components/jv-datepicker/)
 
-### Attributes
+## Attributes
 <table>
 <thead>
 <tr>
@@ -79,7 +79,7 @@ Example:
 </tbody>
 </table>
 
-### Styling
+## Styling
 Now with mixins, head over to the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more details.
 
 ## Getting Started
@@ -104,6 +104,6 @@ For `jv-datepicker-dialog`,
 
 4. Done
 
-### Supported Browsers
+## License
 
-[Same as Polymer](http://www.polymer-project.org/resources/compatibility.html)
+[MIT License](http://motss.mit-license.org/) © Rong Sen Ng

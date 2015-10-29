@@ -1,0 +1,129 @@
+<link rel="import" href="paper-dialog-theme.html">
+
+<dom-module id="jv-datepicker-dialog-theme">
+  <template>
+    <style include="paper-dialog-theme">
+      /*:host {
+        display: block;
+        height: calc(100vh - 32px);
+        width: calc(100vw - 64px);
+        background: var(--paper-dialog-background-color, --primary-background-color);
+        color: var(--paper-dialog-color, --primary-text-color);
+
+        @apply(--shadow-elevation-16dp);
+      }*/
+
+      /* N7 2013 Portrait and 800px PC potrait */
+      /*@media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
+        :host {
+          width: 360px;
+          height: 640px;
+        }
+      }*/
+
+      /* N7 2013 landscape and 800px PC landscape */
+      /*@media all and (min-width: 800px) and (orientation: landscape) {
+        :host {
+          width: 640px;
+          height: 360px;
+        }
+      }*/
+
+      :host {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        display: block;
+        box-sizing: border-box;
+
+        background: var(--paper-dialog-background-color, --primary-background-color);
+        color: var(--paper-dialog-color, --primary-text-color);
+
+        /*@apply(--shadow-elevation-16dp);*/
+        @apply(--layout-vertical);
+      }
+
+      *, *:before, *:after {
+        box-sizing: inherit;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+
+      .content, .container {
+        margin: 0;
+        padding: 0;
+      }
+
+      .buttons paper-button{
+        color: var(--compound-timepicker-buttons, --paper-teal-500);
+      }
+
+      /* mobile-small */
+      /* Loosely supporting IP4 anymore, IP5 onwards. */
+      @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) {
+        :host {
+          @apply(--layout-fit);
+          /* clock + buttons = 340 + 57 */
+          min-height: 397px;
+        }
+
+      }
+
+      /* mobile-large */
+      @media all and (min-width: 361px) and (max-width: 599px) and (orientation: portrait) {
+        :host {
+          @apply(--layout-fit);
+          margin: 32px 64px;
+          background: blue;
+          /* clock + buttons = 340 + 57 */
+          min-height: 397px;
+        }
+
+      }
+
+      /* taller mobile-large */
+      /* IP6, IP6+, N6 */
+      @media all and (min-width: 361px) and (max-width: 599px) and (min-height: 567px) and (orientation: portrait) {
+        :host {
+          @apply(--layout-fit);
+          margin: 64px;
+          background: blue;
+          /* clock + buttons = 340 + 57 */
+          min-height: 397px;
+        }
+
+      }
+
+      /* tablet and above*/
+      @media all and (min-width: 600px) and (orientation: portrait) {
+        :host {
+          width: 288px;
+          min-height: 512px;
+        }
+      }
+      /* mobile-small-landscape */
+      @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {
+        :host {
+          margin-top: 6px;
+          margin-bottom: 6px;
+          @apply(--layout-fit);
+          min-height: 268px;
+        }
+      }
+      /* mobile-large-landscape */
+      @media all and (min-width: 481px) and (max-width: 959px) and (orientation: landscape) {
+        :host {
+          @apply(--layout-fit);
+          min-height: 305px;
+        }
+      }
+      /* tablet-landscape */
+      @media all and (min-width: 960px) and (orientation: landscape) {
+        :host {
+          width: 640px;
+          /* min-height instead of height to override max-height */
+          min-height: 360px;
+        }
+      }
+    </style>
+  </template>
+</dom-module>

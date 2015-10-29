@@ -1,0 +1,326 @@
+<dom-module id="jv-datepicker-theme">
+  <template>
+    <style>
+      :host {
+        /*display: block;
+        position: relative;
+        height: 100%;
+        width: 100%;*/
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
+        /*background: var(--jv-datepicker-bg, #ffffff);*/
+        background: var(--jv-datepicker-bg, #fafafa);
+        /*@apply(--paper-font-common-base);
+        @apply(--paper-font-common-expensive-kerning);*/
+        @apply(--jv-datepicker);
+      }
+
+      *, *::before, *::after {
+        box-sizing: inherit;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+
+      .content {
+        margin: 0;
+        padding: 0;
+      }
+
+      .selection-view {
+        background: var(--jv-datepicker-selection-bg, #009688);
+        color: var(--jv-datepicker-selection-color, #ffffff);
+        text-align: center;
+      }
+
+      .calendar-view {
+
+      }
+
+      .pages {
+        background: #9e9e9e;
+      }
+
+      .month-year-bar {
+        background: #fafafa;
+        min-height: 46px;
+      }
+
+      .calendar-page {
+        color: var(--jv-datepicker-calendar-text-color, #000000);
+        /*background: var(--jv-datepicker-calendar-bg, #FAFAFA);*/
+        background: #e0e0e0;
+        font-size: 10px;
+      }
+
+      .year-page {
+        color: var(--jv-datepicker-calendar-text-color, #000000);
+        /*background: var(--jv-datepicker-calendar-bg, #FAFAFA);*/
+        background: #e0e0e0;
+      }
+
+      .weekdays-bar {
+        min-height: 26px;
+      }
+
+      .days-content {
+
+      }
+
+      .week-row {
+        vertical-align: middle;
+        text-align: center;
+        min-height: 34px;
+      }
+
+      .week-row:nth-child(2n+1) {
+        /*background: #f5f5f5;*/
+      }
+
+      .day-column {
+
+      }
+
+      .day-column div.day.day-selected {
+        background: var(--jv-datepicker-selected-day-bg, #009688);
+        color: var(--jv-datepicker-selected-day-color, #ffffff);
+        border-radius: 50%;
+        /*margin-left: auto;
+        margin-right: auto;
+        padding: 3px;*/
+      }
+
+      .day-column:nth-child(2n+1) {
+        /*background: #bdbdbd;*/
+      }
+
+      .day-column div:nth-child(2) {
+        width: 33px;
+        height: 33px;
+        padding: 7px;
+        /*background: #fafafa;*/
+      }
+
+      /*:host, #datepickerContainer {
+        max-height: calc(100vh - 32px);
+        max-width: calc(100vw - 64px);
+      }*/
+
+      /*#datepickerContainer, #datepickerContainer div {
+        width: calc(100vw - 64px);
+        position: relative
+      }*/
+
+
+      #weekdayContainer {
+        background: var(--jv-datepicker-weekday-bg, #00796b);
+        padding-bottom: 6px;
+      }
+
+      #dateContainer {
+        padding: 12px 0;
+      }
+
+      #month {
+        text-transform: uppercase;
+        font-size: 27px;
+      }
+
+      #year {
+        font-size: 25px;
+      }
+
+      #day {
+        font-size: 90px;
+      }
+
+      #monthYear {
+        padding: 3px 0;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+
+      #selectedMonthYear {
+        text-align: center;
+        @apply(--layout-flex-auto);
+      }
+
+      #weekdays {
+        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
+        text-align: center;
+        padding: 3px 0;
+        @apply(--layout-horizontal);
+      }
+
+      #weekdays span {
+        @apply(--layout-flex-2);
+      }
+
+      /*#buttonContainer {
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }*/
+
+      paper-button {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        color: var(--jv-datepicker-button-color, --paper-teal-500);
+        --paper-button-ink-color: var(--jv-datepicker-button-ink-color);
+      }
+
+      paper-button /deep/ .keyboard-focus {
+        font-weight: normal;
+      }
+
+      /*.week-container {
+        padding: 3px 0;
+        text-align: center;
+        min-height: calc(22px + 6px);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }*/
+
+      /*.day-container {
+        @apply(--layout);
+        @apply(--layout-flex-2);
+      }*/
+
+      /*.day {
+        min-width: 22px;
+        min-height: 22px;
+        font-size: 12px;
+        @apply(--layout);
+        @apply(--layout-center-center);
+      }*/
+
+      .day.is-today {
+        color: var(--jv-datepicker-today-color, #009688);
+      }
+
+      .is-disabled {
+        color: var(--jv-datepicker-disabled-color, #9e9e9e);
+      }
+
+      /*#calendarView, #yearView {
+        color: var(--jv-datepicker-calendar-text-color, #000000);
+        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
+      }
+
+      #calendarView {
+        overflow: hidden;
+      }*/
+
+      /*#days {
+        max-height: calc(100vh - 32px - 215px - 50px - 46px - 25px);
+        padding-right: 16px;
+        -webkit-overflow-scrolling: touch;
+        overflow: auto;
+      }*/
+
+      #yearContainer, #dayContainer {
+        position: relative;
+      }
+
+      #yearView {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+      }
+
+      #yearView #expandContainer * {
+        width: initial;
+      }
+
+      #expandMoreGroup, #expandLessGroup, #expandYear {
+        text-align: center;
+        padding: 3px 0 3px 40px;
+      }
+
+      #expandYear {
+        font-size: 70px;
+        padding: 3px 0;
+      }
+
+      paper-icon-button {
+        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color);
+        color: var(--jv-datepicker-icon-button-color, #737373);
+      }
+
+      #dayContainer > paper-ripple,
+      #yearContainer > paper-ripple,
+      #expandYear > paper-ripple {
+        color: var(--jv-datepicker-selection-ripple-color);
+      }
+
+      /* mobile-small */
+      @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) {
+        .selection-view {
+          min-height: 90px;
+        }
+
+        .calendar-view {
+          min-height: 313px;
+        }
+
+        .pages {
+          /*min-height: 237px;*/
+          /*min-height: 313px;*/
+        }
+
+      }
+      /* mobile-large */
+      @media all and (min-width: 361px) and (orientation: portrait) {
+        .selection-view {
+          min-height: 90px;
+        }
+
+        .calendar-view {
+          min-height: 313px;
+        }
+
+        .pages {
+          /*min-height: 237px;*/
+          /*min-height: 313px;*/
+        }
+      }
+      /* tablet and above*/
+      @media all and (min-width: 600px) and (orientation: portrait) {
+
+      }
+
+      /* mobile-small-landscape */
+      @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {
+        .selection-view {
+          min-width: 170px;
+        }
+
+        .calendar-view {
+          min-width: 343px;
+        }
+
+        .pages {
+          /*min-width: 343px;*/
+        }
+
+      }
+      /* mobile-large-landscape */
+      @media all and (min-width: 481px) and (orientation: landscape) {
+        .selection-view {
+          min-width: 170px;
+        }
+
+        .calendar-view {
+          min-width: 343px;
+        }
+        
+        .pages {
+          /*min-width: 343px;*/
+        }
+
+      }
+      /* tablet-landscape */
+      @media all and (min-width: 960px) and (orientation: landscape) {
+
+      }
+    </style>
+  </template>
+</dom-module>

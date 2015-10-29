@@ -6,6 +6,9 @@
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-ripple/paper-ripple.html">
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
+<link rel="import" href="../neon-animation/neon-animations.html">
+<link rel="import" href="jv-datepicker-theme.html">
+
 <!--
 An custom Polymer element created to provide a datepicker element that is more compelling and rich with features.
 
@@ -92,448 +95,78 @@ Custom property | Description | Default
 -->
 <dom-module id="jv-datepicker">
   <template>
-    <style is="custom-style">
-      :host {
-        display: block;
-        position: relative;
-        height: 100%;
-        width: 100%;
-        background: var(--jv-datepicker-bg, #ffffff);
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        @apply(--paper-font-common-base);
-        @apply(--paper-font-common-expensive-kerning);
-        @apply(--jv-datepicker);
-      }
-
-      :host, #datepickerContainer {
-        max-height: calc(100vh - 32px);
-        max-width: calc(100vw - 64px);
-      }
-
-      #datepickerContainer, #datepickerContainer div {
-        width: calc(100vw - 64px);
-        position: relative
-      }
-
-      #selectionView {
-        background: var(--jv-datepicker-selection-bg, #009688);
-        color: var(--jv-datepicker-selection-color, #ffffff);
-        text-align: center;
-      }
-
-      #weekdayContainer {
-        background: var(--jv-datepicker-weekday-bg, #00796b);
-        padding-bottom: 6px;
-      }
-
-      #dateContainer {
-        padding: 12px 0;
-      }
-
-      #month {
-        text-transform: uppercase;
-        font-size: 27px;
-      }
-
-      #year {
-        font-size: 25px;
-      }
-
-      #day {
-        font-size: 90px;
-      }
-
-      #monthYear {
-        padding: 3px 0;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-      }
-
-      #selectedMonthYear {
-        text-align: center;
-        @apply(--layout-flex-auto);
-      }
-
-      #weekdays {
-        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
-        text-align: center;
-        padding: 3px 0;
-        @apply(--layout-horizontal);
-      }
-
-      #weekdays span {
-        @apply(--layout-flex-2);
-      }
-
-      #buttonContainer {
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
-      }
-
-      paper-button {
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        color: var(--jv-datepicker-button-color, --paper-teal-500);
-        --paper-button-ink-color: var(--jv-datepicker-button-ink-color);
-      }
-
-      paper-button /deep/ .keyboard-focus {
-        font-weight: normal;
-      }
-
-      .week-container {
-        padding: 3px 0;
-        text-align: center;
-        min-height: calc(22px + 6px);
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-      }
-
-      .day-container {
-        @apply(--layout);
-        @apply(--layout-flex-2);
-      }
-
-      .day {
-        min-width: 22px;
-        min-height: 22px;
-        font-size: 12px;
-        @apply(--layout);
-        @apply(--layout-center-center);
-      }
-
-      div .day.day-selected {
-        background: var(--jv-datepicker-selected-day-bg, #009688);
-        color: var(--jv-datepicker-selected-day-color, #ffffff);
-        border-radius: 50%;
-        margin-left: auto;
-        margin-right: auto;
-        padding: 3px;
-      }
-
-      .day.is-today {
-        color: var(--jv-datepicker-today-color, #009688);
-      }
-
-      .is-disabled {
-        color: var(--jv-datepicker-disabled-color, #9e9e9e);
-      }
-
-      neon-animated-pages {
-        height: calc(100vh - 32px - 215px - 50px);
-      }
-
-      #calendarView, #yearView {
-        color: var(--jv-datepicker-calendar-text-color, #000000);
-        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
-      }
-
-      #calendarView {
-        overflow: hidden;
-      }
-
-      #days {
-        max-height: calc(100vh - 32px - 215px - 50px - 46px - 25px);
-        padding-right: 16px;
-        -webkit-overflow-scrolling: touch;
-        overflow: auto;
-      }
-
-      #yearContainer, #dayContainer {
-        position: relative;
-      }
-
-      #yearView {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
-      }
-
-      #yearView #expandContainer * {
-        width: initial;
-      }
-
-      #expandMoreGroup, #expandLessGroup, #expandYear {
-        text-align: center;
-        padding: 3px 0 3px 40px;
-      }
-
-      #expandYear {
-        font-size: 70px;
-        padding: 3px 0;
-      }
-
-      paper-icon-button {
-        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color);
-        color: var(--jv-datepicker-icon-button-color, #737373);
-      }
-
-      #dayContainer > paper-ripple,
-      #yearContainer > paper-ripple,
-      #expandYear > paper-ripple {
-        color: var(--jv-datepicker-selection-ripple-color);
-      }
-
-      /* workaround for Mozilla Firefox */
-      @-moz-document url-prefix() {
-        /* Galaxy Nexus Portrait */
-        @media all {
-          span.day-container {
-            max-width: calc((100vw - 64px)/ 7);
-          }
-        }
-
-        /* Galaxy Nexus Landscape */
-        @media all and (orientation: landscape) {
-          span.day-container {
-            max-width: calc((100vw - 64px - 280px)/ 7);
-          }
-        }
-
-        /* IP4, IP5 && min-width 640px mobile landscape */
-        @media all and (min-width: 480px) and (orientation: landscape) {
-          span.day-container {
-            max-width: calc(296px/ 7);
-          }
-        }
-
-        /* N7 2013 && 800px PC Portrait*/
-        @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
-          span.day-container {
-            max-width: calc(360px/ 7);
-          }
-        }
-      }
-
-      /* Google Galaxy Nexus @ landscape */
-      @media all and (orientation: landscape) {
-        :host, #datepickerContainer {
-          min-height: calc(100vh - 32px);
-          min-width: calc(100vw - 64px);
-        }
-
-        #selectionView div{
-          width: calc(100vw - 64px - 296px);
-        }
-
-        #datepickerContainer, #selectionView {
-          max-height: calc(100vh - 32px - 50px);
-        }
-
-        #viewContainer, neon-animated-pages {
-          height: calc(100vh - 32px - 50px);
-        }
-
-        #dateContainer {
-          height: calc(100vh - 32px - 50px - 25px);
-        }
-
-        #days {
-          max-height: calc(100vh - 32px - 50px - 46px - 25px);
-        }
-
-        div #buttonContainer {
-          width: calc(100vw - 64px);
-        }
-      }
-
-      /* IP4, IP5 Portrait */
-      @media all and (min-width: 0) and (max-width: 359px) and (max-height: 480px) and (orientation: portrait) {
-        /*:host, #datepickerContainer {}*/
-
-        #dateContainer {
-          padding: 3px 0;
-          @apply(--layout-horizontal);
-        }
-
-        neon-animated-pages {
-          height: calc(100vh - 50px - 136px - 32px);
-        }
-
-        #days {
-          max-height: calc(100vh - 136px - 46px - 25px - 50px - 32px);
-        }
-      }
-
-      @media all and (max-width: 359px) and (min-height: 481px) and (max-height: 568px) and (orientation: portrait) {
-        /*:host, #datepickerContainer {}*/
-
-        #dateContainer {
-          padding: 6px 0;
-          @apply(--layout-vertical);
-        }
-
-        neon-animated-pages {
-          height: calc(100vh - 32px - 203px - 50px);
-        }
-
-        #days {
-          max-height: calc(100vh - 32px - 203px - 50px - 46px - 25px);
-        }
-      }
-
-      /* min-width 640px mobile landscape */
-      @media all and (min-width: 481px) and (max-width: 799px) and (orientation: landscape) {
-         neon-animated-pages, neon-animated-pages #calendarView, #calendarView div, neon-animated-pages #yearView, #yearView div {
-          width: 296px;
-        }
-      }
-
-      /* IP4 and IP5 landscape */
-      @media all and (min-width: 480px) and (max-width: 568px) and (orientation: landscape) {
-        #selectionView, #selectionView div {
-          max-width: calc(100vw - 64px - 296px);
-          max-height: calc(100vh - 32px - 50px);
-        }
-
-        neon-animated-pages div {
-          max-width: 296px;
-        }
-
-        #weekdayContainer {
-          padding-bottom: 0;
-        }
-
-        #monthContainer, #yearContainer {
-          height: 20px;
-        }
-
-        #monthContainer span, #yearContainer span {
-          font-size: 20px;
-        }
-
-        #dayContainer {
-          height: 93px;
-        }
-
-        #dayContainer span {
-          font-size: 80px;
-        }
-
-        #dateContainer {
-          padding: 6px 0;
-        }
-      }
-
-      /* N7 2013 Portrait and 800px PC potrait */
-      @media all and (min-width: 600px) and (min-height: 600px) and (orientation: portrait) {
-        :host, #datepickerContainer {
-          min-width: 320px;
-          min-height: 480px;
-          max-width: 360px;
-          max-height: 640px;
-        }
-
-        #datepickerContainer, #datepickerContainer div {
-          width: 360px;
-        }
-
-        #viewContainer {
-          max-height: calc(640px - 50px);
-          @apply(--layout-vertical);
-        }
-
-        neon-animated-pages {
-          height: calc(640px - 50px - 215px);
-        }
-      }
-
-      /* N7 2013 landscape and 800px PC landscape */
-      @media all and (min-width: 800px) and (orientation: landscape) {
-        :host, #datepickerContainer {
-          min-height: 320px;
-          min-width: 480px;
-          max-height: 360px;
-          max-width: 640px;
-        }
-
-        #viewContainer, #selectionView, neon-animated-pages {
-          max-width: 640px;
-          max-height: calc(360px - 50px);
-        }
-
-        #selectionView, #selectionView div {
-          max-width: calc(640px - 300px);
-        }
-
-        #dateContainer {
-          max-height: calc(360px - 50px - 25px);
-        }
-
-        neon-animated-pages, #calendarView, #calendarView div, #yearView,
-        #yearView #expandContainer {
-          max-width: 300px;
-        }
-
-        #buttonContainer {
-          max-width: 640px;
-        }
-
-        #dayContainer, #yearContainer, paper-icon-button, paper-button, .day {
-          cursor: pointer;
-        }
-
-        .day.is-disabled {
-          cursor: not-allowed;
-        }
-      }
-    </style>
+    <style include="jv-datepicker-theme"></style>
 
     <!-- Element's code starts here -->
-    <iron-media-query query="(orientation: portrait)" query-matches="{{portrait}}"></iron-media-query>
+    <iron-media-query query="(orientation: portrait)" query-matches="{{_portrait}}"></iron-media-query>
     <!-- Datepicker Container-->
-    <div id="datepickerContainer">
-        <!-- View Container -->
-        <div id="viewContainer" class$="{{_computeContainerCls(portrait)}}">
-          <!-- Selection View-->
-          <div id="selectionView">
-            <div id="weekdayContainer">
-              <span id="weekday">{{_selectedWeekday}}</span>
-            </div>
-            <div id="dateContainer">
-              <div id="monthContainer">
-                <span id="month">{{_selectedMonth}}</span>
-              </div>
-              <div id="dayContainer">
-                <paper-ripple fit on-tap="_goCalView"></paper-ripple>
-                <span id="day">{{_selectedDate}}</span>
-              </div>
-              <div id="yearContainer">
-                <paper-ripple fit on-tap="_goYearView"></paper-ripple>
-                <span id="year">{{_selectedYear}}</span>
-              </div>
-            </div>
+    <div id="datepickerContainer" class$="{{_computeContentCls(_portrait)}}">
+      <!-- View Container -->
+      <!-- <div id="viewContainer" class$="{{_computeContainerCls(portrait)}}"> -->
+        <!-- Selection View-->
+        <div id="selectionView" class="selection-view">
+          <div class="year-selected">
+            <span>{{_selectedYear}}</span>
+          </div>
+          <div class="date-selected">
+            <span>{{_selectedWeekday}}, </span>
+            <!-- <span>, </span> -->
+            <span>{{_selectedMonth}} </span>
+            <span>{{_selectedDate}}</span>
+          </div>
+          <!-- <div id="yearContainer">
+            <paper-ripple fit on-tap="_goYearView"></paper-ripple>
+            <span id="year">{{_selectedYear}}</span>
           </div>
 
-          <neon-animated-pages id="datepicker-pages" selected="{{_selectedView}}" attr-for-selected="data-view">
-            <!-- Calendar View-->
-            <div id="calendarView" data-view="calendar">
-              <div id="monthYear">
-                <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
-                <span id="selectedMonthYear">
-                  <span>{{_selectedMonthYear}}</span>
-                </span>
-                <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
-              </div>
+          <div id="weekdayContainer">
+            <span id="weekday">{{_selectedWeekday}}</span>
+          </div>
+          <div id="dateContainer">
+            <div id="monthContainer">
+              <span id="month">{{_selectedMonth}}</span>
+            </div>
+            <div id="dayContainer">
+              <paper-ripple fit on-tap="_goCalView"></paper-ripple>
+              <span id="day">{{_selectedDate}}</span>
+            </div>
+          </div>-->
+        </div>
 
-              <div id="weekdays">
+        <div class="calendar-view layout vertical flex-auto">
+          <div id="monthYear" class="month-year-bar">
+            <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
+            <span id="selectedMonthYear">
+              <span>{{_selectedMonthYear}}</span>
+            </span>
+            <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
+          </div>
+
+          <neon-animated-pages id="pages" selected="{{_selectedView}}"
+                                          attr-for-selected="data-view"
+                                          class="pages flex-auto"
+                                          entry-animation=""
+                                          exit-animation="">
+            <!-- Calendar View-->
+            <div id="calendarView" data-view="calendar" class="calendar-page">
+              <div id="weekdays" class="weekdays-bar">
                 <template is="dom-repeat" items="{{_weekdays}}">
                   <span>{{item}}</span>
                 </template>
               </div>
-              <div id="days">
+
+              <div id="days" class="days-content flex-auto layout vertical">
                 <template is="dom-repeat" items="{{_days}}" as="day">
-                  <div id$="[[_computeWeekId(index)]]" class="week-container">
+                  <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center">
                     <template is="dom-repeat" items="{{day}}">
-                      <span class="day-container">
-                        <div></div>
+                      <div class="day-column layout flex-1 center-center horizontal">
+                        <span></span>
                         <div id$="[[_computeDayId(item)]]"
                              class$="{{_computeDayStyle(item, index, _disableCls)}}"
                              disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
                              on-tap="_selectDate">{{item}}</div>
-                        <div></div>
-                      </span>
+                        <span></span>
+                      </div>
                     </template>
                   </div>
                 </template>
@@ -541,7 +174,7 @@ Custom property | Description | Default
             </div>
 
             <!-- Year View -->
-            <div id="yearView" data-view="year">
+            <div id="yearView" data-view="year" class="year-page">
               <div id="expandContainer">
                 <div id="expandLessGroup">
                   <paper-icon-button icon="expand-less" on-tap="_prevCentury"></paper-icon-button>
@@ -561,13 +194,7 @@ Custom property | Description | Default
             </div>
           </neon-animated-pages>
         </div>
-
-      <!-- Button Container-->
-      <div id="buttonContainer" on-tap="_onBtnTap">
-        <paper-button dialog-today>today</paper-button>
-        <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
-      </div>
+      <!-- </div> -->
     </div>
   </template>
 
@@ -700,13 +327,21 @@ Custom property | Description | Default
       '_propChanged(startDay, disableDays, format)'
     ],
 
-    _computeContainerCls: function (portrait) {
-      var cls = 'layout vertical center-center';
-      if (!portrait) {
-        cls = 'layout horizontal center-center';
-      }
-      return cls;
+    // Calculate class based on screen orientation.
+    _computeContentCls: function(_portrait) {
+      var _cls = 'layout flex-auto content ';
+
+      _cls += _portrait ? 'vertical' : 'horizontal';
+
+      return _cls;
     },
+    // _computeContainerCls: function (portrait) {
+    //   var cls = 'layout vertical center-center';
+    //   if (!portrait) {
+    //     cls = 'layout horizontal center-center';
+    //   }
+    //   return cls;
+    // },
 
     _computeWeekdays: function (startDay) {
       var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -1052,24 +687,6 @@ Custom property | Description | Default
       this._computeMonthYear();
     },
 
-    _onBtnTap: function(ev) {
-      var target = ev.target;
-      while (target && target !== 'paper-button') {
-        if (target.hasAttribute) {
-          if (target.hasAttribute('dialog-today')) {
-            this._resetDate();
-            break;
-          }else if (target.hasAttribute('dialog-dismiss')) {
-            console.log(this.resetDate);
-            if (this.resetDate) {
-              this._resetDate();
-              break;
-            }
-          }
-        }
-        target = target.parentNode;
-      }
-    }
 //    _computeWeekNumber: function () {
 //      var now = new Date(),
 //          onejan = new Date(now.getFullYear(), 0, 1);
