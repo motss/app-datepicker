@@ -8,6 +8,7 @@
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
 <link rel="import" href="../neon-animation/neon-animations.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="jv-datepicker-theme.html">
 
 <!--
@@ -122,73 +123,93 @@ Custom property | Description | Default
               </div>
             </div>
           </iron-selector>
-          <!-- <div id="yearContainer">
-            <paper-ripple fit on-tap="_goYearView"></paper-ripple>
-            <span id="year">{{_selectedYear}}</span>
-          </div>
-
-          <div id="weekdayContainer">
-            <span id="weekday">{{_selectedWeekday}}</span>
-          </div>
-          <div id="dateContainer">
-            <div id="monthContainer">
-              <span id="month">{{_selectedMonth}}</span>
-            </div>
-            <div id="dayContainer">
-              <paper-ripple fit on-tap="_goCalView"></paper-ripple>
-              <span id="day">{{_selectedDate}}</span>
-            </div>
-          </div>-->
         </div>
 
         <div class="calendar-view layout vertical flex-auto">
-          <div id="monthYear" class="month-year-bar">
-            <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
-            <span id="selectedMonthYear">
-              <span>{{_selectedMonthYear}}</span>
-            </span>
-            <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
-          </div>
-
           <neon-animated-pages id="pages" class="pages flex-auto"
                                           selected="[[_selectedYearOrDate]]"
                                           entry-animation="fade-in-animation"
                                           exit-animation="fade-out-animation"
                                           attr-for-selected="data-page">
-            <neon-animatable data-page="date" class="flex-auto layout vertical">
-              <!-- <div class="flex-auto"> -->
-              <div id="calendarView" data-view="calendar" class="calendar-page flex-auto">
-                <div id="weekdays" class="weekdays-bar">
-                  <template is="dom-repeat" items="{{_weekdays}}">
-                    <span>{{item}}</span>
-                  </template>
+            <!-- <neon-animatable data-page="date" class="calendar-page flex-auto layout vertical"> -->
+              <div class="calendar-page flex-auto layout vertical" data-page="date">
+                <div id="monthYear" class="month-year-bar layout horizontal center-center">
+                  <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
+                  <span id="selectedMonthYear">
+                    <span>{{_selectedMonthYear}}</span>
+                  </span>
+                  <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
                 </div>
 
-                <div id="days" class="days-content flex-auto layout vertical">
-                  <template is="dom-repeat" items="{{_days}}" as="day">
-                    <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center">
-                      <template is="dom-repeat" items="{{day}}">
-                        <div class="day-column layout flex-1 center-center horizontal">
-                          <span></span>
-                          <div id$="[[_computeDayId(item)]]"
-                               class$="{{_computeDayStyle(item, index, _disableCls)}}"
-                               disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
-                               on-tap="_selectDate">{{item}}</div>
-                          <span></span>
+                <div id="calendarView" data-view="calendar" class="full-calendar flex-auto layout vertical scroll">
+                  <div id="weekdays" class="weekdays-bar flex-auto layout horizontal center-center">
+                    <template is="dom-repeat" items="{{_weekdays}}">
+                      <div class="weekday-column layout flex-auto center-center horizontal">
+                        <span></span>
+                        <span>{{item}}</span>
+                        <span></span>
+                      </div>
+                    </template>
+                  </div>
+
+                  <div class="calendar-without-weekdays-bar flex-auto scroll">
+                    <div id="days" class="days-content flex-auto layout vertical">
+                      <template is="dom-repeat" items="{{_days}}" as="day">
+                        <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center">
+                          <template is="dom-repeat" items="{{day}}">
+                            <div class="day-column layout flex-auto center-center horizontal">
+                              <span></span>
+                              <div id$="[[_computeDayId(item)]]"
+                                   class$="{{_computeDayStyle(item, index, _disableCls)}}"
+                                   disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
+                                   on-tap="_selectDate">{{item}}</div>
+                              <span></span>
+                            </div>
+                          </template>
                         </div>
                       </template>
                     </div>
-                  </template>
+                  </div>
                 </div>
               </div>
+            <!-- </neon-animatable> -->
 
-              <!-- </div> -->
-            </neon-animatable>
+            <neon-animatable data-page="year" class="year-page flex-auto layout vertical center-center">
+              <!-- <div id="yearView" data-view="year" class="year-page"> -->
+                <div id="year-selector" class="year-selector layout horizontal center-center">
+                  <div class="select-century">
+                    <div class="select-century-increment" on-tap="_nextCentury">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                    <div class="select-century-decrement" on-tap="_prevCentury">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                  </div>
+                  <div class="select-decade">
+                    <div class="select-decade-increment" on-tap="_nextDecade">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                    <div class="select-decade-decrement" on-tap="_prevDecade">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                  </div>
+                  <div class="select-year">
+                    <div class="select-year-increment" on-tap="_nextYear">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                    <div class="select-year-decrement" on-tap="_prevYear">
+                      <paper-ripple></paper-ripple>
+                    </div>
+                  </div>
+                  <div class="today-year">
+                    <span class="today-year-century">{{_showCentury}}</span>
+                    <span class="today-year-decade">{{_showDecade}}</span>
+                    <span class="today-year-year">{{_showYear}}</span>
+                  </div>
+                    <!-- <span class="today-year-year">{{_todayYear}}</span> -->
+                </div>
 
-            <neon-animatable data-page="year" class="flex-auto layout vertical">
-              <div id="yearView" data-view="year" class="year-page flex-auto">
-                <div id="expandContainer">
-                  <div id="expandLessGroup">
+                  <!-- <div id="expandLessGroup">
                     <paper-icon-button icon="expand-less" on-tap="_prevCentury"></paper-icon-button>
                     <paper-icon-button icon="expand-less" on-tap="_prevDecade"></paper-icon-button>
                     <paper-icon-button icon="expand-less" on-tap="_prevYear"></paper-icon-button>
@@ -201,9 +222,8 @@ Custom property | Description | Default
                     <paper-icon-button icon="expand-more" on-tap="_nextCentury"></paper-icon-button>
                     <paper-icon-button icon="expand-more" on-tap="_nextDecade"></paper-icon-button>
                     <paper-icon-button icon="expand-more" on-tap="_nextYear"></paper-icon-button>
-                  </div>
-                </div>
-              </div>
+                  </div> -->
+              <!-- </div> -->
             </neon-animatable>
           </neon-animated-pages>
         </div>
@@ -327,7 +347,7 @@ Custom property | Description | Default
       _selectedYearOrDate: {
         type: String,
         value: 'date'
-      }
+      },
     },
     // Element Lifecycle
     // ready: function () {},attached: function () {},detached: function () {},
@@ -341,7 +361,8 @@ Custom property | Description | Default
      */
 
     observers: [
-      '_propChanged(startDay, disableDays, format)'
+      '_propChanged(startDay, disableDays, format)',
+      '_showFullYear(_todayYear)'
     ],
 
     // Calculate class based on screen orientation.
@@ -702,6 +723,12 @@ Custom property | Description | Default
       this._todayYear = new Date().getFullYear();
       this._todayMonth = new Date().getMonth();
       this._computeMonthYear();
+    },
+
+    _showFullYear: function(_year) {
+      this._showCentury = String.prototype.slice.call(_year, 0, 2);
+      this._showDecade = String.prototype.slice.call(_year, 2, 3);
+      this._showYear = String.prototype.slice.call(_year, -1);
     },
 
 

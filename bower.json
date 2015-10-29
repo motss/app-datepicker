@@ -36,7 +36,8 @@
     "paper-radio-button": "PolymerElements/paper-radio-button#~1.0.8",
     "paper-radio-group": "PolymerElements/paper-radio-group#~1.0.4",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#~1.0.8",
-    "polymer": "Polymer/polymer#^1.1.3"
+    "polymer": "Polymer/polymer#^1.1.3",
+    "iron-list": "PolymerElements/iron-list#~1.1.5"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"

@@ -60,16 +60,17 @@
       }
 
       .calendar-view {
-        padding: 0 14px;
+        /*padding: 0 14px;*/
       }
 
       .pages {
-        background: #9e9e9e;
+        background: #eee;
       }
 
       .month-year-bar {
         background: #fafafa;
         min-height: 46px;
+        padding: 3px 0;
       }
 
       .calendar-page {
@@ -79,14 +80,21 @@
         font-size: 10px;
       }
 
-      .year-page {
-        color: var(--jv-datepicker-calendar-text-color, #000000);
-        /*background: var(--jv-datepicker-calendar-bg, #FAFAFA);*/
-        background: #e0e0e0;
+      .calendar-page .month-year-bar,
+      .calendar-page .full-calendar .calendar-without-weekdays-bar .days-content .week-row {
+        padding: 0 14px;
+      }
+
+      .calendar-page .full-calendar .calendar-without-weekdays-bar .days-content {
+        padding-bottom: 24px;
       }
 
       .weekdays-bar {
-        min-height: 26px;
+        /*min-height: 26px;*/
+        max-height: 26px; /* flex-auto will make full-calendar looks weird */
+        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
+        text-align: center;
+        padding: 3px 14px;
       }
 
       .days-content {
@@ -126,6 +134,80 @@
         /*background: #fafafa;*/
       }
 
+      .year-page {
+        color: var(--jv-datepicker-calendar-text-color, #000000);
+        /*background: var(--jv-datepicker-calendar-bg, #FAFAFA);*/
+        background: #E0E0E0;
+      }
+
+      .year-selector {
+        position: relative;
+        /*min-height: 24px;
+        min-width: 100px;*/
+        min-height: 100px;
+        min-width: 150px;
+        background: #9E9E9E;
+      }
+
+      .year-selector .select-century,
+      .year-selector .select-decade,
+      .year-selector .select-year {
+        /*border-radius: 3px;*/
+        /*padding: 0 1px;*/
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      .year-selector.layout.horizontal .select-century div,
+      .year-selector.layout.horizontal .select-decade div,
+      .year-selector.layout.horizontal .select-year div{
+        /*border: 1px solid;*/
+      }
+
+      .year-selector .select-decade {
+        left: 50px;
+      }
+
+      .year-selector .select-year {
+        left: 100px;
+      }
+
+      .year-selector .select-century .select-century-increment,
+      .year-selector .select-century .select-century-decrement,
+      .year-selector .select-decade .select-decade-increment,
+      .year-selector .select-decade .select-decade-decrement,
+      .year-selector .select-year .select-year-increment,
+      .year-selector .select-year .select-year-decrement {
+        position: relative;
+        min-height: 50px;
+        min-width: 50px;
+        border-radius: 50%;
+        background: #FAFAFA;
+        cursor: pointer;
+      }
+
+      .year-selector .today-year span{
+        position: absolute;
+        touch-action: none;
+        pointer-events: none;
+        font-size: 52px;
+        top: 38px;
+      }
+
+      .year-selector .today-year .today-year-century {
+        left: -2px;
+        letter-spacing: -4px;
+      }
+
+      .year-selector .today-year .today-year-decade {
+        left: 60px;
+      }
+
+      .year-selector .today-year .today-year-year {
+        top: 39px;
+        left: 110px;
+      }
       /*:host, #datepickerContainer {
         max-height: calc(100vh - 32px);
         max-width: calc(100vw - 64px);
@@ -159,27 +241,21 @@
         font-size: 90px;
       }
 
-      #monthYear {
+      /*#monthYear {
         padding: 3px 0;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
-      }
+      }*/
 
       #selectedMonthYear {
         text-align: center;
         @apply(--layout-flex-auto);
       }
 
-      #weekdays {
-        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
-        text-align: center;
-        padding: 3px 0;
-        @apply(--layout-horizontal);
-      }
 
-      #weekdays span {
+      /*#weekdays span {
         @apply(--layout-flex-2);
-      }
+      }*/
 
       /*#buttonContainer {
         @apply(--layout-horizontal);
