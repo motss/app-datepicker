@@ -16,11 +16,11 @@
 
       </div> -->
       <jv-datepicker class="flex-auto layout vertical content"
-                     start-day="{{startDay}}"
+                     first-day-of-week="{{firstDayOfWeek}}"
                      disable-days="{{disableDays}}"
-                     format="{{format}}"
-                     bind-date="{{bindDate}}"
-                     reset-date="{{resetDate}}"></jv-datepicker>
+                     date-format="{{dateFormat}}"
+                     bind-date="{{bindDate}}"></jv-datepicker>
+                     <!-- reset-date="{{resetDate}}"></jv-datepicker> -->
 
       <!-- Dialog buttons -->
       <div id="buttonContainer" on-tap="_onBtnTap" class="buttons layout horizontal">
@@ -37,9 +37,9 @@
         is: 'jv-datepicker-dialog',
 
         properties: {
-          startDay: Number,
+          firstDayOfWeek: Number,
           disableDays: Array,
-          format: String,
+          dateFormat: String,
           bindDate: {
             type: String,
             notify: true
@@ -76,22 +76,22 @@
         },
 
         _onBtnTap: function(ev) {
-          var target = ev.target;
-          while (target && target !== 'paper-button') {
-            if (target.hasAttribute) {
-              if (target.hasAttribute('dialog-today')) {
-                this._resetDate();
-                break;
-              }else if (target.hasAttribute('dialog-dismiss')) {
-                console.log(this.resetDate);
-                if (this.resetDate) {
-                  this._resetDate();
-                  break;
-                }
-              }
-            }
-            target = target.parentNode;
-          }
+          // var target = ev.target;
+          // while (target && target !== 'paper-button') {
+          //   if (target.hasAttribute) {
+          //     if (target.hasAttribute('dialog-today')) {
+          //       this._resetDate();
+          //       break;
+          //     }else if (target.hasAttribute('dialog-dismiss')) {
+          //       // console.log(this.resetDate);
+          //       if (this.resetDate) {
+          //         this._resetDate();
+          //         break;
+          //       }
+          //     }
+          //   }
+          //   target = target.parentNode;
+          // }
         }
       });
     })();

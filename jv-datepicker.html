@@ -682,7 +682,7 @@ Custom property | Description | Default
 
     // Return formatted date string.
     _formatDate: function() {
-      var dateformat = this.format;
+      var dateformat = this.dateFormat;
       var yearreg = dateformat.match(/y/gi),
           dayreg = dateformat.match(/d/gi),
           monthreg = dateformat.match(/m/gi);
@@ -791,9 +791,9 @@ Custom property | Description | Default
     },
 
     // Properties change.
-    _propChanged: function(startDay, disableDays, format) {
-      this._weekdays = this._computeWeekdays(startDay);
-      this._shiftDisabledDays(disableDays, startDay);
+    _propChanged: function(_firstDayOfWeek, disableDays, format) {
+      this._weekdays = this._computeWeekdays(_firstDayOfWeek);
+      this._shiftDisabledDays(disableDays, _firstDayOfWeek);
       this._days = this._computeDays(this._todayYear, this._todayMonth, this.firstDayOfWeek);
       this._disableCls = !this._disableCls;
     },

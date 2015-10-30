@@ -152,9 +152,9 @@
     </div>
 
     <div>
-      <h4>Start Day</h4>
+      <h4>First Day of Week</h4>
       <section class="horizontal-section">
-        <paper-radio-group id="start" selected="{{startDay}}">
+        <paper-radio-group id="start" selected="{{firstDayOfWeek}}">
           <paper-radio-button name="0" label="sunday">sunday</paper-radio-button>
           <paper-radio-button name="1" label="monday">monday</paper-radio-button>
           <paper-radio-button name="2" label="tuesday">tuesday</paper-radio-button>
@@ -252,8 +252,8 @@
           </paper-checkbox>
         </div>
         <div>
-          <paper-checkbox data-toggle="start" checked="{{takeStartDay}}">
-            <span>startDay</span>
+          <paper-checkbox data-toggle="start" checked="{{takefirstDayOfWeek}}">
+            <span>firstDayOfWeek</span>
           </paper-checkbox>
         </div>
         <div>
@@ -263,7 +263,7 @@
         </div>
         <div>
           <paper-checkbox data-toggle="format" checked="{{takeFormat}}">
-            <span>format</span>
+            <span>dateFormat</span>
           </paper-checkbox>
         </div>
         <div>
@@ -287,30 +287,30 @@
 
     <section>
       <jv-datepicker-dialog id="resetDialog" entry-animation="scale-up-animation"  exit-animation="fade-out-animation"
-      start-day="0" disable-days="[0,6]" reset-date></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0,6]" reset-date></jv-datepicker-dialog>
       <jv-datepicker-dialog id="simpleDialog" entry-animation="scale-up-animation"  exit-animation="fade-out-animation"
-      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="backdropDialog" entry-animation="scale-up-animation" with-backdrop  exit-animation="fade-out-animation"
-      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="colorDialog" entry-animation="scale-up-animation" modal  exit-animation="fade-out-animation"
-      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="regularDialog" entry-animation="scale-up-animation" modal  exit-animation="fade-out-animation"
-      start-day="0" disable-days="[0,6]"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="startDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-      start-day="{{startDay}}" disable-days="[0,6]"></jv-datepicker-dialog>
+      first-day-of-week="{{firstDayOfWeek}}" disable-days="[0,6]"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="disableDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-      start-day="0" disable-days="{{disableDays}}"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="{{disableDays}}"></jv-datepicker-dialog>
       <jv-datepicker-dialog id="weekendsDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
-      start-day="0" disable-days="[0, 6]"></jv-datepicker-dialog>
-      <jv-datepicker-dialog id="formatDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal format="{{format}}" bind-date="{{displayBind}}" on-format-date="_formatDate"></jv-datepicker-dialog>
+      first-day-of-week="0" disable-days="[0, 6]"></jv-datepicker-dialog>
+      <jv-datepicker-dialog id="formatDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal date-format="{{format}}" bind-date="{{displayBind}}" on-format-date="_formatDate"></jv-datepicker-dialog>
     </section>
   </div>
 </template>
 <script>
   var app = document.querySelector('#app');
-  app.startDay = 0;
+  app.firstDayOfWeek = 0;
   app.disableDays = [];
-  app.format = 'yyyy-mm-dd';
+  app.dateFormat = 'yyyy-mm-dd';
   app.dayStart = 'sunday';
   app.yearFormat = 'yyyy';
   app.monthFormat = 'mm';
@@ -321,7 +321,7 @@
 
   app.dateCode = '<jv-datepicker-dialog modal></jv-datepicker-dialog>';
   app.takeDialog = true;
-  app.takeStartDay = false;
+  app.takefirstDayOfWeek = false;
   app.takeDisableDays = false;
   app.takeFormat = false;
   app.takeBindDate = false;
@@ -358,7 +358,7 @@
         newCodeStr = modifyCode(toggleCheck, newCodeStr, ' modal');
         break;
       case 'start':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' start-day=""');
+        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' first-day-of-week=""');
         break;
       case 'disable':
         newCodeStr = modifyCode(toggleCheck, newCodeStr, ' disable-days=""');
@@ -455,13 +455,13 @@
         app.dayStart = app._dayStart(day);
         break;
       case 'year':
-        app.format = app.format.replace(/^[y]+/gi, targetValue);
+        app.dateFormat = app.dateFormat.replace(/^[y]+/gi, targetValue);
         break;
       case 'month':
-        app.format = app.format.replace(/[m]+/gi, targetValue);
+        app.dateFormat = app.dateFormat.replace(/[m]+/gi, targetValue);
         break;
       case 'day':
-        app.format = app.format.replace(/[d]+[o]*/gi, targetValue);
+        app.dateFormat = app.dateFormat.replace(/[d]+[o]*/gi, targetValue);
         break;
       default:
         console.log('Error');
