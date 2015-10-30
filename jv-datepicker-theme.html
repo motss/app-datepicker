@@ -140,74 +140,16 @@
         background: #E0E0E0;
       }
 
-      .year-selector {
-        position: relative;
-        /*min-height: 24px;
-        min-width: 100px;*/
-        min-height: 100px;
-        min-width: 150px;
-        background: #9E9E9E;
+      .year-page .year-selector .year-list {
+        padding: 24px 0;
       }
 
-      .year-selector .select-century,
-      .year-selector .select-decade,
-      .year-selector .select-year {
-        /*border-radius: 3px;*/
-        /*padding: 0 1px;*/
-        position: absolute;
-        top: 0;
-        left: 0;
+      .year-page .year-selector .year-list .year-column {
+        padding: 24px 0;
+        font-size: 24px;
+        font-weight: 500;
       }
 
-      .year-selector.layout.horizontal .select-century div,
-      .year-selector.layout.horizontal .select-decade div,
-      .year-selector.layout.horizontal .select-year div{
-        /*border: 1px solid;*/
-      }
-
-      .year-selector .select-decade {
-        left: 50px;
-      }
-
-      .year-selector .select-year {
-        left: 100px;
-      }
-
-      .year-selector .select-century .select-century-increment,
-      .year-selector .select-century .select-century-decrement,
-      .year-selector .select-decade .select-decade-increment,
-      .year-selector .select-decade .select-decade-decrement,
-      .year-selector .select-year .select-year-increment,
-      .year-selector .select-year .select-year-decrement {
-        position: relative;
-        min-height: 50px;
-        min-width: 50px;
-        border-radius: 50%;
-        background: #FAFAFA;
-        cursor: pointer;
-      }
-
-      .year-selector .today-year span{
-        position: absolute;
-        touch-action: none;
-        pointer-events: none;
-        font-size: 52px;
-        top: 38px;
-      }
-
-      .year-selector .today-year .today-year-century {
-        left: -2px;
-        letter-spacing: -4px;
-      }
-
-      .year-selector .today-year .today-year-decade {
-        left: 60px;
-      }
-
-      .year-selector .today-year .today-year-year {
-        top: 39px;
-        left: 110px;
-      }
       /*:host, #datepickerContainer {
         max-height: calc(100vh - 32px);
         max-width: calc(100vw - 64px);
@@ -224,7 +166,7 @@
         padding-bottom: 6px;
       }
 
-      #dateContainer {
+      /*#dateContainer {
         padding: 12px 0;
       }
 
@@ -247,50 +189,9 @@
         @apply(--layout-center-center);
       }*/
 
-      #selectedMonthYear {
+      /*#selectedMonthYear {
         text-align: center;
         @apply(--layout-flex-auto);
-      }
-
-
-      /*#weekdays span {
-        @apply(--layout-flex-2);
-      }*/
-
-      /*#buttonContainer {
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
-      }*/
-
-      paper-button {
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        color: var(--jv-datepicker-button-color, --paper-teal-500);
-        --paper-button-ink-color: var(--jv-datepicker-button-ink-color);
-      }
-
-      paper-button /deep/ .keyboard-focus {
-        font-weight: normal;
-      }
-
-      /*.week-container {
-        padding: 3px 0;
-        text-align: center;
-        min-height: calc(22px + 6px);
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-      }*/
-
-      /*.day-container {
-        @apply(--layout);
-        @apply(--layout-flex-2);
-      }*/
-
-      /*.day {
-        min-width: 22px;
-        min-height: 22px;
-        font-size: 12px;
-        @apply(--layout);
-        @apply(--layout-center-center);
       }*/
 
       .day.is-today {
@@ -301,54 +202,9 @@
         color: var(--jv-datepicker-disabled-color, #9e9e9e);
       }
 
-      /*#calendarView, #yearView {
-        color: var(--jv-datepicker-calendar-text-color, #000000);
-        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
-      }
-
-      #calendarView {
-        overflow: hidden;
-      }*/
-
-      /*#days {
-        max-height: calc(100vh - 32px - 215px - 50px - 46px - 25px);
-        padding-right: 16px;
-        -webkit-overflow-scrolling: touch;
-        overflow: auto;
-      }*/
-
-      #yearContainer, #dayContainer {
-        position: relative;
-      }
-
-      /*#yearView {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
-      }*/
-
-      /*#yearView #expandContainer * {
-        width: initial;
-      }*/
-
-      #expandMoreGroup, #expandLessGroup, #expandYear {
-        text-align: center;
-        padding: 3px 0 3px 40px;
-      }
-
-      #expandYear {
-        font-size: 70px;
-        padding: 3px 0;
-      }
-
       paper-icon-button {
         --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color);
         color: var(--jv-datepicker-icon-button-color, #737373);
-      }
-
-      #dayContainer > paper-ripple,
-      #yearContainer > paper-ripple,
-      #expandYear > paper-ripple {
-        color: var(--jv-datepicker-selection-ripple-color);
       }
 
       /* mobile-small */

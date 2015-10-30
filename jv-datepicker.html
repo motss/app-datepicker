@@ -128,7 +128,7 @@ Custom property | Description | Default
 
         <div class="calendar-view layout vertical flex-auto">
           <neon-animated-pages id="pages" class="pages flex-auto"
-                                          selected="[[_selectedYearOrDate]]"
+                                          selected="[[_selectedYearOrDatePage]]"
                                           entry-animation="fade-in-animation"
                                           exit-animation="fade-out-animation"
                                           attr-for-selected="data-page">
@@ -176,63 +176,15 @@ Custom property | Description | Default
             <!-- </neon-animatable> -->
 
             <neon-animatable data-page="year" class="year-page layout vertical">
-              <!-- <div id="yearView" data-view="year" class="year-page"> -->
-                <!-- <div id="year-selector" class="year-selector layout vertical center-center scroll"> -->
-                  <!-- <div class="select-century">
-                    <div class="select-century-increment" on-tap="_nextCentury">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                    <div class="select-century-decrement" on-tap="_prevCentury">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                  </div>
-                  <div class="select-decade">
-                    <div class="select-decade-increment" on-tap="_nextDecade">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                    <div class="select-decade-decrement" on-tap="_prevDecade">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                  </div>
-                  <div class="select-year">
-                    <div class="select-year-increment" on-tap="_nextYear">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                    <div class="select-year-decrement" on-tap="_prevYear">
-                      <paper-ripple></paper-ripple>
-                    </div>
-                  </div>
-                  <div class="today-year">
-                    <span class="today-year-century">{{_showCentury}}</span>
-                    <span class="today-year-decade">{{_showDecade}}</span>
-                    <span class="today-year-year">{{_showYear}}</span>
-                  </div> -->
-                <!-- </div> -->
-                <div class="flex-auto scroll layout vertical">
-                  <iron-list id="yearList" class="flex" items="{{_years}}" as="item">
+                <div class="flex-auto scroll layout vertical year-selector">
+                  <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
                     <template>
-                      <div class="layout horizontal center-center">
-                        <span>{{index}}</span>
+                      <div class="layout horizontal center-center year-column">
+                        <span data-year$="{{item.year}}">{{item.year}}</span>
                       </div>
                     </template>
                   </iron-list>
                 </div>
-
-                  <!-- <div id="expandLessGroup">
-                    <paper-icon-button icon="expand-less" on-tap="_prevCentury"></paper-icon-button>
-                    <paper-icon-button icon="expand-less" on-tap="_prevDecade"></paper-icon-button>
-                    <paper-icon-button icon="expand-less" on-tap="_prevYear"></paper-icon-button>
-                  </div>
-                  <div id="expandYear" class="relative">
-                    <paper-ripple id="expandRipple" fit on-tap="_changeYear"></paper-ripple>
-                    <span>{{_todayYear}}</span>
-                  </div>
-                  <div id="expandMoreGroup">
-                    <paper-icon-button icon="expand-more" on-tap="_nextCentury"></paper-icon-button>
-                    <paper-icon-button icon="expand-more" on-tap="_nextDecade"></paper-icon-button>
-                    <paper-icon-button icon="expand-more" on-tap="_nextYear"></paper-icon-button>
-                  </div> -->
-              <!-- </div> -->
             </neon-animatable>
           </neon-animated-pages>
         </div>
@@ -360,16 +312,26 @@ Custom property | Description | Default
       _years: {
         type: Object,
         value: function() {
-          var t = []
+          var t = [],
+              _y = 2015;
 
-          for (i=0; i<1000; i++) {
+          for (i= _y - 50 ; i <= _y + 50; i++) {
             t.push({
-              name: i
+              year: i
             })
           }
 
           return t;
         }
+      },
+      _listReady: {
+        type: Boolean,
+        value: false
+      },
+      _selectedYearOrDatePage: String,
+      _selectedYearIndex: {
+        type: Object,
+        value: {}
       }
     },
     // Element Lifecycle
@@ -385,7 +347,6 @@ Custom property | Description | Default
 
     observers: [
       '_propChanged(startDay, disableDays, format)',
-      '_showFullYear(_todayYear)',
       '_fireIronResize(_selectedYearOrDate)'
     ],
 
@@ -749,14 +710,33 @@ Custom property | Description | Default
       this._computeMonthYear();
     },
 
-    _showFullYear: function(_year) {
-      this._showCentury = String.prototype.slice.call(_year, 0, 2);
-      this._showDecade = String.prototype.slice.call(_year, 2, 3);
-      this._showYear = String.prototype.slice.call(_year, -1);
+    _selectYear: function(ev) {
+      var _target = ev.target,
+          _selected;
+
+      while (_target && _target.tagName !== 'SPAN') {
+        _target = _target.parentElement;
+      }
+
+      if (_target) {
+        if (_target.hasAttribute('data-year')) {
+          _selected = parseInt(_target.getAttribute('data-year'));
+          this._selectedYearIndex.index = (_selected - 2015) + 50;
+          this._selectedYearIndex.year = _selected;
+          this._selectedYearOrDatePage = 'date';
+          this._selectedYearOrDate = 'date';
+          console.log(_selected);
+        }
+      }
     },
 
     _fireIronResize: function(_selectedYearOrDate) {
-      this.$.yearList.fire('iron-resize');
+      if (!this._listReady && _selectedYearOrDate === 'year') {
+        this.$.yearList.scrollToIndex(50);
+        this.$.yearList.fire('iron-resize');
+        this.set('_listReady', true);
+      }
+      this._selectedYearOrDatePage = _selectedYearOrDate;
     },
 
 //    _computeWeekNumber: function () {
