@@ -9,6 +9,7 @@
 <link rel="import" href="../neon-animation/neon-animations.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-list/iron-list.html">
 <link rel="import" href="jv-datepicker-theme.html">
 
 <!--
@@ -174,10 +175,10 @@ Custom property | Description | Default
               </div>
             <!-- </neon-animatable> -->
 
-            <neon-animatable data-page="year" class="year-page flex-auto layout vertical center-center">
+            <neon-animatable data-page="year" class="year-page layout vertical">
               <!-- <div id="yearView" data-view="year" class="year-page"> -->
-                <div id="year-selector" class="year-selector layout horizontal center-center">
-                  <div class="select-century">
+                <!-- <div id="year-selector" class="year-selector layout vertical center-center scroll"> -->
+                  <!-- <div class="select-century">
                     <div class="select-century-increment" on-tap="_nextCentury">
                       <paper-ripple></paper-ripple>
                     </div>
@@ -205,8 +206,16 @@ Custom property | Description | Default
                     <span class="today-year-century">{{_showCentury}}</span>
                     <span class="today-year-decade">{{_showDecade}}</span>
                     <span class="today-year-year">{{_showYear}}</span>
-                  </div>
-                    <!-- <span class="today-year-year">{{_todayYear}}</span> -->
+                  </div> -->
+                <!-- </div> -->
+                <div class="flex-auto scroll layout vertical">
+                  <iron-list id="yearList" class="flex" items="{{_years}}" as="item">
+                    <template>
+                      <div class="layout horizontal center-center">
+                        <span>{{index}}</span>
+                      </div>
+                    </template>
+                  </iron-list>
                 </div>
 
                   <!-- <div id="expandLessGroup">
@@ -348,6 +357,20 @@ Custom property | Description | Default
         type: String,
         value: 'date'
       },
+      _years: {
+        type: Object,
+        value: function() {
+          var t = []
+
+          for (i=0; i<1000; i++) {
+            t.push({
+              name: i
+            })
+          }
+
+          return t;
+        }
+      }
     },
     // Element Lifecycle
     // ready: function () {},attached: function () {},detached: function () {},
@@ -362,7 +385,8 @@ Custom property | Description | Default
 
     observers: [
       '_propChanged(startDay, disableDays, format)',
-      '_showFullYear(_todayYear)'
+      '_showFullYear(_todayYear)',
+      '_fireIronResize(_selectedYearOrDate)'
     ],
 
     // Calculate class based on screen orientation.
@@ -731,6 +755,9 @@ Custom property | Description | Default
       this._showYear = String.prototype.slice.call(_year, -1);
     },
 
+    _fireIronResize: function(_selectedYearOrDate) {
+      this.$.yearList.fire('iron-resize');
+    },
 
 //    _computeWeekNumber: function () {
 //      var now = new Date(),
