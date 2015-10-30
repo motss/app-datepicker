@@ -73,6 +73,10 @@
         padding: 3px 0;
       }
 
+      .calendar-page .month-year-bar .selected-month-year {
+        text-align: center;
+      }
+
       .calendar-page {
         color: var(--jv-datepicker-calendar-text-color, #000000);
         /*background: var(--jv-datepicker-calendar-bg, #FAFAFA);*/
@@ -145,10 +149,23 @@
       }
 
       .year-page .year-selector .year-list .year-column {
-        padding: 24px 0;
+        padding: 8px 0;
         font-size: 24px;
         font-weight: 500;
       }
+
+      .year-page .year-selector .year-list .year-column .year-column-year {
+        padding: 16px 12px;
+      }
+
+      .selected-year {
+        padding: 16px 0;
+        background: #009688;
+        color: #ffffff;
+        border-radius: 50%;
+      }
+
+
 
       /*:host, #datepickerContainer {
         max-height: calc(100vh - 32px);
