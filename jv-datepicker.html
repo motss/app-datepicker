@@ -104,91 +104,88 @@ Custom property | Description | Default
     <iron-media-query query="(orientation: portrait)" query-matches="{{_portrait}}"></iron-media-query>
     <!-- Datepicker Container-->
     <div id="datepickerContainer" class$="{{_computeContentCls(_portrait)}}">
-      <!-- View Container -->
-      <!-- <div id="viewContainer" class$="{{_computeContainerCls(portrait)}}"> -->
-        <!-- Selection View-->
-        <div id="selectionView" class="selection-view">
-          <iron-selector selected="{{_selectedYearOrDate}}"
-                         attr-for-selected="data-view"
-                         class="iron-selector-selection-view">
-            <div id="selectionViewYearSelected" class="year-selected selection-view-iron-selector" data-view="year">
-              <span>{{_selectedYear}}</span>
+      <!-- Selection View-->
+      <div id="selectionView" class="selection-view">
+        <iron-selector selected="{{_selectedYearOrDate}}"
+                       attr-for-selected="data-view"
+                       class="iron-selector-selection-view">
+          <div id="selectionViewYearSelected" class="year-selected selection-view-iron-selector" data-view="year">
+            <span>{{_selectedYear}}</span>
+          </div>
+          <div id="selectionViewDateSelected" class="date-selected selection-view-iron-selector" data-view="date">
+            <div class="selected-weekday">
+              <span>{{_selectedWeekday}}, </span>
             </div>
-            <div id="selectionViewDateSelected" class="date-selected selection-view-iron-selector" data-view="date">
-              <div class="selected-weekday">
-                <span>{{_selectedWeekday}}, </span>
-              </div>
-              <div class="selected-month-date">
-                <span>{{_selectedMonth}} </span>
-                <span>{{_selectedDate}}</span>
-              </div>
+            <div class="selected-month-date">
+              <span>{{_selectedMonth}} </span>
+              <span>{{_selectedDate}}</span>
             </div>
-          </iron-selector>
-        </div>
+          </div>
+        </iron-selector>
+      </div>
 
-        <div class="calendar-view layout vertical flex-auto">
-          <neon-animated-pages id="pages" class="pages flex-auto"
-                                          selected="[[_selectedYearOrDatePage]]"
-                                          entry-animation="fade-in-animation"
-                                          exit-animation="fade-out-animation"
-                                          attr-for-selected="data-page">
-            <!-- <neon-animatable data-page="date" class="calendar-page flex-auto layout vertical"> -->
-              <div class="calendar-page flex-auto layout vertical" data-page="date">
-                <div id="monthYear" class="month-year-bar layout horizontal center-center">
-                  <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
-                  <span id="selectedMonthYear">
-                    <span>{{_selectedMonthYear}}</span>
-                  </span>
-                  <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
-                </div>
+      <div class="calendar-view layout vertical flex-auto">
+        <neon-animated-pages id="pages" class="pages flex-auto"
+                                        selected="[[_selectedYearOrDatePage]]"
+                                        entry-animation="fade-in-animation"
+                                        exit-animation="fade-out-animation"
+                                        attr-for-selected="data-page">
+          <!-- <neon-animatable data-page="date" class="calendar-page flex-auto layout vertical"> -->
+            <div class="calendar-page flex-auto layout vertical" data-page="date">
+              <div id="monthYear" class="month-year-bar layout horizontal center-center">
+                <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
+                <span id="selectedMonthYear">
+                  <span>{{_selectedMonthYear}}</span>
+                </span>
+                <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
+              </div>
 
-                <div id="calendarView" data-view="calendar" class="full-calendar flex-auto layout vertical scroll">
-                  <div id="weekdays" class="weekdays-bar flex-auto layout horizontal center-center">
-                    <template is="dom-repeat" items="{{_weekdays}}">
-                      <div class="weekday-column layout flex-auto center-center horizontal">
-                        <span></span>
-                        <span>{{item}}</span>
-                        <span></span>
-                      </div>
-                    </template>
-                  </div>
-
-                  <div class="calendar-without-weekdays-bar flex-auto scroll">
-                    <div id="days" class="days-content flex-auto layout vertical">
-                      <template is="dom-repeat" items="{{_days}}" as="day">
-                        <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center">
-                          <template is="dom-repeat" items="{{day}}">
-                            <div class="day-column layout flex-auto center-center horizontal">
-                              <span></span>
-                              <div id$="[[_computeDayId(item)]]"
-                                   class$="{{_computeDayStyle(item, index, _disableCls)}}"
-                                   disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
-                                   on-tap="_selectDate">{{item}}</div>
-                              <span></span>
-                            </div>
-                          </template>
-                        </div>
-                      </template>
+              <div id="calendarView" data-view="calendar" class="full-calendar flex-auto layout vertical scroll">
+                <div id="weekdays" class="weekdays-bar flex-auto layout horizontal center-center">
+                  <template is="dom-repeat" items="{{_weekdays}}">
+                    <div class="weekday-column layout flex-auto center-center horizontal">
+                      <span></span>
+                      <span>{{item}}</span>
+                      <span></span>
                     </div>
+                  </template>
+                </div>
+
+                <div class="calendar-without-weekdays-bar flex-auto scroll">
+                  <div id="days" class="days-content flex-auto layout vertical">
+                    <template is="dom-repeat" items="{{_days}}" as="day">
+                      <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center">
+                        <template is="dom-repeat" items="{{day}}">
+                          <div class="day-column layout flex-auto center-center horizontal">
+                            <span></span>
+                            <div id$="[[_computeDayId(item)]]"
+                                 class$="{{_computeDayStyle(item, index, _disableCls)}}"
+                                 disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
+                                 on-tap="_selectDate">{{item}}</div>
+                            <span></span>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
                   </div>
                 </div>
               </div>
-            <!-- </neon-animatable> -->
+            </div>
+          <!-- </neon-animatable> -->
 
-            <neon-animatable data-page="year" class="year-page layout vertical">
-                <div class="flex-auto scroll layout vertical year-selector">
-                  <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
-                    <template>
-                      <div class="layout horizontal center-center year-column">
-                        <span data-year$="{{item.year}}">{{item.year}}</span>
-                      </div>
-                    </template>
-                  </iron-list>
-                </div>
-            </neon-animatable>
-          </neon-animated-pages>
-        </div>
-      <!-- </div> -->
+          <neon-animatable data-page="year" class="year-page layout vertical">
+              <div class="flex-auto scroll layout vertical year-selector">
+                <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
+                  <template>
+                    <div class="layout horizontal center-center year-column">
+                      <span data-year$="{{item.year}}">{{item.year}}</span>
+                    </div>
+                  </template>
+                </iron-list>
+              </div>
+          </neon-animatable>
+        </neon-animated-pages>
+      </div>
     </div>
   </template>
 
@@ -207,15 +204,47 @@ Custom property | Description | Default
     },
 
     properties: {
-      startDay: {
-        type: Number,
-        value: 0
+      bindDate: {
+        type: String,
+        value: function() {
+          var _date, _yy, _mm, _dd;
+
+          _date = new Date();
+          _dd = _date.getDate();
+          _mm = _date.getMonth() + 1;
+          _yy = _date.getFullYear();
+
+          _date = Array.prototype.join.call([_yy, ('0' + _mm).slice(-2), _dd], '-');
+
+          return _date;
+        },
+        reflectToAttribute: true,
+        notify: true
+      },
+      dateFormat: {
+        type: String,
+        value: function() {
+          return 'yyyy-mm-dd';
+        },
+        reflectToAttribute: true
       },
       disableDays: {
         type: Array,
         value: function () {
           return [];
-        }
+        },
+        reflectToAttribute: true,
+        observer: '_validateDisableDays'
+      },
+      firstDayOfWeek: {
+        type: Number,
+        value: 0,
+        reflectToAttribute: true,
+        observer: '_validateFirstDayOfWeek'
+      },
+      _resetDate: {
+        type: Boolean,
+        value: false
       },
       _shiftedDisableDays: Array,
       _weekdays: {
@@ -286,22 +315,7 @@ Custom property | Description | Default
         value: 'calendar'
       },
       _tempYear: Number,
-      format: {
-        type: String,
-        value: function() {
-          return 'yyyy-mm-dd';
-        }
-      },
-      bindDate: {
-        type: String,
-        value: '2015-09-31',
-        notify: true
-      },
       _disableCls: {
-        type: Boolean,
-        value: false
-      },
-      resetDate: {
         type: Boolean,
         value: false
       },
@@ -346,7 +360,7 @@ Custom property | Description | Default
      */
 
     observers: [
-      '_propChanged(startDay, disableDays, format)',
+      '_propChanged(firstDayOfWeek, disableDays, dateFormat)',
       '_fireIronResize(_selectedYearOrDate)'
     ],
 
@@ -358,75 +372,107 @@ Custom property | Description | Default
 
       return _cls;
     },
-    // _computeContainerCls: function (portrait) {
-    //   var cls = 'layout vertical center-center';
-    //   if (!portrait) {
-    //     cls = 'layout horizontal center-center';
-    //   }
-    //   return cls;
-    // },
 
-    _computeWeekdays: function (startDay) {
-      var arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-      if (this._validateStartDay(startDay)) {
-        for (var i = 0; i < startDay; i++) {
-          arrayWeek.push(arrayWeek.shift());
-        }
+    // Compute weekdays based on _firstDayOfWeek.
+    _computeWeekdays: function (_firstDayOfWeek) {
+      var _arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      // if (this._validateStartDay(startDay)) {
+      for (var i = 0; i < _firstDayOfWeek; i++) {
+        _arrayWeek.push(_arrayWeek.shift());
       }
-      return arrayWeek;
+      // }
+      return _arrayWeek;
     },
 
-    _computeDays: function () {
-      var arrayDays = [],
-          arrayWeeks = [],
-          pushElem,
-          firstYear = this._todayYear,
-          firstMonth = this._todayMonth,
-          startDay = !this._validateStartDay(this.startDay)? 0: this.startDay%7,
-          firstDayOfMonth = (new Date(firstYear, firstMonth, 1).getDay() + 7 - startDay)%7,
-          totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth),
-          totalRow = (totalDay + firstDayOfMonth)>35? 42: 35;
-      for (var i = 1, j = 0; i <= totalRow; i++, j++) {
-        pushElem = i;
-
-        if (firstDayOfMonth >= i) {
-          pushElem = '';
-        }else {
-          pushElem = (pushElem - firstDayOfMonth) > totalDay? '': pushElem - firstDayOfMonth;
+    // Check if valid firstDayOfWeek.
+    _validateFirstDayOfWeek: function (oldVal, newVal) {
+      if (typeof newVal !== 'undefined') {
+        if (newVal < 0 || newVal > 6) {
+          this.set('firstDayOfWeek', 0);
         }
-        arrayWeeks.push(pushElem);
+      }
+    },
+
+    // Check if valid disableDays
+    _validateDisableDays: function(_disableDaysArr) {
+      if (Array.isArray(_disableDaysArr)) {
+        return _disableDaysArr.every(function(el){
+          return el >= 0 && el < 7;
+        });
+      }
+    },
+
+    // Compute _days based on firstDayOfWeek.
+    _computeDays: function (_year, _month, _firstDayOfWeek) {
+      // var arrayDays = [],
+      //     arrayWeeks = [],
+      //     pushElem,
+      //     firstYear = this._todayYear,
+      //     firstMonth = this._todayMonth,
+      //     startDay = !this._validateStartDay(this.startDay)? 0: this.startDay%7,
+      //     firstDayOfMonth = (new Date(firstYear, firstMonth, 1).getDay() + 7 - startDay)%7,
+      //     totalDay = this._computeTotalDay(firstDayOfMonth, firstYear, firstMonth),
+      //     totalRow = (totalDay + firstDayOfMonth)>35? 42: 35;
+      // for (var i = 1, j = 0; i <= totalRow; i++, j++) {
+      //   pushElem = i;
+      //
+      //   if (firstDayOfMonth >= i) {
+      //     pushElem = '';
+      //   }else {
+      //     pushElem = (pushElem - firstDayOfMonth) > totalDay? '': pushElem - firstDayOfMonth;
+      //   }
+      //   arrayWeeks.push(pushElem);
+      //   if (j >= 6) {
+      //     arrayDays.push(arrayWeeks);
+      //     j = -1;
+      //     arrayWeeks = [];
+      //   }
+      // }
+      // this._days = arrayDays;
+
+      var _days = [],
+          _weeks = [],
+          _elem = '',
+          _y = _year,
+          _m = _month,
+          // _firstDayOfWeek = _firstDayOfWeek,
+          _firstDayOfMonth = (new Date(_y, _m, 1).getDay() + 7 - _firstDayOfWeek)%7,
+          _totalDay = this._computeTotalDay(_firstDayOfMonth, _y, _m),
+          _totalWeekRow = (_totalDay + _firstDayOfMonth) > 35 ? 42 : 35;
+
+      for (var i = 1, j = 0; i <= _totalWeekRow; i++, j++) {
+
+        if (_firstDayOfMonth < i) {
+          _elem = (i - _firstDayOfMonth);
+          _elem = _elem > _totalDay ? '' : _elem;
+        }
+        Array.prototype.push.call(_weeks, _elem);
+
         if (j >= 6) {
-          arrayDays.push(arrayWeeks);
+          Array.prototype.push.call(_days, _weeks);
           j = -1;
-          arrayWeeks = [];
+          _weeks = [];
         }
       }
-      this._days = arrayDays;
+
+      return _days;
     },
 
+    // Compute id for weekRow for styling.
     _computeWeekId: function (idx) {
       return 'week' + idx;
     },
 
+    // Store _oldDate and style selected date.
     _selectedDateChanged: function (newValue, oldValue) {
       this._oldDate = oldValue;
       this._selectedDate = newValue;
       if (oldValue) {
-        this._styleSelected.bind(this.$.days.querySelector('#day' + oldValue))();
+        this._styleSelected.call(this.$.days.querySelector('#day' + oldValue));
       }
     },
 
-    _selectDate: function (ev) {
-      var target = ev.target;
-      if (!target.hasAttribute('disabled') && ev.target.textContent) {
-        this._selectedMonth = this._computeMonth(this._todayMonth, true);
-        this._selectedDate = parseInt(ev.target.textContent);
-        this._selectedYear = this._todayYear;
-        this._selectedWeekday = this._computeWeekday(new Date(this._todayYear, this._todayMonth, this._selectedDate).getDay());
-        this._styleSelected.bind(ev.target, true)();
-      }
-    },
-
+    // Style selected date on calendar.
     _styleSelected: function (addCls) {
       if (addCls) {
         this.classList.add('day-selected');
@@ -437,52 +483,72 @@ Custom property | Description | Default
       }
     },
 
-    _computeDayStyle: function (date, whichDay) {
-      var cls = 'day',
-          today = new Date(),
-          tm = today.getMonth(),
-          ty = today.getFullYear();
-      if (date === this._todayDate && this._todayMonth === tm && this._todayYear === ty) {
-        cls = cls + ' is-today';
+    // Do things when select a date on calendar.
+    _selectDate: function (ev) {
+      var target = ev.target;
+      if (!target.hasAttribute('disabled') && ev.target.textContent) {
+        this._selectedMonth = this._computeMonth(this._todayMonth, true);
+        this._selectedDate = parseInt(ev.target.textContent);
+        this._selectedYear = this._todayYear;
+        this._selectedWeekday = this._computeWeekday(new Date(this._todayYear, this._todayMonth, this._selectedDate).getDay());
+        this._styleSelected.call(ev.target, true);
       }
-      if (!date || this._isDisabledDay(whichDay)) {
-        cls = cls + ' is-disabled';
-      }
-      return cls;
     },
 
+    // Compute month to generate trimmed text of month.
+    _computeMonth: function(monthIdx, _trimMonth) {
+      var _selectedMth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIdx];
+      if (_trimMonth) {
+        _selectedMth = _selectedMth.slice(0, 3);
+      }
+      return _selectedMth;
+    },
+
+    // Style day if it is today or being disabled.
+    _computeDayStyle: function (_date, _whichDay) {
+      var _cls = 'day',
+          _today = new Date(),
+          _tm = _today.getMonth(),
+          _ty = _today.getFullYear();
+      if (_date === this._todayDate && this._todayMonth === _tm && this._todayYear === _ty) {
+        _cls += ' is-today';
+      }
+      if (!_date || this._isDisabledDay(_whichDay)) {
+        _cls += ' is-disabled';
+      }
+      return _cls;
+    },
+
+    // Compute id for day.
     _computeDayId: function (idx) {
       return 'day' + idx;
     },
 
+    // Compute text for monthYear.
     _computeMonthYear: function () {
-      var preTodayMth = this._todayMonth + this._mthOffset;
-      this._todayMonth = (preTodayMth) < 0? 11: (preTodayMth)%12;
+      var _preTodayMth = this._todayMonth + this._mthOffset;
+      this._todayMonth = (_preTodayMth) < 0 ? 11 : (_preTodayMth%12);
       this._mthOffset = 0;
-      this._computeDays();
+      this._days = this._computeDays(this._todayYear, this._todayMonth, this.firstDayOfWeek);
       this._selectedMonthYear = this._computeMonth(this._todayMonth) + ' ' + this._todayYear;
     },
 
-    _computeMonth: function(monthIdx, to_slice) {
-      var selectedMth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIdx];
-      if (to_slice) {
-        selectedMth = selectedMth.slice(0, 3);
-      }
-      return selectedMth;
+    // Compute Weekday based on index.
+    _computeWeekday: function(_weekdayIdx) {
+      return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][_weekdayIdx];
     },
 
-    _computeWeekday: function(weekdayIdx) {
-      return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][weekdayIdx];
-    },
-
+    // one month back.
     _prevMonth: function () {
       this._mthOffset--;
     },
 
+    // one month forward.
     _nextMonth: function () {
       this._mthOffset++;
     },
 
+    // Change _todayYear based on transition of value change of _todayMonth.
     _todayMonthChanged: function (newValue, oldValue) {
       if (oldValue === 0 && newValue === 11){
         this._todayYear--;
@@ -491,103 +557,130 @@ Custom property | Description | Default
       }
     },
 
-    _computeTotalDay: function (firstDayOfMonth, firstYear, firstMonth) {
-      var totalDay = 31;
-      if (firstMonth === 1) {
-        totalDay = new Date(firstYear, 1, 29).getMonth() === 1? 29: 28;
+    // Compute total days in a month.
+    _computeTotalDay: function (_firstDayOfMonth, _firstYear, _firstMonth) {
+      // if (firstMonth === 1) {
+      //   totalDay = new Date(firstYear, 1, 29).getMonth() === 1 ? 29 : 28;
+      // }
+      //
+      // if (firstMonth === 3 || firstMonth === 5 || firstMonth === 8 || firstMonth === 10) {
+      //     totalDay = 30;
+      // }
+
+      if (_firstMonth) {
+        var _totalDay = 31;
+        switch (_firstMonth) {
+          case 1:
+            _totalDay = new Date(_firstYear, 1, 29).getMonth() === 1 ? 29 : 28;
+            break;
+          case 3:
+          case 5:
+          case 8:
+          case 10:
+            _totalDay = 30;
+            break;
+          case 0:
+          case 2:
+          case 4:
+          case 6:
+          case 7:
+          case 9:
+          case 11:
+            break;
+          default:
+            console.log('Error at _computeTotalDay: Invalid _firstMonth ' + _firstMonth + '.');
+        }
+        return _totalDay;
       }
-
-      if (firstMonth === 3 || firstMonth === 5 || firstMonth === 8 || firstMonth === 10) {
-          totalDay = 30;
-      }
-      return totalDay;
     },
 
-    _goYearView: function () {
-      if (this._selectedView === 'year') {
-        return;
-      }else {
-        this._tempYear = this._todayYear;
-        this._selectedView = 'year';
-      }
-    },
+    // _goYearView: function () {
+    //   if (this._selectedView === 'year') {
+    //     return;
+    //   }else {
+    //     this._tempYear = this._todayYear;
+    //     this._selectedView = 'year';
+    //   }
+    // },
+    //
+    // _goCalView: function () {
+    //   if (this._selectedView === 'calendar') {
+    //     return;
+    //   }else {
+    //     this._todayYear = this._tempYear || this._selectedYear;
+    //     this._selectedView = 'calendar';
+    //   }
+    // },
 
-    _goCalView: function () {
-      if (this._selectedView === 'calendar') {
-        return;
-      }else {
-        this._todayYear = this._tempYear || this._selectedYear;
-        this._selectedView = 'calendar';
-      }
-    },
+    // _prevCentury: function () {
+    //   this._todayYear = this._todayYear - 100;
+    // },
+    //
+    // _prevDecade: function () {
+    //   this._todayYear = this._todayYear - 10;
+    // },
+    //
+    // _prevYear: function () {
+    //   this._todayYear--;
+    // },
+    //
+    // _nextCentury: function () {
+    //   this._todayYear = this._todayYear + 100;
+    // },
+    //
+    // _nextDecade: function () {
+    //   this._todayYear = this._todayYear + 10;
+    // },
+    //
+    // _nextYear: function () {
+    //   this._todayYear++;
+    // },
 
-    _prevCentury: function () {
-      this._todayYear = this._todayYear - 100;
-    },
+    // _changeYear: function (ev) {
+    //   this._selectedYear = this._todayYear;
+    //   this._computeMonthYear();
+    //   this._days = this._computeDays(this._todayYear, this._todayMonth, this.firstDayOfWeek);
+    //   this._selectedView = 'calendar';
+    // },
 
-    _prevDecade: function () {
-      this._todayYear = this._todayYear - 10;
-    },
+    // _validateStartDay: function(startDay) {
+    //   return startDay >= 0 && startDay < 7;
+    // },
 
-    _prevYear: function () {
-      this._todayYear--;
-    },
-
-    _nextCentury: function () {
-      this._todayYear = this._todayYear + 100;
-    },
-
-    _nextDecade: function () {
-      this._todayYear = this._todayYear + 10;
-    },
-
-    _nextYear: function () {
-      this._todayYear++;
-    },
-
-    _changeYear: function (ev) {
-      this._selectedYear = this._todayYear;
-      this._computeMonthYear();
-      this._computeDays();
-      this._selectedView = 'calendar';
-    },
-
-    _isDisabledDay: function (date) {
+    // Check if given date is disabled.
+    _isDisabledDay: function (_date) {
       if (this._shiftedDisableDays) {
         return this._shiftedDisableDays.some(function (el) {
-          return date === el;
+          return _date === el;
         });
       }
     },
 
-    _validateDisableDays: function(disableDaysArr) {
-      if (Array.isArray(disableDaysArr)) {
-        return disableDaysArr.every(function(el){
-          return el >= 0 && el < 7;
-        });
-      }
+    // Compute attr for disabled day.
+    _computeDisabledAttr: function (_whichDay) {
+      return this._isDisabledDay(_whichDay);
     },
 
-    _validateStartDay: function(startDay) {
-      return startDay >= 0 && startDay < 7;
-    },
-
-    _computeDisabledAttr: function (whichDay) {
-      return this._isDisabledDay(whichDay);
-    },
-
-    _shiftDisabledDays: function(disableDaysArr, startDay) {
-      if (this._validateDisableDays(disableDaysArr) && this._validateStartDay(startDay)){
+    // Shift disable days if _firstDayOfWeek is not 0.
+    _shiftDisabledDays: function(_disableDaysArr, _firstDayOfWeek) {
+      // if (this._validateDisableDays(disableDaysArr) && this._validateStartDay(startDay)){
+      if (this._validateDisableDays(_disableDaysArr)){
         var temp = [];
-        disableDaysArr.forEach(function(el) {
-          temp.push((el + 7 - startDay)%7);
+        _disableDaysArr.forEach(function(el) {
+          temp.push((el + 7 - _firstDayOfWeek)%7);
         });
         this._shiftedDisableDays = temp;
+
+        // var _arr = _disableDaysArr.map(function(el) {
+        //   return (el + 7 - _firstDayOfWeek)%7;
+        // });
+        // this._shiftDisabledDays = _arr;
       }else {
         this.setAttribute('disable-days', 'invalidArr');
       }
     },
 
+    // Return formatted date string.
     _formatDate: function() {
       var dateformat = this.format;
       var yearreg = dateformat.match(/y/gi),
@@ -697,19 +790,22 @@ Custom property | Description | Default
       }
     },
 
+    // Properties change.
     _propChanged: function(startDay, disableDays, format) {
       this._weekdays = this._computeWeekdays(startDay);
       this._shiftDisabledDays(disableDays, startDay);
-      this._computeDays();
+      this._days = this._computeDays(this._todayYear, this._todayMonth, this.firstDayOfWeek);
       this._disableCls = !this._disableCls;
     },
 
+    // Reset date.
     _resetDate: function() {
       this._todayYear = new Date().getFullYear();
       this._todayMonth = new Date().getMonth();
       this._computeMonthYear();
     },
 
+    // Select year from yearList.
     _selectYear: function(ev) {
       var _target = ev.target,
           _selected;
@@ -730,6 +826,7 @@ Custom property | Description | Default
       }
     },
 
+    // Fire iron-resize to update iron-list.
     _fireIronResize: function(_selectedYearOrDate) {
       if (!this._listReady && _selectedYearOrDate === 'year') {
         this.$.yearList.scrollToIndex(50);
