@@ -20,14 +20,12 @@
                      first-day-of-week="{{firstDayOfWeek}}"
                      disable-days="{{disableDays}}"
                      date-format="{{dateFormat}}"
-                     bind-date="{{bindDate}}"></jv-datepicker>
-                     <!-- reset-date="{{resetDate}}"></jv-datepicker> -->
+                     bind-date="{{_dateOnHold}}"></jv-datepicker>
 
       <!-- Dialog buttons -->
-      <div id="buttonContainer" on-tap="_onBtnTap" class="buttons layout horizontal">
-        <paper-button dialog-today>today</paper-button>
+      <div id="buttonContainer" class="buttons layout horizontal">
         <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button on-tap="_formatDate" dialog-confirm autofocus>ok</paper-button>
+        <paper-button dialog-confirm autofocus on-tap="updateBindDate">ok</paper-button>
       </div>
     </div>
   </template>
@@ -45,7 +43,7 @@
             type: String,
             notify: true
           },
-          resetDate: Boolean
+          _dateOnHold: String
         },
 
         behaviors: [
@@ -76,23 +74,9 @@
           }
         },
 
-        _onBtnTap: function(ev) {
-          // var target = ev.target;
-          // while (target && target !== 'paper-button') {
-          //   if (target.hasAttribute) {
-          //     if (target.hasAttribute('dialog-today')) {
-          //       this._resetDate();
-          //       break;
-          //     }else if (target.hasAttribute('dialog-dismiss')) {
-          //       // console.log(this.resetDate);
-          //       if (this.resetDate) {
-          //         this._resetDate();
-          //         break;
-          //       }
-          //     }
-          //   }
-          //   target = target.parentNode;
-          // }
+        updateBindDate: function(ev) {
+          this.set('bindDate', this._dateOnHold);
+          this.fire('format-date', {date: this._dateOnHold});
         }
       });
     })();

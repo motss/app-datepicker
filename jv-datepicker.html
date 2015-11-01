@@ -216,6 +216,7 @@ Custom property | Description | Default
 
           return _date;
         },
+        computed: '_formatDate(dateFormat, _selectedYear, _selectedMonth, _selectedDate)',
         reflectToAttribute: true,
         notify: true
       },
@@ -231,14 +232,15 @@ Custom property | Description | Default
       },
       /**
        * Array of days numbered from 0 to 6 for disabling. Eg. weekends.
+       * (handle Array with care when dealing with attributes).
        */
       disableDays: {
         type: Array,
         value: function () {
-          return [];
+          return JSON.stringify([]);
         },
-        reflectToAttribute: true,
-        observer: '_validateDisableDays'
+        // reflectToAttribute: true,
+        observer: '_disableDaysFunc'
       },
       /**
        * First Day of the week. Numbered days: 0 (Sun) to 6 (Sat).
@@ -303,8 +305,10 @@ Custom property | Description | Default
       // Array contains disabled days shifted by different firstDayOfWeek.
       _shiftedDisableDays: {
         type: Array,
-        value: [],
-        computed: '_shiftDisabledDays(disableDays, firstDayOfWeek)'
+        value: function() {
+          return [];
+        },
+        computed: '_shiftDisableDays(disableDays, firstDayOfWeek)'
       },
       // Array of all weekDays texts (S, M, T, W, T, F, S).
       _weekdays: {
@@ -386,7 +390,7 @@ Custom property | Description | Default
       // },
     },
     // Element Lifecycle
-    // ready: function () {},attached: function () {},detached: function () {},
+    // ready: function () {}, attached: function () {},detached: function () {},
 
     // Element Behaviorset
     /**
@@ -398,7 +402,7 @@ Custom property | Description | Default
 
     observers: [
       '_fireIronResize(_selectedYearOrDate)',
-      '_computeCalendar(_activeYear, _activeMonth, firstDayOfWeek)'
+      '_computeCalendar(_activeYear, _activeMonth, firstDayOfWeek)',
     ],
 
     /***************************************************************************
@@ -554,11 +558,12 @@ Custom property | Description | Default
     },
 
     // Shift disable days if _firstDayOfWeek is not 0.
-    _shiftDisabledDays: function(_disableDays, _firstDayOfWeek) {
+    _shiftDisableDays: function(_disableDays, _firstDayOfWeek) {
       // only shift _disableDays when _firstDayOfWeek > 0.
+      var _disables = JSON.parse(_disableDays);
       if (_firstDayOfWeek > 0) {
-        if (this._validateDisableDays(_disableDays)){
-          return _disableDaysArr.map(function(el) {
+        if (this._validateDisableDays(_disables)){
+          return _disables.map(function(el) {
             return (el + 7 - _firstDayOfWeek)%7;
           });
         }else {
@@ -566,7 +571,7 @@ Custom property | Description | Default
         }
       }else {
         // return untouched _disableDays.
-        return _disableDays;
+        return _disables;
       }
     },
 
@@ -586,7 +591,7 @@ Custom property | Description | Default
     // Check if valid disableDays
     _validateDisableDays: function(_disableDays) {
       if (Array.isArray(_disableDays)) {
-        return _disableDays.some(function(el){
+        return _disableDays.every(function(el){
           return el >= 0 && el < 7;
         });
       }
@@ -621,6 +626,8 @@ Custom property | Description | Default
         this._selectedYear = this._activeYear;
         this._selectedWeekday = new Date(this._activeYear, this._activeMonth, this._selectedDate).getDay();
         this._styleSelected.call(ev.target, true);
+        // update select date.
+        // this._formatDate(this.dateFormat, this._selectYear, this._selectedMonth, this._selectedDate);
       }
     },
 
@@ -646,110 +653,114 @@ Custom property | Description | Default
     },
 
     // Return formatted date string.
-    _formatDate: function() {
-      var dateformat = this.dateFormat;
-      var yearreg = dateformat.match(/y/gi),
-          dayreg = dateformat.match(/d/gi),
-          monthreg = dateformat.match(/m/gi);
+    _formatDate: function(_dateFormat, _selectedYear, _selectedMonth, _selectedDate) {
+        var dateformat = _dateFormat,
+            yearreg = dateformat.match(/y/gi),
+            dayreg = dateformat.match(/d/gi),
+            monthreg = dateformat.match(/m/gi);
 
-      // regexp year
-      if (yearreg) {
-        var _formattedYear = this._selectedYear;
-        switch (yearreg.length) {
-          case 2:
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^yy[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy$/)) {
-              dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
-              break;
-            }
-          default:
-            dateformat = dateformat.replace(/[o]*[y]+[y|o]*/gi, _formattedYear);
+        // regexp year
+        if (yearreg) {
+          var _formattedYear = _selectedYear;
+          switch (yearreg.length) {
+            case 2:
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^yy[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy$/)) {
+                dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
+                break;
+              }
+            default:
+              dateformat = dateformat.replace(/[o]*[y]+[y|o]*/gi, _formattedYear);
+          }
         }
-      }
 
-      // regexp day
-      if (dayreg) {
-        var _formattedDay = this._selectedDate;
-        switch (dayreg.length) {
-          case 1:
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]d[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^d[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]d$/)) {
-              dateformat = dateformat.replace(/d/gi, _formattedDay);
-              break;
-            }
+        // regexp day
+        if (dayreg) {
+          var _formattedDay = _selectedDate;
+          switch (dayreg.length) {
+            case 1:
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]d[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^d[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]d$/)) {
+                dateformat = dateformat.replace(/d/gi, _formattedDay);
+                break;
+              }
 
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]do[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^do[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]do$/)) {
-              var _suffixOrdinal, _cardinalNumber = _formattedDay%10;
-              if (_formattedDay === 11 || _formattedDay === 12 || _formattedDay === 13) {
-                _suffixOrdinal = 'th';
-              }else {
-                switch (_cardinalNumber) {
-                  case 1:
-                    _suffixOrdinal = 'st';
-                    break;
-                  case 2:
-                    _suffixOrdinal = 'nd';
-                    break;
-                  case 3:
-                    _suffixOrdinal = 'rd';
-                    break;
-                  default:
-                    _suffixOrdinal = 'th';
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]do[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^do[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]do$/)) {
+                var _suffixOrdinal, _cardinalNumber = _formattedDay%10;
+                if (_formattedDay === 11 || _formattedDay === 12 || _formattedDay === 13) {
+                  _suffixOrdinal = 'th';
+                }else {
+                  switch (_cardinalNumber) {
+                    case 1:
+                      _suffixOrdinal = 'st';
+                      break;
+                    case 2:
+                      _suffixOrdinal = 'nd';
+                      break;
+                    case 3:
+                      _suffixOrdinal = 'rd';
+                      break;
+                    default:
+                      _suffixOrdinal = 'th';
+                  }
                 }
+                dateformat = dateformat.replace(/[o]*[d]+[o]+/gi, _formattedDay + _suffixOrdinal);
+                break;
               }
-              dateformat = dateformat.replace(/[o]*[d]+[o]+/gi, _formattedDay + _suffixOrdinal);
-              break;
-            }
-          case 2:
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^dd[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd$/)) {
-                dateformat = dateformat.replace(/[d]+/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
-              break;
-            }
-          default:
-            dateformat = dateformat.replace(/[o]*[d]+[d|0]*/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
+            case 2:
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^dd[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd$/)) {
+                  dateformat = dateformat.replace(/[d]+/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
+                break;
+              }
+            default:
+              dateformat = dateformat.replace(/[o]*[d]+[d|0]*/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
+          }
         }
-      }
 
-      // regexp month
-      if (monthreg) {
-        var _numberedMonth = this._activeMonth, _formattedMonth;
-        switch (monthreg.length) {
-          case 1:
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^m[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]m$/)) {
-              dateformat = dateformat.replace(/m/gi, _numberedMonth + 1);
-              break;
-            }
-          case 2:
-          case 3:
-          case 4:
-            if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/^m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
-                dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}$/)) {
-              _formattedMonth = _numberedMonth + 1;
-              if (monthreg.length === 2) {
-                dateformat = dateformat.replace(/[m]+/gi, _formattedMonth.toString().replace(/^(\d)$/gi, '0$1'));
-              }else if (monthreg.length === 3) {
-                dateformat = dateformat.replace(/[m]+/gi, this._selectedMonth);
-              }else {
-                dateformat = dateformat.replace(/[m]+/gi, this._computeTextMonth(_numberedMonth));
+        // regexp month
+        if (monthreg) {
+          // var _numberedMonth = this._activeMonth,
+          var _numberedMonth = _selectedMonth,
+              _formattedMonth;
+          switch (monthreg.length) {
+            case 1:
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^m[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]m$/)) {
+                dateformat = dateformat.replace(/m/gi, _numberedMonth + 1);
+                break;
               }
-              break;
-            }
-          default:
-            dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
+            case 2:
+            case 3:
+            case 4:
+              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/^m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
+                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}$/)) {
+                _formattedMonth = _numberedMonth + 1;
+                if (monthreg.length === 2) {
+                  dateformat = dateformat.replace(/[m]+/gi, _formattedMonth.toString().replace(/^(\d)$/gi, '0$1'));
+                }else if (monthreg.length === 3) {
+                  dateformat = dateformat.replace(/[m]+/gi, this._selectedMonth);
+                }else {
+                  dateformat = dateformat.replace(/[m]+/gi, this._computeTextMonth(_numberedMonth));
+                }
+                break;
+              }
+            default:
+              dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
+          }
         }
-      }
       // bind and fire formatted date
-      this.bindDate = dateformat;
-      this.fire('format-date', {date: dateformat});
+      // this.async(function() {
+      //   this.fire('format-date', {date: dateformat});
+      // },1);
+      return dateformat;
       // if (this.resetDate) {
       //   this._resetDate();
       // }
@@ -791,11 +802,21 @@ Custom property | Description | Default
       this._selectedYearOrDatePage = _selectedYearOrDate;
     },
 
-    // Whenever _shiftDisabledDays or _calendar changes in value,
+    // Whenever _shiftDisableDays or _calendar changes in value,
     // update calendar class.
     _updateCalendarCls: function(_shiftedDisableDays, _calendar) {
       return !this._disableCls;
     },
+
+    _disableDaysFunc: function(newVal, oldVal) {
+      // might cause perf issue, leave it for debugging use.
+      // might remove in the near future.
+      this.setAttribute('disable-days', JSON.stringify(newVal));
+    },
+
+    // _updateBindDate: function( _dateFormat, _selectedYear, _selectedMonth, _selectedDate) {
+    //   return this._formatDate(_dateFormat, _selectedYear, _selectedMonth, _selectedDate);
+    // },
 
     /***************************************************************************
      * revision needed!
