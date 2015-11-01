@@ -7,8 +7,6 @@
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="../../paper-styles/paper-styles.html">
   <link rel="import" href="../../paper-styles/demo-pages.html">
-  <!-- <link rel="import" href="../../paper-radio-group/paper-radio-group.html">
-  <link rel="import" href="../../paper-radio-button/paper-radio-button.html"> -->
   <link rel="import" href="../../paper-slider/paper-slider.html">
   <link rel="import" href="../../paper-button/paper-button.html">
   <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
@@ -34,6 +32,11 @@
       min-width: 130px;
     }
 
+    paper-button, paper-checkbox {
+      display: block;
+      margin-bottom: 24px;
+    }
+
     .copy-attr {
        padding: 16px 0;
        @apply(--layout-horizontal);
@@ -50,81 +53,35 @@
        @apply(--layout-center-justified);
      }
 
-    /*paper-button:hover {
-      @apply(--shadow-elevation-3dp);
-    }*/
+     .copy-attr-slider {
+       padding: 6px 0;
+     }
 
-    paper-button {
-      display: block;
-      margin-bottom: 24px;
+     .copy-me {
+       border: 1px solid #cfd8dc;
+       color: #607d8b;
+       display: block;
+       height: 50px;
+       -webkit-flex-shrink: 0;
+       flex-shrink: 0;
+       padding: 10px 4px;
+       margin: 0 13px 12px;
+       -moz-box-sizing: border-box;
+       box-sizing: border-box;
+       border-radius: 2px;
+       font-size: 12px;
+       word-break: break-word;
+     }
+
+     .copy-section {
+      padding: 24px 0;
     }
 
-    paper-radio-button, paper-checkbox {
-      display: block;
-      width: 130px;
-    }
-
-    div paper-checkbox {
-      margin-top: 12px;
-      margin-bottom: 20px;
-    }
-
-    hr {
-      margin-bottom: 40px;
-      border-color: var(--divider-color, #e0e0e0);
-    }
-
-    .display-date {
-      text-align: justify;
-      padding-bottom: 20px;
-    }
-
-    .display-date > span {
-      font-style: oblique;
-      font-weight: bolder;
-      color: var(--dark-primary-color, #303f9f);
-    }
-
-    .pick-date {
-      margin: 20px 0;
-    }
-
-    .wrap-datepicker {
-      overflow: auto;
-      width: 96%;
-      min-width: 300px;
-      max-width: 96%;
-    }
-
-    .datepicker-boilerplate {
-      width: 90%;
-      border: 1px solid #cfd8dc;
+    .copy-note {
       color: #607d8b;
-      display: block;
-      height: 36px;
-      -webkit-flex-shrink: 0;
-      flex-shrink: 0;
-      padding: 10px 4px;
-      margin: 0 13px 12px;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      border-radius: 2px;
-      font-size: 12px;
-    }
-
-    .code-section div {
-      margin: 20px 0;
-    }
-
-    .note {
       font-size: 10px;
-      font-style: italic;
-      color: #727272;
     }
 
-    .normal {
-      width: initial;
-    }
 
     /* mixin */
     jv-datepicker-dialog#colorDialog {
@@ -158,7 +115,6 @@
         <paper-button tab-index="0" id="color" data-dialog="colorDialog" on-tap="_openDatepicker">dark theme</paper-button>
         <paper-button tab-index="0" id="backdrop" data-dialog="backdropDialog" on-tap="_openDatepicker">with-backdrop</paper-button>
         <paper-button tab-index="0" id="simple" data-dialog="simpleDialog" on-tap="_openDatepicker">Simple</paper-button>
-        <!-- <paper-button tab-index="0" id="reset" data-dialog="resetDialog" on-tap="_openDatepicker">reset date</paper-button></paper-button> -->
       </section>
     </div>
 
@@ -191,69 +147,79 @@
 
     <div>
       <h4>Date Format Options</h4>
-        <section class="horizontal-section">
-          <div on-change="_convertDateFormatNumberToText">
-            <div class="copy-attr">
-              <span class="copy-attr-span">Year</span>
-              <paper-slider data-slider="yy" min="0" max="1" value="{{yy}}" pin snaps></paper-slider>
-            </div>
-            <div class="copy-attr">
-              <span class="copy-attr-span">Month</span>
-              <paper-slider data-slider="mm" min="0" max="3" value="{{mm}}" pin snaps></paper-slider>
-            </div>
-            <div class="copy-attr">
-              <span class="copy-attr-span">Day</span>
-              <paper-slider data-slider="dd" min="0" max="2" value="{{dd}}" pin snaps></paper-slider>
-            </div>
-            <div class="date-format-text copy-attr">{{dateFormatText}}</div>
-            <div class="display-date">
-              bind-date: <span>{{showBindDate}}</span>
-            </div>
-            <div class="display-date">
-              fire-date: <span>{{showFireDate}}</span>
-            </div>
-            <paper-button tab-index="0" id="dayFormat" data-dialog="formatDialog" on-tap="_openDatepicker">
-              <span>Choose a date</span>
-            </paper-button>
+      <section class="horizontal-section">
+        <div on-change="_convertDateFormatNumberToText">
+          <div class="copy-attr">
+            <span class="copy-attr-span">Year</span>
+            <paper-slider data-slider="yy" min="0" max="1" value="{{yy}}" pin snaps></paper-slider>
           </div>
-        </section>
-      </div>
+          <div class="copy-attr">
+            <span class="copy-attr-span">Month</span>
+            <paper-slider data-slider="mm" min="0" max="3" value="{{mm}}" pin snaps></paper-slider>
+          </div>
+          <div class="copy-attr">
+            <span class="copy-attr-span">Day</span>
+            <paper-slider data-slider="dd" min="0" max="2" value="{{dd}}" pin snaps></paper-slider>
+          </div>
+          <div class="date-format-text copy-attr">{{dateFormatText}}</div>
+          <div class="display-date">
+            bind-date: <span>{{showBindDate}}</span>
+          </div>
+          <div class="display-date">
+            fire-date: <span>{{showFireDate}}</span>
+          </div>
+          <paper-button tab-index="0" id="dayFormat" data-dialog="formatDialog" on-tap="_openDatepicker">
+            <span>Choose a date</span>
+          </paper-button>
+        </div>
+      </section>
     </div>
 
     <div>
       <h4>Boilerplate Generator</h4>
-      <section class="horizontal-section code-section" on-iron-change="genCode">
+      <section class="horizontal-section" on-iron-change="updateCopyMe">
         <div class="copy-attr">
-          <paper-checkbox data-date="withdialog" checked="{{withdialog}}" disabled="{{nodialog}}">jv-datepicker-dialog</paper-checkbox>
-        </div>
-        <div class="copy-attr">
-          <paper-checkbox data-date="nodialog" checked="{{nodialog}}" disabled="{{withdialog}}">jv-datepicker</paper-checkbox>
+          <paper-checkbox data-box="withdialog" checked="{{withdialog}}" disabled="{{nodialog}}">jv-datepicker-dialog</paper-checkbox>
         </div>
         <div class="copy-attr">
-          <paper-checkbox data-toggle="modal" checked="{{modal}}" disabled="{{withdialog}}">modal</paper-checkbox>
+          <paper-checkbox data-box="nodialog" checked="{{nodialog}}" disabled="{{withdialog}}">jv-datepicker</paper-checkbox>
         </div>
         <div class="copy-attr">
-          <paper-checkbox data-toggle="backdrop" checked="{{backdrop}}" disabled="{{withdialog}}">withBackdrop</paper-checkbox>
+          <paper-checkbox data-box="modal" checked="{{modal}}" disabled="{{nomodal}}">modal</paper-checkbox>
         </div>
-        <div>
-          <paper-checkbox data-toggle="start" checked="{{firstday}}">firstDayOfWeek</paper-checkbox>
+        <div class="copy-attr">
+          <paper-checkbox data-box="backdrop" checked="{{backdrop}}" disabled="{{nobackdrop}}">withBackdrop</paper-checkbox>
         </div>
-        <div>
-          <paper-checkbox data-toggle="disable" checked="{{disable}}">disableDays</paper-checkbox>
+        <div class="copy-attr">
+          <paper-checkbox data-box="firstday" checked="{{firstday}}">
+            <div>firstDayOfWeek</div>
+            <div class="copy-note">// Select your attr-value from previous</div>
+            <div class="copy-note">FDoW section and check the box.</div>
+          </paper-checkbox>
         </div>
-        <div>
-          <paper-checkbox data-toggle="format" checked="{{format}}">dateFormat</paper-checkbox>
+        <div class="copy-attr">
+          <paper-checkbox data-box="disable" checked="{{disable}}">
+            <div>disableDays</div>
+            <div class="copy-note">// Select your attr-value from previous</div>
+            <div class="copy-note">Disable Days (s) section and check the box.</div>
+          </paper-checkbox>
         </div>
-        <div>
-          <paper-checkbox data-toggle="bind" checked="{{binddate}}">bindDate</paper-checkbox>
+        <div class="copy-attr">
+          <paper-checkbox data-box="format" checked="{{format}}">
+            <div>dateFormat</div>
+            <div class="copy-note">// Select your attr-value from previous</div>
+            <div class="copy-note">Date Format Options section and check the box.</div>
+          </paper-checkbox>
         </div>
-        <div>
-          <paper-checkbox data-toggle="fire" checked="{{formatdate}}">onFormatDate</paper-checkbox>
+        <div class="copy-attr">
+          <paper-checkbox data-box="bind" checked="{{binddate}}">bindDate</paper-checkbox>
+        </div>
+        <div class="copy-attr">
+          <paper-checkbox data-box="fire" checked="{{formatdate}}">onFormatDate</paper-checkbox>
         </div>
         <div class="copy-section layout horizontal flex-auto">
           <input class="copy-me flex-auto" value="{{copyText}}" title="copy me" readonly onclick="this.select();">
         </div>
-        <!-- <input class="datepicker-boilerplate" value="{{dateCode}}" title="jv-datepicker-boilerplate" readonly onclick="this.select();"> -->
       </section>
     </div>
 
@@ -273,7 +239,7 @@
       <jv-datepicker-dialog id="weekendsDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal
       first-day-of-week="0" disable-days='"[0, 6]"'></jv-datepicker-dialog>
       <jv-datepicker-dialog id="formatDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" modal date-format="{{dateFormatText}}" bind-date="{{showBindDate}}" on-format-date="_formatDate"></jv-datepicker-dialog>
-    </section>
+    </div>
   </div>
 </template>
 <script>
@@ -283,83 +249,139 @@
   datepicker.yy = 0;
   datepicker.mm = 2;
   datepicker.dd = 1;
+  datepicker.showBindDate = _initDate();
+  datepicker.showFireDate = _initDate();
 
   datepicker.firstDayOfWeek = 0;
   datepicker.firstdayText = 'Sunday';
-  // datepicker.dateFormat = 'yyyy-mm-dd';
-  // datepicker.dayStart = 'sunday';
-  // datepicker.yearFormat = 'yyyy';
-  // datepicker.monthFormat = 'mm';
-  // datepicker.dayFormat = 'dd';
-  // datepicker.displayDate = initializeDate();
-  // datepicker.displayBind = initializeDate();
 
-  datepicker.dateCode = '<jv-datepicker-dialog modal></jv-datepicker-dialog>';
-  datepicker.takeDialog = true;
-  datepicker.takefirstDayOfWeek = false;
-  datepicker.takeDisableDays = false;
-  datepicker.takeFormat = false;
-  datepicker.takeBindDate = false;
-  datepicker.takeFormatDate = false;
-  datepicker.takeModal = true;
-  datepicker.takeBackdrop = false;
-  datepicker.takeReset = false;
-  datepicker.takeElement = 'jv-datepicker-dialog';
+  datepicker.withdialog = true;
+  datepicker.nodialog = false;
+  datepicker.modal = true;
+  datepicker.backdrop = false;
+  datepicker.firstday = false;
+  datepicker.disable = false;
+  datepicker.format = false;
+  datepicker.binddate = false;
+  datepicker.formatdate = false;
+  datepicker.copyText = '<jv-datepicker-dialog modal></jv-datepicker-dialog>';
 
-  datepicker.genCode = function(ev){
-    var target = ev.target;
+  datepicker.nomodal = true;
+  datepicker.nobackdrop = true;
 
-    if (!target.hasAttribute('data-toggle')) {
-      return;
+  datepicker.updateCopyMe = function(ev){
+    var _target = ev.target,
+            _box,
+            _emblem,
+            _newText = datepicker.copyText;
+    if (_target) {
+      if (_target.tagName !== 'PAPER-CHECKBOX') {
+        return;
+      }
     }
-
-    if (!datepicker.dateCode) {
-      return;
-    }
-
-    var toggleId = target.getAttribute('data-toggle'),
-        toggleCheck = target.checked,
-        newCodeStr = datepicker.dateCode;
-    switch (toggleId) {
-      case 'dialog':
-        datepicker.takeElement = toggleCheck? 'jv-datepicker-dialog': 'jv-datepicker';
-        if (!toggleCheck) {
-          datepicker.takeModal = datepicker.takeBackdrop = !toggleCheck;
-          newCodeStr = modifyCode(toggleCheck, newCodeStr, ' with-backdrop');
-        }else {
-          datepicker.takeBackdrop = false;
-        }
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, '', true);
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' modal');
-        break;
-      case 'start':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' first-day-of-week=""');
-        break;
-      case 'disable':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' disable-days=""');
-        break;
-      case 'format':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' date-format=""');
-        break;
-      case 'bind':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' bind-date=""');
-        break;
-      case 'fire':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' on-format-date=""');
-        break;
-      case 'modal':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' modal');
-        break;
-      case 'backdrop':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' with-backdrop');
-        break;
-      case 'reset':
-        newCodeStr = modifyCode(toggleCheck, newCodeStr, ' reset-date');
-        break;
-      default:
-    }
-    if(newCodeStr) {
-      datepicker.dateCode = newCodeStr;
+    if (_target) {
+      if (_target.hasAttribute('data-box')) {
+        _box = _target.getAttribute('data-box');
+        _emblem = _target.checked;
+      }
+      switch (_box) {
+        case 'withdialog':
+          if (!_emblem) {
+            datepicker.nodialog = true;
+            datepicker.modal = false;
+            datepicker.backdrop = false;
+            datepicker.nomodal = true;
+            datepicker.nobackdrop = true;
+            _newText = modifyCode(_emblem, _newText, /\s(modal)/gi);
+            _newText = modifyCode(_emblem, _newText, /\s(with)\-(backdrop)/gi);
+            _newText = modifyCode(_emblem, _newText, '', true);
+          }
+          break;
+        case 'nodialog':
+          if (!_emblem) {
+            datepicker.withdialog = true;
+            datepicker.nomodal = false;
+            datepicker.nobackdrop = false;
+            _newText = modifyCode(!_emblem, _newText, '', true);
+          }
+          break;
+        case 'modal':
+          if (_emblem) {
+            datepicker.nobackdrop = datepicker.withdialog && _emblem;
+            if (/\s(modal)/gi.test(_newText)) {
+              _newText = _newText.replace(/\s(modal)/gi, ' modal');
+            }else {
+              _newText = modifyCode(_emblem, _newText, ' modal');
+            }
+          }else {
+            datepicker.nobackdrop = datepicker.withdialg && _emblem;
+            _newText = modifyCode(_emblem, _newText, /\s(modal)/gi);
+          }
+          break;
+        case 'backdrop':
+          if (_emblem) {
+            datepicker.nomodal = datepicker.withdialog && _emblem;
+            if (/\s(with)\-(backdrop)/gi.test(_newText)) {
+              _newText = _newText.replace(/\s(with)\-(backdrop)/gi, ' with-backdrop');
+            }else {
+              _newText = modifyCode(_emblem, _newText, ' with-backdrop');
+            }
+          }else {
+            datepicker.nomodal = datepicker.withdialog && _emblem;
+            _newText = modifyCode(_emblem, _newText, /\s(with)\-(backdrop)/gi);
+          }
+          break;
+        case 'firstday':
+          if (_emblem) {
+            if (/\s(first-day-of-week)\=\"\d*\"/gi.test(_newText)) {
+              _newText = _newText.replace(/\s(first-day-of-week)\=\"\d*\"/gi, ' first-day-of-week="' + datepicker.firstDayOfWeek + '"');
+            }else {
+              _newText = modifyCode(_emblem, _newText, ' first-day-of-week="' + datepicker.firstDayOfWeek + '"');
+            }
+          }else {
+            _newText = modifyCode(_emblem, _newText, /\s(first-day-of-week)\=\"\d*\"/gi);
+          }
+          break;
+        case 'disable':
+          if (_emblem) {
+            if (/\s(disable)\-(days)\=\"\"\[\d*[\,\d]*\]\"\"/gi.test(_newText)) {
+              _newText = _newText.replace(/\s(disable)\-(days)\=\"\"\[\d*[\,\d]*\]\"\"/gi, ' disable-days="' + JSON.stringify(datepicker.disableDays) + '"');
+            }else {
+              _newText = modifyCode(_emblem, _newText, ' disable-days="' + JSON.stringify(datepicker.disableDays) + '"');
+            }
+          }else {
+            _newText = modifyCode(_emblem, _newText, /\s(disable)\-(days)\=\"\"\[\d*[\,\d]*\]\"\"/gi);
+          }
+          break;
+        case 'format':
+          if (_emblem) {
+            if (/\s(format)\=\"\w+\-\w+\-\w+\"/gi.test(_newText)) {
+              _newText = _newText.replace(/\s(format)\=\"\w+\-\w+\-\w+\"/gi, ' firstday="' + datepicker.dateFormatText + '"');
+            }else {
+              _newText = modifyCode(_emblem, _newText, ' format="' + datepicker.dateFormatText + '"');
+            }
+          }else {
+            _newText = modifyCode(_emblem, _newText, /\s(format)\=\"\w+\-\w+\-\w+\"/gi);
+          }
+          break;
+        case 'bind':
+          if (_emblem) {
+            _newText = modifyCode(_emblem, _newText, ' bind-date=""');
+          }else {
+            _newText = modifyCode(_emblem, _newText, /\s(bind-date)\=\"\"/gi);
+          }
+          break;
+        case 'fire':
+          if (_emblem) {
+            _newText = modifyCode(_emblem, _newText, ' on-format-date=""');
+          }else {
+            _newText = modifyCode(_emblem, _newText, /\s(on)\-(format)\-(date)\=\"\"/gi);
+          }
+          break;
+        default:
+          console.log('Encounter error in the selection. Throw some bananas at ' + _emblem + '!');
+      }
+      datepicker.copyText = _newText;
     }
   };
 
@@ -385,63 +407,6 @@
     return modifiedStr;
   };
 
-  function initializeDate(){
-    var year = new Date().getFullYear(),
-        month = new Date().getMonth() + 1,
-        day = new Date().getDate();
-    return year + '-' + ('00'+month).slice(-2) + '-' + day;
-  };
-
-  datepicker.checkboxHandler = function() {
-    var disableArr = [],
-    disableObj = {
-      sun: this.sun,
-      mon: this.mon,
-      tue: this.tue,
-      wed: this.wed,
-      thu: this.thu,
-      fri: this.fri,
-      sat: this.sat
-    };
-    Object.keys(disableObj).forEach(function(el, idx) {
-      if (disableObj[el]) {
-        disableArr.push(idx);
-      }
-    });
-    this.disableDays = disableArr;
-  };
-
-  document.addEventListener('selected-changed', function(ev) {
-    var target = ev.target, targetId, targetValue;
-
-    if (!target.hasAttribute('id')) {
-      return;
-    }
-
-    targetId = target.getAttribute('id');
-    targetValue = ev.detail.value;
-    switch (targetId) {
-      case 'start':
-        var day = parseInt(targetValue);
-        datepicker.dayStart = datepicker._dayStart(day);
-        break;
-      case 'year':
-        datepicker.dateFormatText = datepicker.dateFormat.replace(/^[y]+/gi, targetValue);
-        break;
-      case 'month':
-        datepicker.dateFormat = datepicker.dateFormat.replace(/[m]+/gi, targetValue);
-        break;
-      case 'day':
-        datepicker.dateFormat = datepicker.dateFormat.replace(/[d]+[o]*/gi, targetValue);
-        break;
-      default:
-        console.log('Error');
-    }
-  }, true);
-
-  //
-  //
-  //
   datepicker._openDatepicker = function(ev) {
     var button = ev.target;
     while (!button.hasAttribute('data-dialog') && button !== document.body) {
@@ -487,14 +452,13 @@
 
   // mutate disableDays array.
   function _mutateDisableDays(_chk, _dayNumber) {
-    // var _mutate = JSON.parse(datepicker.disableDays);
     var _mutate = JSON.parse(datepicker.disableDays);
     if (_chk) {
       _mutate.push(_dayNumber);
     }else {
       _mutate.splice(_mutate.indexOf(_dayNumber), 1);
     }
-    console.log(_mutate);
+    // console.log(_mutate);
     return JSON.stringify(_mutate);
   }
 
@@ -532,11 +496,20 @@
     datepicker.showFireDate = de.date;
   };
 
+  function _initDate() {
+    var _date = new Date();
+    function _zero (_date) {
+      return String.prototype.slice.call(('0' + _date), -2);
+    }
+
+    return _date.getFullYear() + '-' + _zero(_date.getMonth() + 1) + '-' + _zero(_date.getDate());
+  }
+
   // disable context menu on hold (right click on mobile).
   function _disableRightClick(ev) {
-    ev.preventDefault();
-    ev.stopPropagation();
-    return false;
+  //   ev.preventDefault();
+  //   ev.stopPropagation();
+  //   return false;
   }
 </script>
 </body>
