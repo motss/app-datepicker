@@ -85,28 +85,37 @@
 
     /* mixin */
     jv-datepicker-dialog#colorDialog {
-      /*--jv-datepicker {}*/
-      --jv-datepicker-button-color: #80CBC4;
-      --jv-datepicker-button-ink-color: #80CBC4;
-      --jv-datepicker-icon-button-color: #ffff00;
-      --jv-datepicker-icon-button-ink-color: #ffff00;
+      background: #424242;
+
+      --jv-datepicker-buttons: #80CBC4;
+
+      --jv-datepicker-bg: #424242;
+
+      --jv-datepicker-selection-bg: #555555;
+      --jv-datepicker-selection-color: #cccccc;
+
+      --jv-datepicker-iron-selected: #FFFFFF;
+
+      --jv-datepicker-calendar-color: #ffffff;
+      --jv-datepicker-calendar-bg: #424242;
+
+      --jv-datepicker-weekdays-color: #c6c6c6;
+
       --jv-datepicker-selected-day-bg: #80CBC4;
       --jv-datepicker-selected-day-color: #555555;
+
+      --jv-datepicker-selected-year-color: #80CBC4;
+
       --jv-datepicker-today-color: #80CBC4;
       --jv-datepicker-disabled-color: #ffff00;
-      --jv-datepicker-selection-color: #ffffff;
-      --jv-datepicker-selection-bg: #555555;
-      --jv-datepicker-weekday-bg: #555555;
-      --jv-datepicker-bg: #424242;
-      --jv-datepicker-calendar-text-color: #ffffff;
-      --jv-datepicker-calendar-bg: #424242;
-      --jv-datepicker-selection-ripple-color: #ffff00;
-      --jv-datepicker-weekdays-color: #c6c6c6;
+
+      --jv-datepicker-icon-buttons-color: #ffff00;
+      --jv-datepicker-icon-buttons-ink-color: #ffff00;
     }
   </style>
 </head>
-<body unresolved oncontextmenu="_disableRightClick(event)">
-<template is="dom-bind" id="datepicker">
+<body unresolved>
+<template is="dom-bind" id="datepicker" strip-whitespace>
   <div class="horizontal-section-container">
     <div>
       <h4>Simple Styled</h4>
@@ -177,7 +186,7 @@
 
     <div>
       <h4>Boilerplate Generator</h4>
-      <section class="horizontal-section" on-iron-change="updateCopyMe">
+      <section class="horizontal-section" on-change="updateCopyMe">
         <div class="copy-attr">
           <paper-checkbox data-box="withdialog" checked="{{withdialog}}" disabled="{{nodialog}}">jv-datepicker-dialog</paper-checkbox>
         </div>
@@ -274,6 +283,7 @@
             _box,
             _emblem,
             _newText = datepicker.copyText;
+            console.log(datepicker.copyText);
     if (_target) {
       if (_target.tagName !== 'PAPER-CHECKBOX') {
         return;
@@ -393,9 +403,9 @@
       }else {
         var findAssertPoint = str.indexOf('>'),
             firstPartStr, lastParStr;
-        firstPartStr = str.substring(0, findAssertPoint);
-        lastParStr = str.substring(findAssertPoint);
-        modifiedStr = firstPartStr.concat(insertion, lastParStr);
+        firstPartStr = str.substr(0, findAssertPoint);
+        lastParStr = str.substr(findAssertPoint);
+        modifiedStr = firstPartStr + insertion + lastParStr;
       }
     }else {
       if (tag) {
@@ -506,11 +516,11 @@
   }
 
   // disable context menu on hold (right click on mobile).
-  function _disableRightClick(ev) {
+  // function _disableRightClick(ev) {
   //   ev.preventDefault();
   //   ev.stopPropagation();
   //   return false;
-  }
+  // }
 </script>
 </body>
 </html>

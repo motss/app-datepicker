@@ -1,7 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-media-query/iron-media-query.html">
 <link rel="import" href="../paper-styles/paper-styles.html">
-<!-- <link rel="import" href="../paper-ripple/paper-ripple.html"> -->
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
@@ -16,9 +15,9 @@ An custom Polymer element created to provide a datepicker element that is more c
 Example:
 
     <jv-datepicker><jv-datepicker>
+    <jv-datepicker-dialog></jv-datepicker-dialog>
     <jv-datepicker-dialog modal></jv-datepicker-dialog>
     <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
-    <jv-datepicker-dialog></jv-datepicker-dialog>
 
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
@@ -41,29 +40,23 @@ At the end of the demo, there is a section where user can play around with to ge
 
 Style the datepicker with CSS as you would a normal DOM element.
 
-    jv-datepicker {
-      --jv-datepicker {
-        color: var(--any-color-you-want);
-      }
-    }
-
     jv-datepicker-dialog#darkThemedDialog {
-      --jv-datepicker-button-color: #80CBC4;
-      --jv-datepicker-button-ink-color: #80CBC4;
-      --jv-datepicker-icon-button-color: #ffff00;
-      --jv-datepicker-icon-button-ink-color: #ffff00;
+      background: #424242;
+      --jv-datepicker-buttons: #80CBC4;
+      --jv-datepicker-bg: #424242;
+      --jv-datepicker-selection-bg: #555555;
+      --jv-datepicker-selection-color: #cccccc;
+      --jv-datepicker-iron-selected: #FFFFFF;
+      --jv-datepicker-calendar-color: #ffffff;
+      --jv-datepicker-calendar-bg: #424242;
+      --jv-datepicker-weekdays-color: #c6c6c6;
       --jv-datepicker-selected-day-bg: #80CBC4;
       --jv-datepicker-selected-day-color: #555555;
+      --jv-datepicker-selected-year-color: #80CBC4;
       --jv-datepicker-today-color: #80CBC4;
       --jv-datepicker-disabled-color: #ffff00;
-      --jv-datepicker-selection-color: #ffffff;
-      --jv-datepicker-selection-bg: #555555;
-      --jv-datepicker-weekday-bg: #555555;
-      --jv-datepicker-bg: #424242;
-      --jv-datepicker-calendar-text-color: #ffffff;
-      --jv-datepicker-calendar-bg: #424242;
-      --jv-datepicker-selection-ripple-color: #ffff00;
-      --jv-datepicker-weekdays-color: #c6c6c6;
+      --jv-datepicker-icon-buttons-color: #ffff00;
+      --jv-datepicker-icon-buttons-ink-color: #ffff00;
     }
 
 By default, the datepicker is in light theme and now you are able to style almost all possible sections of the datepicker with your own choices of color.
@@ -72,22 +65,20 @@ The following custom properties and mixins are also available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--jv-datepicker-bg` | Background color of the datepicker | #ffffff
+`--jv-datepicker-bg` | Background color of the datepicker | #fafafa
 `--jv-datepicker-selection-bg` | Background color of the display section (selectionView) | #009688
-`--jv-datepicker-selection-color` | Text color of the display section (selectionView) | #ffffff
-`--jv-datepicker-weekday-bg` | Background color of the weekday in display section (selectionView) | #00796b
-`--jv-datepicker-selection-ripple-color` | Ripple color in display section (selectionView) | Default color of `paper-ripple`
-`--jv-datepicker-icon-button-color` | Color of `chevron-left` and `chevron-right` | #737373
-`--jv-datepicker-icon-button-ink-color` | Ripple color of `chevron-left` and `chevron-right` | Default ripple color of `paper-icon-button`
+`--jv-datepicker-selection-color` | Text color of the display section (selectionView) | #b2dfdb
+`--jv-datepicker-iron-selected` | Text color of the view selector | #fefefe
 `--jv-datepicker-calendar-bg` | Background color of calendar section | #fafafa
-`--jv-datepicker-calendar-text-color` | Text color of calendar section | #000000
+`--jv-datepicker-calendar-color` | Text color of calendar section | #000000
 `--jv-datepicker-weekdays-color` | Text color of weekdays | #9b9b9b
-`--jv-datepicker-today-color` | Text color of today's day | #009688
 `--jv-datepicker-selected-day-bg` | Background color of selected day | #009688
 `--jv-datepicker-selected-day-color` | Text color of selected day | #ffffff
+`--jv-datepicker-selected-year-color` | Text color of selected year in year list | #009688
+`--jv-datepicker-today-color` | Text color of today's day | #009688
 `--jv-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
-`--jv-datepicker-button-color` | Text color of action buttons | #009688
-`--jv-datepicker-button-ink-color` | Ripple color of action buttons | Default ripple color
+`--jv-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
+`--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 
 @author motss
@@ -95,7 +86,7 @@ Custom property | Description | Default
 @demo demo/index.html
 -->
 <dom-module id="jv-datepicker">
-  <template>
+  <template strip-whitespace>
     <style include="jv-datepicker-theme"></style>
 
     <!-- Element's code starts here -->
@@ -152,6 +143,7 @@ Custom property | Description | Default
                         <div class="day-column layout flex-auto center-center horizontal">
                           <span></span>
                           <div id$="[[_computeDayId(item)]]"
+                               data-idx$="{{index}}"
                                class$="{{_computeDayStyle(item, index, _disableCls)}}"
                                disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
                                on-tap="_selectDate">{{item}}</div>
@@ -212,9 +204,7 @@ Custom property | Description | Default
           _mm = _date.getMonth() + 1;
           _yy = _date.getFullYear();
 
-          _date = Array.prototype.join.call([_yy, ('0' + _mm).slice(-2), _dd], '-');
-
-          return _date;
+          return Array.prototype.join.call([_yy, ('0' + _mm).slice(-2), _dd], '-');
         },
         computed: '_formatDate(dateFormat, _selectedYear, _selectedMonth, _selectedDate)',
         reflectToAttribute: true,
@@ -232,7 +222,7 @@ Custom property | Description | Default
       },
       /**
        * Array of days numbered from 0 to 6 for disabling. Eg. weekends.
-       * (handle Array with care when dealing with attributes).
+       * (`JSON.stringify` the array before passing in).
        */
       disableDays: {
         type: Array,
@@ -292,7 +282,7 @@ Custom property | Description | Default
       _disableCls: {
         type: Boolean,
         value: false,
-        computed: '_updateCalendarCls(_shiftedDisableDays, _calendar)'
+        computed: '_updateCalendarCls(_shiftedDisableDays, _calendar, firstDayOfWeek)'
       },
       // Array contains rows of weeks which contains columns of days.
       _calendar: {
@@ -379,15 +369,7 @@ Custom property | Description | Default
         type: Boolean,
         value: true,
         readOnly: true
-      }
-
-      // /*************************************************************************
-      //  * Deprecated (maybe).
-      //  */
-      // _resetDate: {
-      //   type: Boolean,
-      //   value: false
-      // },
+      },
     },
     // Element Lifecycle
     // ready: function () {}, attached: function () {},detached: function () {},
@@ -430,7 +412,7 @@ Custom property | Description | Default
     },
 
     // Style day if it is today or being disabled.
-    _computeDayStyle: function (_date, _whichDay) {
+    _computeDayStyle: function (_date, _dayIdx) {
       var _cls = 'day',
           _today = new Date(),
           _tm = _today.getMonth(),
@@ -439,9 +421,10 @@ Custom property | Description | Default
         _cls += ' is-today';
       }
 
-      if (!_date || this._isDisabledDay(_whichDay)) {
+      if (!_date || this._isDisabledDay(_dayIdx)) {
         _cls += ' is-disabled';
       }
+
       return _cls;
     },
 
@@ -473,7 +456,7 @@ Custom property | Description | Default
       if (_activeMonth >= 0 && _activeMonth <= 11) {
         var _days = [],
             _weeks = [],
-            _elem,
+            _elem = '',
             _y = _activeYear,
             _m = _activeMonth,
             _firstDayOfMonth = (new Date(_y, _m, 1).getDay() + 7 - _firstDayOfWeek)%7,
@@ -496,13 +479,17 @@ Custom property | Description | Default
     },
 
     // Compute id for weekRow for styling.
-    _computeWeekId: function (idx) {
-      return 'week' + idx;
+    _computeWeekId: function (_idx) {
+      if (_idx) {
+        return 'week' + _idx;
+      }
     },
 
     // Compute id for day.
-    _computeDayId: function (idx) {
-      return 'day' + idx;
+    _computeDayId: function (_idx) {
+      if (_idx) {
+        return 'day' + _idx;
+      }
     },
 
     // Compute Weekday based on index.
@@ -553,8 +540,8 @@ Custom property | Description | Default
     },
 
     // Compute attr for disabled day.
-    _computeDisabledAttr: function (_whichDay) {
-      return this._isDisabledDay(_whichDay);
+    _computeDisabledAttr: function (_dayIdx) {
+      return this._isDisabledDay(_dayIdx);
     },
 
     // Shift disable days if _firstDayOfWeek is not 0.
@@ -756,14 +743,7 @@ Custom property | Description | Default
               dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
           }
         }
-      // bind and fire formatted date
-      // this.async(function() {
-      //   this.fire('format-date', {date: dateformat});
-      // },1);
       return dateformat;
-      // if (this.resetDate) {
-      //   this._resetDate();
-      // }
     },
 
     // Select year from yearList.
@@ -804,7 +784,7 @@ Custom property | Description | Default
 
     // Whenever _shiftDisableDays or _calendar changes in value,
     // update calendar class.
-    _updateCalendarCls: function(_shiftedDisableDays, _calendar) {
+    _updateCalendarCls: function(_shiftedDisableDays, _calendar, _firstDayOfWeek) {
       return !this._disableCls;
     },
 
@@ -812,20 +792,6 @@ Custom property | Description | Default
       // might cause perf issue, leave it for debugging use.
       // might remove in the near future.
       this.setAttribute('disable-days', JSON.stringify(newVal));
-    },
-
-    // _updateBindDate: function( _dateFormat, _selectedYear, _selectedMonth, _selectedDate) {
-    //   return this._formatDate(_dateFormat, _selectedYear, _selectedMonth, _selectedDate);
-    // },
-
-    /***************************************************************************
-     * revision needed!
-     */
-    // Reset date.
-    _resetDate: function() {
-      this._activeYear = new Date().getFullYear();
-      this._activeMonth = new Date().getMonth();
-      // this._computeMonthYear();
     },
 
 //    _computeWeekNumber: function () {

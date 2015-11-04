@@ -1,5 +1,5 @@
 <dom-module id="jv-datepicker-theme">
-  <template>
+  <template strip-whitespace>
     <style>
       :host {
         -webkit-user-select: none;
@@ -7,8 +7,7 @@
         -ms-user-select: none;
         user-select: none;
         box-sizing: border-box;
-        background: var(--jv-datepicker-bg, #ffffff);
-        /*background: var(--jv-datepicker-bg, #fafafa);*/
+        background: var(--jv-datepicker-bg, #fafafa);
         @apply(--jv-datepicker);
       }
 
@@ -24,21 +23,19 @@
 
       .selection-view {
         background: var(--jv-datepicker-selection-bg, #009688);
-        color: var(--jv-datepicker-selection-color, #ffffff);
+        color: var(--jv-datepicker-selection-color, #b2dfdb);
         font-weight: bold;
         text-align: left;
         padding: 24px 24px 20px;
       }
 
       .selection-view .year-selected {
-        color: #b2dfdb;
         margin-top: -6px;
         font-size: 12px;
         cursor: pointer;
       }
 
       .selection-view .date-selected {
-        color: #b2dfdb;
         margin-top: 6px;
         font-size: 26px;
         cursor: pointer;
@@ -50,19 +47,16 @@
       }
 
       iron-selector div.selection-view-iron-selector.iron-selected {
-        color: #FEFEFE;
+        color: var(--jv-datepicker-iron-selected, #fefefe);
       }
 
       .calendar-view {
-        /*padding: 0 14px;*/
       }
 
       .pages {
-        background: #eee;
       }
 
       .month-year-bar {
-        background: #fafafa;
         min-height: 46px;
         padding: 3px 0;
       }
@@ -71,10 +65,9 @@
         text-align: center;
       }
 
-      .calendar-page {
-        color: var(--jv-datepicker-calendar-text-color, #000000);
-        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
-        /*background: #e0e0e0;*/
+      .calendar-page, .year-page {
+        color: var(--jv-datepicker-calendar-color, #000000);
+        background: var(--jv-datepicker-calendar-bg, #fafafa);
         font-size: 10px;
       }
 
@@ -102,12 +95,7 @@
         max-height: 37px;
       }
 
-      .week-row:nth-child(2n+1) {
-        /*background: #f5f5f5;*/
-      }
-
       .day-column {
-
       }
 
       .day {
@@ -120,9 +108,6 @@
         border-radius: 50%;
       }
 
-      .day-column:nth-child(2n+1) {
-      }
-
       .calendar-page .weekdays-bar .weekday-column,
       .day-column div:nth-child(2) {
         width: 33px;
@@ -131,9 +116,7 @@
       }
 
       .year-page {
-        color: var(--jv-datepicker-calendar-text-color, #000000);
-        background: var(--jv-datepicker-calendar-bg, #FAFAFA);
-        /*background: #E0E0E0;*/
+        font-size: 14px;
       }
 
       .year-page .year-selector .year-list {
@@ -151,14 +134,8 @@
       }
 
       .selected-year {
-        color: #009688;
+        color: var(--jv-datepicker-selected-year-color, #009688);
         font-size: 24px;
-      }
-
-/*******************************************************************************/
-
-      .weekdays-bar {
-        /*background: var(--jv-datepicker-weekday-bg, #00796b);*/
       }
 
       .day.is-today {
@@ -171,48 +148,28 @@
       }
 
       paper-icon-button {
-        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color);
-        color: var(--jv-datepicker-icon-button-color, #737373);
+        color: var(--jv-datepicker-icon-buttons-color, #737373);
+        --paper-icon-button-ink-color: var(--jv-datepicker-icon-buttons-ink-color, #737373);
       }
 
+      /* Adaptive Breakpoints */
 
-      /************************* @media ***************************************/
       /* mobile-small */
       @media all and (min-width: 0) and (max-width: 360px) and (orientation: portrait) {
         .selection-view {
           min-height: 90px;
         }
-
-        .calendar-view {
-          /* might need this. */
-          /*min-height: 313px;*/
-        }
-
-        .pages {
-          /*min-height: 237px;*/
-          /*min-height: 313px;*/
-        }
-
       }
+
       /* mobile-large */
       @media all and (min-width: 361px) and (orientation: portrait) {
         .selection-view {
           min-height: 90px;
         }
-
-        .calendar-view {
-          /* might need this. */
-          /*min-height: 313px;*/
-        }
-
-        .pages {
-          /*min-height: 237px;*/
-          /*min-height: 313px;*/
-        }
       }
+
       /* tablet and above*/
       @media all and (min-width: 600px) and (orientation: portrait) {
-
       }
 
       /* mobile-small-landscape */
@@ -225,11 +182,6 @@
         .calendar-view {
           min-width: 343px;
         }
-
-        .pages {
-          /*min-width: 343px;*/
-        }
-
       }
       /* mobile-large-landscape */
       @media all and (min-width: 481px) and (orientation: landscape) {
@@ -241,15 +193,10 @@
         .calendar-view {
           min-width: 343px;
         }
-
-        .pages {
-          /*min-width: 343px;*/
-        }
-
       }
+
       /* tablet-landscape */
       @media all and (min-width: 960px) and (orientation: landscape) {
-
       }
     </style>
   </template>

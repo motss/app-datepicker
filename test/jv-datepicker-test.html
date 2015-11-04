@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../test-fixture/test-fixture-mocha.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../../test-fixture/test-fixture.html">
+
+    <link rel="import" href="../jv-datepicker.html">
+  </head>
+  <body>
+
+    <!-- Setting up test-fixture for jv-datepicker -->
+    <test-fixture id="JvDatepicker">
+      <template>
+        <jv-datepicker></jv-datepicker>
+      </template>
+    </test-fixture>
+
+    <script>
+      'use strict';
+      describe('<compound-datepicker>', function () {
+        var datepicker;
+        beforeEach(function () {
+          datepicker = fixture('JvDatepicker');
+        });
+        context('test inputs for property hours', function () {
+          it('should show correct time in 12-hours when inputs passed in', function () {
+            for (var i = 0; i < 24; i++) {
+              var _h = i % 12;
+              _h = _h === 0 ? 12 : _h;
+              datepicker.setAttribute('hours', i);
+              datepicker.notifyTimeUpdate();
+              if (_h < 10) {
+                expect(datepicker.time.slice(0, 1)).to.be.equal(_h.toString());
+              }else {
+                expect(datepicker.time.slice(0, 2)).to.be.equal(_h.toString());
+              }
+              if (i >= 12) {
+                expect(datepicker.time).to.have.string('PM');
+              }else {
+                expect(datepicker.time).to.have.string('AM');
+              }
+            }
+          });
+          it('should show correct hours in 24-hours when inputs numbers from 0 till 23', function () {
+            datepicker.setAttribute('time-format', 24);
+            for (var i = 0; i < 24; i++) {
+              datepicker.setAttribute('hours', i);
+              expect(datepicker.hours).to.be.equal(i);
+              datepicker.notifyTimeUpdate();
+              expect(datepicker.time).to.not.have.string('M');
+            }
+          });
+          it('should not accept String-typed arguments', function () {
+            datepicker.hours = 'a';
+            expect(datepicker.hours).to.be.within(0, 23);
+          });
+          it('should not accept number lesser than 0', function () {
+            datepicker.hours = -1;
+            expect(datepicker.hours).to.not.be.below(0);
+          })
+          it('should not accept number greater than 23', function () {
+            datepicker.hours = 99;
+            expect(datepicker.hours).to.be.at.most(23);
+          });
+          it('should not be undefined when unset', function () {
+            expect(datepicker.hours).to.not.be.undefined;
+          });
+          it('should be equal to current time', function () {
+            var _format = datepicker.timeFormat,
+                _now = new Date().getHours();
+            if (_format >= 24) {
+              expect(datepicker.time.slice(0, 2)).to.be.equal(('0' + _now).slice(-2));
+              expect(datepicker.time).to.not.have.string('M');
+              expect(datepicker.hours).to.be.equal(_now);
+            }else {
+              if (_now < 10) {
+                expect(datepicker.time.slice(0, 1)).to.be.equal(_now.toString());
+                expect(datepicker.hours).to.be.equal(_now);
+              }else {
+                expect(datepicker.time.slice(0, 2)).to.not.be.equal(_now.toString());
+                expect(datepicker.hours).to.be.not.equal(_now);
+              }
+              expect(datepicker.time).to.have.string('M');
+            }
+          });
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

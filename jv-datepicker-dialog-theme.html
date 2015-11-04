@@ -1,7 +1,7 @@
 <link rel="import" href="paper-dialog-theme.html">
 
 <dom-module id="jv-datepicker-dialog-theme">
-  <template>
+  <template strip-whitespace>
     <style include="paper-dialog-theme">
       :host {
         -moz-user-select: none;
@@ -9,11 +9,7 @@
         -ms-user-select: none;
         display: block;
         box-sizing: border-box;
-
-        background: var(--paper-dialog-background-color, --primary-background-color);
-        color: var(--paper-dialog-color, --primary-text-color);
-
-        /*@apply(--shadow-elevation-16dp);*/
+        background: var(--jv-datepicker-dialog-bg, #fafafa);
         @apply(--layout-vertical);
       }
 
@@ -28,16 +24,16 @@
       }
 
       .buttons paper-button{
-        color: var(--compound-timepicker-buttons, --paper-teal-500);
+        color: var(--jv-datepicker-buttons, --paper-teal-500);
       }
+
+      /* Adaptive Breakpoints */
 
       /* mobile-small */
       /* Loosely supporting IP4 anymore, IP5 onwards. */
       @media all and (min-width: 0) and (max-width: 359px) and (orientation: portrait) {
         :host {
           @apply(--layout-fit);
-          /* clock + buttons = 340 + 57 */
-          /*min-height: 397px;*/
           margin: 24px;
         }
       }
@@ -47,8 +43,6 @@
           @apply(--layout-fit);
           margin-left: 40px;
           margin-right: 40px;
-          /* clock + buttons = 340 + 57 */
-          /*min-height: 397px;*/
         }
       }
       /* N4 */
@@ -74,7 +68,6 @@
         }
       }
 
-
       /* mobile-small-landscape */
       /* Loosely support IP4 */
       @media all and (min-width: 0) and (max-width: 480px) and (orientation: landscape) {
@@ -92,7 +85,6 @@
           margin-left: 40px;
           margin-right: 40px;
           min-height: 317px;
-          /*min-height: 305px;*/
         }
       }
       /* tablet-landscape */
