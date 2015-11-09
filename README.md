@@ -26,61 +26,16 @@ Example:
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
 ## Event handling
-
 `jv-datepicker` or `jv-datepicker-dialog` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
 
 Example:
 
     <jv-datepicker on-format-date="{{selectedDate}}"></jv-datepicker>
-
     <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
 
-## Demo
-[Click here go the demo app + code boilerplate generator](http://motss.github.io/jv-datepicker/components/jv-datepicker/)
+## Generating your own boilerplate code of the compounds
+At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided.
 
-## Attributes
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>bindDate</th>
-<td>String</td>
-<td>2015-09-31</td>
-<td>Return selected date via user interaction.</td>
-</tr>
-<tr>
-<th>disableDays</th>
-<td>Array</td>
-<td>[]</td>
-<td>Input any number from 0 (Sunday) to 6 (Saturday) to disable any day.</td>
-</tr>
-<tr>
-<th>format</th>
-<td>String</td>
-<td>yyyy-mm-dd</td>
-<td>Input date format string for the selected date.</td>
-</tr>
-<tr>
-<th>startDay</th>
-<td>Number</td>
-<td>0</td>
-<td>Input any number from 0 (Sunday) to 6 (Saturday) as the first day of the week.</td>
-</tr>
-<tr>
-<th>resetDate</th>
-<td>Boolean</td>
-<td>false</td>
-<td>Reset calendar to current month and year.</td>
-</tr>
-</tbody>
-</table>
 
 ## Styling
 Now with mixins, head over to the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more details.
