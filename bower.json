@@ -1,6 +1,6 @@
 {
   "name": "jv-datepicker",
-  "version": "1.7.2",
+  "version": "2.0.0",
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
@@ -35,7 +35,9 @@
     "paper-dialog": "PolymerElements/paper-dialog#~1.0.1",
     "paper-icon-button": "PolymerElements/paper-icon-button#~1.0.3",
     "iron-list": "PolymerElements/iron-list#~1.1.5",
-    "paper-slider": "PolymerElements/paper-slider#~1.0.7"
+    "paper-slider": "PolymerElements/paper-slider#~1.0.7",
+    "test-fixture": "PolymerElements/test-fixture#~1.0.1",
+    "iron-test-helpers": "PolymerElements/iron-test-helpers#~1.0.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"

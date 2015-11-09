@@ -23,74 +23,39 @@
 
     <script>
       'use strict';
-      describe('<compound-datepicker>', function () {
+      describe('<jv-datepicker>', function () {
         var datepicker;
         beforeEach(function () {
           datepicker = fixture('JvDatepicker');
         });
-        context('test inputs for property hours', function () {
-          it('should show correct time in 12-hours when inputs passed in', function () {
-            for (var i = 0; i < 24; i++) {
-              var _h = i % 12;
-              _h = _h === 0 ? 12 : _h;
-              datepicker.setAttribute('hours', i);
-              datepicker.notifyTimeUpdate();
-              if (_h < 10) {
-                expect(datepicker.time.slice(0, 1)).to.be.equal(_h.toString());
-              }else {
-                expect(datepicker.time.slice(0, 2)).to.be.equal(_h.toString());
-              }
-              if (i >= 12) {
-                expect(datepicker.time).to.have.string('PM');
-              }else {
-                expect(datepicker.time).to.have.string('AM');
-              }
-            }
-          });
-          it('should show correct hours in 24-hours when inputs numbers from 0 till 23', function () {
-            datepicker.setAttribute('time-format', 24);
-            for (var i = 0; i < 24; i++) {
-              datepicker.setAttribute('hours', i);
-              expect(datepicker.hours).to.be.equal(i);
-              datepicker.notifyTimeUpdate();
-              expect(datepicker.time).to.not.have.string('M');
-            }
-          });
-          it('should not accept String-typed arguments', function () {
-            datepicker.hours = 'a';
-            expect(datepicker.hours).to.be.within(0, 23);
-          });
-          it('should not accept number lesser than 0', function () {
-            datepicker.hours = -1;
-            expect(datepicker.hours).to.not.be.below(0);
-          })
-          it('should not accept number greater than 23', function () {
-            datepicker.hours = 99;
-            expect(datepicker.hours).to.be.at.most(23);
-          });
-          it('should not be undefined when unset', function () {
-            expect(datepicker.hours).to.not.be.undefined;
-          });
-          it('should be equal to current time', function () {
-            var _format = datepicker.timeFormat,
-                _now = new Date().getHours();
-            if (_format >= 24) {
-              expect(datepicker.time.slice(0, 2)).to.be.equal(('0' + _now).slice(-2));
-              expect(datepicker.time).to.not.have.string('M');
-              expect(datepicker.hours).to.be.equal(_now);
-            }else {
-              if (_now < 10) {
-                expect(datepicker.time.slice(0, 1)).to.be.equal(_now.toString());
-                expect(datepicker.hours).to.be.equal(_now);
-              }else {
-                expect(datepicker.time.slice(0, 2)).to.not.be.equal(_now.toString());
-                expect(datepicker.hours).to.be.not.equal(_now);
-              }
-              expect(datepicker.time).to.have.string('M');
-            }
+
+        context('datepicker has role="datepicker"', function () {
+          it('should show "datepicker" for attribute role', function () {
+            expect(datepicker.getAttribute('role')).to.be.equal('datepicker');
           });
         });
 
+        context('test inputs for correct selected view', function() {
+          it('should select date view on start', function () {
+            var _ironSelector = datepicker.querySelector('iron-selector');
+            expect(_ironSelector.selected).to.be.equal('date');
+          });
+
+          it('should select the correct view (year)', function () {
+            var _yearView = datepicker.querySelector('iron-selector #selectionViewYearSelected');
+            _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+            expect(_yearView.classList.contains('iron-selected'));
+          });
+
+          it('should select the correct view (date)', function () {
+            var _ironSelector = datepicker.querySelector('iron-selector'),
+                _dateView = _ironSelector.querySelector('#selectionViewDateSelected'),
+                _yearView = _ironSelector.querySelector('#selectionViewYearSelected');
+            _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+            _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+            expect(_dateView.classList.contains('iron-selected')).to.be.true;
+          });
+        });
       });
     </script>
 

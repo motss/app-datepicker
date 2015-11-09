@@ -4,7 +4,15 @@
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
-<link rel="import" href="../neon-animation/neon-animations.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../neon-animation/animations/fade-in-animation.html">
+<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../neon-animation/animations/slide-left-animation.html">
+<link rel="import" href="../neon-animation/animations/slide-right-animation.html">
+<link rel="import" href="../neon-animation/animations/slide-from-right-animation.html">
+<link rel="import" href="../neon-animation/animations/slide-from-left-animation.html">
+<link rel="import" href="datepicker-slide-from-right-animation.html">
+<link rel="import" href="datepicker-slide-from-left-animation.html">
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-list/iron-list.html">
 <link rel="import" href="jv-datepicker-theme.html">
@@ -157,17 +165,17 @@ Custom property | Description | Default
             </div>
           </div>
 
-          <neon-animatable data-page="year" class="year-page layout vertical">
-              <div class="flex-auto scroll layout vertical year-selector">
-                <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
-                  <template>
-                    <div class="layout horizontal center-center year-column">
-                      <span data-year$="{{item.year}}" class$="{{_applyListCls(item.year, _refresh)}}">{{item.year}}</span>
-                    </div>
-                  </template>
-                </iron-list>
-              </div>
-          </neon-animatable>
+          <div data-page="year" class="year-page layout vertical">
+            <div class="flex-auto scroll layout vertical year-selector">
+              <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
+                <template>
+                  <div class="layout horizontal center-center year-column">
+                    <span data-year$="{{item.year}}" class$="{{_applyListCls(item.year, _refresh)}}">{{item.year}}</span>
+                  </div>
+                </template>
+              </iron-list>
+            </div>
+          </div>
         </neon-animated-pages>
       </div>
     </div>
@@ -188,6 +196,49 @@ Custom property | Description | Default
     },
 
     properties: {
+      // Animation Config for calendar.
+      animationConfig: {
+        value: function () {
+          return {
+            'incrementEntry': [
+              {
+                name: 'slide-from-right-animation',
+                node: this.$.days
+              },
+              {
+                name: 'slide-from-right-animation',
+                node: this.$.weekdays
+              },
+              {
+                name: 'datepicker-slide-from-right-animation',
+                node: this.$.selectedMonthYear
+              }
+            ],
+            'decrementEntry': [
+              {
+                name: 'slide-from-left-animation',
+                node: this.$.days
+              },
+              {
+                name: 'slide-from-left-animation',
+                node: this.$.weekdays
+              },
+              {
+                name: 'datepicker-slide-from-left-animation',
+                node: this.$.selectedMonthYear
+              }
+            ],
+            'incrementExit': {
+              name: 'slide-left-animation',
+              node: this.$.days
+            },
+            'decrementExit': {
+              name: 'slide-right-animation',
+              node: this.$.days
+            }
+          }
+        }
+      },
       /**
        * Public properties.
        */
@@ -370,6 +421,11 @@ Custom property | Description | Default
         value: true,
         readOnly: true
       },
+      // If false, run animation.
+      _animating: {
+        type: Boolean,
+        value: false
+      }
     },
     // Element Lifecycle
     // ready: function () {}, attached: function () {},detached: function () {},
@@ -381,7 +437,12 @@ Custom property | Description | Default
      * @event format-date
      * @detail {{date: String}}
      */
-
+    behaviors: [
+      Polymer.NeonAnimationRunnerBehavior
+    ],
+    listeners: {
+      'neon-animation-finish': '_onNeonAnimationFinish'
+    },
     observers: [
       '_fireIronResize(_selectedYearOrDate)',
       '_computeCalendar(_activeYear, _activeMonth, firstDayOfWeek)',
@@ -553,8 +614,6 @@ Custom property | Description | Default
           return _disables.map(function(el) {
             return (el + 7 - _firstDayOfWeek)%7;
           });
-        }else {
-          this.setAttribute('disable-days', 'invalidArr');
         }
       }else {
         // return untouched _disableDays.
@@ -620,12 +679,26 @@ Custom property | Description | Default
 
     // one month back.
     _prevMonth: function () {
-      this._activeMonth--;
+      if (!this._animating) {
+        this.set('_animating', true);
+        this.cancelAnimation();
+        this.playAnimation('decrementExit');
+        this._activeMonth--;
+        this.cancelAnimation();
+        this.playAnimation('decrementEntry');
+      }
     },
 
     // one month forward.
     _nextMonth: function () {
-      this._activeMonth++;
+      if(!this._animating) {
+        this.set('_animating', true);
+        this.cancelAnimation();
+        this.playAnimation('incrementExit');
+        this._activeMonth++;
+        this.cancelAnimation();
+        this.playAnimation('incrementEntry');
+      }
     },
 
     // Change _activeYear based on transition of value change of _activeMonth.
@@ -787,11 +860,15 @@ Custom property | Description | Default
     _updateCalendarCls: function(_shiftedDisableDays, _calendar, _firstDayOfWeek) {
       return !this._disableCls;
     },
-
+    // reflectToAttribute for Array.
     _disableDaysFunc: function(newVal, oldVal) {
       // might cause perf issue, leave it for debugging use.
       // might remove in the near future.
       this.setAttribute('disable-days', JSON.stringify(newVal));
+    },
+    // Force animation to run completely.
+    _onNeonAnimationFinish: function () {
+      this.set('_animating', false);
     },
 
 //    _computeWeekNumber: function () {

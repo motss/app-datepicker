@@ -10,7 +10,6 @@
   <link rel="import" href="../../paper-slider/paper-slider.html">
   <link rel="import" href="../../paper-button/paper-button.html">
   <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
-  <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
   <link rel="import" href="../../neon-animation/animations/scale-up-animation.html">
   <link rel="import" href="../../neon-animation/animations/fade-out-animation.html">
 
@@ -82,7 +81,6 @@
       font-size: 10px;
     }
 
-
     /* mixin */
     jv-datepicker-dialog#colorDialog {
       background: #424242;
@@ -115,7 +113,7 @@
   </style>
 </head>
 <body unresolved>
-<template is="dom-bind" id="datepicker" strip-whitespace>
+<template is="dom-bind" id="datepicker">
   <div class="horizontal-section-container">
     <div>
       <h4>Simple Styled</h4>
@@ -514,13 +512,6 @@
 
     return _date.getFullYear() + '-' + _zero(_date.getMonth() + 1) + '-' + _zero(_date.getDate());
   }
-
-  // disable context menu on hold (right click on mobile).
-  // function _disableRightClick(ev) {
-  //   ev.preventDefault();
-  //   ev.stopPropagation();
-  //   return false;
-  // }
 </script>
 </body>
 </html>
