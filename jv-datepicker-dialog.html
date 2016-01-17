@@ -1,81 +1,76 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="jv-datepicker.html">
-<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+
 <link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
-<link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../paper-button/paper-button.html">
-<link rel="import" href="jv-datepicker-dialog-theme.html">
+
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 
 <dom-module id="jv-datepicker-dialog">
   <template strip-whitespace>
-    <style include="jv-datepicker-dialog-theme"></style>
+    <style>
+      :host {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        box-sizing: border-box;
 
-    <!-- Main codes starts here -->
-    <div class="container layout vertical flex-auto">
-      <!-- jv-datepicker's code -->
-      <jv-datepicker class="flex-auto layout vertical content"
-                     first-day-of-week="{{firstDayOfWeek}}"
-                     disable-days="{{disableDays}}"
-                     date-format="{{dateFormat}}"
-                     bind-date="{{_dateOnHold}}"></jv-datepicker>
+        display: block;
+      }
+    </style>
 
-      <!-- Dialog buttons -->
-      <div id="buttonContainer" class="buttons layout horizontal">
+    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="format" date="{{date}}" show-long-date="[[showLongDate]]">
+      <div class="buttons">
         <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button dialog-confirm autofocus on-tap="updateBindDate">ok</paper-button>
+        <paper-button dialog-confirm>ok</paper-button>
       </div>
-    </div>
+    </jv-datepicker>
   </template>
-
   <script>
-    (function() {
-      Polymer({
-        is: 'jv-datepicker-dialog',
+    Polymer({
+      is: 'jv-datepicker-dialog',
 
-        properties: {
-          firstDayOfWeek: Number,
-          disableDays: Array,
-          dateFormat: String,
-          bindDate: {
-            type: String,
-            notify: true
-          },
-          _dateOnHold: String
+      properties: {
+        firstDayOfWeek: Number,
+        disableDays: Array,
+        minDate: String,
+        maxDate: String,
+        format: String,
+        date: {
+          type: String,
+          notify: true
         },
+        showLongDate: Boolean,
+      },
 
-        behaviors: [
-          Polymer.PaperDialogBehavior,
-          Polymer.NeonAnimationRunnerBehavior
-        ],
-
-        listeners: {
-          'neon-animation-finish': '_onNeonAnimationFinish'
-        },
-        _renderOpened: function() {
-          if (this.withBackdrop) {
-            this.backdropElement.open();
-          }
-          this.playAnimation('entry');
-        },
-        _renderClosed: function() {
-          if (this.withBackdrop) {
-            this.backdropElement.close();
-          }
-          this.playAnimation('exit');
-        },
-        _onNeonAnimationFinish: function() {
-          if (this.opened) {
-            this._finishRenderOpened();
-          } else {
-            this._finishRenderClosed();
-          }
-        },
-
-        updateBindDate: function(ev) {
-          this.set('bindDate', this._dateOnHold);
-          this.fire('format-date', {date: this._dateOnHold});
+      behaviors: [
+        Polymer.PaperDialogBehavior,
+        Polymer.NeonAnimationRunnerBehavior
+      ],
+      listeners: {
+        'neon-animation-finish': '_onNeonAnimationFinish'
+      },
+      _renderOpened: function() {
+        if (this.withBackdrop) {
+          this.backdropElement.open();
         }
-      });
-    })();
+        this.playAnimation('entry');
+      },
+      _renderClosed: function() {
+        if (this.withBackdrop) {
+          this.backdropElement.close();
+        }
+        this.playAnimation('exit');
+      },
+      _onNeonAnimationFinish: function() {
+        if (this.opened) {
+          this._finishRenderOpened();
+        } else {
+          this._finishRenderClosed();
+        }
+      },
+
+    });
   </script>
 </dom-module>

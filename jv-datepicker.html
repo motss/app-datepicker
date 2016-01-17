@@ -1,22 +1,19 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../iron-media-query/iron-media-query.html">
-<link rel="import" href="../paper-styles/paper-styles.html">
-<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="jv-datepicker-icons.html">
+<link rel="import" href="datepicker-slide-from-left-animation.html">
+<link rel="import" href="datepicker-slide-from-right-animation.html">
+
+<link rel="import" href="../iron-selector/iron-selector.html">
+<link rel="import" href="../iron-list/iron-list.html">
+
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
+
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
 <link rel="import" href="../neon-animation/animations/fade-in-animation.html">
 <link rel="import" href="../neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../neon-animation/animations/slide-left-animation.html">
-<link rel="import" href="../neon-animation/animations/slide-right-animation.html">
-<link rel="import" href="../neon-animation/animations/slide-from-right-animation.html">
 <link rel="import" href="../neon-animation/animations/slide-from-left-animation.html">
-<link rel="import" href="datepicker-slide-from-right-animation.html">
-<link rel="import" href="datepicker-slide-from-left-animation.html">
-<link rel="import" href="../iron-selector/iron-selector.html">
-<link rel="import" href="../iron-list/iron-list.html">
-<link rel="import" href="jv-datepicker-theme.html">
-
+<link rel="import" href="../neon-animation/animations/slide-from-right-animation.html">
 <!--
 Material Design: [Pickers](https://www.google.com/design/spec/components/pickers.html#pickers-date-pickers)
 
@@ -32,17 +29,7 @@ Example:
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-### Event handling
-
-`jv-datepicker` or `jv-datepicker-dialog` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date and bind it to your own property, say the `selectedDate` property in the example provided below.
-
-Example:
-
-    <jv-datepicker on-format-date="{{selectedDate}}"></jv-datepicker>
-
-    <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
-
-### Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`
+### (Coming soon!) Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`
 
 At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!
 
@@ -52,26 +39,27 @@ Style the datepicker with CSS as you would a normal DOM element.
 
     jv-datepicker-dialog#darkThemedDialog {
       background: #424242;
-      --jv-datepicker-buttons: #80CBC4;
       --jv-datepicker-bg: #424242;
       --jv-datepicker-selection-bg: #555555;
       --jv-datepicker-selection-color: #cccccc;
       --jv-datepicker-iron-selected: #FFFFFF;
-      --jv-datepicker-calendar-color: #ffffff;
       --jv-datepicker-calendar-bg: #424242;
+      --jv-datepicker-calendar-color: #ffffff;
       --jv-datepicker-weekdays-color: #c6c6c6;
       --jv-datepicker-selected-day-bg: #80CBC4;
       --jv-datepicker-selected-day-color: #555555;
+      --jv-datepicker-selected-year-bg: #f5f5f5;
       --jv-datepicker-selected-year-color: #80CBC4;
       --jv-datepicker-today-color: #80CBC4;
       --jv-datepicker-disabled-color: #ffff00;
-      --jv-datepicker-icon-buttons-color: #ffff00;
-      --jv-datepicker-icon-buttons-ink-color: #ffff00;
+      --jv-datepicker-icon-button-color: #ffff00;
+      --jv-datepicker-icon-button-ink-color: #ffff00;
+      --jv-datepicker-button-color: #80CBC4;
     }
 
 By default, the datepicker is in light theme and now you are able to style almost all possible sections of the datepicker with your own choices of color.
 
-The following custom properties and mixins are also available for styling:
+The following custom properties and mixin are also available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
@@ -80,15 +68,17 @@ Custom property | Description | Default
 `--jv-datepicker-selection-color` | Text color of the display section (selectionView) | #b2dfdb
 `--jv-datepicker-iron-selected` | Text color of the view selector | #fefefe
 `--jv-datepicker-calendar-bg` | Background color of calendar section | #fafafa
-`--jv-datepicker-calendar-color` | Text color of calendar section | #000000
+`--jv-datepicker-calendar-color` | Text color of calendar section | #000
 `--jv-datepicker-weekdays-color` | Text color of weekdays | #9b9b9b
 `--jv-datepicker-selected-day-bg` | Background color of selected day | #009688
-`--jv-datepicker-selected-day-color` | Text color of selected day | #ffffff
+`--jv-datepicker-selected-day-color` | Text color of selected day | #fff
+`--jv-datepicker-selected-year-bg` | Background color of selected year in year list | #f5f5f5
 `--jv-datepicker-selected-year-color` | Text color of selected year in year list | #009688
 `--jv-datepicker-today-color` | Text color of today's day | #009688
 `--jv-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
 `--jv-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
 `--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
+`--jv-datepicker-button-color | Color of `paper-button` | #009688
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 
 @author motss
@@ -97,787 +87,853 @@ Custom property | Description | Default
 -->
 <dom-module id="jv-datepicker">
   <template strip-whitespace>
-    <style include="jv-datepicker-theme"></style>
+    <style>
+      :root {
+        --jv-datepicker-default-height: calc(300px + 84px);
+      }
 
-    <!-- Element's code starts here -->
-    <iron-media-query query="(orientation: portrait)" query-matches="{{_portrait}}"></iron-media-query>
-    <div id="datepickerContainer" class$="{{_applyContentCls(_portrait)}}">
-      <div id="selectionView" class="selection-view">
-        <iron-selector selected="{{_selectedYearOrDate}}"
-                       attr-for-selected="data-view"
-                       class="iron-selector-selection-view">
-          <div id="selectionViewYearSelected" class="year-selected selection-view-iron-selector" data-view="year">
-            <span>{{_selectedYear}}</span>
+      :host {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        box-sizing: border-box;
+
+        background: var(--jv-datepicker-bg, #fafafa);
+        @apply(--jv-datepicker);
+        display: block;
+      }
+
+      *, *::before, *::after {
+        box-sizing: inherit;
+      }
+
+      div.datepicker {
+        width: 300px;
+        height: var(--jv-datepicker-height, --jv-datepicker-default-height);
+        max-height: calc(300px + 84px + 57px);
+        @apply(--layout-vertical);
+      }
+
+      iron-selector.selected-fulldate {
+        min-height: 84px;
+        padding: 8px 24px;
+        color: var(--jv-datepicker-selection-color, #b2dfdb);
+        background-color: var(--jv-datepicker-selection-bg, #009688);
+        @apply(--layout-vertical);
+      }
+      div.selected-year.iron-selected,
+      div.selected-date.iron-selected {
+        color: var(--jv-datepicker-iron-selected, #fefefe);
+      }
+      div.selected-year {
+        font-size: 14px;
+        font-weight: 800;
+        height: 34px;
+        cursor: pointer;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+      div.selected-date {
+        font-size: 32px;
+        font-weight: 800;
+        height: 34px;
+        cursor: pointer;
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+      }
+
+      neon-animated-pages.fullcalendar {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        color: var(--jv-datepicker-calendar-color, #000);
+        background-color: var(--jv-datepicker-calendar-bg, #fafafa);
+        @apply(--layout-vertical);
+      }
+      div.navigator {
+        max-height: 46px;
+        padding: 3px 10px;Text
+        position: relative;
+        margin-top: 8px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      div.nav-month-year {
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+        @apply(--layout-flex-auto);
+      }
+      div.days-of-week {
+        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      div.each-days-of-week {
+        font-size: 10px;
+        padding: 13px;
+        max-height: 36px;
+        width: 41px;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      div.days-of-month {
+        /*padding-bottom: 8px;*/
+        @apply(--layout-horizontal);
+        @apply(--layout-wrap);
+        @apply(--layout-center-justified);
+      }
+      div.each-days-of-month {
+        font-size: 10px;
+        height: 35px;
+        width: 35px;
+        margin-left: 3px;
+        margin-right: 3px;
+        position: relative;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
+        border-radius: 50%;
+        background-color: var(--jv-datepicker-selected-day-bg, #009688);
+        color: var(--jv-datepicker-selected-day-color, #fff);
+      }
+      div.days-of-month > div.each-days-of-month.is-today {
+        color: var(--jv-datepicker-today-color, #009688);
+      }
+      div.days-of-month > .each-days-of-month.is-disabled-day {
+        color: var(--jv-datepicker-disabled-color, #9e9e9e);
+      }
+      div.each-days-of-month:not(.is-non-selectable) {
+        cursor: pointer;
+      }
+
+      div.each-list-of-years {
+        height: 64px;
+        cursor: pointer;
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+      div.each-list-of-years.is-selected {
+        background-color: var(--jv-datepicker-selected-year-bg, #f5f5f5);
+        color: var(--jv-datepicker-selected-year-color, #009688);
+        font-weight: 800;
+      }
+
+      /* paper-icon-button */
+      paper-icon-button {
+        color: var(--jv-datepicker-icon-button-color, #737373);
+        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #737373);
+      }
+
+      /* content tag selector */
+      div.calendar-view > ::content > div.buttons {
+        color: var(--jv-datepicker-button-color, #009688);
+        position: relative;
+        padding: 8px 8px 8px 24px;
+        margin: 0;
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
+
+      /* landscape */
+      @media all and (orientation: landscape) {
+        div.datepicker {
+          width: 512px;
+          height: 288px !important;
+          @apply(--layout-horizontal);
+        }
+
+        iron-selector.selected-fulldate {
+          width: calc(100% / 3 + 48px);
+          height: 100%;
+        }
+        div.selected-date {
+          height: 68px;
+          @apply(--layout-vertical);
+          @apply(--layout-start);
+          @apply(--layout-center-justified);
+        }
+
+        neon-animated-pages.fullcalendar {
+          height: 100%;
+        }
+        div.calendar-view {
+          padding-bottom: 0;
+        }
+        div.navigator {
+          padding: 2px 10px;
+          margin-top: 0;
+        }
+        div.days-of-week {
+          padding: 0 3px;
+        }
+        div.each-days-of-week {
+          width: calc(100% / 7 - 20px);
+          padding: 0;
+          margin-left: 10px;
+          margin-right: 10px;
+        }
+        div.days-of-month {
+          padding: 0 3px;
+        }
+        div.each-days-of-month {
+          height: 29px;
+          margin-left: 10px;
+          margin-right: 10px;
+          width: calc(100% / 7 - 20px);
+        }
+      }
+    </style>
+
+    <div class="datepicker">
+      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view">
+        <div class="selected-year" view="year">
+          [[_selectedYear]]
+        </div>
+        <div class="selected-date" view="calendar">
+          [[_selectedDaysOfWeek]],&nbsp;
+          <span>[[_computeShortMonthName(_selectedMonth)]] [[_selectedDate]]</span>
+        </div>
+      </iron-selector>
+
+      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+        <div class="calendar-view" view="calendar">
+          <div class="navigator">
+            <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_setUpdateMonth" action="decrement"></paper-icon-button>
+            <div id="navMonthYear" class="nav-month-year">
+              [[_computeMonthName(_activeMonth)]] [[_activeYear]]
+            </div>
+            <paper-icon-button icon="datepicker:chevron-right" on-transitionend="_incrementMonth" on-tap="_setUpdateMonth" action="increment"></paper-icon-button>
           </div>
-          <div id="selectionViewDateSelected" class="date-selected selection-view-iron-selector" data-view="date">
-            <div class="selected-weekday">
-              <span>{{_computeTextWeekday(_selectedWeekday, _slice)}}, </span>
-            </div>
-            <div class="selected-month-date">
-              <span>{{_computeTextMonth(_selectedMonth, _slice)}} </span>
-              <span>{{_selectedDate}}</span>
-            </div>
-          </div>
-        </iron-selector>
-      </div>
 
-      <div class="calendar-view layout vertical flex-auto">
-        <neon-animated-pages id="pages" class="pages flex-auto"
-                                        selected="[[_selectedYearOrDatePage]]"
-                                        entry-animation="fade-in-animation"
-                                        exit-animation="fade-out-animation"
-                                        attr-for-selected="data-page">
-          <div class="calendar-page flex-auto layout vertical" data-page="date">
-            <div id="monthYear" class="month-year-bar layout horizontal center-center">
-              <paper-icon-button icon="chevron-left" on-tap="_prevMonth"></paper-icon-button>
-              <div id="selectedMonthYear" class="selected-month-year flex-auto">{{_computeTextMonth(_activeMonth)}} {{_activeYear}}</div>
-              <paper-icon-button icon="chevron-right" on-tap="_nextMonth"></paper-icon-button>
-            </div>
-
-            <div id="calendarView" data-view="calendar" class="full-calendar flex-auto layout vertical scroll">
-              <div id="weekdays" class="weekdays-bar flex-auto layout horizontal center-center">
-                <template is="dom-repeat" items="{{_weekdays}}">
-                  <div class="weekday-column layout flex-auto center-center horizontal">
-                    <span></span>
-                    <span>{{item}}</span>
-                    <span></span>
-                  </div>
-                </template>
+          <div id="daysOfWeek" class="days-of-week">
+            <template is="dom-repeat" items="[[_daysOfWeek]]" index-as="index" strip-whitespace>
+              <div class="each-days-of-week">
+                [[item]]
               </div>
+            </template>
+          </div>
 
-              <div class="calendar-without-weekdays-bar flex-auto scroll layout vertical">
-                <div id="days" class="days-content flex-auto layout vertical">
-                  <template is="dom-repeat" items="{{_calendar}}" as="day">
-                    <div id$="[[_computeWeekId(index)]]" class="week-row layout horizontal center-center flex-auto">
-                      <template is="dom-repeat" items="{{day}}">
-                        <div class="day-column layout flex-auto center-center horizontal">
-                          <span></span>
-                          <div id$="[[_computeDayId(item)]]"
-                               data-idx$="{{index}}"
-                               class$="{{_computeDayStyle(item, index, _disableCls)}}"
-                               disabled$="{{_computeDisabledAttr(index, _disableCls)}}"
-                               on-tap="_selectDate">{{item}}</div>
-                          <span></span>
-                        </div>
-                      </template>
-                    </div>
-                  </template>
-                </div>
+          <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
+            <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
+              <div class$="each-days-of-month[[_isToday(item, _activeYear, _activeMonth)]][[_isEmptyDate(item)]][[_isChosenDaysOfMonth(item)]][[_isDisableDays(index, disableDays.*, minDate, maxDate, item)]]" index="[[index]]" date="[[item]]">
+                [[item]]
               </div>
-            </div>
+            </template>
           </div>
 
-          <div data-page="year" class="year-page layout vertical">
-            <div class="flex-auto scroll layout vertical year-selector">
-              <iron-list id="yearList" class="flex year-list" items="{{_years}}" as="item" on-tap="_selectYear">
-                <template>
-                  <div class="layout horizontal center-center year-column">
-                    <span data-year$="{{item.year}}" class$="{{_applyListCls(item.year, _refresh)}}">{{item.year}}</span>
-                  </div>
-                </template>
-              </iron-list>
+          <content select=".buttons"></content>
+        </div>
+
+        <iron-list id="listOfYears" items="[[_listOfYears]]" view="year" selection-enabled selected-item="{{_chosenListOfYears}}">
+          <template strip-whitespace>
+            <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]">
+              [[item.year]]
             </div>
-          </div>
-        </neon-animated-pages>
-      </div>
+          </template>
+        </iron-list>
+      </neon-animated-pages>
+
     </div>
   </template>
 
-</dom-module>
+  <script>
+    var _monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    var _dayNames = [
+      'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+      'Thursday', 'Friday', 'Saturday'
+    ];
 
-<script>
+    Polymer({
+      is: 'jv-datepicker',
 
-  var dateObject = new Date();
+      hostAttributes: {
+        role: 'datepicker',
+      },
 
-  Polymer({
+      behaviors: [
+        Polymer.NeonAnimationRunnerBehavior
+      ],
 
-    is: 'jv-datepicker',
+      properties: {
+        firstDayOfWeek: {
+          type: Number,
+          value: 0
+        },
+        disableDays: {
+          type: Array,
+          value: function() {
+            return [0, 6, 4];
+          }
+        },
+        minDate: {
+          type: String,
+          value: '1000-00-01'
+        },
+        maxDate: {
+          type: String,
+          value: '9999-99-99'
+        },
+        format: {
+          type: String,
+          value: 'yyyy-mm-dd'
+        },
+        date: {
+          type: String,
+          value: function() {
+            var _now = new Date();
+            return [_now.getFullYear(), ('0' + _now.getMonth() + 1).slice(-2),
+            _now.getDate()].join('-');
+          },
+          notify: true
+        },
+        showLongDate: {
+          type: Boolean,
+          value: false
+        },
 
-    hostAttributes: {
-      'role': 'datepicker'
-    },
+        _daysOfWeek: {
+          type: Array,
+          value: function() {
+            return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+          },
+          computed: '_computeDaysOfWeek(firstDayOfWeek)'
+        },
+        _daysOfMonth: {
+          type: Array,
+          value: function() {
+            return [1,2,3,4,5];
+          }
+        },
+        _listOfYears: {
+          type: Array,
+          value: function() {
+            for (var _listOfYears = [], y = 1900,
+              i = y; i <= 2100; i++) {
+              _listOfYears.push({
+                year: i
+              });
+            }
+            return _listOfYears;
+          }
+        },
 
-    properties: {
-      // Animation Config for calendar.
-      animationConfig: {
-        value: function () {
-          return {
-            'incrementEntry': [
-              {
-                name: 'slide-from-right-animation',
-                node: this.$.days
-              },
-              {
-                name: 'slide-from-right-animation',
-                node: this.$.weekdays
-              },
-              {
-                name: 'datepicker-slide-from-right-animation',
-                node: this.$.selectedMonthYear
-              }
-            ],
-            'decrementEntry': [
-              {
-                name: 'slide-from-left-animation',
-                node: this.$.days
-              },
-              {
-                name: 'slide-from-left-animation',
-                node: this.$.weekdays
-              },
-              {
-                name: 'datepicker-slide-from-left-animation',
-                node: this.$.selectedMonthYear
-              }
-            ],
-            'incrementExit': {
-              name: 'slide-left-animation',
-              node: this.$.days
+        _activeView: {
+          type: String,
+          value: 'calendar'
+        },
+        _activeYear: {
+          type: Number,
+          value: function() {
+            return new Date().getFullYear();
+          }
+        },
+        _activeMonth: {
+          type: Number,
+          value: function() {
+            return new Date().getMonth();
+          }
+        },
+        _isIncrementMonth: {
+          type: Boolean,
+          value: false
+        },
+        _isDecrementMonth: {
+          type: Boolean,
+          value: false
+        },
+
+        _selectedYear: {
+          type: Number,
+          value: new Date().getFullYear()
+        },
+        _selectedMonth: {
+          type: Number,
+          value: new Date().getMonth()
+        },
+        _selectedDate: {
+          type: Number,
+          value: new Date().getDate()
+        },
+        _selectedDaysOfWeek: {
+          type: String,
+          value: function() {
+            var _daysOfWeek = new Date().getDay();
+            if (_daysOfWeek < 0) {
+              _daysOfWeek = 6;
+            }
+            return _dayNames[_daysOfWeek].slice(0, 3);
+          }
+        },
+        _chosenListOfYears: {
+          type: Object,
+          observer: '_chosenListOfYearsChanged'
+        },
+        _chosenDaysOfMonth: {
+          type: Number,
+          value: 99
+        },
+
+        _isListUpdated: {
+          type: Boolean,
+          value: false
+        },
+
+        _isSelectedDateConfirmed: {
+          type: Boolean,
+          value: false
+        },
+        _format: {
+          type: Object,
+          value: function() {
+            return {y: 'yyyy', m: 'mm', d: 'dd', s1: '-', s2: '-'};
+          }
+        },
+
+      },
+
+      observers: [
+        '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek)',
+        '_updateList(_activeView)',
+        '_computeSeparateFormat(format)',
+        '_computeShowLongDate(showLongDate)'
+      ],
+
+      // Element Lifecycle
+
+      ready: function() {
+        // `ready` is called after all elements have been configured, but
+        // propagates bottom-up. This element's children are ready, but parents
+        // are not.
+        //
+        // This is the point where you should make modifications to the DOM (when
+        // necessary), or kick off any processes the element wants to perform.
+      },
+
+      attached: function() {
+        // `attached` fires once the element and its parents have been inserted
+        // into a document.
+        //
+        // This is a good place to perform any work related to your element's
+        // visual state or active behavior (measuring sizes, beginning animations,
+        // loading resources, etc).
+        this.set('animationConfig', {
+          'incrementEntry': [
+            {
+              name: 'slide-from-right-animation',
+              node: this.$.daysOfWeek
             },
-            'decrementExit': {
-              name: 'slide-right-animation',
-              node: this.$.days
+            {
+              name: 'slide-from-right-animation',
+              node: this.$.daysOfMonth
+            },
+            {
+              name: 'datepicker-slide-from-right-animation',
+              node: this.$.navMonthYear
+            }
+          ],
+          'decrementEntry': [
+            {
+              name: 'slide-from-left-animation',
+              node: this.$.daysOfWeek
+            },
+            {
+              name: 'slide-from-left-animation',
+              node: this.$.daysOfMonth
+            },
+            {
+              name: 'datepicker-slide-from-left-animation',
+              node: this.$.navMonthYear
+            }
+          ]
+        });
+        // setup iron-list.
+        this.$.listOfYears.selectItem(new Date().getFullYear() - 1900);
+        // setup distributed children.
+        var _content = this.getEffectiveChildren();
+        var _paperButtons = Polymer.dom(_content[0]).querySelectorAll('paper-button');
+        // workaround to check for _content[0] as paper-button outside of
+        // this element will be queried as well even though outside of content tag.
+        if (_content[0] && _paperButtons.length > 0) {
+          for (var i = 0; i < _paperButtons.length; i++) {
+            // addEventListener to paper-button with dialog-confirm.
+            if (_paperButtons[i].hasAttribute('dialog-confirm')) {
+              // attach event handler which first binded to this scope.
+              _paperButtons[i].addEventListener('tap', this._confirmSelectedDate.bind(this));
+              _paperButtons[i].addEventListener('transitionend', this.updateBindDate.bind(this));
             }
           }
-        }
-      },
-      /**
-       * Public properties.
-       */
-      /**
-       * Return selected date. Eg. '2020-02-20'.
-       */
-      bindDate: {
-        type: String,
-        value: function() {
-          var _date, _yy, _mm, _dd;
-
-          _date = dateObject;
-          _dd = _date.getDate();
-          _mm = _date.getMonth() + 1;
-          _yy = _date.getFullYear();
-
-          return Array.prototype.join.call([_yy, ('0' + _mm).slice(-2), _dd], '-');
-        },
-        computed: '_formatDate(dateFormat, _selectedYear, _selectedMonth, _selectedDate)',
-        reflectToAttribute: true,
-        notify: true
-      },
-      /**
-       * Date format string. Default: 'yyyy-mm-dd'.
-       */
-      dateFormat: {
-        type: String,
-        value: function() {
-          return 'yyyy-mm-dd';
-        },
-        reflectToAttribute: true
-      },
-      /**
-       * Array of days numbered from 0 to 6 for disabling. Eg. weekends.
-       * (`JSON.stringify` the array before passing in).
-       */
-      disableDays: {
-        type: Array,
-        value: function () {
-          return JSON.stringify([]);
-        },
-        // reflectToAttribute: true,
-        observer: '_disableDaysFunc'
-      },
-      /**
-       * First Day of the week. Numbered days: 0 (Sun) to 6 (Sat).
-       */
-      firstDayOfWeek: {
-        type: Number,
-        value: 0,
-        reflectToAttribute: true,
-        observer: '_validateFirstDayOfWeek'
-      },
-
-      /*************************************************************************
-       * Private Properties
-       */
-      // An object which consists of 100 years for selection.
-      _years: {
-        type: Object,
-        value: function() {
-          var t = [],
-              _y = 2015;
-          for (i= _y - 50 ; i <= _y + 50; i++) {
-            t.push({
-              year: i
-            });
-          }
-          return t;
-        }
-      },
-      // To indicate that list has been updated with list items.
-      _listReady: {
-        type: Boolean,
-        value: false
-      },
-      // To indicate which page has been selected (year or date).
-      _selectedYearOrDatePage: String,
-      // Object of selected year from iron-list.
-      _selectedYearIndex: {
-        type: Object,
-        value: function() {
-          return (dateObject.getFullYear() - 2015) + 50 - 1;
-        }
-      },
-      // To update the computed class. Used in iron-list.
-      _refresh: {
-        type: Boolean,
-        value: false
-      },
-      // To update the computed clas. Used in disabled days in calendar.
-      _disableCls: {
-        type: Boolean,
-        value: false,
-        computed: '_updateCalendarCls(_shiftedDisableDays, _calendar, firstDayOfWeek)'
-      },
-      // Array contains rows of weeks which contains columns of days.
-      _calendar: {
-        type: Array,
-        value: function() {
-          return [];
-        },
-        computed: '_computeCalendar(_activeYear, _activeMonth, firstDayOfWeek)'
-      },
-      // Array contains disabled days shifted by different firstDayOfWeek.
-      _shiftedDisableDays: {
-        type: Array,
-        value: function() {
-          return [];
-        },
-        computed: '_shiftDisableDays(disableDays, firstDayOfWeek)'
-      },
-      // Array of all weekDays texts (S, M, T, W, T, F, S).
-      _weekdays: {
-        type: Array,
-        value: function() {
-          return [];
-        },
-        computed: '_computeWeekdays(firstDayOfWeek)'
-      },
-      // Selected weekday.
-      _selectedWeekday: {
-        type: String,
-        value: function() {
-          return dateObject.getDay();
-        }
-      },
-      // Selected date.
-      _selectedDate: {
-        type: Number,
-        value: function() {
-          return dateObject.getDate();
-        },
-        observer: '_selectedDateChanged'
-      },
-      // Selected month.
-      _selectedMonth: {
-        type: String,
-        value: function() {
-          return dateObject.getMonth();
-        }
-      },
-      // Selected year.
-      _selectedYear: {
-        type: Number,
-        value: function (){
-          return dateObject.getFullYear();
-        }
-      },
-      // Currently active year.
-      _activeYear: {
-        type: Number,
-        value: function() {
-          return dateObject.getFullYear();
-        }
-      },
-      // Currently active month.
-      _activeMonth: {
-        type: Number,
-        value: function() {
-          return dateObject.getMonth();
-        },
-        observer: '_activeMonthChanged'
-      },
-      // Currently active date.
-      _activeDate: {
-        type: Number,
-        value: function() {
-          return dateObject.getDate();
-        }
-      },
-      // Used to update iron-list to propagate items.
-      _selectedYearOrDate: {
-        type: String,
-        value: 'date'
-      },
-      // If true, slice first 3 letters of the month.
-      _slice: {
-        type: Boolean,
-        value: true,
-        readOnly: true
-      },
-      // If false, run animation.
-      _animating: {
-        type: Boolean,
-        value: false
-      }
-    },
-    // Element Lifecycle
-    // ready: function () {}, attached: function () {},detached: function () {},
-
-    // Element Behaviorset
-    /**
-     * The `format-date` event is fired whenever `_formatDate` is called.
-     *
-     * @event format-date
-     * @detail {{date: String}}
-     */
-    behaviors: [
-      Polymer.NeonAnimationRunnerBehavior
-    ],
-    listeners: {
-      'neon-animation-finish': '_onNeonAnimationFinish'
-    },
-    observers: [
-      '_fireIronResize(_selectedYearOrDate)',
-      '_computeCalendar(_activeYear, _activeMonth, firstDayOfWeek)',
-    ],
-
-    /***************************************************************************
-     * Applying classes.
-     */
-
-    // Calculate class based on screen orientation.
-    _applyContentCls: function(_portrait) {
-      var _cls = 'layout flex-auto content ';
-
-      _cls += _portrait ? 'vertical' : 'horizontal';
-
-      return _cls;
-    },
-
-    // Style selected date on calendar.
-    _styleSelected: function (addCls) {
-      if (addCls) {
-        this.classList.add('day-selected');
-      }else {
-        if (this) {
-          this.classList.remove('day-selected');
-        }
-      }
-    },
-
-    // Style day if it is today or being disabled.
-    _computeDayStyle: function (_date, _dayIdx) {
-      var _cls = 'day',
-          _today = new Date(),
-          _tm = _today.getMonth(),
-          _ty = _today.getFullYear();
-      if (_date === this._activeDate && this._activeMonth === _tm && this._activeYear === _ty) {
-        _cls += ' is-today';
-      }
-
-      if (!_date || this._isDisabledDay(_dayIdx)) {
-        _cls += ' is-disabled';
-      }
-
-      return _cls;
-    },
-
-    // Apply class to list.
-    _applyListCls: function(_year) {
-      var _cls = 'year-column-year ';
-      if (_year === this._selectedYear) {
-        _cls += ' selected-year';
-      }
-      return _cls;
-    },
-
-    /***************************************************************************
-     * Rendering Datepicker.
-     */
-
-    // Compute weekdays based on _firstDayOfWeek.
-    _computeWeekdays: function (_firstDayOfWeek) {
-      var _arrayWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-      for (var i = 0; i < _firstDayOfWeek; i++) {
-        _arrayWeek.push(_arrayWeek.shift());
-      }
-      return _arrayWeek;
-    },
-
-    // Compute _calendar based on firstDayOfWeek.
-    _computeCalendar: function (_activeYear, _activeMonth, _firstDayOfWeek) {
-      // _activeMonth always changes.
-      if (_activeMonth >= 0 && _activeMonth <= 11) {
-        var _days = [],
-            _weeks = [],
-            _elem = '',
-            _y = _activeYear,
-            _m = _activeMonth,
-            _firstDayOfMonth = (new Date(_y, _m, 1).getDay() + 7 - _firstDayOfWeek)%7,
-            _totalDay = this._computeTotalDay(_firstDayOfMonth, _y, _m),
-            _totalWeekRow = (_totalDay + _firstDayOfMonth) > 35 ? 42 : 35;
-        for (var i = 1, j = 0; i <= _totalWeekRow; i++, j++) {
-          if (_firstDayOfMonth < i) {
-            _elem = (i - _firstDayOfMonth);
-            _elem = _elem > _totalDay ? '' : _elem;
-          }
-          Array.prototype.push.call(_weeks, _elem);
-          if (j >= 6) {
-            Array.prototype.push.call(_days, _weeks);
-            j = -1;
-            _weeks = [];
-          }
-        }
-        return _days;
-      }
-    },
-
-    // Compute id for weekRow for styling.
-    _computeWeekId: function (_idx) {
-      if (_idx) {
-        return 'week' + _idx;
-      }
-    },
-
-    // Compute id for day.
-    _computeDayId: function (_idx) {
-      if (_idx) {
-        return 'day' + _idx;
-      }
-    },
-
-    // Compute Weekday based on index.
-    _computeTextWeekday: function(_weekdayIdx, _slice) {
-      var _selectWd = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][_weekdayIdx];
-      if (_slice) {
-        _selectWd = String.prototype.slice.call(_selectWd, 0, 3);
-      }
-      return _selectWd;
-    },
-
-    // Compute month to generate trimmed text of month.
-    _computeTextMonth: function(monthIdx, _slice) {
-      var _selectedMth = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIdx];
-      if (_slice) {
-        _selectedMth = String.prototype.slice.call(_selectedMth, 0, 3);
-      }
-      return _selectedMth;
-    },
-
-    // Compute total days in a month.
-    _computeTotalDay: function (_firstDayOfMonth, _firstYear, _firstMonth) {
-      if (_firstMonth >= 0 && _firstDayOfMonth <= 11) {
-        var _totalDay = 31;
-        switch (_firstMonth) {
-          case 1:
-            _totalDay = new Date(_firstYear, 1, 29).getMonth() === 1 ? 29 : 28;
-            break;
-          case 3:
-          case 5:
-          case 8:
-          case 10:
-            _totalDay = 30;
-            break;
-          case 0:
-          case 2:
-          case 4:
-          case 6:
-          case 7:
-          case 9:
-          case 11:
-            break;
-          default:
-            console.log('Error at _computeTotalDay: Invalid _firstMonth ' + _firstMonth + '.');
-        }
-        return _totalDay;
-      }
-    },
-
-    // Compute attr for disabled day.
-    _computeDisabledAttr: function (_dayIdx) {
-      return this._isDisabledDay(_dayIdx);
-    },
-
-    // Shift disable days if _firstDayOfWeek is not 0.
-    _shiftDisableDays: function(_disableDays, _firstDayOfWeek) {
-      // only shift _disableDays when _firstDayOfWeek > 0.
-      var _disables = JSON.parse(_disableDays);
-      if (_firstDayOfWeek > 0) {
-        if (this._validateDisableDays(_disables)){
-          return _disables.map(function(el) {
-            return (el + 7 - _firstDayOfWeek)%7;
+          // update to a new height for datepicker if paper-buttons present.
+          this.updateStyles({
+            '--jv-datepicker-height': (300 + 84 + 57) + 'px'
           });
+        }else {
+
         }
-      }else {
-        // return untouched _disableDays.
-        return _disables;
-      }
-    },
+      },
 
-    /***************************************************************************
-     * Validations
-     */
+      detached: function() {
+        // The analog to `attached`, `detached` fires when the element has been
+        // removed from a document.
+        //
+        // Use this to clean up anything you did in `attached`.
+      },
 
-    // Check if valid firstDayOfWeek.
-    _validateFirstDayOfWeek: function (oldVal, newVal) {
-      if (typeof newVal !== 'undefined') {
-        if (newVal < 0 || newVal > 6) {
-          this.set('firstDayOfWeek', 0);
+      // Element Behavior
+
+      //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+      //  Days   31  28  31  30  31  30  31  31  30  31  30  31
+      //   31?    0       2       4       6   7       9      11
+      //   30?                3       5           8      10
+      //  Feb?        1
+      //  Su Mo Tu We Th Fr Sa startDay + _firstDayOfWeek
+      //                  1  2        5 - 0 < 0 ? 6 : 5 - 0;
+      //  Mo Tu We Th Fr Sa Su
+      //               1  2  3        5 - 1 < 0 ? 6 : 5 - 1;
+      //  Tu We Th Fr Sa Su Mo
+      //            1  2  3  4        5 - 2 < 0 ? 6 : 5 - 2;
+      //  We Th Fr Sa Su Mo Tu
+      //         1  2  3  4  5        5 - 3 < 0 ? 6 : 5 - 3;
+      //  Th Fr Sa Su Mo Tu We
+      //      1  2  3  4  5  6        5 - 4 < 0 ? 6 : 5 - 4;
+      //  Fr Sa Su Mo Tu We Th
+      //   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
+      //  Sa Su Mo Tu We Th Fr
+      //                     1        5 - 6 < 0 ? 6 : 5 - 6;
+      _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek) {
+        function _computeTotalDaysOfMonth(_year, _month) {
+            var _totalDaysOfMonth = 31;
+            if (_month === 1) {
+              _totalDaysOfMonth = new Date(_year, 1, 29) .getMonth() === 1 ? 29 : 28;
+            }else if (_month === 3 || _month === 5 ||
+              _month === 8 || _month === 10) {
+              _totalDaysOfMonth = 30;
+            }
+            return _totalDaysOfMonth;
         }
-      }
-    },
 
-    // Check if valid disableDays
-    _validateDisableDays: function(_disableDays) {
-      if (Array.isArray(_disableDays)) {
-        return _disableDays.every(function(el){
-          return el >= 0 && el < 7;
+        // var _now = new Date();
+        var _start = new Date(_activeYear, _activeMonth, 1).getDay();
+        var _daysOfMonth = [];
+        var _totalDays = _computeTotalDaysOfMonth(_activeYear, _activeMonth);
+
+        //  if _firstDayOfWeek is greater than 0 but less than 7.
+        if (_firstDayOfWeek > 0 && _firstDayOfWeek < 7) {
+          _start = _start - _firstDayOfWeek;
+          _start = _start < 0 ? 7  + _start : _start;
+        }
+
+        for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
+          _daysOfMonth.push((i >= _start & i < _start + _totalDays ? j : ''));
+        }
+        // update _chosenDaysOfMonth for every new calendar being rendered.
+        this.set('_chosenDaysOfMonth', this._computeChosenDaysOfMonth(_daysOfMonth));
+
+        // return _daysOfMonth;
+        this.set('_daysOfMonth', _daysOfMonth);
+      },
+      _setUpdateMonth: function(ev) {
+        var _target = ev.target;
+        while (_target && _target.tagName !== 'PAPER-ICON-BUTTON') {
+          _target = _target.parentElement;
+        }
+        // separate ready flag for increment and decrement due to focus.
+        // on-transitionend on previous focused paper-icon-button will trigger
+        // the previous function to be executed instead of the current one.
+        if (_target && _target.hasAttribute('action')) {
+          if (_target.getAttribute('action') === 'increment') {
+            this.set('_isIncrementMonth', true);
+          }else {
+            this.set('_isDecrementMonth', true);
+          }
+        }
+      },
+      _incrementMonth: function() {
+        if (this._isIncrementMonth) {
+          var _month = this._activeMonth;
+          if (++_month > 11) {
+            this._activeYear++;
+          }
+          this.set('_activeMonth', _month > 11 ? 0 : _month);
+          this.cancelAnimation();
+          this.playAnimation('incrementEntry');
+          this.set('_isIncrementMonth', false);
+        }
+      },
+      _decrementMonth: function() {
+        if (this._isDecrementMonth) {
+          var _month = this._activeMonth;
+          if (--_month < 0) {
+            this._activeYear--;
+          }
+          this.set('_activeMonth', _month < 0 ? 11 : _month);
+          this.cancelAnimation();
+          this.playAnimation('decrementEntry');
+          this.set('_isDecrementMonth', false);
+        }
+      },
+      _computeMonthName: function(_activeMonth) {
+        return _monthNames[_activeMonth];
+      },
+      _computeShortMonthName: function(_selectedMonth) {
+        return _monthNames[_selectedMonth].slice(0, 3);
+      },
+      _chooseDaysOfMonth: function(ev) {
+        var _target = ev.target;
+        // daysOfMonth is chooseable when:
+        // a) _target.date is of type Number,
+        // b) _target.classList.contains('is-disabled-day').
+        if (_target && _.isNumber(_target.date) &&
+          !_target.classList.contains('is-disabled-day')) {
+          if (this._chosenDaysOfMonth !== 99) {
+            var _node = Polymer.dom(this.$.daysOfMonth).querySelectorAll('div');
+            this.toggleClass('chosen-days-of-month', false,
+              _node[this._chosenDaysOfMonth]);
+          }
+          this.toggleClass('chosen-days-of-month', true, _target);
+          this.set('_chosenDaysOfMonth', _target.index);
+
+          this.set('_selectedDate', _target.date);
+          this.set('_selectedYear', this._activeYear);
+          this.set('_selectedMonth', this._activeMonth);
+          this.set('_selectedDaysOfWeek', this._computeShortDayName(_target.index % 7));
+        }
+      },
+      _computeShortDayName: function(_index) {
+        return _dayNames[_index].slice(0, 3);
+      },
+
+      _isToday: function(_item, _activeYear, _activeMonth) {
+        var _now = new Date();
+        if (_item === _now.getDate() &&
+          _activeYear === _now.getFullYear() &&
+          _activeMonth === _now.getMonth()) {
+          return ' is-today';
+        }
+        return '';
+      },
+      _isEmptyDate: function(_item) {
+        if (_.isNumber(_item)) {
+          return '';
+        }
+        return ' is-non-selectable';
+      },
+      _isChosenDaysOfMonth: function(_item) {
+        // able to retain selected daysOfMonth even after navigating to other months.
+        if (this._chosenDaysOfMonth !== 99 && this._activeYear === this._selectedYear &&
+            this._activeMonth === this._selectedMonth &&
+            _item === this._selectedDate) {
+          return ' chosen-days-of-month';
+        }
+        return '';
+      },
+      _isDisableDays: function(_index, _disableDays, _minDate, _maxDate, _item) {
+        // _index % 7 gives values from 0 to 6.
+        // and if _index matches some of these disableDays values return true.
+        var _isDisabledDays = this.disableDays.some(function(_n) {
+          return _n === _index % 7;
         });
-      }
-    },
-
-    // Check if given date is disabled.
-    _isDisabledDay: function (_date) {
-      if (this._shiftedDisableDays) {
-        return this._shiftedDisableDays.some(function (el) {
-          return _date === el;
-        });
-      }
-    },
-
-    // Store _oldDate and style selected date.
-    _selectedDateChanged: function (newValue, oldValue) {
-    //   this._selectedDate = newValue;
-      if (oldValue) {
-        this._styleSelected.call(this.$.days.querySelector('#day' + oldValue));
-      }
-    },
-
-    /***************************************************************************
-     *  Runtime
-     */
-    // Do things when select a date on calendar.
-    _selectDate: function (ev) {
-      var target = ev.target;
-      if (!target.hasAttribute('disabled') && ev.target.textContent) {
-        this._selectedMonth = this._activeMonth;
-        this._selectedDate = parseInt(ev.target.textContent);
-        this._selectedYear = this._activeYear;
-        this._selectedWeekday = new Date(this._activeYear, this._activeMonth, this._selectedDate).getDay();
-        this._styleSelected.call(ev.target, true);
-        // update select date.
-        // this._formatDate(this.dateFormat, this._selectYear, this._selectedMonth, this._selectedDate);
-      }
-    },
-
-    // one month back.
-    _prevMonth: function () {
-      if (!this._animating) {
-        this.set('_animating', true);
-        this.cancelAnimation();
-        this.playAnimation('decrementExit');
-        this._activeMonth--;
-        this.cancelAnimation();
-        this.playAnimation('decrementEntry');
-      }
-    },
-
-    // one month forward.
-    _nextMonth: function () {
-      if(!this._animating) {
-        this.set('_animating', true);
-        this.cancelAnimation();
-        this.playAnimation('incrementExit');
-        this._activeMonth++;
-        this.cancelAnimation();
-        this.playAnimation('incrementEntry');
-      }
-    },
-
-    // Change _activeYear based on transition of value change of _activeMonth.
-    _activeMonthChanged: function (newValue, oldValue) {
-      if (newValue < 0) {
-        this.set('_activeMonth', 11);
-        this._activeYear--;
-      }else if (newValue > 11) {
-        this.set('_activeMonth', 0);
-        this._activeYear++;
-      }
-    },
-
-    // Return formatted date string.
-    _formatDate: function(_dateFormat, _selectedYear, _selectedMonth, _selectedDate) {
-        var dateformat = _dateFormat,
-            yearreg = dateformat.match(/y/gi),
-            dayreg = dateformat.match(/d/gi),
-            monthreg = dateformat.match(/m/gi);
-
-        // regexp year
-        if (yearreg) {
-          var _formattedYear = _selectedYear;
-          switch (yearreg.length) {
-            case 2:
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^yy[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]yy$/)) {
-                dateformat = dateformat.replace(/y{1,2}/gi, _formattedYear%100);
-                break;
-              }
-            default:
-              dateformat = dateformat.replace(/[o]*[y]+[y|o]*/gi, _formattedYear);
+        var _isLessThanMinDate;
+        var _isMoreThanMaxDate;
+        // ------ < _minDate ---------------- _maxDate > ------
+        // if _item is of type Number.
+        // if converted _item into new Date() < minDate or > maxDate.
+        if (_.isNumber(_item)) {
+          var _minDateObj = this._computeMinDate(_minDate);
+          var _maxDateObj = this._computeMaxDate(_maxDate);
+          var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
+          // run two different obj differently just in case only one of them
+          // is defined and still be able to update disabled days.
+          if (!_.isUndefined(_minDateObj)) {
+            _isLessThanMinDate = _currentDate < new Date(_minDateObj.year,
+              _minDateObj.month - 1, _minDateObj.date);
+          }
+          if (!_.isUndefined(_maxDateObj)) {
+            _isMoreThanMaxDate = _currentDate > new Date(_maxDateObj.year,
+              _maxDateObj.month - 1, _maxDateObj.date);
           }
         }
+        // To disable a date, it must be either one of the followings:
+        // a) _isDisabledDays (set by property disableDays),
+        // b) _isLessThanMinDate (set by property minDate), and
+        // c) _isMoreThanMaxDate (set by propery moreDate).
+        if (_isDisabledDays || _isLessThanMinDate || _isMoreThanMaxDate) {
+          return ' is-disabled-day';
+        }
+        return '';
+      },
 
-        // regexp day
-        if (dayreg) {
-          var _formattedDay = _selectedDate;
-          switch (dayreg.length) {
-            case 1:
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]d[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^d[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]d$/)) {
-                dateformat = dateformat.replace(/d/gi, _formattedDay);
-                break;
-              }
+      _chooseListOfYears: function(_year) {
+        // ev.model (1968)
+        // index: 2
+        // item.year: 1968
+        // selected: false
 
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]do[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^do[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]do$/)) {
-                var _suffixOrdinal, _cardinalNumber = _formattedDay%10;
-                if (_formattedDay === 11 || _formattedDay === 12 || _formattedDay === 13) {
-                  _suffixOrdinal = 'th';
-                }else {
-                  switch (_cardinalNumber) {
-                    case 1:
-                      _suffixOrdinal = 'st';
-                      break;
-                    case 2:
-                      _suffixOrdinal = 'nd';
-                      break;
-                    case 3:
-                      _suffixOrdinal = 'rd';
-                      break;
-                    default:
-                      _suffixOrdinal = 'th';
-                  }
-                }
-                dateformat = dateformat.replace(/[o]*[d]+[o]+/gi, _formattedDay + _suffixOrdinal);
-                break;
-              }
-            case 2:
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^dd[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]dd$/)) {
-                  dateformat = dateformat.replace(/[d]+/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
-                break;
-              }
-            default:
-              dateformat = dateformat.replace(/[o]*[d]+[d|0]*/gi, _formattedDay.toString().replace(/^(\d)$/gi, '0$1'));
+        // if none is selected is the listOfYears, reset to old value (_activeYear).
+        if (_.isNull(_year) || _.isEmpty(_year)) {
+          // reset unselected listOfYears to _activeYear;
+          this.$.listOfYears.selectItem(this._activeYear - 1900);
+          // notifyResize iron-list after selectItem function.
+          this.async(function() {
+            this.$.listOfYears.notifyResize();
+          });
+          return;
+        }
+
+        this.set('_selectedYear', _year.year);
+        this.set('_activeYear', _year.year);
+      },
+      _isListOfYearsSelected: function(_selected) {
+        if (_selected) {
+          return ' is-selected'
+        }
+        return '';
+      },
+      _chosenListOfYearsChanged: function(_new, _old) {
+        // whenever _chosenListOfYears changes in value, pass the selection.
+        this._chooseListOfYears(_new);
+        // return to calendar after selection/ selection changed.
+        if (this._activeView === 'year') {
+          this.set('_activeView', 'calendar');
+        }
+      },
+
+      _computeDaysOfWeek: function(_firstDayOfWeek) {
+        // _daysOfWeek needs to be changed as well with firstDayOfWeek.
+        if (_firstDayOfWeek > 0 && _firstDayOfWeek < 7) {
+          var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+          var _spliced = _dow.splice(_firstDayOfWeek);
+          _spliced.push(_dow);
+          return _.flatten(_spliced);
+        }
+        return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      },
+      _computeChosenDaysOfMonth: function(_daysOfMonth) {
+        // depends on _daysOfMonth and recalculate the index of _chosenDaysOfMonth.
+        var _newDaysOfMonthIdx = _daysOfMonth.indexOf(this._selectedDate);
+        if (_newDaysOfMonthIdx > 0) {
+          return _newDaysOfMonthIdx;
+        }
+      },
+
+      _computeMinDate: function(_minDate) {
+        var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
+        var m = re.exec(_minDate);
+        if (m !== null) {
+          return {year: parseInt(m[1]), month: parseInt(m[2]),
+            date: parseInt(m[3])};
+        }
+      },
+      _computeMaxDate: function(_maxDate) {
+        var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
+        var m = re.exec(_maxDate);
+        if (m !== null) {
+          return {year: parseInt(m[1]), month: parseInt(m[2]),
+            date: parseInt(m[3])};
+        }
+      },
+
+      // when _activeView is year, scrollToIndex and notifyResize iron-list.
+      // workaround to always center selected year and...
+      // to fix duplicated items when first switching to year view.
+      _updateList: function(_activeView) {
+        if (_activeView === 'year') {
+          if (!this._isListUpdated) {
+            this.$.listOfYears.scrollToIndex(this._activeYear - 1900);
+            this.$.listOfYears.notifyResize();
+            this.set('_isListUpdated', true);
+          }else {
+            this.$.listOfYears.scrollToIndex(this._activeYear - 1900 - 2);
+            this.$.listOfYears.notifyResize();
           }
         }
+      },
 
-        // regexp month
-        if (monthreg) {
-          // var _numberedMonth = this._activeMonth,
-          var _numberedMonth = _selectedMonth,
-              _formattedMonth;
-          switch (monthreg.length) {
-            case 1:
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^m[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]m$/)) {
-                dateformat = dateformat.replace(/m/gi, _numberedMonth + 1);
-                break;
-              }
-            case 2:
-            case 3:
-            case 4:
-              if (dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/^m{2,4}[$-/:-?{-~!"^_`\[\]]/) ||
-                  dateformat.match(/[$-/:-?{-~!"^_`\[\]]m{2,4}$/)) {
-                _formattedMonth = _numberedMonth + 1;
-                if (monthreg.length === 2) {
-                  dateformat = dateformat.replace(/[m]+/gi, _formattedMonth.toString().replace(/^(\d)$/gi, '0$1'));
-                }else if (monthreg.length === 3) {
-                  dateformat = dateformat.replace(/[m]+/gi, this._selectedMonth);
-                }else {
-                  dateformat = dateformat.replace(/[m]+/gi, this._computeTextMonth(_numberedMonth));
-                }
-                break;
-              }
-            default:
-              dateformat = dateformat.replace(/[o]*[m]+[o]*/gi, _numberedMonth + 1);
+      // split capturing group of format into year, month and date.
+      _computeSeparateFormat: function(_format) {
+        var re = /(yyyy|yy)[^a-zA-Z0-9]+(mmmm|mmm|mm|m)[^a-zA-Z0-9]+(do|dd|d)/i;
+        var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
+        var m = re.exec(_format);
+        var n = sym.exec(_format);
+        if (m !== null && n !== null) {
+          this.set('_format.y', m[1]);
+          this.set('_format.m', m[2]);
+          this.set('_format.d', m[3]);
+          this.set('_format.s1', n[1]);
+          this.set('_format.s2', n[2]);
+        }
+      },
+
+      _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
+        var _formattedYear  = _selectedYear;
+        var _formattedMonth  = _monthNames[_selectedMonth];
+        var _formattedDate  = _selectedDate;
+        var _finalFormatted = '';
+
+        // compute new formatted year.
+        if (_format.y === 'yy') {
+          _formattedYear = _selectedYear%100;
+        }
+        // compute new formatted month.
+        if (_format.m === 'mmm') {
+          _formattedMonth = _formattedMonth.slice(0, 3);
+        }else if (_format.m === 'mm') {
+          _formattedMonth = ('0' + (_selectedMonth + 1)).slice(-2);
+        }else if (_format.m === 'm') {
+          _formattedMonth = _selectedMonth + 1;
+        }
+        // compute new formatted date.
+        if (_format.d === 'do') {
+          var _cardinalNumber = _formattedDate%10;
+          var _suffixOrdinal = _cardinalNumber > 3 ? 'th' :
+            ['th', 'st', 'nd', 'rd'][_cardinalNumber];
+          if (_formattedDate === 11 || _formattedDate == 12 || _formattedDate === 13) {
+            _suffixOrdinal = 'th';
           }
+          _formattedDate = _formattedDate + _suffixOrdinal;
+        }else if (_format.d === 'dd') {
+          _formattedDate = ('0' + _formattedDate).slice(-2);
         }
-      return dateformat;
-    },
-
-    // Select year from yearList.
-    _selectYear: function(ev) {
-      var _target = ev.target,
-          _selected;
-
-      while (_target && _target.tagName !== 'SPAN') {
-        _target = _target.parentElement;
-      }
-
-      if (_target) {
-        if (_target.hasAttribute('data-year')) {
-          var _selected = parseInt(_target.getAttribute('data-year')),
-              _idx = (_selected - 2015) + 50;
-          this._selectedYearIndex = _idx;
-          this._selectedYear = _selected;
-          this._activeYear = _selected;
-          this._selectedYearOrDatePage = 'date';
-          this._selectedYearOrDate = 'date';
-          this._refresh = !this._refresh;
-          // temporarily center year..
-          this.$.yearList.scrollToIndex(_idx);
-          this.$.yearList.scrollToIndex(_idx - 2);
+        // set formatted value with user defined symbols.
+        _finalFormatted = [_formattedYear, _format.s1, _formattedMonth,
+          _format.s2, _formattedDate].join('');
+        // show long date (eg. Fri, May 12 2017 instead.
+        if (this.showLongDate) {
+          var _longDate = new Date(_finalFormatted).toString().slice(0, 15);
+          _finalFormatted = _longDate.slice(0, 3) + ',' + _longDate.slice(3);
         }
-      }
-    },
+        this.set('date', _finalFormatted);
+      },
+      // functions for content tag.
+      _confirmSelectedDate: function(ev) {
+        if (!this._isSelectedDateConfirmed) {
+          this.set('_isSelectedDateConfirmed', true);
+        }
+      },
+      updateBindDate: function(ev) {
+        if (this._isSelectedDateConfirmed) {
+          this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
+            this._selectedDate, this._format);
+          this.set('_isSelectedDateConfirmed', false);
+        }
+      },
+      // Update date to show long date or short date.
+      _computeShowLongDate: function(_showLongDate) {
+        if (_showLongDate) {
+          var _longDate = new Date(this.date).toString().slice(0, 15);
+          this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
+        }else {
+          var _shortDate = new Date(this.date);
+          this.set('date', [_shortDate.getFullYear(),
+            ('0' + (_shortDate.getMonth() + 1)).slice(-2), _shortDate.getDate()].join('-'));
+        }
+      },
 
-    // Fire iron-resize to update iron-list.
-    _fireIronResize: function(_selectedYearOrDate) {
-      if (!this._listReady && _selectedYearOrDate === 'year') {
-        this.$.yearList.scrollToIndex(this._selectedYearIndex);
-        this.$.yearList.fire('iron-resize');
-        this.set('_listReady', true);
-      }
-      this._selectedYearOrDatePage = _selectedYearOrDate;
-    },
-
-    // Whenever _shiftDisableDays or _calendar changes in value,
-    // update calendar class.
-    _updateCalendarCls: function(_shiftedDisableDays, _calendar, _firstDayOfWeek) {
-      return !this._disableCls;
-    },
-    // reflectToAttribute for Array.
-    _disableDaysFunc: function(newVal, oldVal) {
-      // might cause perf issue, leave it for debugging use.
-      // might remove in the near future.
-      this.setAttribute('disable-days', JSON.stringify(newVal));
-    },
-    // Force animation to run completely.
-    _onNeonAnimationFinish: function () {
-      this.set('_animating', false);
-    },
-
-//    _computeWeekNumber: function () {
-//      var now = new Date(),
-//          onejan = new Date(now.getFullYear(), 0, 1);
-//          weekNumber = Math.ceil((((now - onejan) / 86400000) + onejan.getDay() + 1) / 7);
-//      return weekNumber;
-//    }
-  });
-</script>
+    });
+  </script>
+</dom-module>

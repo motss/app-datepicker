@@ -15,6 +15,12 @@ See the [component page](http://motss.github.io/jv-datepicker/components/jv-date
 
 An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
+### Update (v2.1.0)
+Three new features have been added to the element:
+- `minDate` (dates that are smaller than the predefined `minDate` will be disabled)
+- `maxDate` (dates that are larger than the predefined `maxDate` will be disabled)
+- `showLongDate` (to show long date instead of short date. Eg. Fri, May 12 2017)
+
 Example:
 
     <jv-datepicker><jv-datepicker>
@@ -25,15 +31,7 @@ Example:
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-## Event handling
-`jv-datepicker` or `jv-datepicker-dialog` will fire an event `format-date` whenever a date is being selected via user interaction and it is one of the ways which user can make use of to retrieve the value of the selected date.
-
-Example:
-
-    <jv-datepicker on-format-date="{{selectedDate}}"></jv-datepicker>
-    <jv-datepicker-dialog modal on-format-date="{{selectedDate}}"></jv-datepicker-dialog>
-
-## Generating your own boilerplate code of the compounds
+## (Coming soon!) Generating your own boilerplate code of the compounds
 At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided.
 
 
