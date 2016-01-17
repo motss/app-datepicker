@@ -11,15 +11,15 @@
 <!-- ![jv-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-jv-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
-See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
-
-An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
-
-### Update (v2.1.0)
+## Update (v2.1.0)
 Three new features have been added to the element:
 - `minDate` (dates that are smaller than the predefined `minDate` will be disabled)
 - `maxDate` (dates that are larger than the predefined `maxDate` will be disabled)
 - `showLongDate` (to show long date instead of short date. Eg. Fri, May 12 2017)
+
+See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
+
+An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
 Example:
 
@@ -31,15 +31,16 @@ Example:
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-## (Coming soon!) Generating your own boilerplate code of the compounds
+
+## ( Coming soon!) Generating your own boilerplate code of the compounds
 At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided.
 
 
 ## Styling
 Now with mixins, head over to the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more details.
 
-## Getting Started
 
+## Getting Started
 1. Install with bower  
 `bower install --save jv-datepicker`
 
@@ -60,6 +61,6 @@ For `jv-datepicker-dialog`,
 
 4. Done
 
-## License
 
+## License
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
