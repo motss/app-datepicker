@@ -361,28 +361,49 @@ Custom property | Description | Default
       ],
 
       properties: {
+        /**
+         * First Day of the week. Numbered days: 0 (Sun) to 6 (Sat).
+         */
         firstDayOfWeek: {
           type: Number,
           value: 0
         },
+        /**
+         * Arrays of days need to be disabled for selection, numbered from
+         * 0 (Sun) to 6 (Sat). Eg. weekends, `disable-days="[0, 6]"``.
+         */
         disableDays: {
           type: Array,
           value: function() {
             return [0, 6, 4];
           }
         },
+        /**
+         * Minimum date for selection. Dates that are smaller than the minimum
+         * date will be disabled for selection.
+         */
         minDate: {
           type: String,
           value: '1000-00-01'
         },
+        /**
+         * Maximum date for selection. Dates that are larger than the maximum
+         * date will be disabled for selection.
+         */
         maxDate: {
           type: String,
           value: '9999-99-99'
         },
+        /**
+         * Format for the selected date. Default to `yyyy-mm-dd`. Eg. `2017-05-17`.
+         */
         format: {
           type: String,
           value: 'yyyy-mm-dd'
         },
+        /**
+         * Selected date in the default format of `yyyy-mm-dd`. Eg. `2017-05-17`.
+         */
         date: {
           type: String,
           value: function() {
@@ -392,6 +413,9 @@ Custom property | Description | Default
           },
           notify: true
         },
+        /**
+         * Selected date will be formatted into long date. Eg. `Fri, May 12 2017`.
+         */
         showLongDate: {
           type: Boolean,
           value: false
