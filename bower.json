@@ -1,6 +1,6 @@
 {
   "name": "jv-datepicker",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
@@ -25,9 +25,7 @@
     "/.*",
     "/test/",
     "LICENSE",
-    "README.md",
-    "datepicker-slide-from-bottom-animation.html"
-    "datepicker-slide-from-top-animation.html",
+    "README.md"
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
