@@ -884,7 +884,6 @@ Custom property | Description | Default
         var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
         var m = re.exec(_format);
         var n = sym.exec(_format);
-				console.log(m, n);
         if (m !== null && n !== null) {
           this.set('_format.y', m[1]);
           this.set('_format.m', m[2]);
