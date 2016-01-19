@@ -884,6 +884,7 @@ Custom property | Description | Default
         var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
         var m = re.exec(_format);
         var n = sym.exec(_format);
+				console.log(m, n);
         if (m !== null && n !== null) {
           this.set('_format.y', m[1]);
           this.set('_format.m', m[2]);
@@ -894,11 +895,17 @@ Custom property | Description | Default
       },
 
       _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
-        var _formattedYear  = _selectedYear;
-        var _formattedMonth  = _monthNames[_selectedMonth];
-        var _formattedDate  = _selectedDate;
-        var _finalFormatted = '';
+				// show long date (eg. Fri, May 12 2017 instead.
+        if (this.showLongDate) {
+          var _longDate = new Date(_selectedYear, _selectedMonth,
+						_selectedDate).toString().slice(0, 15);
+					return _longDate.slice(0, 3) + ',' + _longDate.slice(3);
+        }
 
+				var _formattedYear  = _selectedYear;
+				var _formattedMonth  = _monthNames[_selectedMonth];
+				var _formattedDate  = _selectedDate;
+				var _finalFormatted = '';
         // compute new formatted year.
         if (_format.y === 'yy') {
           _formattedYear = _selectedYear%100;
@@ -926,12 +933,8 @@ Custom property | Description | Default
         // set formatted value with user defined symbols.
         _finalFormatted = [_formattedYear, _format.s1, _formattedMonth,
           _format.s2, _formattedDate].join('');
-        // show long date (eg. Fri, May 12 2017 instead.
-        if (this.showLongDate) {
-          var _longDate = new Date(_finalFormatted).toString().slice(0, 15);
-          _finalFormatted = _longDate.slice(0, 3) + ',' + _longDate.slice(3);
-        }
-        this.set('date', _finalFormatted);
+
+				return _finalFormatted;
       },
       // functions for content tag.
       _confirmSelectedDate: function(ev) {
@@ -941,20 +944,21 @@ Custom property | Description | Default
       },
       updateBindDate: function(ev) {
         if (this._isSelectedDateConfirmed) {
-          this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
-            this._selectedDate, this._format);
+          this.set('date', this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
+            this._selectedDate, this._format));
           this.set('_isSelectedDateConfirmed', false);
         }
       },
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
         if (_showLongDate) {
-          var _longDate = new Date(this.date).toString().slice(0, 15);
+          var _longDate = _.isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) :
+						new Date(this._selectedYear, this._selectedMonth,
+							this._selectedDate).toString().slice(0, 15);
           this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-          var _shortDate = new Date(this.date);
-          this.set('date', [_shortDate.getFullYear(),
-            ('0' + (_shortDate.getMonth() + 1)).slice(-2), _shortDate.getDate()].join('-'));
+					this.set('date', this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
+						this._selectedDate, this._format));
         }
       },
 
