@@ -375,7 +375,7 @@ Custom property | Description | Default
         disableDays: {
           type: Array,
           value: function() {
-            return [0, 6, 4];
+            return [6, 0];
           }
         },
         /**
@@ -884,13 +884,16 @@ Custom property | Description | Default
         var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
         var m = re.exec(_format);
         var n = sym.exec(_format);
-        if (m !== null && n !== null) {
-          this.set('_format.y', m[1]);
-          this.set('_format.m', m[2]);
-          this.set('_format.d', m[3]);
-          this.set('_format.s1', n[1]);
-          this.set('_format.s2', n[2]);
-        }
+				var _temp = {};
+		    if (m !== null && n !== null) {
+					_temp.y = m[1];
+					_temp.m = m[2];
+					_temp.d = m[3];
+					_temp.s1 = n[1];
+					_temp.s2 = n[2];
+		    }
+				this.set('_format', _temp);
+				_temp = null;
       },
 
       _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
@@ -956,8 +959,9 @@ Custom property | Description | Default
 							this._selectedDate).toString().slice(0, 15);
           this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-					this.set('date', this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
-						this._selectedDate, this._format));
+					this.set('date', _.isUndefined(this._selectedDate) ? this.date :
+						this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,	this._selectedDate,
+							this._format));
         }
       },
 
