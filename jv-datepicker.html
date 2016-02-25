@@ -670,7 +670,7 @@ Custom property | Description | Default
         // on-transitionend on previous focused paper-icon-button will trigger
         // the previous function to be executed instead of the current one.
         if (_target && _target.hasAttribute('action')) {
-          if (_target.getAttribute('action') === 'increment') {
+          if (_target.getAttribute('action').indexOf('increment')  >= 0) {
             this.set('_isIncrementMonth', true);
           }else {
             this.set('_isDecrementMonth', true);
