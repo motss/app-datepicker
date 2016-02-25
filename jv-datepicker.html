@@ -408,8 +408,10 @@ Custom property | Description | Default
           type: String,
           value: function() {
             var _now = new Date();
-            return [_now.getFullYear(), ('0' + _now.getMonth() + 1).slice(-2),
-            _now.getDate()].join('-');
+            var _fullyear = _now.getFullYear();
+            var _month = _.padStart(_now.getMonth(), 2, '0');
+            var _date = _.padStart(_now.getDate(), 2, '0');
+            return [_fullyear, _month, _date].join('-');
           },
           notify: true
         },
@@ -916,7 +918,7 @@ Custom property | Description | Default
         if (_format.m === 'mmm') {
           _formattedMonth = _formattedMonth.slice(0, 3);
         }else if (_format.m === 'mm') {
-          _formattedMonth = ('0' + (_selectedMonth + 1)).slice(-2);
+          _formattedMonth = _.padStart(_selectedMonth, 2, '0');
         }else if (_format.m === 'm') {
           _formattedMonth = _selectedMonth + 1;
         }
@@ -930,7 +932,7 @@ Custom property | Description | Default
           }
           _formattedDate = _formattedDate + _suffixOrdinal;
         }else if (_format.d === 'dd') {
-          _formattedDate = ('0' + _formattedDate).slice(-2);
+          _formattedDate = _.padStart(_formattedDate, 2, '0');
         }
         // set formatted value with user defined symbols.
         _finalFormatted = [_formattedYear, _format.s1, _formattedMonth,
