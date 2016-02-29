@@ -409,8 +409,8 @@ Custom property | Description | Default
           value: function() {
             var _now = new Date();
             var _fullyear = _now.getFullYear();
-            var _month = _.padStart(_now.getMonth(), 2, '0');
-            var _date = _.padStart(_now.getDate(), 2, '0');
+            var _month = this._padStart(_now.getMonth() + 1, 2, '0');
+            var _date = this._padStart(_now.getDate() + 1, 2, '0');
             return [_fullyear, _month, _date].join('-');
           },
           notify: true
@@ -425,9 +425,6 @@ Custom property | Description | Default
 
         _daysOfWeek: {
           type: Array,
-          value: function() {
-            return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-          },
           computed: '_computeDaysOfWeek(firstDayOfWeek)'
         },
         _daysOfMonth: {
@@ -714,7 +711,7 @@ Custom property | Description | Default
         // daysOfMonth is chooseable when:
         // a) _target.date is of type Number,
         // b) _target.classList.contains('is-disabled-day').
-        if (_target && _.isNumber(_target.date) &&
+        if (_target && this._isNumber(_target.date) &&
           !_target.classList.contains('is-disabled-day')) {
           if (this._chosenDaysOfMonth !== 99) {
             var _node = Polymer.dom(this.$.daysOfMonth).querySelectorAll('div');
@@ -744,7 +741,7 @@ Custom property | Description | Default
         return '';
       },
       _isEmptyDate: function(_item) {
-        if (_.isNumber(_item)) {
+        if (this._isNumber(_item)) {
           return '';
         }
         return ' is-non-selectable';
@@ -769,17 +766,17 @@ Custom property | Description | Default
         // ------ < _minDate ---------------- _maxDate > ------
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
-        if (_.isNumber(_item)) {
+        if (this._isNumber(_item)) {
           var _minDateObj = this._computeMinDate(_minDate);
           var _maxDateObj = this._computeMaxDate(_maxDate);
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
-          if (!_.isUndefined(_minDateObj)) {
+          if (!this._isUndefined(_minDateObj)) {
             _isLessThanMinDate = _currentDate < new Date(_minDateObj.year,
               _minDateObj.month - 1, _minDateObj.date);
           }
-          if (!_.isUndefined(_maxDateObj)) {
+          if (!this._isUndefined(_maxDateObj)) {
             _isMoreThanMaxDate = _currentDate > new Date(_maxDateObj.year,
               _maxDateObj.month - 1, _maxDateObj.date);
           }
@@ -801,7 +798,7 @@ Custom property | Description | Default
         // selected: false
 
         // if none is selected is the listOfYears, reset to old value (_activeYear).
-        if (_.isNull(_year) || _.isEmpty(_year)) {
+        if (this._isNull(_year) || this._isNumber(_year)) {
           // reset unselected listOfYears to _activeYear;
           this.$.listOfYears.selectItem(this._activeYear - 1900);
           // notifyResize iron-list after selectItem function.
@@ -833,9 +830,10 @@ Custom property | Description | Default
         // _daysOfWeek needs to be changed as well with firstDayOfWeek.
         if (_firstDayOfWeek > 0 && _firstDayOfWeek < 7) {
           var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-          var _spliced = _dow.splice(_firstDayOfWeek);
-          _spliced.push(_dow);
-          return _.flatten(_spliced);
+          var _sliced = _dow.slice(_firstDayOfWeek);
+          var _rest = _dow.slice(0, _firstDayOfWeek);
+          var _concatted = Array.prototype.concat(_sliced, _rest);
+          return _concatted;
         }
         return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       },
@@ -918,7 +916,7 @@ Custom property | Description | Default
         if (_format.m === 'mmm') {
           _formattedMonth = _formattedMonth.slice(0, 3);
         }else if (_format.m === 'mm') {
-          _formattedMonth = _.padStart(_selectedMonth, 2, '0');
+          _formattedMonth = this._padStart(_selectedMonth + 1, 2, '0');
         }else if (_format.m === 'm') {
           _formattedMonth = _selectedMonth + 1;
         }
@@ -932,7 +930,7 @@ Custom property | Description | Default
           }
           _formattedDate = _formattedDate + _suffixOrdinal;
         }else if (_format.d === 'dd') {
-          _formattedDate = _.padStart(_formattedDate, 2, '0');
+          _formattedDate = this._padStart(_formattedDate, 2, '0');
         }
         // set formatted value with user defined symbols.
         _finalFormatted = [_formattedYear, _format.s1, _formattedMonth,
@@ -956,15 +954,31 @@ Custom property | Description | Default
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
         if (_showLongDate) {
-          var _longDate = _.isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) :
+          var _longDate = this._isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) :
 						new Date(this._selectedYear, this._selectedMonth,
 							this._selectedDate).toString().slice(0, 15);
           this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-					this.set('date', _.isUndefined(this._selectedDate) ? this.date :
+					this.set('date', this._isUndefined(this._selectedDate) ? this.date :
 						this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,	this._selectedDate,
 							this._format));
         }
+      },
+
+      // Lodash's replacements.
+      _padStart: function(_string, _length, _chars) {
+        var _len = -_length;
+        var _str = (_chars + _string).slice(_len);
+        return _str;
+      },
+      _isUndefined: function(_value) {
+        return _value === undefined;
+      },
+      _isNull: function(_value) {
+        return _value === null;
+      },
+      _isNumber: function(_value) {
+        return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
       },
 
     });
