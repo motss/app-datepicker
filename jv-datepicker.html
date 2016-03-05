@@ -632,7 +632,7 @@ Custom property | Description | Default
         function _computeTotalDaysOfMonth(_year, _month) {
             var _totalDaysOfMonth = 31;
             if (_month === 1) {
-              _totalDaysOfMonth = new Date(_year, 1, 29) .getMonth() === 1 ? 29 : 28;
+              _totalDaysOfMonth = new Date(_year, 1, 29).getMonth() === 1 ? 29 : 28;
             }else if (_month === 3 || _month === 5 ||
               _month === 8 || _month === 10) {
               _totalDaysOfMonth = 30;
@@ -954,14 +954,10 @@ Custom property | Description | Default
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
         if (_showLongDate) {
-          var _longDate = this._isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) :
-						new Date(this._selectedYear, this._selectedMonth,
-							this._selectedDate).toString().slice(0, 15);
+          var _longDate = this._isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) : new Date(this._selectedYear, this._selectedMonth, this._selectedDate).toString().slice(0, 15);
           this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-					this.set('date', this._isUndefined(this._selectedDate) ? this.date :
-						this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,	this._selectedDate,
-							this._format));
+					this.set('date', this._isUndefined(this._selectedDate) ? this.date : this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,	this._selectedDate, this._format));
         }
       },
 
@@ -981,6 +977,12 @@ Custom property | Description | Default
         return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
       },
 
+      // TODO: Templatize datepicker so that reduce element nodes on page load.
+      // TODO: To add property noAnimation to disable all animations completely.
+      // TODO: To allow custom animation configurations.
+      // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
+      // TODO: To add GIF to README.md.
+      // TODO: To add support for IE11, div.days-of-month can be fixed by removing padding: 0 3px at @media & font seems too large, no user-select none.
     });
   </script>
 </dom-module>
