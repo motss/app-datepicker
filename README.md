@@ -1,5 +1,6 @@
 [![GitHub version](https://badge.fury.io/gh/motss%2Fjv-datepicker.svg)](http://badge.fury.io/gh/motss%2Fjv-datepicker)
 [![Bower version](https://badge.fury.io/bo/jv-datepicker.svg)](http://badge.fury.io/bo/jv-datepicker)
+[![Build Status](https://travis-ci.org/motss/jv-datepicker.svg?branch=master)](https://travis-ci.org/motss/jv-datepicker)
 
 # jv-datepicker
 ![jv-datepicker-v2-dark-portrait](https://cloud.githubusercontent.com/assets/10607759/11032650/1e9b9d36-8718-11e5-95b3-4c5c7baaef3a.png)
