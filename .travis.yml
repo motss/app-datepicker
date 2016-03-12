@@ -16,7 +16,7 @@ before_script:
 - bower install
 - polylint
 script:
-- xvfb-run wct --skip-plugin-sauce
+- xvfb-run wct --skip-plugin sauce
 - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then wct --skip-plugin local; fi
 env:
   global:
