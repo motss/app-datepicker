@@ -266,17 +266,11 @@ Custom property | Description | Default
           padding: 2px 10px;
           margin-top: 0;
         }
-        div.days-of-week {
-          padding: 0 3px;
-        }
         div.each-days-of-week {
           width: calc(100% / 7 - 20px);
           padding: 0;
           margin-left: 10px;
           margin-right: 10px;
-        }
-        div.days-of-month {
-          padding: 0 3px;
         }
         div.each-days-of-month {
           height: 29px;
@@ -318,7 +312,7 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item, _activeYear, _activeMonth)]][[_isEmptyDate(item)]][[_isChosenDaysOfMonth(item)]][[_isDisableDays(index, disableDays.*, minDate, maxDate, item)]]" index="[[index]]" date="[[item]]">
+              <div class$="each-days-of-month[[_isToday(item, _activeYear, _activeMonth)]][[_isEmptyDate(item)]][[_isChosenDaysOfMonth(item, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, disableDays.*, minDate, maxDate, item)]]" index="[[index]]" date="[[item]]">
                 [[item]]
               </div>
             </template>
@@ -524,7 +518,8 @@ Custom property | Description | Default
         '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek)',
         '_updateList(_activeView)',
         '_computeSeparateFormat(format)',
-        '_computeShowLongDate(showLongDate)'
+        '_computeShowLongDate(showLongDate)',
+        '_updateToReflectExternalChange(date)'
       ],
 
       // Element Lifecycle
@@ -746,11 +741,11 @@ Custom property | Description | Default
         }
         return ' is-non-selectable';
       },
-      _isChosenDaysOfMonth: function(_item) {
+      _isChosenDaysOfMonth: function(_item, _selectedYear, _selectedMonth, _selectedDate) {
         // able to retain selected daysOfMonth even after navigating to other months.
-        if (this._chosenDaysOfMonth !== 99 && this._activeYear === this._selectedYear &&
-            this._activeMonth === this._selectedMonth &&
-            _item === this._selectedDate) {
+        if (this._chosenDaysOfMonth !== 99 && this._activeYear === _selectedYear &&
+            this._activeMonth === _selectedMonth &&
+            _item === _selectedDate) {
           return ' chosen-days-of-month';
         }
         return '';
@@ -953,12 +948,134 @@ Custom property | Description | Default
       },
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
+        console.log('_computeShowLongDate');
+        var _isDateDefined = this._isUndefined(this._selectedDate);
         if (_showLongDate) {
-          var _longDate = this._isUndefined(this._selectedDate) ? new Date().toString().slice(0, 15) : new Date(this._selectedYear, this._selectedMonth, this._selectedDate).toString().slice(0, 15);
+          var _longDate = new Date(this._selectedYear, this._selectedMonth, this._selectedDate).toString().slice(0, 15);
+          _longDate = _isDateDefined ? new Date().toString().slice(0, 15) : _longDate;
           this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-					this.set('date', this._isUndefined(this._selectedDate) ? this.date : this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,	this._selectedDate, this._format));
+          var _longDate = this._bindSelectedFulldate(this._selectedYear, this._selectedMonth, this._selectedDate, this._format);
+          _longDate = _isDateDefined ? this.date : _longDate;
+          console.log(_longDate);
+          this.set('date', _longDate);
         }
+      },
+
+      _updateToReflectExternalChange: function(date) {
+        var _showLongDate = this.showLongDate;
+        var _yy = 0;
+        var _mm = 0;
+        var _dd = 0;
+
+        // Encouraged to use standard format for long date.
+        if (_showLongDate) {
+          // Date object works like charm.
+          var _newDate = new Date(date);
+          if (_newDate == 'Invalid Date') {
+            // If still it is an invalid date input...
+            // console.error('Invalid date!');
+            // Restore the invalid input date by calling this method.
+            this._computeShowLongDate(_showLongDate);
+            return;
+          }
+
+          _yy = _newDate.getFullYear();
+          _mm = _newDate.getMonth();
+          _dd = _newDate.getDate();
+        }else {
+          // All possibilityes = 2 * 4 * 3 = 24.
+          // 'yyyy' 'mmmm' 'do' - N
+          // 'yyyy' 'mmmm' 'dd' - P
+          // 'yyyy' 'mmmm' 'd' - P
+          //
+          // 'yyyy' 'mmm' 'do' - N
+          // 'yyyy' 'mmm' 'dd' - P
+          // 'yyyy' 'mmm' 'd' - P
+          //
+          // 'yyyy' 'mm' 'do' - N
+          // 'yyyy' 'mm' 'dd' - P
+          // 'yyyy' 'mm' 'd' - P
+          //
+          // 'yyyy' 'm' 'do' - N
+          // 'yyyy' 'm' 'dd' - P
+          // 'yyyy' 'm' 'd' - P
+          //
+          // 'yy' 'mmmm' 'do' - N
+          // 'yy' 'mmmm' 'dd' - P
+          // 'yy' 'mmmm' 'd' - P
+          //
+          // 'yy' 'mmm' 'do' - N
+          // 'yy' 'mmm' 'dd' - P
+          // 'yy' 'mmm' 'd' - P
+          //
+          // 'yy' 'mm' 'do' - N
+          // 'yy' 'mm' 'dd' - F*
+          // 'yy' 'mm' 'd' - F*
+          //
+          // 'yy' 'm' 'do' - N
+          // 'yy' 'm' 'dd' - F*
+          // 'yy' 'm' 'd' - F*
+
+          // Return when date is undefined.
+          if (!date) {
+            return;
+          }
+
+          var _format = this.format;
+          var _re = /[^a-zA-Z0-9]+/gi;
+          var _cg = date.replace(_re, '-').split('-');
+          var _cgf = _format.replace(_re, '-').split('-');
+          var _cgLen = _cg.length;
+          var _cgfLen = _cgf.length;
+
+          // console.log(_cg, _cgf);
+          // If it happened to be a long name, return.
+          if (_cgLen !== _cgfLen || _cgLen > 3 || _cgfLen > 3) {
+            // console.log(this.showLongDate, date);
+            return;
+          }
+
+          // Loop thru the date format as this is needed to cater for when do is
+          // one of the formats, the ordinal suffix has to be removed.
+          // At the same time extract the date string from the input date.
+          for (var i = 0; i < 3; i++) {
+            if (_cgf[i].indexOf('y') >= 0) {
+              _yy = parseFloat(_cg[i]);
+            }else if (_cgf[i].indexOf('d') >= 0) {
+              if (_cgf[i].indexOf('do') >= 0) {
+                _dd = _cg[i].replace('/[0-9][t|h|r|d|n|s]+/i', '');
+                _dd = parseFloat(_dd);
+              }else {
+                _dd = parseFloat(_cg[i]);
+              }
+            }else {
+              _mm = parseFloat(_cg[i]) - 1;
+            }
+          }
+
+          // If the extracted date is an invalid date...
+          if (new Date(_yy, _mm, _dd) == 'Invalid Date') {
+            // console.error('Invalid Date');
+            this._computeShowLongDate(_showLongDate);
+            return;
+          }
+        }
+
+        // console.log('yy-mm-dd', _yy, _mm, _dd);
+        // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
+        this.set('_activeYear', _yy);
+        this.set('_activeMonth', _mm);
+        this.set('_selectedYear', _yy);
+        this.set('_selectedMonth', _mm);
+        this.set('_selectedDate', _dd);
+
+        // Run this method to format the final output.
+        // It is to ensure that even when date input is not complied to a standard date format,
+        // this method will do its job to rectify the problem.
+        this._computeShowLongDate(_showLongDate);
+        // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
+
       },
 
       // Lodash's replacements.
@@ -974,15 +1091,18 @@ Custom property | Description | Default
         return _value === null;
       },
       _isNumber: function(_value) {
-        return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
+        // return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
+        // Fallback: caused by IE11 as those methods are not supported in IE11.
+        return typeof _value == 'number' || (!isNaN(parseFloat(_value)) && isFinite(_value));
       },
 
+      // TODO: paper-buttons are way too big. Set font-size to 14px instead.
       // TODO: Templatize datepicker so that reduce element nodes on page load.
       // TODO: To add property noAnimation to disable all animations completely.
       // TODO: To allow custom animation configurations.
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: To add GIF to README.md.
-      // TODO: To add support for IE11, div.days-of-month can be fixed by removing padding: 0 3px at @media & font seems too large, no user-select none.
+      // X - TODO: To add support for IE11, div.days-of-month can be fixed by removing padding: 0 3px at @media & font seems too large, no user-select none.
     });
   </script>
 </dom-module>

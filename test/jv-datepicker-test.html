@@ -38,22 +38,134 @@
         context('test inputs for correct selected view', function() {
           it('should select date view on start', function () {
             var _ironSelector = datepicker.querySelector('iron-selector');
-            expect(_ironSelector.selected).to.be.equal('date');
+            expect(_ironSelector.selected).to.be.equal('calendar');
           });
 
           it('should select the correct view (year)', function () {
-            var _yearView = datepicker.querySelector('iron-selector #selectionViewYearSelected');
+            var _yearView = datepicker.querySelector('iron-selector .selected-year');
             _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
             expect(_yearView.classList.contains('iron-selected'));
           });
 
           it('should select the correct view (date)', function () {
             var _ironSelector = datepicker.querySelector('iron-selector'),
-                _dateView = _ironSelector.querySelector('#selectionViewDateSelected'),
-                _yearView = _ironSelector.querySelector('#selectionViewYearSelected');
+                _dateView = _ironSelector.querySelector('div.selected-date'),
+                _yearView = _ironSelector.querySelector('div.selected-year');
             _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
             _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
             expect(_dateView.classList.contains('iron-selected')).to.be.true;
+          });
+        });
+
+        context('test for update to reflect external date change', function() {
+          // All possibilityes = 2 * 4 * 3 = 24.
+          // 'yyyy' 'mmmm' 'do' - N
+          // 'yyyy' 'mmmm' 'dd' - P
+          // 'yyyy' 'mmmm' 'd' - P
+          //
+          // 'yyyy' 'mmm' 'do' - N
+          // 'yyyy' 'mmm' 'dd' - P
+          // 'yyyy' 'mmm' 'd' - P
+          //
+          // 'yyyy' 'mm' 'do' - N
+          // 'yyyy' 'mm' 'dd' - P
+          // 'yyyy' 'mm' 'd' - P
+          //
+          // 'yyyy' 'm' 'do' - N
+          // 'yyyy' 'm' 'dd' - P
+          // 'yyyy' 'm' 'd' - P
+          //
+          // 'yy' 'mmmm' 'do' - N
+          // 'yy' 'mmmm' 'dd' - P
+          // 'yy' 'mmmm' 'd' - P
+          //
+          // 'yy' 'mmm' 'do' - N
+          // 'yy' 'mmm' 'dd' - P
+          // 'yy' 'mmm' 'd' - P
+          //
+          // 'yy' 'mm' 'do' - N
+          // 'yy' 'mm' 'dd' - F*
+          // 'yy' 'mm' 'd' - F*
+          //
+          // 'yy' 'm' 'do' - N
+          // 'yy' 'm' 'dd' - F*
+          // 'yy' 'm' 'd' - F*
+          it('should show correct output date even if date input is invalid when showLongDate is falsy', function() {
+            var _selectedYear = datepicker._selectedYear;
+            var _selectedMonth = datepicker._selectedMonth;
+            var _selectedDate = datepicker._selectedDate;
+            var _allPossibilities = [
+              '2016 January 31st', '2016 January 31', '2016 January 3',
+              '2016 Jan 31st', '2016 Jan 31', '2016 Jan 3',
+              '2016 01 31st', '2016 01 31', '2016 01 3',
+              '2016 1 31st', '2016 1 31', '2016 1 3',
+              '16 January 31st', '16 January 31', '16 January 3',
+              '16 Jan 31st', '16 Jan 31', '16 Jan 3',
+              '16 01 31st', '16 01 31', '16 01 3',
+              '16 1 31st', '16 1 31', '16 1 3'
+            ];
+            var _allPossibilitiesLen = _allPossibilities.length;
+            var _expectedOutput = [
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }
+            ];
+            datepicker.showLongDate = !1;
+
+            for (var i = 0; i < _allPossibilitiesLen; i++) {
+              datepicker.date = _allPossibilitiesLen[i];
+              window.setTimeout(function() {
+                console.log(datepicker.date);
+                expect(new Date(datepicker.date).getFullYear()).to.be.equal(_expectedOutput[i].yy);
+                expect(new Date(datepicker.date).getMonth()).to.be.equal(_expectedOutput[i].mm);
+                expect(new Date(datepicker.date).getDate()).to.be.equal(_expectedOutput[i].dd);
+              }, 1);
+            }
+          });
+
+          it('should show correct output date even if date input is invalid when showLongDate is truthy', function() {
+            var _selectedYear = datepicker._selectedYear;
+            var _selectedMonth = datepicker._selectedMonth;
+            var _selectedDate = datepicker._selectedDate;
+            var _allPossibilities = [
+              '2016 January 31st', '2016 January 31', '2016 January 3',
+              '2016 Jan 31st', '2016 Jan 31', '2016 Jan 3',
+              '2016 01 31st', '2016 01 31', '2016 01 3',
+              '2016 1 31st', '2016 1 31', '2016 1 3',
+              '16 January 31st', '16 January 31', '16 January 3',
+              '16 Jan 31st', '16 Jan 31', '16 Jan 3',
+              '16 01 31st', '16 01 31', '16 01 3',
+              '16 1 31st', '16 1 31', '16 1 3'
+            ];
+            var _allPossibilitiesLen = _allPossibilities.length;
+            var _expectedOutput = [
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy: 2016, mm: 0, dd: 31 }, { yy: 2016, mm: 0, dd: 3 },
+
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate },
+              { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }, { yy:_selectedYear, mm: _selectedMonth, dd: _selectedDate }
+            ];
+            datepicker.showLongDate = !0;
+
+            for (var i = 0; i < _allPossibilitiesLen; i++) {
+              datepicker.date = _allPossibilitiesLen[i];
+              window.setTimeout(function() {
+                console.log(datepicker.date);
+                expect(new Date(datepicker.date).getFullYear()).to.be.equal(_expectedOutput[i].yy);
+                expect(new Date(datepicker.date).getMonth()).to.be.equal(_expectedOutput[i].mm);
+                expect(new Date(datepicker.date).getDate()).to.be.equal(_expectedOutput[i].dd);
+              }, 1);
+            }
           });
         });
       });
