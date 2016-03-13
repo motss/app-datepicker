@@ -78,7 +78,7 @@ Custom property | Description | Default
 `--jv-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
 `--jv-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
 `--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
-`--jv-datepicker-button-color | Color of `paper-button` | #009688
+`--jv-datepicker-button-color` | Color of `paper-button` | #009688
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 
 @author motss
@@ -593,8 +593,8 @@ Custom property | Description | Default
             // addEventListener to paper-button with dialog-confirm.
             if (_paperButtons[i].hasAttribute('dialog-confirm')) {
               // attach event handler which first binded to this scope.
-              _paperButtons[i].addEventListener('tap', this.updateBindDate.bind(this));
-              _paperButtons[i].addEventListener('transitionend', this.updateBindDate.bind(this));
+              _paperButtons[i].addEventListener('tap', this._updateBindDate.bind(this));
+              _paperButtons[i].addEventListener('transitionend', this._updateBindDate.bind(this));
             }
           }
           // update to a new height for datepicker if paper-buttons present.
@@ -944,8 +944,8 @@ Custom property | Description | Default
 				return _finalFormatted;
       },
       // method for content tag (eg. buttons).
-      updateBindDate: function(ev) {
-        this.debounce('updateBindDate', function() {
+      _updateBindDate: function(ev) {
+        this.debounce('_updateBindDate', function() {
           var _type = ev.type;
           if (_type === 'tap') {
             this.set('_isSelectedDateConfirmed', !0);
@@ -1045,7 +1045,8 @@ Custom property | Description | Default
         // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
       },
       /**
-       * Force update the datepicker declaratively
+       * By default, buttons are required so that they are to confirm the date change.
+       * This method allows force update the datepicker declaratively when buttons inside the datepicker to confirm date change.
        */
       enforceDateChange: function() {
         this._computeShowLongDate(this.showLongDate);
