@@ -20,10 +20,10 @@
       }
     </style>
 
-    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{date}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]">
+    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{_readOnlyDate}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]" no-animation="[[noAnimation]]" page-entry-animation="[[pageEntryAnimation]]" page-exit-animation="[[pageExitAnimation]]">
       <div class="buttons">
-        <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button dialog-confirm>ok</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-dismiss>cancel</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-confirm>ok</paper-button>
       </div>
     </jv-datepicker>
   </template>
@@ -44,6 +44,11 @@
         },
         inputDate: String,
         showLongDate: Boolean,
+        noAnimation: Boolean,
+        pageEntryAnimation: String,
+        pageExitAnimation: String,
+
+        _readOnlyDate: String,
       },
 
       behaviors: [
@@ -53,6 +58,9 @@
       listeners: {
         'neon-animation-finish': '_onNeonAnimationFinish'
       },
+      observers: [
+        '_updateReadOnlyDate(_readOnlyDate)'
+      ],
       _renderOpened: function() {
         if (this.withBackdrop) {
           this.backdropElement.open();
@@ -71,6 +79,11 @@
         } else {
           this._finishRenderClosed();
         }
+      },
+
+      // Special method to update two-way binded read-only property.
+      _updateReadOnlyDate: function(_readOnlyDate) {
+        this._setDate(_readOnlyDate);
       },
 
     });

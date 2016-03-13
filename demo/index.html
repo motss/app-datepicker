@@ -269,8 +269,14 @@
           <h4>Datepicker dialog</h4>
           <div class="datepicker-dialog">
             <paper-button raised on-tap="_openDialog">Datepicker Dialog</paper-button>
-            <paper-button disabled>[[selectedDate]]</paper-button>
-            <jv-datepicker-dialog id="datepicker" with-backdrop first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation"></jv-datepicker-dialog>
+            <paper-button disabled>[[dynamicDate]]</paper-button>
+            <jv-datepicker-dialog id="datepicker" with-backdrop first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation"></jv-datepicker-dialog>
+          </div>
+          <h4>Datepicker dialog w/o any animation and transition</h4>
+          <div class="datepicker-dialog">
+            <paper-button noink raised on-tap="_openStaticDialog">Static datepicker Dialog</paper-button>
+            <paper-button disabled>[[staticDate]]</paper-button>
+            <jv-datepicker-dialog id="static" with-backdrop first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" no-animation></jv-datepicker-dialog>
           </div>
         </div>
       </div>
@@ -316,6 +322,9 @@
       demo._openDialog = function(ev) {
         this.$.datepicker.open();
       };
+      demo._openStaticDialog = function(ev) {
+        this.$.static.open();
+      }
 
       demo.onIronItemsChanged = function() {
         var _format = [_years[demo.yearFormat], _months[demo.monthFormat], _days[demo.dayFormat]].join('-');
@@ -323,16 +332,17 @@
         // console.log(demo.disableDays);
         // console.log(demo.format);
       };
-      demo._onChange = function(ev) {
-        // console.log(demo.minDate, demo.maxDate);
-      };
 
       demo._onDateChanged = function(ev) {
-        console.log('_onDateChanged:', ev.detail.value);
+        // console.log('_onDateChanged:', ev.detail.value);
       };
 
-      window.addEventListener('jv-datepicker-attached', function(ev) {
-        console.log(ev);
+      document.addEventListener('jv-datepicker-attached', function(ev) {
+        var _target = ev.target;
+        window.setTimeout(function() {
+          var _tel = _target.getElementsByTagName('*').length;
+          console.log('Total element nodes w/ Lazy-Loading:', _tel);
+        }, 1);
       });
     </script>
 

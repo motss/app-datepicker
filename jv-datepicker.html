@@ -299,14 +299,14 @@ Custom property | Description | Default
         </div>
       </iron-selector>
 
-      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="[[pageEntryAnimation]]" exit-animation="[[pageExitAnimation]]">
         <div class="calendar-view" view="calendar">
           <div class="navigator">
-            <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_setUpdateMonth" action="decrement"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
             <div id="navMonthYear" class="nav-month-year">
               [[_computeMonthName(_activeMonth)]] [[_activeYear]]
             </div>
-            <paper-icon-button icon="datepicker:chevron-right" on-transitionend="_incrementMonth" on-tap="_setUpdateMonth" action="increment"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-right" on-transitionend="_incrementMonth" on-tap="_incrementMonth" noink="[[noAnimation]]"></paper-icon-button>
           </div>
 
           <div id="daysOfWeek" class="days-of-week">
@@ -419,13 +419,28 @@ Custom property | Description | Default
           notify: true,
           readOnly: true
         },
+        /**
+         * inputDate accepts a standard date string. It will reflect the change to update the internal.
+         */
         inputDate: String,
+        /**
+        * If true, no animation and transition on all elements.
+        */
+        noAnimation: Boolean,
+        /**
+        * Custom animation effect property when the page enters.
+        */
+        pageEntryAnimation: String,
+        /**
+        * Custom animation effect when the page exits.
+        */
+        pageExitAnimation: String,
         /**
          * Selected date will be formatted into long date. Eg. `Fri, May 12 2017`.
          */
         showLongDate: {
           type: Boolean,
-          value: false
+          value: !1
         },
 
         _daysOfWeek: {
@@ -485,13 +500,10 @@ Custom property | Description | Default
 
         _isListUpdated: {
           type: Boolean,
-          value: false
+          value: !1
         },
 
-        _isSelectedDateConfirmed: {
-          type: Boolean,
-          value: false
-        },
+        _isSelectedDateConfirmed: Boolean,
         _format: {
           type: Object,
           value: function() {
@@ -527,36 +539,40 @@ Custom property | Description | Default
         // This is a good place to perform any work related to your element's
         // visual state or active behavior (measuring sizes, beginning animations,
         // loading resources, etc).
-        this.set('animationConfig', {
-          'incrementEntry': [
-            {
-              name: 'slide-from-right-animation',
-              node: this.$.daysOfWeek
-            },
-            {
-              name: 'slide-from-right-animation',
-              node: this.$.daysOfMonth
-            },
-            {
-              name: 'datepicker-slide-from-right-animation',
-              node: this.$.navMonthYear
-            }
-          ],
-          'decrementEntry': [
-            {
-              name: 'slide-from-left-animation',
-              node: this.$.daysOfWeek
-            },
-            {
-              name: 'slide-from-left-animation',
-              node: this.$.daysOfMonth
-            },
-            {
-              name: 'datepicker-slide-from-left-animation',
-              node: this.$.navMonthYear
-            }
-          ]
-        });
+        if (!this.noAnimation) {
+          this.set('animationConfig', {
+            'incrementEntry': [
+              {
+                name: 'slide-from-right-animation',
+                node: this.$.daysOfWeek
+              },
+              {
+                name: 'slide-from-right-animation',
+                node: this.$.daysOfMonth
+              },
+              {
+                name: 'datepicker-slide-from-right-animation',
+                node: this.$.navMonthYear
+              }
+            ],
+            'decrementEntry': [
+              {
+                name: 'slide-from-left-animation',
+                node: this.$.daysOfWeek
+              },
+              {
+                name: 'slide-from-left-animation',
+                node: this.$.daysOfMonth
+              },
+              {
+                name: 'datepicker-slide-from-left-animation',
+                node: this.$.navMonthYear
+              }
+            ]
+          });
+          this.set('pageEntryAnimation', 'fade-in-animation');
+          this.set('pageExitAnimation', 'fade-out-animation');
+        }
         // setup iron-list.
         // this.$$('#listOfYears').selectItem(new Date().getFullYear() - 1900);
         // setup distributed children.
@@ -569,7 +585,7 @@ Custom property | Description | Default
             // addEventListener to paper-button with dialog-confirm.
             if (_paperButtons[i].hasAttribute('dialog-confirm')) {
               // attach event handler which first binded to this scope.
-              _paperButtons[i].addEventListener('tap', this._confirmSelectedDate.bind(this));
+              _paperButtons[i].addEventListener('tap', this.updateBindDate.bind(this));
               _paperButtons[i].addEventListener('transitionend', this.updateBindDate.bind(this));
             }
           }
@@ -641,45 +657,53 @@ Custom property | Description | Default
         // return _daysOfMonth;
         this.set('_daysOfMonth', _daysOfMonth);
       },
-      _setUpdateMonth: function(ev) {
-        var _target = ev.target;
-        while (_target && _target.tagName !== 'PAPER-ICON-BUTTON') {
-          _target = _target.parentElement;
-        }
-        // separate ready flag for increment and decrement due to focus.
-        // on-transitionend on previous focused paper-icon-button will trigger
-        // the previous function to be executed instead of the current one.
-        if (_target && _target.hasAttribute('action')) {
-          if (_target.getAttribute('action').indexOf('increment')  >= 0) {
-            this.set('_isIncrementMonth', true);
-          }else {
-            this.set('_isDecrementMonth', true);
+
+
+      _incrementMonth: function(ev) {
+        this.debounce('_incrementMonth', function() {
+          var _type = ev.type;
+          if (_type === 'tap') {
+            this.set('_isIncrementMonth', !0);
           }
-        }
+
+          if (_type === 'transitioned' || this.noAnimation) {
+            if (this._isIncrementMonth) {
+              var _month = this._activeMonth;
+              if (++_month > 11) {
+                this._activeYear++;
+              }
+              this.set('_activeMonth', _month > 11 ? 0 : _month);
+              if (!this.noAnimation) {
+                this.cancelAnimation();
+                this.playAnimation('incrementEntry');
+              }
+              this.set('_isIncrementMonth', !1);
+            }
+          }
+        }, 1);
       },
-      _incrementMonth: function() {
-        if (this._isIncrementMonth) {
-          var _month = this._activeMonth;
-          if (++_month > 11) {
-            this._activeYear++;
+      _decrementMonth: function(ev) {
+        this.debounce('_decrementMonth', function() {
+          var _type = ev.type;
+          if (_type === 'tap') {
+            this.set('_isDecrementMonth', !0);
           }
-          this.set('_activeMonth', _month > 11 ? 0 : _month);
-          this.cancelAnimation();
-          this.playAnimation('incrementEntry');
-          this.set('_isIncrementMonth', false);
-        }
-      },
-      _decrementMonth: function() {
-        if (this._isDecrementMonth) {
-          var _month = this._activeMonth;
-          if (--_month < 0) {
-            this._activeYear--;
+
+          if (_type === 'transitioned' || this.noAnimation){
+            if (this._isDecrementMonth) {
+              var _month = this._activeMonth;
+              if (--_month < 0) {
+                this._activeYear--;
+              }
+              this.set('_activeMonth', _month < 0 ? 11 : _month);
+              if (!this.noAnimation) {
+                this.cancelAnimation();
+                this.playAnimation('decrementEntry');
+              }
+              this.set('_isDecrementMonth', !1);
+            }
           }
-          this.set('_activeMonth', _month < 0 ? 11 : _month);
-          this.cancelAnimation();
-          this.playAnimation('decrementEntry');
-          this.set('_isDecrementMonth', false);
-        }
+        }, 1);
       },
       _computeMonthName: function(_activeMonth) {
         return _monthNames[_activeMonth];
@@ -696,10 +720,10 @@ Custom property | Description | Default
           !_target.classList.contains('is-disabled-day')) {
           if (this._chosenDaysOfMonth !== 99) {
             var _node = Polymer.dom(this.$.daysOfMonth).querySelectorAll('div');
-            this.toggleClass('chosen-days-of-month', false,
+            this.toggleClass('chosen-days-of-month', !1,
               _node[this._chosenDaysOfMonth]);
           }
-          this.toggleClass('chosen-days-of-month', true, _target);
+          this.toggleClass('chosen-days-of-month', !0, _target);
           this.set('_chosenDaysOfMonth', _target.index);
 
           this.set('_selectedDate', _target.date);
@@ -911,18 +935,26 @@ Custom property | Description | Default
 
 				return _finalFormatted;
       },
-      // functions for content tag.
-      _confirmSelectedDate: function(ev) {
-        if (!this._isSelectedDateConfirmed) {
-          this.set('_isSelectedDateConfirmed', true);
-        }
-      },
+      // method for content tag (eg. buttons).
       updateBindDate: function(ev) {
-        if (this._isSelectedDateConfirmed) {
-          this._setDate(this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
-            this._selectedDate, this._format));
-          this.set('_isSelectedDateConfirmed', false);
-        }
+        this.debounce('updateBindDate', function() {
+          var _type = ev.type;
+          if (_type === 'tap') {
+            this.set('_isSelectedDateConfirmed', !0);
+          }
+
+          if (_type === 'transitionend' || this.noAnimation){
+            if (this._isSelectedDateConfirmed) {
+              var _sy = this._selectedYear;
+              var _sm = this._selectedMonth;
+              var _sd = this._selectedDate;
+              var _f = this._format
+              var _confirmDate = this._bindSelectedFulldate(_sy, _sm, _sd, _f);
+              this._setDate(_confirmDate);
+              this.set('_isSelectedDateConfirmed', !1);
+            }
+          }
+        }, 1);
       },
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
@@ -954,7 +986,7 @@ Custom property | Description | Default
           }
         }
 
-        console.log('_updateToReflectExternalChange:', _inputDate);
+        // console.log('_updateToReflectExternalChange:', _inputDate);
         var _showLongDate = this.showLongDate;
         var _yy = 0;
         var _mm = 0;
@@ -962,6 +994,11 @@ Custom property | Description | Default
         // Encouraged to use standard format for long date.
         var _re = /(\w+)[^a-zA-Z0-9]+(\w+)[^a-zA-Z0-9]+(\w+)/i;
         var _m = _re.exec(_inputDate);
+
+        if (_m === null) {
+          return;
+        }
+
         var _my = _reformat(_m[1]);
         var _mm = _reformat(_m[2]);
         var _md = _reformat(_m[3]);
@@ -1008,11 +1045,14 @@ Custom property | Description | Default
         return typeof _value == 'number' || (!isNaN(parseFloat(_value)) && isFinite(_value));
       },
 
-      // TODO: To add property noAnimation to disable all animations completely.
-      // TODO: To allow custom animation configurations.
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: To add GIF to README.md.
+      // TODO: To add dist/ to contain minified version.
       // TODO: Templatize datepicker so that reduce element nodes on page load.
+      // X - TODO: Special method to update two-way binded read-only property.
+      // X - TODO: To add property noAnimation to disable all animations completely.
+      // X - TODO: To allow custom animation configurations.
+      // X - TODO: Tap and Transition within the same method FTW.
       // X - TODO: input date will reflect the change to update internal datepicker.
       // X - TODO: paper-buttons are way too big. Set font-size to 14px instead (It was set to 12px so this is no need).
       // X - TODO: To add support for IE11, div.days-of-month can be fixed by removing padding: 0 3px at @media & font seems too large, no user-select none.
