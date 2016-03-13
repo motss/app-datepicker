@@ -213,11 +213,11 @@
           </div>
           <div class="choose-min-date">
             <h5>Min date</h5>
-            <paper-input label="minDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{minDate}}" on-change="_onChange" error-message="Invalid date input!"></paper-input>
+            <paper-input label="minDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{minDate::input}}" error-message="Invalid date input!"></paper-input>
           </div>
           <div class="choose-max-date">
             <h5>Max date</h5>
-            <paper-input label="maxDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{maxDate}}" on-change="_onChange" error-message="Invalid date input!"></paper-input>
+            <paper-input label="maxDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{maxDate::input}}" error-message="Invalid date input!"></paper-input>
           </div>
           <div class="choose-date-format">
             <div class="choose-date-format-year">
@@ -259,8 +259,12 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <jv-datepicker first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]">
+            <jv-datepicker first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]">
             </jv-datepicker>
+          </div>
+          <div class="choose-max-date">
+            <h5>Input the date externally</h5>
+            <paper-input label="date" char-counter maxlength="30" placeholder="2016/01/01" auto-validate input-date value="{{inputDate::input}}" error-message="Invalid date input!"></paper-input>
           </div>
           <h4>Datepicker dialog</h4>
           <div class="datepicker-dialog">
@@ -319,13 +323,17 @@
         // console.log(demo.disableDays);
         // console.log(demo.format);
       };
-      demo._onChange = function() {
+      demo._onChange = function(ev) {
         // console.log(demo.minDate, demo.maxDate);
       };
 
-      demo._onDateChanged = function(ev, de) {
-        // console.log(de.value);
+      demo._onDateChanged = function(ev) {
+        console.log('_onDateChanged:', ev.detail.value);
       };
+
+      window.addEventListener('jv-datepicker-attached', function(ev) {
+        console.log(ev);
+      });
     </script>
 
   </body>

@@ -88,10 +88,6 @@ Custom property | Description | Default
 <dom-module id="jv-datepicker">
   <template strip-whitespace>
     <style>
-      :root {
-        --jv-datepicker-default-height: calc(300px + 84px);
-      }
-
       :host {
         user-select: none;
         -webkit-user-select: none;
@@ -109,10 +105,17 @@ Custom property | Description | Default
       }
 
       div.datepicker {
+        /* calc(300px + 84px) */
+        position: relative;
         width: 300px;
-        height: var(--jv-datepicker-height, --jv-datepicker-default-height);
-        max-height: calc(300px + 84px + 57px);
+        height: 384px;
+        max-height: 384px;
         @apply(--layout-vertical);
+      }
+      div.datepicker.with-buttons {
+        /* calc(300px + 84px + 47px) */
+        height: 431px;
+        max-height: 431px;
       }
 
       iron-selector.selected-fulldate {
@@ -173,7 +176,7 @@ Custom property | Description | Default
       div.each-days-of-week {
         font-size: 10px;
         padding: 13px;
-        max-height: 36px;
+        max-height: 32px;
         width: 41px;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
@@ -239,10 +242,14 @@ Custom property | Description | Default
 
       /* landscape */
       @media all and (orientation: landscape) {
-        div.datepicker {
+        div#dp.datepicker {
           width: 512px;
-          height: 288px !important;
+          /* calc(288px - 47px) */
+          height: 241px;
           @apply(--layout-horizontal);
+        }
+        div#dp.datepicker.with-buttons {
+          height: 288px;
         }
 
         iron-selector.selected-fulldate {
@@ -281,7 +288,7 @@ Custom property | Description | Default
       }
     </style>
 
-    <div class="datepicker">
+    <div id="dp" class="datepicker">
       <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view">
         <div class="selected-year" view="year">
           [[_selectedYear]]
@@ -321,13 +328,15 @@ Custom property | Description | Default
           <content select=".buttons"></content>
         </div>
 
-        <iron-list id="listOfYears" items="[[_listOfYears]]" view="year" selection-enabled selected-item="{{_chosenListOfYears}}">
-          <template strip-whitespace>
-            <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]">
-              [[item.year]]
-            </div>
-          </template>
-        </iron-list>
+        <template is="dom-if" if="[[_isListUpdated]]" restamp="true" strip-whitespace>
+          <iron-list id="listOfYears" items="[[_listOfYears]]" view="year">
+            <template strip-whitespace>
+              <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" on-tap="_goCalendar">
+                [[item.year]]
+              </div>
+            </template>
+          </iron-list>
+        </template>
       </neon-animated-pages>
 
     </div>
@@ -407,8 +416,10 @@ Custom property | Description | Default
             var _date = this._padStart(_now.getDate() + 1, 2, '0');
             return [_fullyear, _month, _date].join('-');
           },
-          notify: true
+          notify: true,
+          readOnly: true
         },
+        inputDate: String,
         /**
          * Selected date will be formatted into long date. Eg. `Fri, May 12 2017`.
          */
@@ -421,24 +432,8 @@ Custom property | Description | Default
           type: Array,
           computed: '_computeDaysOfWeek(firstDayOfWeek)'
         },
-        _daysOfMonth: {
-          type: Array,
-          value: function() {
-            return [1,2,3,4,5];
-          }
-        },
-        _listOfYears: {
-          type: Array,
-          value: function() {
-            for (var _listOfYears = [], y = 1900,
-              i = y; i <= 2100; i++) {
-              _listOfYears.push({
-                year: i
-              });
-            }
-            return _listOfYears;
-          }
-        },
+        _daysOfMonth: Array,
+        _listOfYears: Array,
 
         _activeView: {
           type: String,
@@ -456,14 +451,8 @@ Custom property | Description | Default
             return new Date().getMonth();
           }
         },
-        _isIncrementMonth: {
-          type: Boolean,
-          value: false
-        },
-        _isDecrementMonth: {
-          type: Boolean,
-          value: false
-        },
+        _isIncrementMonth: Boolean,
+        _isDecrementMonth: Boolean,
 
         _selectedYear: {
           type: Number,
@@ -487,13 +476,11 @@ Custom property | Description | Default
             return _dayNames[_daysOfWeek].slice(0, 3);
           }
         },
-        _chosenListOfYears: {
-          type: Object,
-          observer: '_chosenListOfYearsChanged'
-        },
         _chosenDaysOfMonth: {
           type: Number,
-          value: 99
+          value: function() {
+            return new Date().getDate();
+          }
         },
 
         _isListUpdated: {
@@ -519,7 +506,7 @@ Custom property | Description | Default
         '_updateList(_activeView)',
         '_computeSeparateFormat(format)',
         '_computeShowLongDate(showLongDate)',
-        '_updateToReflectExternalChange(date)'
+        '_updateToReflectExternalChange(inputDate)',
       ],
 
       // Element Lifecycle
@@ -571,7 +558,7 @@ Custom property | Description | Default
           ]
         });
         // setup iron-list.
-        this.$.listOfYears.selectItem(new Date().getFullYear() - 1900);
+        // this.$$('#listOfYears').selectItem(new Date().getFullYear() - 1900);
         // setup distributed children.
         var _content = this.getEffectiveChildren();
         var _paperButtons = Polymer.dom(_content[0]).querySelectorAll('paper-button');
@@ -587,12 +574,11 @@ Custom property | Description | Default
             }
           }
           // update to a new height for datepicker if paper-buttons present.
-          this.updateStyles({
-            '--jv-datepicker-height': (300 + 84 + 57) + 'px'
-          });
+          this.$.dp.classList.add('with-buttons');
         }else {
-
+          this.$.dp.classList.remove('with-buttons');
         }
+        this.fire('jv-datepicker-attached');
       },
 
       detached: function() {
@@ -786,39 +772,8 @@ Custom property | Description | Default
         return '';
       },
 
-      _chooseListOfYears: function(_year) {
-        // ev.model (1968)
-        // index: 2
-        // item.year: 1968
-        // selected: false
-
-        // if none is selected is the listOfYears, reset to old value (_activeYear).
-        if (this._isNull(_year) || this._isNumber(_year)) {
-          // reset unselected listOfYears to _activeYear;
-          this.$.listOfYears.selectItem(this._activeYear - 1900);
-          // notifyResize iron-list after selectItem function.
-          this.async(function() {
-            this.$.listOfYears.notifyResize();
-          });
-          return;
-        }
-
-        this.set('_selectedYear', _year.year);
-        this.set('_activeYear', _year.year);
-      },
-      _isListOfYearsSelected: function(_selected) {
-        if (_selected) {
-          return ' is-selected'
-        }
-        return '';
-      },
-      _chosenListOfYearsChanged: function(_new, _old) {
-        // whenever _chosenListOfYears changes in value, pass the selection.
-        this._chooseListOfYears(_new);
-        // return to calendar after selection/ selection changed.
-        if (this._activeView === 'year') {
-          this.set('_activeView', 'calendar');
-        }
+      _isListOfYearsSelected: function(_itemYear, _activeYear) {
+        return _itemYear === _activeYear ? ' is-selected' : '';
       },
 
       _computeDaysOfWeek: function(_firstDayOfWeek) {
@@ -863,14 +818,37 @@ Custom property | Description | Default
       _updateList: function(_activeView) {
         if (_activeView === 'year') {
           if (!this._isListUpdated) {
-            this.$.listOfYears.scrollToIndex(this._activeYear - 1900);
-            this.$.listOfYears.notifyResize();
-            this.set('_isListUpdated', true);
+            // Set _isListUpdated true to generate iron-list lazily.
+            this.set('_isListUpdated', !0);
+            if (!this._listOfYears) {
+              for (var _newList = [], y = 1900, i = y; i <= 2100; i++) {
+                _newList.push({
+                  year: i
+                });
+              }
+              this.set('_listOfYears', _newList);
+            }
+            // Since generating iron-list dynamically takes time, perform
+            // subsequent operation ASYNC-ly.
+            this.async(function() {
+              this.$$('#listOfYears').selectItem(this._activeYear - 1900);
+              this.$$('#listOfYears').scrollToIndex(this._activeYear - 1900 - 1);
+              this.$$('#listOfYears').notifyResize();
+            }, 1);
           }else {
-            this.$.listOfYears.scrollToIndex(this._activeYear - 1900 - 2);
-            this.$.listOfYears.notifyResize();
+            // Else if iron-list has already there, just scroll to selected year.
+            this.$$('#listOfYears').scrollToIndex(this._activeYear - 1900 - 2);
+            this.$$('#listOfYears').notifyResize();
           }
         }
+      },
+      _goCalendar: function(ev) {
+        var _selectedYear = ev.model.item.year;
+        // Set _activeYear and _selectedYear to the selected year.
+        this.set('_activeYear', _selectedYear);
+        this.set('_selectedYear', _selectedYear);
+        // Go back to calendar page.
+        this.set('_activeView', 'calendar');
       },
 
       // split capturing group of format into year, month and date.
@@ -941,127 +919,64 @@ Custom property | Description | Default
       },
       updateBindDate: function(ev) {
         if (this._isSelectedDateConfirmed) {
-          this.set('date', this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
+          this._setDate(this._bindSelectedFulldate(this._selectedYear, this._selectedMonth,
             this._selectedDate, this._format));
           this.set('_isSelectedDateConfirmed', false);
         }
       },
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
-        console.log('_computeShowLongDate');
         var _isDateDefined = this._isUndefined(this._selectedDate);
         if (_showLongDate) {
           var _longDate = new Date(this._selectedYear, this._selectedMonth, this._selectedDate).toString().slice(0, 15);
           _longDate = _isDateDefined ? new Date().toString().slice(0, 15) : _longDate;
-          this.set('date', _longDate.slice(0,3) + ',' + _longDate.slice(3));
+          this._setDate(_longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
           var _longDate = this._bindSelectedFulldate(this._selectedYear, this._selectedMonth, this._selectedDate, this._format);
           _longDate = _isDateDefined ? this.date : _longDate;
-          console.log(_longDate);
-          this.set('date', _longDate);
+          this._setDate(_longDate);
         }
       },
 
-      _updateToReflectExternalChange: function(date) {
+      _updateToReflectExternalChange: function(_inputDate) {
+        function _reformat(_m) {
+          var _nan = isNaN(parseFloat(_m));
+          if (_nan) {
+            var _re = /([0-9]+)[t|h|r|s|n|d]/i;
+            var _hasOrdinalSuffix = _re.exec(_m) !== null;
+            if (_hasOrdinalSuffix) {
+              return ('0' + _m).slice(-2);
+            }else {
+              return _m;
+            }
+          }else {
+            return _m / 1000 < 1 ? ('0' + _m).slice(-2) : ('0' + _m).slice(-4);
+          }
+        }
+
+        console.log('_updateToReflectExternalChange:', _inputDate);
         var _showLongDate = this.showLongDate;
         var _yy = 0;
         var _mm = 0;
         var _dd = 0;
-
         // Encouraged to use standard format for long date.
-        if (_showLongDate) {
-          // Date object works like charm.
-          var _newDate = new Date(date);
-          if (_newDate == 'Invalid Date') {
-            // If still it is an invalid date input...
-            // console.error('Invalid date!');
-            // Restore the invalid input date by calling this method.
-            this._computeShowLongDate(_showLongDate);
-            return;
-          }
+        var _re = /(\w+)[^a-zA-Z0-9]+(\w+)[^a-zA-Z0-9]+(\w+)/i;
+        var _m = _re.exec(_inputDate);
+        var _my = _reformat(_m[1]);
+        var _mm = _reformat(_m[2]);
+        var _md = _reformat(_m[3]);
+        var _formattedInputDate = [_my, _mm, _md].join('-');
+        var _newDate = new Date(_formattedInputDate);
+        // var _newDate = new Date(_inputDate);
 
-          _yy = _newDate.getFullYear();
-          _mm = _newDate.getMonth();
-          _dd = _newDate.getDate();
-        }else {
-          // All possibilityes = 2 * 4 * 3 = 24.
-          // 'yyyy' 'mmmm' 'do' - N
-          // 'yyyy' 'mmmm' 'dd' - P
-          // 'yyyy' 'mmmm' 'd' - P
-          //
-          // 'yyyy' 'mmm' 'do' - N
-          // 'yyyy' 'mmm' 'dd' - P
-          // 'yyyy' 'mmm' 'd' - P
-          //
-          // 'yyyy' 'mm' 'do' - N
-          // 'yyyy' 'mm' 'dd' - P
-          // 'yyyy' 'mm' 'd' - P
-          //
-          // 'yyyy' 'm' 'do' - N
-          // 'yyyy' 'm' 'dd' - P
-          // 'yyyy' 'm' 'd' - P
-          //
-          // 'yy' 'mmmm' 'do' - N
-          // 'yy' 'mmmm' 'dd' - P
-          // 'yy' 'mmmm' 'd' - P
-          //
-          // 'yy' 'mmm' 'do' - N
-          // 'yy' 'mmm' 'dd' - P
-          // 'yy' 'mmm' 'd' - P
-          //
-          // 'yy' 'mm' 'do' - N
-          // 'yy' 'mm' 'dd' - F*
-          // 'yy' 'mm' 'd' - F*
-          //
-          // 'yy' 'm' 'do' - N
-          // 'yy' 'm' 'dd' - F*
-          // 'yy' 'm' 'd' - F*
-
-          // Return when date is undefined.
-          if (!date) {
-            return;
-          }
-
-          var _format = this.format;
-          var _re = /[^a-zA-Z0-9]+/gi;
-          var _cg = date.replace(_re, '-').split('-');
-          var _cgf = _format.replace(_re, '-').split('-');
-          var _cgLen = _cg.length;
-          var _cgfLen = _cgf.length;
-
-          // console.log(_cg, _cgf);
-          // If it happened to be a long name, return.
-          if (_cgLen !== _cgfLen || _cgLen > 3 || _cgfLen > 3) {
-            // console.log(this.showLongDate, date);
-            return;
-          }
-
-          // Loop thru the date format as this is needed to cater for when do is
-          // one of the formats, the ordinal suffix has to be removed.
-          // At the same time extract the date string from the input date.
-          for (var i = 0; i < 3; i++) {
-            if (_cgf[i].indexOf('y') >= 0) {
-              _yy = parseFloat(_cg[i]);
-            }else if (_cgf[i].indexOf('d') >= 0) {
-              if (_cgf[i].indexOf('do') >= 0) {
-                _dd = _cg[i].replace('/[0-9][t|h|r|d|n|s]+/i', '');
-                _dd = parseFloat(_dd);
-              }else {
-                _dd = parseFloat(_cg[i]);
-              }
-            }else {
-              _mm = parseFloat(_cg[i]) - 1;
-            }
-          }
-
-          // If the extracted date is an invalid date...
-          if (new Date(_yy, _mm, _dd) == 'Invalid Date') {
-            // console.error('Invalid Date');
-            this._computeShowLongDate(_showLongDate);
-            return;
-          }
+        if (_newDate == 'Invalid Date') {
+          this._computeShowLongDate(_showLongDate);
+          return;
         }
 
+        _yy = _newDate.getFullYear();
+        _mm = _newDate.getMonth();
+        _dd = _newDate.getDate();
         // console.log('yy-mm-dd', _yy, _mm, _dd);
         // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
         this.set('_activeYear', _yy);
@@ -1087,21 +1002,19 @@ Custom property | Description | Default
       _isUndefined: function(_value) {
         return _value === undefined;
       },
-      _isNull: function(_value) {
-        return _value === null;
-      },
       _isNumber: function(_value) {
         // return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
         // Fallback: caused by IE11 as those methods are not supported in IE11.
         return typeof _value == 'number' || (!isNaN(parseFloat(_value)) && isFinite(_value));
       },
 
-      // TODO: paper-buttons are way too big. Set font-size to 14px instead.
-      // TODO: Templatize datepicker so that reduce element nodes on page load.
       // TODO: To add property noAnimation to disable all animations completely.
       // TODO: To allow custom animation configurations.
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: To add GIF to README.md.
+      // TODO: Templatize datepicker so that reduce element nodes on page load.
+      // X - TODO: input date will reflect the change to update internal datepicker.
+      // X - TODO: paper-buttons are way too big. Set font-size to 14px instead (It was set to 12px so this is no need).
       // X - TODO: To add support for IE11, div.days-of-month can be fixed by removing padding: 0 3px at @media & font seems too large, no user-select none.
     });
   </script>
