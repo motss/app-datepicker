@@ -1007,7 +1007,6 @@ Custom property | Description | Default
           var _m = _re.exec(_inputDate);
 
           if (_m === null) {
-            console.log('return null');
             this._setInvalidDate(!0);
             return;
           }
@@ -1016,12 +1015,10 @@ Custom property | Description | Default
           var _mm = _reformat(_m[2]);
           var _md = _reformat(_m[3]);
           var _formattedInputDate = [_my, _mm, _md].join('-');
-          console.log(_formattedInputDate);
           _newDate = new Date(_formattedInputDate);
         }
 
         if (_newDate == 'Invalid Date') {
-          console.log('invalid date:');
           this._computeShowLongDate(_showLongDate);
           this._setInvalidDate(!0);
           return;
@@ -1030,8 +1027,6 @@ Custom property | Description | Default
         _yy = _newDate.getFullYear();
         _mm = _newDate.getMonth();
         _dd = _newDate.getDate();
-        // console.log('yy-mm-dd', _yy, _mm, _dd);
-        // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
         this.set('_activeYear', _yy);
         this.set('_activeMonth', _mm);
         this.set('_selectedYear', _yy);
@@ -1042,7 +1037,6 @@ Custom property | Description | Default
         // It is to ensure that even when date input is not complied to a standard date format,
         // this method will do its job to rectify the problem.
         this._computeShowLongDate(_showLongDate);
-        // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
       },
       /**
        * By default, buttons are required so that they are to confirm the date change.

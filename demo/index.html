@@ -343,8 +343,6 @@
       demo.onIronItemsChanged = function() {
         var _format = [_years[demo.yearFormat], _months[demo.monthFormat], _days[demo.dayFormat]].join('-');
         demo.format = _format;
-        // console.log(demo.disableDays);
-        // console.log(demo.format);
       };
 
       demo._onDateChanged = function(ev) {
@@ -358,7 +356,6 @@
             this.$.eInput.updateValueAndPreserveCaret(ev.detail.value);
           }, 1500);
         }
-        // console.log(ev.target, this.$.eInput);
       };
 
       demo._updateDatepickerWoButtons = function() {
