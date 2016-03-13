@@ -442,6 +442,14 @@ Custom property | Description | Default
           type: Boolean,
           value: !1
         },
+        /**
+         * Set true if input date. Only use it with inputDate properte
+         */
+        invalidDate: {
+          type: Boolean,
+          notify: true,
+          readOnly: true
+        },
 
         _daysOfWeek: {
           type: Array,
@@ -991,23 +999,31 @@ Custom property | Description | Default
         var _yy = 0;
         var _mm = 0;
         var _dd = 0;
+        var _newDate = new Date(_inputDate);
+        this._setInvalidDate(!1);
         // Encouraged to use standard format for long date.
-        var _re = /(\w+)[^a-zA-Z0-9]+(\w+)[^a-zA-Z0-9]+(\w+)/i;
-        var _m = _re.exec(_inputDate);
+        if (!_showLongDate) {
+          var _re = /(\w+)[^a-zA-Z0-9]+(\w+)[^a-zA-Z0-9]+(\w+)/i;
+          var _m = _re.exec(_inputDate);
 
-        if (_m === null) {
-          return;
+          if (_m === null) {
+            console.log('return null');
+            this._setInvalidDate(!0);
+            return;
+          }
+
+          var _my = _reformat(_m[1]);
+          var _mm = _reformat(_m[2]);
+          var _md = _reformat(_m[3]);
+          var _formattedInputDate = [_my, _mm, _md].join('-');
+          console.log(_formattedInputDate);
+          _newDate = new Date(_formattedInputDate);
         }
 
-        var _my = _reformat(_m[1]);
-        var _mm = _reformat(_m[2]);
-        var _md = _reformat(_m[3]);
-        var _formattedInputDate = [_my, _mm, _md].join('-');
-        var _newDate = new Date(_formattedInputDate);
-        // var _newDate = new Date(_inputDate);
-
         if (_newDate == 'Invalid Date') {
+          console.log('invalid date:');
           this._computeShowLongDate(_showLongDate);
+          this._setInvalidDate(!0);
           return;
         }
 
@@ -1027,7 +1043,12 @@ Custom property | Description | Default
         // this method will do its job to rectify the problem.
         this._computeShowLongDate(_showLongDate);
         // console.log(this._activeYear, this._activeMonth, this._selectedYear, this._selectedMonth, this._selectedDate);
-
+      },
+      /**
+       * Force update the datepicker declaratively
+       */
+      enforceDateChange: function() {
+        this._computeShowLongDate(this.showLongDate);
       },
 
       // Lodash's replacements.

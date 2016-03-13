@@ -20,7 +20,7 @@
       }
     </style>
 
-    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{_readOnlyDate}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]" no-animation="[[noAnimation]]" page-entry-animation="[[pageEntryAnimation]]" page-exit-animation="[[pageExitAnimation]]">
+    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{_readOnlyDate}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]" no-animation="[[noAnimation]]" page-entry-animation="[[pageEntryAnimation]]" page-exit-animation="[[pageExitAnimation]]" invalid-date="{{_readOnlyInvalidDate}}">
       <div class="buttons">
         <paper-button noink="[[noAnimation]]" dialog-dismiss>cancel</paper-button>
         <paper-button noink="[[noAnimation]]" dialog-confirm>ok</paper-button>
@@ -42,6 +42,11 @@
           notify: true,
           readOnly: true
         },
+        invalidDate: {
+          type: Boolean,
+          notify: true,
+          readOnly: true
+        },
         inputDate: String,
         showLongDate: Boolean,
         noAnimation: Boolean,
@@ -49,6 +54,7 @@
         pageExitAnimation: String,
 
         _readOnlyDate: String,
+        _readOnlyInvalidDate: String,
       },
 
       behaviors: [
@@ -59,7 +65,8 @@
         'neon-animation-finish': '_onNeonAnimationFinish'
       },
       observers: [
-        '_updateReadOnlyDate(_readOnlyDate)'
+        '_updateReadOnlyDate(_readOnlyDate)',
+        '_updateReadOnlyInvalidDate(_readOnlyInvalidDate)'
       ],
       _renderOpened: function() {
         if (this.withBackdrop) {
@@ -84,6 +91,11 @@
       // Special method to update two-way binded read-only property.
       _updateReadOnlyDate: function(_readOnlyDate) {
         this._setDate(_readOnlyDate);
+      },
+      // Special method to update two-way binded read-only property.
+      _updateReadOnlyInvalidDate: function(_readOnlyInvalidDate) {
+        console.log(_readOnlyInvalidDate);
+        this._setInvalidDate(_readOnlyInvalidDate);
       },
 
     });

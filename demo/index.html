@@ -64,6 +64,13 @@
         @apply(--layout-center);
         @apply(--layout-start-justified);
       }
+      div.choose-max-date.large {
+        max-width: 100%;
+      }
+      div.choose-max-date.large > paper-button {
+        margin-left: auto;
+        margin-right: auto;
+      }
       div.choose-date-format {
         margin: 8px 0;
         @apply(--layout-vertical);
@@ -154,6 +161,11 @@
         font-size: 12px;
         color: #9e9e9e;
         font-style: italic;
+      }
+
+      .small-note {
+        font-size: 12px;
+        color: #737373;
       }
 
      .flex {
@@ -259,12 +271,14 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <jv-datepicker first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]">
+            <jv-datepicker id="common" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}">
             </jv-datepicker>
           </div>
-          <div class="choose-max-date">
+          <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
+          <div class="choose-max-date large">
             <h5>Input the date externally</h5>
-            <paper-input label="date" char-counter maxlength="30" placeholder="2016/01/01" auto-validate input-date value="{{inputDate::input}}" error-message="Invalid date input!"></paper-input>
+            <paper-input id="eInput" label="date" char-counter maxlength="30" placeholder="2016/01/01" value="{{inputDate::input}}" error-message="Invalid date input!" invalid="[[_isInvalid]]"></paper-input>
+            <paper-button raised on-tap="_updateDatepickerWoButtons">Update datepicker</paper-button>
           </div>
           <h4>Datepicker dialog</h4>
           <div class="datepicker-dialog">
@@ -334,7 +348,21 @@
       };
 
       demo._onDateChanged = function(ev) {
-        // console.log('_onDateChanged:', ev.detail.value);
+        var _target = ev.target;
+        // Only update the input value of paper-input when the date returned from
+        // the datepicker is in a valid format.
+        if (!_target.invalidDate) {
+          // Update the value at the input after a certain delay.
+          // For instance, update the weekday for long date.
+          this.async(function() {
+            this.$.eInput.updateValueAndPreserveCaret(ev.detail.value);
+          }, 1500);
+        }
+        // console.log(ev.target, this.$.eInput);
+      };
+
+      demo._updateDatepickerWoButtons = function() {
+        this.$.common.enforceDateChange();
       };
 
       document.addEventListener('jv-datepicker-attached', function(ev) {
