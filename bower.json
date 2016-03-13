@@ -43,6 +43,7 @@
     "paper-dialog": "PolymerElements/paper-dialog#^1.0.3",
     "paper-input": "PolymerElements/paper-input#^1.1.4",
     "web-component-tester": "^4.0.0",
-    "iron-test-helpers": "polymerelements/iron-test-helpers#^1.1.5"
+    "iron-test-helpers": "polymerelements/iron-test-helpers#^1.1.5",
+    "test-fixture": "PolymerElements/test-fixture#^1.1.0"
   }
 }
