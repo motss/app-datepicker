@@ -666,7 +666,7 @@ Custom property | Description | Default
             this.set('_isIncrementMonth', !0);
           }
 
-          if (_type === 'transitioned' || this.noAnimation) {
+          if (_type === 'transitionend' || this.noAnimation) {
             if (this._isIncrementMonth) {
               var _month = this._activeMonth;
               if (++_month > 11) {
@@ -689,7 +689,7 @@ Custom property | Description | Default
             this.set('_isDecrementMonth', !0);
           }
 
-          if (_type === 'transitioned' || this.noAnimation){
+          if (_type === 'transitionend' || this.noAnimation){
             if (this._isDecrementMonth) {
               var _month = this._activeMonth;
               if (--_month < 0) {
