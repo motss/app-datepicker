@@ -142,8 +142,7 @@
               expect(_isY).to.be.equal(true);
               expect(_isM).to.be.equal(true);
               expect(_isD).to.be.equal(true);
-              datepicker.inputDate = [_selectedYear, _selectedMonth + 1, _selectedDate].join('-');
-              expect(datepicker.date).to.be.equal('2016-03-13');
+              datepicker.inputDate = [_selectedYear, ('0' + (_selectedMonth + 1)).slice(-2), ('0' + _selectedDate).slice(-2)].join('-');
             }
           });
 
