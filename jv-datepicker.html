@@ -80,6 +80,7 @@ Custom property | Description | Default
 `--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
 `--jv-datepicker-button-color` | Color of `paper-button` | #009688
 `--jv-datepicker` | Mixin applied to the datepicker | {}
+`--jv-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
 
 @author motss
 @element jv-datepicker, jv-datepicker-dialog
@@ -236,6 +237,8 @@ Custom property | Description | Default
         position: relative;
         padding: 8px 8px 8px 24px;
         margin: 0;
+        font-size: 12px;
+        @apply(--jv-datepicker-buttons);
         @apply(--layout-horizontal);
         @apply(--layout-end-justified);
       }
