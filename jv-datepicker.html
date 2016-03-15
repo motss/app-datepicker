@@ -416,7 +416,7 @@ Custom property | Description | Default
             var _now = new Date();
             var _fullyear = _now.getFullYear();
             var _month = this._padStart(_now.getMonth() + 1, 2, '0');
-            var _date = this._padStart(_now.getDate() + 1, 2, '0');
+            var _date = this._padStart(_now.getDate(), 2, '0');
             return [_fullyear, _month, _date].join('-');
           },
           notify: true,
