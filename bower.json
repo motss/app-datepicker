@@ -4,18 +4,18 @@
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
-  "description": "A Polymer's Custom Element Datepicker based on Google's Material Design.",
+  "description": "A custom Datepicker element based on Google's Material Design built from scratch with Polymer",
   "keywords": [
     "web-component",
     "web-components",
     "polymer",
     "seed",
-    "datepicker",
     "calendar",
     "date",
     "picker",
     "cal",
     "date-picker",
+    "datepicker",
     "motss"
   ],
   "main": "jv-datepicker.html",

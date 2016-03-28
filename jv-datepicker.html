@@ -25,15 +25,21 @@ Example:
     <jv-datepicker-dialog></jv-datepicker-dialog>
     <jv-datepicker-dialog modal></jv-datepicker-dialog>
     <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
+    <jv-datepicker view="horizontal"></jv-datepicker>
+    <jv-datepicker theme="dark"></jv-datepicker>
 
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
 
-### ( Coming soon!) Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`
+~~### ( Coming soon!) Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`~~
 
-At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!
+~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!~~
 
 ### Styling
+
+By default, the datepicker is in `light-theme` and now you are able to style almost all possible sections of the datepicker with your own choices of color.
+
+**__ ** Note: As of release v2.4.0 the datepicker includes some basic themes that can be set via `theme` property: `dark`, `light`, or `goog`.__*
 
 Style the datepicker with CSS as you would a normal DOM element.
 
@@ -55,9 +61,8 @@ Style the datepicker with CSS as you would a normal DOM element.
       --jv-datepicker-icon-button-color: #ffff00;
       --jv-datepicker-icon-button-ink-color: #ffff00;
       --jv-datepicker-button-color: #80CBC4;
+      --jv-datepicker-button-ink-color: #bcbcbc;
     }
-
-By default, the datepicker is in light theme and now you are able to style almost all possible sections of the datepicker with your own choices of color.
 
 The following custom properties and mixin are also available for styling:
 
@@ -79,6 +84,7 @@ Custom property | Description | Default
 `--jv-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
 `--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
 `--jv-datepicker-button-color` | Color of `paper-button` | #009688
+`--jv-datepicker-button-ink-color` | Ink color of `paper-button` | #737373
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 `--jv-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
 
@@ -101,7 +107,7 @@ Custom property | Description | Default
         display: block;
       }
 
-      *, *::before, *::after {
+      * {
         box-sizing: inherit;
       }
 
@@ -234,61 +240,206 @@ Custom property | Description | Default
       /* content tag selector */
       div.calendar-view > ::content > div.buttons {
         color: var(--jv-datepicker-button-color, #009688);
+        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #737373);
         position: relative;
         padding: 8px 8px 8px 24px;
         margin: 0;
         font-size: 12px;
+        font-weight: 500;
         @apply(--jv-datepicker-buttons);
         @apply(--layout-horizontal);
         @apply(--layout-end-justified);
       }
 
+      /* will-change: transform, however lag on the first time */
+      /*div.nav-month-year,
+      div.days-of-week,
+      div.days-of-month {
+        will-change: transform;
+      }*/
+
       /* landscape */
       @media all and (orientation: landscape) {
-        div#dp.datepicker {
+        :host(:not(.vertical-view)) div#dp.datepicker {
           width: 512px;
           /* calc(288px - 47px) */
           height: 241px;
           @apply(--layout-horizontal);
         }
-        div#dp.datepicker.with-buttons {
+        :host(:not(.vertical-view)) div#dp.datepicker.with-buttons {
           height: 288px;
         }
 
-        iron-selector.selected-fulldate {
+        :host(:not(.vertical-view)) iron-selector.selected-fulldate {
           width: calc(100% / 3 + 48px);
           height: 100%;
         }
-        div.selected-date {
+        :host(:not(.vertical-view)) div.selected-date {
           height: 68px;
           @apply(--layout-vertical);
           @apply(--layout-start);
           @apply(--layout-center-justified);
         }
 
-        neon-animated-pages.fullcalendar {
+        :host(:not(.vertical-view)) neon-animated-pages.fullcalendar {
           height: 100%;
         }
-        div.calendar-view {
+        :host(:not(.vertical-view)) div.calendar-view {
           padding-bottom: 0;
         }
-        div.navigator {
+        :host(:not(.vertical-view)) div.navigator {
           padding: 2px 10px;
           margin-top: 0;
         }
-        div.each-days-of-week {
+        :host(:not(.vertical-view)) div.each-days-of-week {
           width: calc(100% / 7 - 20px);
           padding: 0;
           margin-left: 10px;
           margin-right: 10px;
         }
-        div.each-days-of-month {
+        :host(:not(.vertical-view)) div.each-days-of-month {
           height: 29px;
           margin-left: 10px;
           margin-right: 10px;
           width: calc(100% / 7 - 20px);
         }
       }
+
+      /* view=horizontal */
+      :host(.horizontal-view) div#dp.datepicker {
+        width: 512px;
+        /* calc(288px - 47px) */
+        height: 241px;
+        @apply(--layout-horizontal);
+      }
+      :host(.horizontal-view) div#dp.datepicker.with-buttons {
+        height: 288px;
+      }
+
+      :host(.horizontal-view) iron-selector.selected-fulldate {
+        width: calc(100% / 3 + 48px);
+        height: 100%;
+      }
+      :host(.horizontal-view) div.selected-date {
+        height: 68px;
+        @apply(--layout-vertical);
+        @apply(--layout-start);
+        @apply(--layout-center-justified);
+      }
+
+      :host(.horizontal-view) neon-animated-pages.fullcalendar {
+        height: 100%;
+      }
+      :host(.horizontal-view) div.calendar-view {
+        padding-bottom: 0;
+      }
+      :host(.horizontal-view) div.navigator {
+        padding: 2px 10px;
+        margin-top: 0;
+      }
+      :host(.horizontal-view) div.each-days-of-week {
+        width: calc(100% / 7 - 20px);
+        padding: 0;
+        margin-left: 10px;
+        margin-right: 10px;
+      }
+      :host(.horizontal-view) div.each-days-of-month {
+        height: 29px;
+        margin-left: 10px;
+        margin-right: 10px;
+        width: calc(100% / 7 - 20px);
+      }
+
+      /* dark-theme */
+      :host(.dark-theme) {
+        background-color: var(--jv-datepicker-bg, #424242);
+      }
+
+      :host(.dark-theme) iron-selector.selected-fulldate {
+        color: var(--jv-datepicker-selection-color, #9e9e9e);
+        background-color: var(--jv-datepicker-selection-bg, #555);
+      }
+      :host(.dark-theme) div.selected-year.iron-selected,
+      :host(.dark-theme) div.selected-date.iron-selected {
+        color: var(--jv-datepicker-iron-selected, #f5f5f5);
+      }
+      :host(.dark-theme) neon-animated-pages.fullcalendar {
+        color: var(--jv-datepicker-calendar-color, #f5f5f5);
+        background-color: var(--jv-datepicker-calendar-bg, #424242);
+      }
+      :host(.dark-theme) div.days-of-week {
+        color: var(--jv-datepicker-weekdays-color, #7c7c7c);
+      }
+      :host(.dark-theme) div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
+        color: var(--jv-datepicker-selected-day-color, #555);
+        background-color: var(--jv-datepicker-selected-day-bg, #80cbc4);
+      }
+      :host(.dark-theme) div.days-of-month > div.each-days-of-month.is-today {
+        color: var(--jv-datepicker-today-color, #80cbc4);
+      }
+      :host(.dark-theme) div.days-of-month > .each-days-of-month.is-disabled-day {
+        color: var(--jv-datepicker-disabled-color, #ffff00);
+      }
+      :host(.dark-theme) div.each-list-of-years.is-selected {
+        background-color: var(--jv-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
+        color: var(--jv-datepicker-selected-year-color, #80cbc4);
+        font-size: 26px;
+        font-weight: 500;
+      }
+      :host(.dark-theme) paper-icon-button {
+        color: var(--jv-datepicker-icon-button-color, #ffff00);
+        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #212121);
+      }
+      :host(.dark-theme) div.calendar-view > ::content > div.buttons > paper-button {
+        color: var(--jv-datepicker-button-color, #80cbc4);
+        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #bcbcbc);
+      }
+
+      /* goog theme */
+      :host(.goog-theme) {
+        background-color: var(--jv-datepicker-bg, #212121);
+      }
+
+      :host(.goog-theme) iron-selector.selected-fulldate {
+        color: var(--jv-datepicker-selection-color, #fff);
+        background-color: var(--jv-datepicker-selection-bg, #212121);
+      }
+      :host(.goog-theme) div.selected-year.iron-selected,
+      :host(.goog-theme) div.selected-date.iron-selected {
+        color: var(--jv-datepicker-iron-selected, #DA4336);
+      }
+      :host(.goog-theme) neon-animated-pages.fullcalendar {
+        color: var(--jv-datepicker-calendar-color, #fff);
+        background-color: var(--jv-datepicker-calendar-bg, #212121);
+      }
+      :host(.goog-theme) div.days-of-week {
+        color: var(--jv-datepicker-weekdays-color, #9e9e9e);
+      }
+      :host(.goog-theme) div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
+        color: var(--jv-datepicker-selected-day-color, #fff);
+        background-color: var(--jv-datepicker-selected-day-bg, #DA4336);
+      }
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month.is-today {
+        color: var(--jv-datepicker-today-color, #DA4336);
+      }
+      :host(.goog-theme) div.days-of-month > .each-days-of-month.is-disabled-day {
+        color: var(--jv-datepicker-disabled-color, #646464);
+      }
+      :host(.goog-theme) div.each-list-of-years.is-selected {
+        background-color: var(--jv-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
+        color: var(--jv-datepicker-selected-year-color, #DA4336);
+        font-size: 26px;
+        font-weight: 500;
+      }
+      :host(.goog-theme) paper-icon-button {
+        color: var(--jv-datepicker-icon-button-color, #DA4336);
+        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #616161);
+      }
+      :host(.goog-theme) div.calendar-view > ::content > div.buttons > paper-button {
+        color: var(--jv-datepicker-button-color, #DA4336);
+        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #616161);
+      }
+
     </style>
 
     <div id="dp" class="datepicker">
@@ -367,6 +518,16 @@ Custom property | Description | Default
       ],
 
       properties: {
+        /**
+         * This forcefully sets the view of the datepicker without respecting the orientation of the device.
+         * Available options: `vertical`, `horizontal`.
+         */
+        view: String,
+        /**
+         * This is used to set a theme for the datepicker. By default, the `light` theme is applied.
+         * Other options are `dark`, `goog`.
+         */
+        theme: String,
         /**
          * First Day of the week. Numbered days: `0 (Sun)` to `6 (Sat)`.
          */
@@ -530,6 +691,8 @@ Custom property | Description | Default
         '_computeSeparateFormat(format)',
         '_computeShowLongDate(showLongDate)',
         '_updateToReflectExternalChange(inputDate)',
+        '_updateThemeColor(theme)',
+        '_updateDatepickerView(view)',
       ],
 
       // Element Lifecycle
@@ -599,12 +762,16 @@ Custom property | Description | Default
               _paperButtons[i].addEventListener('tap', this._updateBindDate.bind(this));
               _paperButtons[i].addEventListener('transitionend', this._updateBindDate.bind(this));
             }
+            // Polymer's polyfill for custom properties does not apply to distributed children.
+            // https://www.polymer-project.org/1.0/docs/devguide/styling.html
+            this._updateDistributedButtonInkColorCustomProp(_paperButtons[i], '#737373');
           }
           // update to a new height for datepicker if paper-buttons present.
           this.$.dp.classList.add('with-buttons');
         }else {
           this.$.dp.classList.remove('with-buttons');
         }
+
         this.fire('jv-datepicker-attached');
       },
 
@@ -1043,7 +1210,7 @@ Custom property | Description | Default
       },
       /**
        * By default, buttons are required so that they are to confirm the date change.
-       * This method allows force update the datepicker declaratively when buttons inside the datepicker to confirm date change.
+       * This method allows force update the datepicker when there are no buttons inside the datepicker to confirm date change.
        */
       enforceDateChange: function() {
         this._computeShowLongDate(this.showLongDate);
@@ -1064,10 +1231,52 @@ Custom property | Description | Default
         return typeof _value == 'number' || (!isNaN(parseFloat(_value)) && isFinite(_value));
       },
 
+      // Update theme color.
+      _updateThemeColor: function(_theme) {
+        // var _m = /^(dark|goog|light)$/i.exec(_theme);
+        var _themes = ['dark', 'light', 'goog'];
+        var _themeIdx = _themes.indexOf(_theme);
+        var _distributedButtons = Polymer.dom(this).querySelectorAll('paper-button');
+        var _distributedButtonsLen = _distributedButtons.length;
+        var _colorCode = ['#bcbcbc', '#737373', '#616161'][_themeIdx];
+
+        if (_themeIdx >= 0) {
+          _themes.splice(_themeIdx, 1);
+
+          this.toggleClass(_themes[0] + '-theme', !1, this);
+          this.toggleClass(_themes[1] + '-theme', !1, this);
+          this.toggleClass(_theme + '-theme', !0, this);
+
+        }else {
+          this.toggleClass('dark-theme', !1, this);
+          this.toggleClass('light-theme', !1, this);
+          this.toggleClass('goog-theme', !1, this);
+        }
+
+        // workaround to update custom property of distributed buttons.
+        for (var i = 0; i < _distributedButtonsLen; i++) {
+          this._updateDistributedButtonInkColorCustomProp(_distributedButtons[i], _colorCode || '#737373');
+        }
+        // Update styles of the whole datepicker.
+        this.updateStyles();
+      },
+      // Forcefully update the view of the datepicker.
+      _updateDatepickerView: function(_view) {
+        this.toggleClass('horizontal-view', _view === 'horizontal', this);
+        this.toggleClass('vertical-view', _view === 'vertical', this);
+      },
+
+      // workaround to update custom property of distributed children until Polymer supports Native custom properties.
+      _updateDistributedButtonInkColorCustomProp: function(_node, _colorCode) {
+        _node.customStyle['--paper-button-ink-color'] = _colorCode;
+        _node.updateStyles();
+      },
+
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: To add GIF to README.md.
       // TODO: To add dist/ to contain minified version.
       // TODO: Templatize datepicker so that reduce element nodes on page load.
+      // X - TODO: Added dark, goog theme.
       // X - TODO: Special method to update two-way binded read-only property.
       // X - TODO: To add property noAnimation to disable all animations completely.
       // X - TODO: To allow custom animation configurations.

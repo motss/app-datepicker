@@ -6,17 +6,17 @@
     <title>jv-datepicker Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
 
-    <!-- <link rel="import" href="../jv-datepicker.html"> -->
-    <!-- <link rel="import" href="../jv-datepicker-dialog.html"> -->
-    <!-- <link rel="import" href="../jv-datepicker-icons.html"> -->
-    <!-- <link rel="import" href="../datepicker-slide-from-bottom-animation.html"> -->
-    <!-- <link rel="import" href="../datepicker-slide-from-top-animation.html"> -->
+    <link rel="import" href="../jv-datepicker.html">
+    <link rel="import" href="../jv-datepicker-dialog.html">
+    <link rel="import" href="../jv-datepicker-icons.html">
+    <link rel="import" href="../datepicker-slide-from-bottom-animation.html">
+    <link rel="import" href="../datepicker-slide-from-top-animation.html">
 
-    <link rel="import" href="../dist/jv-datepicker.html">
-    <link rel="import" href="../dist/jv-datepicker-dialog.html">
-    <link rel="import" href="../dist/jv-datepicker-icons.html">
-    <link rel="import" href="../dist/datepicker-slide-from-bottom-animation.html">
-    <link rel="import" href="../dist/datepicker-slide-from-top-animation.html">
+    <!-- <link rel="import" href="../dist/jv-datepicker.html"> -->
+    <!-- <link rel="import" href="../dist/jv-datepicker-dialog.html"> -->
+    <!-- <link rel="import" href="../dist/jv-datepicker-icons.html"> -->
+    <!-- <link rel="import" href="../dist/datepicker-slide-from-bottom-animation.html"> -->
+    <!-- <link rel="import" href="../dist/datepicker-slide-from-top-animation.html"> -->
 
     <link rel="import" href="../../iron-selector/iron-selector.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
@@ -40,10 +40,9 @@
         user-select: none;
         box-sizing: border-box;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
-        -webkit-tap-highlight-color: transparent;
       }
 
-      *, *:before, *:after {
+      * {
         box-sizing: inherit;
       }
 
@@ -53,6 +52,8 @@
       }
 
       /* all containers */
+      div.choose-theme,
+      div.choose-view,
       div.choose-first-day-of-week,
       div.choose-disabled-days,
       div.choose-min-date,
@@ -103,8 +104,15 @@
         width: 36px;
         padding: 6px;
         border: 1px solid #ddd;
+        font-size: 10px;
+        font-weight: 500;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+      }
+      .choose-view iron-selector > div,
+      .choose-theme iron-selector > div {
+        width: 55px;
+        max-width: calc(100% / 3);
       }
       div.choose-date-format-month iron-selector > div:nth-of-type(1),
       div.choose-date-format-month iron-selector > div:nth-of-type(2) {
@@ -211,6 +219,22 @@
         <div class="vertical-section">
           <h3>Configuration</h3>
           <span>The result will reflect on the Datepicker (or the Datepicker dialog) shown below.</span>
+          <div class="choose-theme">
+            <h5>Theme</h5>
+            <iron-selector selected="{{theme}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged" attr-for-selected="theme-selected">
+              <div theme-selected="light">Light theme</div>
+              <div theme-selected="dark">Dark theme</div>
+              <div theme-selected="goog">Google theme</div>
+            </iron-selector>
+          </div>
+          <div class="choose-view">
+            <h5>View</h5>
+            <iron-selector selected="{{view}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged" attr-for-selected="view-selected">
+              <div view-selected="vertical">Vertical</div>
+              <div view-selected="horizontal">Horizontal</div>
+              <div view-selected="">Default</div>
+            </iron-selector>
+          </div>
           <div class="choose-first-day-of-week">
             <h5>First day of week</h5>
             <paper-icon-button icon="datepicker:chevron-left" action="decrement" on-tap="changeFirstDayOfWeek"></paper-icon-button>
@@ -277,7 +301,7 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <jv-datepicker id="common" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}">
+            <jv-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}">
             </jv-datepicker>
           </div>
           <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
@@ -290,13 +314,13 @@
           <div class="datepicker-dialog">
             <paper-button raised on-tap="_openDialog">Datepicker Dialog</paper-button>
             <paper-button disabled>[[dynamicDate]]</paper-button>
-            <jv-datepicker-dialog id="datepicker" with-backdrop first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation"></jv-datepicker-dialog>
+            <jv-datepicker-dialog id="datepicker" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation"></jv-datepicker-dialog>
           </div>
           <h4>Datepicker dialog w/o any animation and transition</h4>
           <div class="datepicker-dialog">
             <paper-button noink raised on-tap="_openStaticDialog">Static datepicker Dialog</paper-button>
             <paper-button disabled>[[staticDate]]</paper-button>
-            <jv-datepicker-dialog id="static" with-backdrop first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" no-animation></jv-datepicker-dialog>
+            <jv-datepicker-dialog id="static" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" on-date-changed="_onDateChanged" no-animation></jv-datepicker-dialog>
           </div>
         </div>
       </div>
@@ -312,6 +336,7 @@
       var _months = ['mmmm', 'mmm', 'mm', 'm'];
       var _days = ['do', 'dd', 'd'];
 
+      demo.theme = 'light';
       demo.showLongDate = true;
       demo.yearFormat = 0;
       demo.monthFormat = 2;

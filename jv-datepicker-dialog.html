@@ -15,12 +15,17 @@
         -ms-user-select: none;
         user-select: none;
         box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
 
         display: block;
       }
+
+      * {
+        box-sizing: border-box;
+      }
     </style>
 
-    <jv-datepicker class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{_readOnlyDate}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]" no-animation="[[noAnimation]]" page-entry-animation="[[pageEntryAnimation]]" page-exit-animation="[[pageExitAnimation]]" invalid-date="{{_readOnlyInvalidDate}}">
+    <jv-datepicker id="datePicker" class="no-padding" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{_readOnlyDate}}" input-date="[[inputDate]]" show-long-date="[[showLongDate]]" no-animation="[[noAnimation]]" page-entry-animation="[[pageEntryAnimation]]" page-exit-animation="[[pageExitAnimation]]" invalid-date="{{_readOnlyInvalidDate}}" view="[[view]]" theme="[[theme]]">
       <div class="buttons">
         <paper-button noink="[[noAnimation]]" dialog-dismiss>cancel</paper-button>
         <paper-button noink="[[noAnimation]]" dialog-confirm>ok</paper-button>
@@ -32,6 +37,8 @@
       is: 'jv-datepicker-dialog',
 
       properties: {
+        view: String,
+        theme: String,
         firstDayOfWeek: Number,
         disableDays: Array,
         minDate: String,
@@ -66,7 +73,8 @@
       },
       observers: [
         '_updateReadOnlyDate(_readOnlyDate)',
-        '_updateReadOnlyInvalidDate(_readOnlyInvalidDate)'
+        '_updateReadOnlyInvalidDate(_readOnlyInvalidDate)',
+        '_updateDatepickerView(view)',
       ],
       _renderOpened: function() {
         if (this.withBackdrop) {
@@ -96,6 +104,10 @@
       _updateReadOnlyInvalidDate: function(_readOnlyInvalidDate) {
         console.log(_readOnlyInvalidDate);
         this._setInvalidDate(_readOnlyInvalidDate);
+      },
+      // Resize dialog to re-center the dialog when view is changed.
+      _updateDatepickerView: function() {
+        this.notifyResize();
       },
 
     });
