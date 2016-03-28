@@ -25,7 +25,7 @@ A list of new features have been added to the element:
 - `pageExitAnimation` (To customize the exit animation for page switching between months)
 - `enforceDateChange` (A public method to force update a datepicker w/o any buttons to confirm date change)
 
-- `theme` (To change the theme of the datepicker. Available options: `dark`, `light`, `goog`)
+- `theme` (To change the theme of the datepicker. Available options: `dark-theme`, `light-theme`, `goog-theme`)
 - `view` (To forcefully change the view of the datepicker without respecting the orientation of the device: `horizontal`, `vertical`)
 
 See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
@@ -36,7 +36,7 @@ Example:
 
     <jv-datepicker><jv-datepicker>
     <jv-datepicker view="horizontal"></jv-datepicker>
-    <jv-datepicker theme="dark"></jv-datepicker>
+    <jv-datepicker theme="dark-theme"></jv-datepicker>
     <jv-datepicker-dialog modal></jv-datepicker-dialog>
     <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
     <jv-datepicker-dialog></jv-datepicker-dialog>

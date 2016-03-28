@@ -26,7 +26,7 @@ Example:
     <jv-datepicker-dialog modal></jv-datepicker-dialog>
     <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
     <jv-datepicker view="horizontal"></jv-datepicker>
-    <jv-datepicker theme="dark"></jv-datepicker>
+    <jv-datepicker theme="dark-theme"></jv-datepicker>
 
 `jv-datepicker` provides a regular datepicker element.
 While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
@@ -39,7 +39,7 @@ While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog
 
 By default, the datepicker is in `light-theme` and now you are able to style almost all possible sections of the datepicker with your own choices of color.
 
-**__ ** Note: As of release v2.4.0 the datepicker includes some basic themes that can be set via `theme` property: `dark`, `light`, or `goog`.__*
+**__ ** Note: As of release v2.4.0 the datepicker includes some basic themes that can be set via `theme` property: `dark-theme`, `light-theme`, or `goog-theme`.__*
 
 Style the datepicker with CSS as you would a normal DOM element.
 
@@ -524,8 +524,8 @@ Custom property | Description | Default
          */
         view: String,
         /**
-         * This is used to set a theme for the datepicker. By default, the `light` theme is applied.
-         * Other options are `dark`, `goog`.
+         * This is used to set a theme for the datepicker. By default, the `light-theme` is applied.
+         * Other options are `dark-theme`, `goog-theme`.
          */
         theme: String,
         /**
@@ -1233,8 +1233,7 @@ Custom property | Description | Default
 
       // Update theme color.
       _updateThemeColor: function(_theme) {
-        // var _m = /^(dark|goog|light)$/i.exec(_theme);
-        var _themes = ['dark', 'light', 'goog'];
+        var _themes = ['dark-theme', 'light-theme', 'goog-theme'];
         var _themeIdx = _themes.indexOf(_theme);
         var _distributedButtons = Polymer.dom(this).querySelectorAll('paper-button');
         var _distributedButtonsLen = _distributedButtons.length;
@@ -1243,10 +1242,9 @@ Custom property | Description | Default
         if (_themeIdx >= 0) {
           _themes.splice(_themeIdx, 1);
 
-          this.toggleClass(_themes[0] + '-theme', !1, this);
-          this.toggleClass(_themes[1] + '-theme', !1, this);
-          this.toggleClass(_theme + '-theme', !0, this);
-
+          this.toggleClass(_themes[0], !1, this);
+          this.toggleClass(_themes[1], !1, this);
+          this.toggleClass(_theme, !0, this);
         }else {
           this.toggleClass('dark-theme', !1, this);
           this.toggleClass('light-theme', !1, this);

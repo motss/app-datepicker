@@ -222,9 +222,9 @@
           <div class="choose-theme">
             <h5>Theme</h5>
             <iron-selector selected="{{theme}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged" attr-for-selected="theme-selected">
-              <div theme-selected="light">Light theme</div>
-              <div theme-selected="dark">Dark theme</div>
-              <div theme-selected="goog">Google theme</div>
+              <div theme-selected="light-theme">Light theme</div>
+              <div theme-selected="dark-theme">Dark theme</div>
+              <div theme-selected="goog-theme">Google theme</div>
             </iron-selector>
           </div>
           <div class="choose-view">
@@ -336,7 +336,7 @@
       var _months = ['mmmm', 'mmm', 'mm', 'm'];
       var _days = ['do', 'dd', 'd'];
 
-      demo.theme = 'light';
+      demo.theme = 'light-theme';
       demo.showLongDate = true;
       demo.yearFormat = 0;
       demo.monthFormat = 2;
