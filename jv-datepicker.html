@@ -88,6 +88,13 @@ Custom property | Description | Default
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 `--jv-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
 
+`--jv-datepicker-selected-year` | Mixin applied to the datepicker's selected year | {}
+`--jv-datepicker-selected-date` | Mixin applied to the datepicker's selected date | {}
+`--jv-datepicker-nav-month-year` | Mixin applied to the datepicker's nav-month-year | {}
+`--jv-datepicker-days-of-week` | Mixin applied to the datepicker's days-of-week | {}
+`--jv-datepicker-days-of-month` | Mixin applied to the datepicker's days-of-month | {}
+`--jv-datepicker-each-list-of-years` | Mixin applied to the datepicker's each-list-of-years | {}
+
 @author motss
 @element jv-datepicker, jv-datepicker-dialog
 @demo demo/index.html
@@ -143,6 +150,7 @@ Custom property | Description | Default
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center);
+        @apply(--jv-datepicker-selected-year);
       }
       div.selected-date {
         font-size: 32px;
@@ -151,6 +159,7 @@ Custom property | Description | Default
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center);
+        @apply(--jv-datepicker-selected-date);
       }
 
       neon-animated-pages.fullcalendar {
@@ -174,14 +183,16 @@ Custom property | Description | Default
         font-weight: 500;
         text-align: center;
         @apply(--layout-flex-auto);
+        @apply(--jv-datepicker-nav-month-year);
       }
       div.days-of-week {
         color: var(--jv-datepicker-weekdays-color, #9b9b9b);
+        font-size: 11px;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+        @apply(--jv-datepicker-days-of-week);
       }
       div.each-days-of-week {
-        font-size: 10px;
         padding: 13px;
         max-height: 32px;
         width: 41px;
@@ -190,12 +201,13 @@ Custom property | Description | Default
       }
       div.days-of-month {
         /*padding-bottom: 8px;*/
+        font-size: 12px;
         @apply(--layout-horizontal);
         @apply(--layout-wrap);
         @apply(--layout-center-justified);
+        @apply(--jv-datepicker-days-of-month);
       }
       div.each-days-of-month {
-        font-size: 10px;
         height: 35px;
         width: 35px;
         margin-left: 3px;
@@ -221,9 +233,11 @@ Custom property | Description | Default
 
       div.each-list-of-years {
         height: 64px;
+        font-size: 14px;
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
+        @apply(--jv-datepicker-each-list-of-years);
       }
       div.each-list-of-years.is-selected {
         background-color: var(--jv-datepicker-selected-year-bg, #f5f5f5);
@@ -246,17 +260,21 @@ Custom property | Description | Default
         margin: 0;
         font-size: 12px;
         font-weight: 500;
-        @apply(--jv-datepicker-buttons);
         @apply(--layout-horizontal);
         @apply(--layout-end-justified);
+        @apply(--jv-datepicker-buttons);
       }
 
       /* will-change: transform, however lag on the first time */
-      /*div.nav-month-year,
+      div.nav-month-year,
       div.days-of-week,
       div.days-of-month {
         will-change: transform;
-      }*/
+        -webkit-transform: translate3d(0px, 0px, 0px);
+                transform: translate3d(0px, 0px, 0px);
+        -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+      }
 
       /* landscape */
       @media all and (orientation: landscape) {
@@ -297,6 +315,10 @@ Custom property | Description | Default
           margin-left: 10px;
           margin-right: 10px;
         }
+        :host(:not(.vertical-view)) div.days-of-month {
+          margin-top: 8px;
+        }
+
         :host(:not(.vertical-view)) div.each-days-of-month {
           height: 29px;
           margin-left: 10px;

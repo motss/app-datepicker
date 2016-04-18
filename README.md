@@ -3,9 +3,9 @@
 [![Build Status](https://travis-ci.org/motss/jv-datepicker.svg?branch=master)](https://travis-ci.org/motss/jv-datepicker)
 
 # jv-datepicker
-![datepicker-light-theme](https://cloud.githubusercontent.com/assets/10607759/14078902/232af734-f52c-11e5-9646-c0a5fb7899ef.png)
-![datepicker-dark-theme](https://cloud.githubusercontent.com/assets/10607759/14078900/22302dae-f52c-11e5-9bb9-fb84f31075a8.png)
-![datepicker-goog-theme](https://cloud.githubusercontent.com/assets/10607759/14078901/22633d84-f52c-11e5-9041-02c805ac9843.png)
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078902/232af734-f52c-11e5-9646-c0a5fb7899ef.png" alt="datepicker-light-theme" width="32%">
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078900/22302dae-f52c-11e5-9bb9-fb84f31075a8.png" alt="datepicker-dark-theme" width="32%">
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078901/22633d84-f52c-11e5-9041-02c805ac9843.png" alt="datepicker-goog-theme" width="32%">
 
 <!-- ![light-themed-jv-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/10119266/ce6d5b0e-64c3-11e5-843d-1310de755315.png)
 ![dark-themed-jv-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/10119265/c9ad900c-64c3-11e5-937e-338a770eebea.png) -->
