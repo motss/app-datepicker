@@ -54,10 +54,10 @@ Now with mixins, head over to the [component page](http://motss.github.io/jv-dat
 
 
 ## Getting Started
-1. Install with bower  
+1. Install with bower.
 `bower install --save jv-datepicker`
 
-2. Load the web component and the dependencies
+2. Load the web component and the dependencies.
 
 For `jv-datepicker`,
 
@@ -70,10 +70,12 @@ For `jv-datepicker-dialog`,
 <link rel="import" href="path-to-bower-components/jv-datepicker/jv-datepicker-dialog.html">
 ```
 
-3. Markup with &lt;jv-datepicker&gt;&lt;/jv-datepicker&gt; or &lt;jv-datepicker-dialog&gt;&lt;/jv-datepicker-dialog&gt;
+3. Markup with `<jv-datepicker></jv-datepicker>` or `<jv-datepicker-dialog></jv-datepicker-dialog>`.
 
-4. Done
+4. Done.
 
+## Throughput
+[![Throughput Graph](https://graphs.waffle.io/motss/jv-datepicker/throughput.svg)](https://waffle.io/motss/jv-datepicker/metrics/throughput)
 
 ## License
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
