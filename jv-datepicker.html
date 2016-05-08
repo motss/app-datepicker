@@ -276,6 +276,15 @@ Custom property | Description | Default
                 backface-visibility: hidden;
       }
 
+      iron-list {
+        --iron-list-items-container: {
+          -webkit-transform: translate3d(0px, 0px, 0px);
+          transform: translate3d(0px, 0px, 0px);
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+        };
+      }
+
       /* landscape */
       @media all and (orientation: landscape) {
         :host(:not(.vertical-view)) div#dp.datepicker {
@@ -465,7 +474,7 @@ Custom property | Description | Default
     </style>
 
     <div id="dp" class="datepicker">
-      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view">
+      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
         <div class="selected-year" view="year">
           [[_selectedYear]]
         </div>
@@ -475,7 +484,7 @@ Custom property | Description | Default
         </div>
       </iron-selector>
 
-      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="[[pageEntryAnimation]]" exit-animation="[[pageExitAnimation]]">
+      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="[[pageEntryAnimation]]" exit-animation="[[pageExitAnimation]]" on-neon-animation-finish="_onAnimationFinish">
         <div class="calendar-view" view="calendar">
           <div class="navigator">
             <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
@@ -504,10 +513,10 @@ Custom property | Description | Default
           <content select=".buttons"></content>
         </div>
 
-        <template is="dom-if" if="[[_isListUpdated]]" restamp="true" strip-whitespace>
-          <iron-list id="listOfYears" items="[[_listOfYears]]" view="year">
-            <template strip-whitespace>
-              <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" on-tap="_goCalendar">
+        <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered">
+          <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish">
+            <template>
+              <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar">
                 [[item.year]]
               </div>
             </template>
@@ -527,6 +536,8 @@ Custom property | Description | Default
       'Sunday', 'Monday', 'Tuesday', 'Wednesday',
       'Thursday', 'Friday', 'Saturday'
     ];
+    console.log('before ready...');
+    console.log('is Intl suppported natively? ', window.Intl, window.Intl.DateTimeFormat().resolvedOptions().timeZone);
 
     Polymer({
       is: 'jv-datepicker',
@@ -588,7 +599,7 @@ Custom property | Description | Default
          */
         format: {
           type: String,
-          value: 'yyyy-mm-dd'
+          value: 'yyyy/mm/dd'
         },
         /**
          * Selected date in the default format of `yyyy-mm-dd`. Eg. `2017-05-17`.
@@ -600,7 +611,7 @@ Custom property | Description | Default
             var _fullyear = _now.getFullYear();
             var _month = this._padStart(_now.getMonth() + 1, 2, '0');
             var _date = this._padStart(_now.getDate(), 2, '0');
-            return [_fullyear, _month, _date].join('-');
+            return [_fullyear, _month, _date].join('/');
           },
           notify: true,
           readOnly: true
@@ -692,7 +703,7 @@ Custom property | Description | Default
           }
         },
 
-        _isListUpdated: {
+        _isListRendered: {
           type: Boolean,
           value: !1
         },
@@ -701,7 +712,7 @@ Custom property | Description | Default
         _format: {
           type: Object,
           value: function() {
-            return {y: 'yyyy', m: 'mm', d: 'dd', s1: '-', s2: '-'};
+            return {y: 'yyyy', m: 'mm', d: 'dd', s1: '/', s2: '/'};
           }
         },
 
@@ -709,7 +720,6 @@ Custom property | Description | Default
 
       observers: [
         '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek)',
-        '_updateList(_activeView)',
         '_computeSeparateFormat(format)',
         '_computeShowLongDate(showLongDate)',
         '_updateToReflectExternalChange(inputDate)',
@@ -726,6 +736,7 @@ Custom property | Description | Default
         //
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
+        console.log('ready');
       },
 
       attached: function() {
@@ -769,8 +780,6 @@ Custom property | Description | Default
           this.set('pageEntryAnimation', 'fade-in-animation');
           this.set('pageExitAnimation', 'fade-out-animation');
         }
-        // setup iron-list.
-        // this.$$('#listOfYears').selectItem(new Date().getFullYear() - 1900);
         // setup distributed children.
         var _content = this.getEffectiveChildren();
         var _paperButtons = Polymer.dom(_content[0]).querySelectorAll('paper-button');
@@ -802,6 +811,7 @@ Custom property | Description | Default
         // removed from a document.
         //
         // Use this to clean up anything you did in `attached`.
+        console.log('jv-datepicker detached.');
       },
 
       // Element Behavior
@@ -811,7 +821,7 @@ Custom property | Description | Default
       //   31?    0       2       4       6   7       9      11
       //   30?                3       5           8      10
       //  Feb?        1
-      //  Su Mo Tu We Th Fr Sa startDay + _firstDayOfWeek
+      //  Su Mo Tu We Th Fr Sa    startDay - _firstDayOfWeek
       //                  1  2        5 - 0 < 0 ? 6 : 5 - 0;
       //  Mo Tu We Th Fr Sa Su
       //               1  2  3        5 - 1 < 0 ? 6 : 5 - 1;
@@ -825,19 +835,19 @@ Custom property | Description | Default
       //   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
       //  Sa Su Mo Tu We Th Fr
       //                     1        5 - 6 < 0 ? 6 : 5 - 6;
+      // Compute the days for a month.
       _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek) {
+        // Compute total number of days for a month.
         function _computeTotalDaysOfMonth(_year, _month) {
-            var _totalDaysOfMonth = 31;
-            if (_month === 1) {
-              _totalDaysOfMonth = new Date(_year, 1, 29).getMonth() === 1 ? 29 : 28;
-            }else if (_month === 3 || _month === 5 ||
-              _month === 8 || _month === 10) {
-              _totalDaysOfMonth = 30;
-            }
-            return _totalDaysOfMonth;
+          var _totalDaysOfMonth = 31;
+          if (_month === 1) {
+            _totalDaysOfMonth = new Date(_year, 1, 29).getMonth() === 1 ? 29 : 28;
+          }else if (_month === 3 || _month === 5 || _month === 8 || _month === 10) {
+            _totalDaysOfMonth = 30;
+          }
+          return _totalDaysOfMonth;
         }
 
-        // var _now = new Date();
         var _start = new Date(_activeYear, _activeMonth, 1).getDay();
         var _daysOfMonth = [];
         var _totalDays = _computeTotalDaysOfMonth(_activeYear, _activeMonth);
@@ -851,14 +861,15 @@ Custom property | Description | Default
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
           _daysOfMonth.push((i >= _start & i < _start + _totalDays ? j : ''));
         }
-        // update _chosenDaysOfMonth for every new calendar being rendered.
+
+        // Update _chosenDaysOfMonth for every new calendar being rendered.
         this.set('_chosenDaysOfMonth', this._computeChosenDaysOfMonth(_daysOfMonth));
 
-        // return _daysOfMonth;
+        // Update the old _daysOfMonth.
         this.set('_daysOfMonth', _daysOfMonth);
       },
 
-
+      // Increment the month via user interaction.
       _incrementMonth: function(ev) {
         this.debounce('_incrementMonth', function() {
           var _type = ev.type;
@@ -871,8 +882,10 @@ Custom property | Description | Default
               var _month = this._activeMonth;
               if (++_month > 11) {
                 this._activeYear++;
+                _month = 0;
               }
-              this.set('_activeMonth', _month > 11 ? 0 : _month);
+              this.set('_activeMonth', _month);
+
               if (!this.noAnimation) {
                 this.cancelAnimation();
                 this.playAnimation('incrementEntry');
@@ -882,6 +895,7 @@ Custom property | Description | Default
           }
         }, 1);
       },
+      // Decrement the month via user interaction.
       _decrementMonth: function(ev) {
         this.debounce('_decrementMonth', function() {
           var _type = ev.type;
@@ -894,8 +908,9 @@ Custom property | Description | Default
               var _month = this._activeMonth;
               if (--_month < 0) {
                 this._activeYear--;
+                _month = 11;
               }
-              this.set('_activeMonth', _month < 0 ? 11 : _month);
+              this.set('_activeMonth', _month);
               if (!this.noAnimation) {
                 this.cancelAnimation();
                 this.playAnimation('decrementEntry');
@@ -905,23 +920,33 @@ Custom property | Description | Default
           }
         }, 1);
       },
+
+      // TODO: Intl will replace this.
       _computeMonthName: function(_activeMonth) {
         return _monthNames[_activeMonth];
       },
+      // TODO: Intl will replace this.
       _computeShortMonthName: function(_selectedMonth) {
         return _monthNames[_selectedMonth].slice(0, 3);
       },
+      // TODO: Intl will replace this.
+      _computeShortDayName: function(_index) {
+        return _dayNames[_index].slice(0, 3);
+      },
+
+      // When a day of month is selected, a lot of tasks need to be carried out.
       _chooseDaysOfMonth: function(ev) {
         var _target = ev.target;
         // daysOfMonth is chooseable when:
         // a) _target.date is of type Number,
         // b) _target.classList.contains('is-disabled-day').
-        if (_target && this._isNumber(_target.date) &&
-          !_target.classList.contains('is-disabled-day')) {
+        if (_target &&
+            this._isNumber(_target.date) &&
+            !_target.classList.contains('is-disabled-day')
+          ) {
           if (this._chosenDaysOfMonth !== 99) {
             var _node = Polymer.dom(this.$.daysOfMonth).querySelectorAll('div');
-            this.toggleClass('chosen-days-of-month', !1,
-              _node[this._chosenDaysOfMonth]);
+            this.toggleClass('chosen-days-of-month', !1, _node[this._chosenDaysOfMonth]);
           }
           this.toggleClass('chosen-days-of-month', !0, _target);
           this.set('_chosenDaysOfMonth', _target.index);
@@ -932,74 +957,72 @@ Custom property | Description | Default
           this.set('_selectedDaysOfWeek', this._computeShortDayName(_target.index % 7));
         }
       },
-      _computeShortDayName: function(_index) {
-        return _dayNames[_index].slice(0, 3);
-      },
 
+      // Re-compute class when the item (day of month) is today's date.
       _isToday: function(_item, _activeYear, _activeMonth) {
         var _now = new Date();
-        if (_item === _now.getDate() &&
-          _activeYear === _now.getFullYear() &&
-          _activeMonth === _now.getMonth()) {
-          return ' is-today';
-        }
-        return '';
+        var _isToday = _item === _now.getDate() &&
+                      _activeYear === _now.getFullYear() &&
+                      _activeMonth === _now.getMonth()
+        return _isToday ? ' is-today' : '';
       },
+      // Re-compute class when the item (day of month) is empty date & non-selectable.
       _isEmptyDate: function(_item) {
-        if (this._isNumber(_item)) {
-          return '';
-        }
-        return ' is-non-selectable';
+        return this._isNumber(_item) ? '' : ' is-non-selectable';
       },
+      // Re-compute class if the item (day of month) is the selected date.
       _isChosenDaysOfMonth: function(_item, _selectedYear, _selectedMonth, _selectedDate) {
         // able to retain selected daysOfMonth even after navigating to other months.
-        if (this._chosenDaysOfMonth !== 99 && this._activeYear === _selectedYear &&
-            this._activeMonth === _selectedMonth &&
-            _item === _selectedDate) {
-          return ' chosen-days-of-month';
-        }
-        return '';
+        var _isChosenDaysOfMonth = this._chosenDaysOfMonth &&
+                                   this._activeYear === _selectedYear &&
+                                   this._activeMonth === _selectedMonth &&
+                                   _item === _selectedDate;
+        return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
+      // Re-compute class if the item (day of month) is a disable day.
       _isDisableDays: function(_index, _disableDays, _minDate, _maxDate, _item) {
+        var _isLessThanMinDate = null;
+        var _isMoreThanMaxDate = null;
+        var _isDisableDay = null;
         // _index % 7 gives values from 0 to 6.
         // and if _index matches some of these disableDays values return true.
         var _isDisabledDays = this.disableDays.some(function(_n) {
           return _n === _index % 7;
         });
-        var _isLessThanMinDate;
-        var _isMoreThanMaxDate;
         // ------ < _minDate ---------------- _maxDate > ------
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
         if (this._isNumber(_item)) {
+          var _minDate = null;
+          var _maxDate = null;
           var _minDateObj = this._computeMinDate(_minDate);
           var _maxDateObj = this._computeMaxDate(_maxDate);
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
           if (!this._isUndefined(_minDateObj)) {
-            _isLessThanMinDate = _currentDate < new Date(_minDateObj.year,
-              _minDateObj.month - 1, _minDateObj.date);
+            _minDate = new Date(_minDateObj.year, _minDateObj.month - 1, _minDateObj.date);
+            _isLessThanMinDate = _currentDate < _minDate;
           }
           if (!this._isUndefined(_maxDateObj)) {
-            _isMoreThanMaxDate = _currentDate > new Date(_maxDateObj.year,
-              _maxDateObj.month - 1, _maxDateObj.date);
+            _maxDate = new Date(_maxDateObj.year, _maxDateObj.month - 1, _maxDateObj.date);
+            _isMoreThanMaxDate = _currentDate > _maxDate;
           }
         }
         // To disable a date, it must be either one of the followings:
         // a) _isDisabledDays (set by property disableDays),
         // b) _isLessThanMinDate (set by property minDate), and
         // c) _isMoreThanMaxDate (set by propery moreDate).
-        if (_isDisabledDays || _isLessThanMinDate || _isMoreThanMaxDate) {
-          return ' is-disabled-day';
-        }
-        return '';
+        _isDisabledDay = _isDisabledDays || _isLessThanMinDate || _isMoreThanMaxDate;
+        return _isDisabledDay ? ' is-disabled-day' : '';
       },
 
+      // Re-compute class when a year is selected at year page.
       _isListOfYearsSelected: function(_itemYear, _activeYear) {
         return _itemYear === _activeYear ? ' is-selected' : '';
       },
 
+      // TODO: Intl will replace this.
       _computeDaysOfWeek: function(_firstDayOfWeek) {
         // _daysOfWeek needs to be changed as well with firstDayOfWeek.
         if (_firstDayOfWeek > 0 && _firstDayOfWeek < 7) {
@@ -1011,6 +1034,8 @@ Custom property | Description | Default
         }
         return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       },
+      // Re-compute the index of the selected date when a new date is selected
+      // via user interaction.
       _computeChosenDaysOfMonth: function(_daysOfMonth) {
         // depends on _daysOfMonth and recalculate the index of _chosenDaysOfMonth.
         var _newDaysOfMonthIdx = _daysOfMonth.indexOf(this._selectedDate);
@@ -1019,51 +1044,79 @@ Custom property | Description | Default
         }
       },
 
+      // Get date from date string as the minimum date can be selected.
       _computeMinDate: function(_minDate) {
-        var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
-        var m = re.exec(_minDate);
-        if (m !== null) {
-          return {year: parseInt(m[1]), month: parseInt(m[2]),
-            date: parseInt(m[3])};
-        }
+        return this._extractDateToParts(_minDate);
       },
+      // Get date from date string as the maximum date can be selected.
       _computeMaxDate: function(_maxDate) {
-        var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
-        var m = re.exec(_maxDate);
-        if (m !== null) {
-          return {year: parseInt(m[1]), month: parseInt(m[2]),
-            date: parseInt(m[3])};
+        return this._extractDateToParts(_maxDate);
+      },
+      // Extract date from the date string.
+      _extractDateToParts: function(_dateString) {
+        if (!_dateString instanceof Date && typeof _dateString === 'string') {
+          var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
+          var m = re.exec(_dateString);
+          if (m !== null) {
+            return {year: parseFloat(m[1]), month: parseFloat(m[2]), date: parseFloat(m[3])};
+          }
+        }else if (_dateString instanceof Date &&
+                  new Date(_dateString).toDateString() !== 'Invalid Date') {
+          return {
+            year: _dateString.getFullYear(),
+            month: _dateString.getMonth() + 1,
+            date: _dateString.getDate()
+          }
         }
       },
 
-      // when _activeView is year, scrollToIndex and notifyResize iron-list.
-      // workaround to always center selected year and...
-      // to fix duplicated items when first switching to year view.
+      // Dynamically load items into the iron-list when switching page to year view.
       _updateList: function(_activeView) {
-        if (_activeView === 'year') {
-          if (!this._isListUpdated) {
-            // Set _isListUpdated true to generate iron-list lazily.
-            this.set('_isListUpdated', !0);
-            if (!this._listOfYears) {
-              for (var _newList = [], y = 1900, i = y; i <= 2100; i++) {
-                _newList.push({
-                  year: i
-                });
-              }
-              this.set('_listOfYears', _newList);
-            }
-            // Since generating iron-list dynamically takes time, perform
-            // subsequent operation ASYNC-ly.
-            this.async(function() {
-              this.$$('#listOfYears').selectItem(this._activeYear - 1900);
-              this.$$('#listOfYears').scrollToIndex(this._activeYear - 1900 - 1);
-              this.$$('#listOfYears').notifyResize();
-            }, 1);
+        for (var _newList = [], y = 1900, i = y; i <= 2100; i++) {
+          _newList.push({ year: i });
+        }
+        this.set('_listOfYears', _newList);
+      },
+      // On neon-animaition-finish, udpate scroller position of the iron-list.
+      // It is to fix the iron-list so that the selected year will always be centered by
+      // hardcoded with fixed length of #items.
+      _onAnimationFinish: function(ev) {
+        var _target = ev.detail;
+        // TO fix the scrolling of iron-list, hard coded with fixed length of #items.
+        if (_target && _target.toPage.tagName === 'IRON-LIST') {
+          this._updateListScroller(_target.toPage);
+        }
+      },
+      _updateListScroller: function(_list) {
+        var _sl = Polymer.dom(_list.root).querySelector('#items');
+        var _slh = _sl.getBoundingClientRect().height || 12863.994140625;
+        var _sli = Math.floor(_slh / (2100 - 1900 + 1) * (this._activeYear - 1900 - 2)) + 1;
+
+        // Scroll to selected year.
+        this.async(function() {
+          _list.scroll(0, _sli);
+        }, 17); // wait for at least 17ms to update the scroller position.
+      },
+      // When first time switching page to year view, dynamically render iron-list.
+      _onIronSelectorSelectedChanged: function(ev) {
+        if (ev.detail.value === 'year') {
+          if (!this._isListRendered) {
+            this._updateList();
+            this.set('_isListRendered', !0);
           }else {
-            // Else if iron-list has already there, just scroll to selected year.
-            this.$$('#listOfYears').scrollToIndex(this._activeYear - 1900 - 2);
-            this.$$('#listOfYears').notifyResize();
+            // When noAnimation is truthy, this will update the list scroller.
+            if (this.noAnimation) {
+              this._updateListScroller(this.$$('#listOfYears'));
+            }
           }
+        }
+      },
+      _onListRendered: function(ev) {
+        // When noAnimation is truthy, this will update the list scroller.
+        if (ev.target.if && this.noAnimation) {
+          this.async(function() {
+            this._updateListScroller(this.$$('#listOfYears'));
+          }, 1);
         }
       },
       _goCalendar: function(ev) {
@@ -1093,11 +1146,12 @@ Custom property | Description | Default
 				_temp = null;
       },
 
+      // TODO: At some degree, Intl will affect this too.
+      // bind the selected date so that it's ready to be read from the outside world.
       _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
 				// show long date (eg. Fri, May 12 2017 instead.
         if (this.showLongDate) {
-          var _longDate = new Date(_selectedYear, _selectedMonth,
-						_selectedDate).toString().slice(0, 15);
+          var _longDate = new Date(_selectedYear, _selectedMonth, _selectedDate).toDateString();
 					return _longDate.slice(0, 3) + ',' + _longDate.slice(3);
         }
 
@@ -1130,8 +1184,8 @@ Custom property | Description | Default
           _formattedDate = this._padStart(_formattedDate, 2, '0');
         }
         // set formatted value with user defined symbols.
-        _finalFormatted = [_formattedYear, _format.s1, _formattedMonth,
-          _format.s2, _formattedDate].join('');
+        _finalFormatted = _formattedYear + _format.s1 +
+                          _formattedMonth + _format.s2 + _formattedDate;
 
 				return _finalFormatted;
       },
@@ -1159,17 +1213,22 @@ Custom property | Description | Default
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate) {
         var _isDateDefined = this._isUndefined(this._selectedDate);
+        var _longDate = new Date(this._selectedYear, this._selectedMonth, this._selectedDate);
+
         if (_showLongDate) {
-          var _longDate = new Date(this._selectedYear, this._selectedMonth, this._selectedDate).toString().slice(0, 15);
-          _longDate = _isDateDefined ? new Date().toString().slice(0, 15) : _longDate;
+          _longDate = _longDate.toDateString();
+          _longDate = _isDateDefined ? new Date().toDateString() : _longDate;
           this._setDate(_longDate.slice(0,3) + ',' + _longDate.slice(3));
         }else {
-          var _longDate = this._bindSelectedFulldate(this._selectedYear, this._selectedMonth, this._selectedDate, this._format);
+          _longDate = this._bindSelectedFulldate(this._selectedYear,
+            this._selectedMonth, this._selectedDate, this._format);
           _longDate = _isDateDefined ? this.date : _longDate;
           this._setDate(_longDate);
         }
       },
 
+      // TODO: TO make things simple and works across different browsers, the input date string
+      // has to be standardized - YYYY/MM/DD.
       _updateToReflectExternalChange: function(_inputDate) {
         function _reformat(_m) {
           var _nan = isNaN(parseFloat(_m));
@@ -1292,10 +1351,13 @@ Custom property | Description | Default
         _node.updateStyles();
       },
 
-      // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: To add GIF to README.md.
-      // TODO: To add dist/ to contain minified version.
-      // TODO: Templatize datepicker so that reduce element nodes on page load.
+      // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
+      // TODO: User Intl for locales.
+      // TODO: Add supported browsers.
+      // X - TODO: Fixed centering of selected year in the iron-list by hardcoded with fixed length of #items.
+      // X - TODO: To add dist/ to contain minified version.
+      // X - TODO: Templatize datepicker so that reduce element nodes on page load.
       // X - TODO: Added dark, goog theme.
       // X - TODO: Special method to update two-way binded read-only property.
       // X - TODO: To add property noAnimation to disable all animations completely.
