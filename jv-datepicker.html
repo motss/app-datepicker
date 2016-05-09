@@ -14,6 +14,7 @@
 <link rel="import" href="../neon-animation/animations/fade-out-animation.html">
 <link rel="import" href="../neon-animation/animations/slide-from-left-animation.html">
 <link rel="import" href="../neon-animation/animations/slide-from-right-animation.html">
+
 <!--
 Material Design: [Pickers](https://www.google.com/design/spec/components/pickers.html#pickers-date-pickers)
 
@@ -186,8 +187,8 @@ Custom property | Description | Default
         @apply(--jv-datepicker-nav-month-year);
       }
       div.days-of-week {
-        color: var(--jv-datepicker-weekdays-color, #9b9b9b);
-        font-size: 11px;
+        color: var(--jv-datepicker-weekdays-color, #848484);
+        font-size: 12px;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         @apply(--jv-datepicker-days-of-week);
@@ -479,8 +480,9 @@ Custom property | Description | Default
           [[_selectedYear]]
         </div>
         <div class="selected-date" view="calendar">
-          [[_selectedDaysOfWeek]],&nbsp;
-          <span>[[_computeShortMonthName(_selectedMonth)]] [[_selectedDate]]</span>
+          <!-- [[_selectedDaysOfWeek]],&nbsp; -->
+          <!-- <span>[[_computeShortMonthName(_selectedMonth, locale)]] [[_selectedDate]]</span> -->
+          <span>[[_shortSelectedDate]]</span>
         </div>
       </iron-selector>
 
@@ -489,7 +491,7 @@ Custom property | Description | Default
           <div class="navigator">
             <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
             <div id="navMonthYear" class="nav-month-year">
-              [[_computeMonthName(_activeMonth)]] [[_activeYear]]
+              [[_activeMonthYear]]
             </div>
             <paper-icon-button icon="datepicker:chevron-right" on-transitionend="_incrementMonth" on-tap="_incrementMonth" noink="[[noAnimation]]"></paper-icon-button>
           </div>
@@ -528,14 +530,14 @@ Custom property | Description | Default
   </template>
 
   <script>
-    var _monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    var _dayNames = [
-      'Sunday', 'Monday', 'Tuesday', 'Wednesday',
-      'Thursday', 'Friday', 'Saturday'
-    ];
+    // var _monthNames = [
+    //   'January', 'February', 'March', 'April', 'May', 'June',
+    //   'July', 'August', 'September', 'October', 'November', 'December'
+    // ];
+    // var _dayNames = [
+    //   'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+    //   'Thursday', 'Friday', 'Saturday'
+    // ];
     console.log('before ready...');
     console.log('is Intl suppported natively? ', window.Intl, window.Intl.DateTimeFormat().resolvedOptions().timeZone);
 
@@ -551,6 +553,17 @@ Custom property | Description | Default
       ],
 
       properties: {
+        /**
+         * Set locale for the datepicker.
+         */
+        locale: {
+          type: String,
+          value: function() {
+            if (window.Intl) {
+              return new window.Intl.DateTimeFormat().resolvedOptions().locale;
+            }
+          }
+        },
         /**
          * This forcefully sets the view of the datepicker without respecting the orientation of the device.
          * Available options: `vertical`, `horizontal`.
@@ -648,9 +661,21 @@ Custom property | Description | Default
           readOnly: true
         },
 
+        // month names, literally.
+        _monthNames: {
+          type: Array,
+          value: function() {
+            return [ 'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December' ];
+          }
+        },
+
+        _activeMonthYear: String,
+        _shortSelectedDate: String,
+
         _daysOfWeek: {
           type: Array,
-          computed: '_computeDaysOfWeek(firstDayOfWeek)'
+          // computed: '_computeDaysOfWeek(firstDayOfWeek, locale)'
         },
         _daysOfMonth: Array,
         _listOfYears: Array,
@@ -686,16 +711,16 @@ Custom property | Description | Default
           type: Number,
           value: new Date().getDate()
         },
-        _selectedDaysOfWeek: {
-          type: String,
-          value: function() {
-            var _daysOfWeek = new Date().getDay();
-            if (_daysOfWeek < 0) {
-              _daysOfWeek = 6;
-            }
-            return _dayNames[_daysOfWeek].slice(0, 3);
-          }
-        },
+        // _selectedDaysOfWeek: {
+        //   type: String,
+        //   value: function() {
+        //     var _daysOfWeek = new Date().getDay();
+        //     if (_daysOfWeek < 0) {
+        //       _daysOfWeek = 6;
+        //     }
+        //     // return _dayNames[_daysOfWeek].slice(0, 3);
+        //   }
+        // },
         _chosenDaysOfMonth: {
           type: Number,
           value: function() {
@@ -721,10 +746,13 @@ Custom property | Description | Default
       observers: [
         '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek)',
         '_computeSeparateFormat(format)',
-        '_computeShowLongDate(showLongDate)',
+        '_computeShowLongDate(showLongDate, _selectedDate, locale)',
         '_updateToReflectExternalChange(inputDate)',
         '_updateThemeColor(theme)',
         '_updateDatepickerView(view)',
+        '_computeDaysOfWeek(firstDayOfWeek, locale)',
+        '_computeActiveMonthYear(_activeYear, _activeMonth, locale)',
+        '_computeShortSelectedDate(_selectedMonth, _selectedDate, locale)',
       ],
 
       // Element Lifecycle
@@ -737,6 +765,51 @@ Custom property | Description | Default
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
         console.log('ready');
+        if (!window.Intl) {
+          var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
+
+          var _thisLocale = this.locale;
+          var _thisActiveYear = this._activeYear;
+          var _thisActiveMonth = this._thisActiveMonth;
+          var _thisSelectedMonth = this._thisSelectedMonth;
+          var _thisSelectedDate = this._thisSelectedDate;
+          var _thisSet = this.set.bind(this);
+          var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
+          var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
+          for (var i = 0; i < 2; i++) {
+            Polymer.Base.importHref(_hrefs[i], function(ev) {
+              console.log(ev);
+              console.log(window.Intl);
+              console.log(window.moment);
+              _thisComputeDaysOfWeek(_thisLocale);
+              _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
+              _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
+            }, function(err) {
+              console.error(err);
+            }, !0);
+          }
+        }else if (!window.Intl.DateTimeFormat().resolvedOptions().timeZone) {
+          // TODO: To be removed since Firefox doesn't need these.
+          var _thisLocale = this.locale;
+          var _thisActiveYear = this._activeYear;
+          var _thisActiveMonth = this._thisActiveMonth;
+          var _thisSelectedMonth = this._thisSelectedMonth;
+          var _thisSelectedDate = this._thisSelectedDate;
+          var _thisSet = this.set.bind(this);
+          var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
+          var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
+          Polymer.Base.importHref('../polyfill/moment.html', function(ev) {
+            // console.log(ev);
+            // console.log(window.Intl);
+            // console.log(window.moment);
+            // _thisSet('locale', 'de-DE');
+            _thisComputeDaysOfWeek(_thisLocale);
+            _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
+            _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
+          }, function(err) {
+            console.error(err);
+          }, !0);
+        }
       },
 
       attached: function() {
@@ -921,17 +994,44 @@ Custom property | Description | Default
         }, 1);
       },
 
-      // TODO: Intl will replace this.
-      _computeMonthName: function(_activeMonth) {
-        return _monthNames[_activeMonth];
+      // Re-compute months of the year.
+      // _computeMonthNames: function(_locale) {
+      //   if (_locale && window.Intl) {
+      //     var _formatter = new window.Intl.DateTimeFormat(_locale, {
+      //       month: 'long'
+      //     }).format;
+      //     var _mn = [];
+      //     for (var i = 0; i < 12; i++) {
+      //       var _currentDate = new Date(2016, i, 1);
+      //       _mn.push(_formatter(_currentDate));
+      //     }
+      //     console.log(_mn);
+      //     this.set('_monthNames', _mn);
+      //   }
+      // },
+      // Re-compute active month year if new date is selected.
+      _computeActiveMonthYear: function(_activeYear, _activeMonth, _locale) {
+        if (window.Intl) {
+          var _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          var _amy = new window.Intl.DateTimeFormat(_locale, {
+            month: 'short',
+            year: 'numeric'
+          }).format(new Date(_activeYear, _activeMonth, 1));
+          console.log(_amy);
+          this.set('_activeMonthYear', _amy);
+        }
       },
-      // TODO: Intl will replace this.
-      _computeShortMonthName: function(_selectedMonth) {
-        return _monthNames[_selectedMonth].slice(0, 3);
-      },
-      // TODO: Intl will replace this.
-      _computeShortDayName: function(_index) {
-        return _dayNames[_index].slice(0, 3);
+      // Re-compute short version of full date to show on the picker.
+      _computeShortSelectedDate: function(_selectedMonth, _selectedDate, _locale) {
+        if (window.Intl) {
+          var _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          var _ssd = new window.Intl.DateTimeFormat(_locale, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+          }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
+          this.set('_shortSelectedDate', _ssd);
+        }
       },
 
       // When a day of month is selected, a lot of tasks need to be carried out.
@@ -954,7 +1054,6 @@ Custom property | Description | Default
           this.set('_selectedDate', _target.date);
           this.set('_selectedYear', this._activeYear);
           this.set('_selectedMonth', this._activeMonth);
-          this.set('_selectedDaysOfWeek', this._computeShortDayName(_target.index % 7));
         }
       },
 
@@ -1023,16 +1122,30 @@ Custom property | Description | Default
       },
 
       // TODO: Intl will replace this.
-      _computeDaysOfWeek: function(_firstDayOfWeek) {
-        // _daysOfWeek needs to be changed as well with firstDayOfWeek.
-        if (_firstDayOfWeek > 0 && _firstDayOfWeek < 7) {
+      _computeDaysOfWeek: function(_firstDayOfWeek, _locale) {
+        // _daysOfWeek needs to be changed as well with firstDayOfWeek and locale.
+        if (_firstDayOfWeek >= 0 && _firstDayOfWeek < 7) {
           var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+          // if locale is set and window.Intl is supported...
+          if (_locale && window.Intl) {
+            _dow = [];
+            var _today = new Date();
+            var _offsetDate = _today.getDate() - _today.getDay();
+            for (var i = 0; i < 7; i++) {
+              var _formatter = new window.Intl.DateTimeFormat(_locale, {
+                weekday: 'narrow'
+              }).format;
+              _today = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
+              _dow.push(_formatter(_today));
+            }
+          }
+
           var _sliced = _dow.slice(_firstDayOfWeek);
           var _rest = _dow.slice(0, _firstDayOfWeek);
           var _concatted = Array.prototype.concat(_sliced, _rest);
-          return _concatted;
+          this.set('_daysOfWeek', _concatted);
         }
-        return ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       },
       // Re-compute the index of the selected date when a new date is selected
       // via user interaction.
@@ -1091,6 +1204,12 @@ Custom property | Description | Default
         var _sl = Polymer.dom(_list.root).querySelector('#items');
         var _slh = _sl.getBoundingClientRect().height || 12863.994140625;
         var _sli = Math.floor(_slh / (2100 - 1900 + 1) * (this._activeYear - 1900 - 2)) + 1;
+
+        // Adjust center position when datepickers has no buttons and in landscape mode.
+        if (!this.$.dp.classList.contains('with-buttons') &&
+            window.matchMedia('(orientation: landscape)').matches) {
+          _sli = Math.floor(_slh / (2100 - 1900 + 1) * (this._activeYear - 1900 - 1)) + 1;
+        }
 
         // Scroll to selected year.
         this.async(function() {
@@ -1156,7 +1275,7 @@ Custom property | Description | Default
         }
 
 				var _formattedYear  = _selectedYear;
-				var _formattedMonth  = _monthNames[_selectedMonth];
+				var _formattedMonth  = this._monthNames[_selectedMonth];
 				var _formattedDate  = _selectedDate;
 				var _finalFormatted = '';
         // compute new formatted year.
@@ -1211,18 +1330,29 @@ Custom property | Description | Default
         }, 1);
       },
       // Update date to show long date or short date.
-      _computeShowLongDate: function(_showLongDate) {
-        var _isDateDefined = this._isUndefined(this._selectedDate);
-        var _longDate = new Date(this._selectedYear, this._selectedMonth, this._selectedDate);
+      _computeShowLongDate: function(_showLongDate, _selectedDate, _locale) {
+        // var _isDateDefined = this._isUndefined(this._selectedDate);
+        var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
-          _longDate = _longDate.toDateString();
-          _longDate = _isDateDefined ? new Date().toDateString() : _longDate;
-          this._setDate(_longDate.slice(0,3) + ',' + _longDate.slice(3));
+          var _options = {
+            weekday: this.showLongDate ? 'short' : undefined,
+            year: 'numeric',
+            month: this.showLongDate ? 'short' : '2-digit',
+            day: '2-digit'
+          };
+          console.log(_locale);
+          console.log(this._selectedDate);
+          console.log(_longDate);
+          // _longDate = _longDate.toDateString();
+          // _longDate = _isDateDefined ? new Date().toDateString() : _longDate;
+          _longDate = new window.Intl.DateTimeFormat(_locale, _options).format(_longDate);
+
+          this._setDate(_longDate);
         }else {
           _longDate = this._bindSelectedFulldate(this._selectedYear,
-            this._selectedMonth, this._selectedDate, this._format);
-          _longDate = _isDateDefined ? this.date : _longDate;
+            this._selectedMonth, _selectedDate, this._format);
+          // _longDate = _isDateDefined ? this.date : _longDate;
           this._setDate(_longDate);
         }
       },
@@ -1270,7 +1400,7 @@ Custom property | Description | Default
         }
 
         if (_newDate == 'Invalid Date') {
-          this._computeShowLongDate(_showLongDate);
+          this._computeShowLongDate(_showLongDate, this._selectedDate, this.locale);
           this._setInvalidDate(!0);
           return;
         }
@@ -1287,14 +1417,14 @@ Custom property | Description | Default
         // Run this method to format the final output.
         // It is to ensure that even when date input is not complied to a standard date format,
         // this method will do its job to rectify the problem.
-        this._computeShowLongDate(_showLongDate);
+        this._computeShowLongDate(_showLongDate, this._selectedDate, this.locale);
       },
       /**
        * By default, buttons are required so that they are to confirm the date change.
        * This method allows force update the datepicker when there are no buttons inside the datepicker to confirm date change.
        */
       enforceDateChange: function() {
-        this._computeShowLongDate(this.showLongDate);
+        this._computeShowLongDate(this.showLongDate, this._selectedDate, this.locale);
       },
 
       // Lodash's replacements.
@@ -1355,6 +1485,8 @@ Custom property | Description | Default
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
       // TODO: User Intl for locales.
       // TODO: Add supported browsers.
+      // TODO: Added polyfill for browsers without Intl.
+      // TODO: DRY up again.
       // X - TODO: Fixed centering of selected year in the iron-list by hardcoded with fixed length of #items.
       // X - TODO: To add dist/ to contain minified version.
       // X - TODO: Templatize datepicker so that reduce element nodes on page load.
