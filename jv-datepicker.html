@@ -202,7 +202,7 @@ Custom property | Description | Default
       }
       div.days-of-month {
         /*padding-bottom: 8px;*/
-        font-size: 12px;
+        font-size: 13px;
         @apply(--layout-horizontal);
         @apply(--layout-wrap);
         @apply(--layout-center-justified);
@@ -234,7 +234,7 @@ Custom property | Description | Default
 
       div.each-list-of-years {
         height: 64px;
-        font-size: 14px;
+        font-size: 16px;
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
@@ -477,11 +477,9 @@ Custom property | Description | Default
     <div id="dp" class="datepicker">
       <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
         <div class="selected-year" view="year">
-          [[_selectedYear]]
+          [[_showSelectedYear]]
         </div>
         <div class="selected-date" view="calendar">
-          <!-- [[_selectedDaysOfWeek]],&nbsp; -->
-          <!-- <span>[[_computeShortMonthName(_selectedMonth, locale)]] [[_selectedDate]]</span> -->
           <span>[[_shortSelectedDate]]</span>
         </div>
       </iron-selector>
@@ -506,8 +504,8 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item, _activeYear, _activeMonth)]][[_isEmptyDate(item)]][[_isChosenDaysOfMonth(item, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, disableDays.*, minDate, maxDate, item)]]" index="[[index]]" date="[[item]]">
-                [[item]]
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, _shiftedDisableDays.*, firstDayOfWeek, minDate, maxDate, item.index)]]" index="[[index]]" date="[[item.index]]">
+                [[item.date]]
               </div>
             </template>
           </div>
@@ -530,17 +528,6 @@ Custom property | Description | Default
   </template>
 
   <script>
-    // var _monthNames = [
-    //   'January', 'February', 'March', 'April', 'May', 'June',
-    //   'July', 'August', 'September', 'October', 'November', 'December'
-    // ];
-    // var _dayNames = [
-    //   'Sunday', 'Monday', 'Tuesday', 'Wednesday',
-    //   'Thursday', 'Friday', 'Saturday'
-    // ];
-    console.log('before ready...');
-    console.log('is Intl suppported natively? ', window.Intl, window.Intl.DateTimeFormat().resolvedOptions().timeZone);
-
     Polymer({
       is: 'jv-datepicker',
 
@@ -670,13 +657,16 @@ Custom property | Description | Default
           }
         },
 
+        _shiftedDisableDays: {
+          type: Array,
+          value: [6, 0]
+        },
+
         _activeMonthYear: String,
         _shortSelectedDate: String,
+        _showSelectedYear: String,
 
-        _daysOfWeek: {
-          type: Array,
-          // computed: '_computeDaysOfWeek(firstDayOfWeek, locale)'
-        },
+        _daysOfWeek: Array,
         _daysOfMonth: Array,
         _listOfYears: Array,
 
@@ -711,16 +701,7 @@ Custom property | Description | Default
           type: Number,
           value: new Date().getDate()
         },
-        // _selectedDaysOfWeek: {
-        //   type: String,
-        //   value: function() {
-        //     var _daysOfWeek = new Date().getDay();
-        //     if (_daysOfWeek < 0) {
-        //       _daysOfWeek = 6;
-        //     }
-        //     // return _dayNames[_daysOfWeek].slice(0, 3);
-        //   }
-        // },
+
         _chosenDaysOfMonth: {
           type: Number,
           value: function() {
@@ -744,7 +725,7 @@ Custom property | Description | Default
       },
 
       observers: [
-        '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek)',
+        '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek, locale)',
         '_computeSeparateFormat(format)',
         '_computeShowLongDate(showLongDate, _selectedDate, locale)',
         '_updateToReflectExternalChange(inputDate)',
@@ -753,6 +734,8 @@ Custom property | Description | Default
         '_computeDaysOfWeek(firstDayOfWeek, locale)',
         '_computeActiveMonthYear(_activeYear, _activeMonth, locale)',
         '_computeShortSelectedDate(_selectedMonth, _selectedDate, locale)',
+        '_computeShowSelectedYear(_selectedYear, locale)',
+        '_computeShiftedDisableDays(firstDayOfWeek, disableDays.*)',
       ],
 
       // Element Lifecycle
@@ -764,51 +747,35 @@ Custom property | Description | Default
         //
         // This is the point where you should make modifications to the DOM (when
         // necessary), or kick off any processes the element wants to perform.
-        console.log('ready');
         if (!window.Intl) {
-          var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
+          // var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
+          var _hrefs = [ '../polyfill/intl.html' ];
 
           var _thisLocale = this.locale;
           var _thisActiveYear = this._activeYear;
-          var _thisActiveMonth = this._thisActiveMonth;
-          var _thisSelectedMonth = this._thisSelectedMonth;
-          var _thisSelectedDate = this._thisSelectedDate;
+          var _thisActiveMonth = this._activeMonth;
+          var _thisSelectedYear = this._selectedYear;
+          var _thisSelectedMonth = this._selectedMonth;
+          var _thisSelectedDate = this._selectedDate;
           var _thisSet = this.set.bind(this);
           var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
           var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
+          var _thisComputeShowSelectedYear = this._computeShowSelectedYear.bind(this);
           for (var i = 0; i < 2; i++) {
             Polymer.Base.importHref(_hrefs[i], function(ev) {
-              console.log(ev);
-              console.log(window.Intl);
-              console.log(window.moment);
               _thisComputeDaysOfWeek(_thisLocale);
               _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
               _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
+              _thisComputeShowSelectedYear(_thisSelectedYear, _thisLocale);
             }, function(err) {
               console.error(err);
             }, !0);
           }
         }else if (!window.Intl.DateTimeFormat().resolvedOptions().timeZone) {
-          // TODO: To be removed since Firefox doesn't need these.
-          var _thisLocale = this.locale;
-          var _thisActiveYear = this._activeYear;
-          var _thisActiveMonth = this._thisActiveMonth;
-          var _thisSelectedMonth = this._thisSelectedMonth;
-          var _thisSelectedDate = this._thisSelectedDate;
-          var _thisSet = this.set.bind(this);
-          var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
-          var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
-          Polymer.Base.importHref('../polyfill/moment.html', function(ev) {
-            // console.log(ev);
-            // console.log(window.Intl);
-            // console.log(window.moment);
-            // _thisSet('locale', 'de-DE');
-            _thisComputeDaysOfWeek(_thisLocale);
-            _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
-            _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
-          }, function(err) {
-            console.error(err);
-          }, !0);
+          // Polymer.Base.importHref('../polyfill/moment.html', function(ev) {
+          // }, function(err) {
+          //   console.error(err);
+          // }, !0);
         }
       },
 
@@ -884,7 +851,6 @@ Custom property | Description | Default
         // removed from a document.
         //
         // Use this to clean up anything you did in `attached`.
-        console.log('jv-datepicker detached.');
       },
 
       // Element Behavior
@@ -909,7 +875,7 @@ Custom property | Description | Default
       //  Sa Su Mo Tu We Th Fr
       //                     1        5 - 6 < 0 ? 6 : 5 - 6;
       // Compute the days for a month.
-      _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek) {
+      _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek, _locale) {
         // Compute total number of days for a month.
         function _computeTotalDaysOfMonth(_year, _month) {
           var _totalDaysOfMonth = 31;
@@ -931,15 +897,38 @@ Custom property | Description | Default
           _start = _start < 0 ? 7  + _start : _start;
         }
 
+        // Set up Intl.
+        _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+        var _formatter = new window.Intl.DateTimeFormat(_locale, {
+          day: 'numeric'
+        }).format;
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
-          _daysOfMonth.push((i >= _start & i < _start + _totalDays ? j : ''));
+          var _formatted = _formatter(new Date(_activeYear, _activeMonth, j));
+          var _dateObj = {
+            date: '',
+            index: ''
+          }
+          if (i >= _start & i < _start + _totalDays) {
+            _dateObj.date = _formatted;
+            _dateObj.index = j;
+          }
+          _daysOfMonth.push(_dateObj);
         }
 
         // Update _chosenDaysOfMonth for every new calendar being rendered.
-        this.set('_chosenDaysOfMonth', this._computeChosenDaysOfMonth(_daysOfMonth));
+        this.set('_chosenDaysOfMonth', this._computeChosenDaysOfMonth(_daysOfMonth, this._selectedDate));
 
         // Update the old _daysOfMonth.
         this.set('_daysOfMonth', _daysOfMonth);
+      },
+      /// Re-compute disable days with firstDayOfWeek.
+      _computeShiftedDisableDays: function(_firstDayOfWeek, _isDisableDays) {
+        _firstDayOfWeek = _firstDayOfWeek > 0 && _firstDayOfWeek < 7 ? _firstDayOfWeek : 0;
+        var _sdd = this.disableDays.map(function(_day) {
+          _day = _day - _firstDayOfWeek;
+          return _day < 0 ? 7 + _day : _day;
+        });
+        this.set('_shiftedDisableDays', _sdd);
       },
 
       // Increment the month via user interaction.
@@ -994,43 +983,36 @@ Custom property | Description | Default
         }, 1);
       },
 
-      // Re-compute months of the year.
-      // _computeMonthNames: function(_locale) {
-      //   if (_locale && window.Intl) {
-      //     var _formatter = new window.Intl.DateTimeFormat(_locale, {
-      //       month: 'long'
-      //     }).format;
-      //     var _mn = [];
-      //     for (var i = 0; i < 12; i++) {
-      //       var _currentDate = new Date(2016, i, 1);
-      //       _mn.push(_formatter(_currentDate));
-      //     }
-      //     console.log(_mn);
-      //     this.set('_monthNames', _mn);
-      //   }
-      // },
       // Re-compute active month year if new date is selected.
       _computeActiveMonthYear: function(_activeYear, _activeMonth, _locale) {
         if (window.Intl) {
-          var _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _amy = new window.Intl.DateTimeFormat(_locale, {
             month: 'short',
             year: 'numeric'
           }).format(new Date(_activeYear, _activeMonth, 1));
-          console.log(_amy);
           this.set('_activeMonthYear', _amy);
         }
       },
       // Re-compute short version of full date to show on the picker.
       _computeShortSelectedDate: function(_selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
-          var _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             weekday: 'short',
             month: 'short',
             day: 'numeric'
           }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
+        }
+      },
+      _computeShowSelectedYear: function(_selectedYear, _locale) {
+        if (window.Intl) {
+          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          var _ssy = new window.Intl.DateTimeFormat(_locale, {
+            year: 'numeric'
+          }).format(new Date(_selectedYear, 0, 1));
+          this.set('_showSelectedYear', _ssy);
         }
       },
 
@@ -1044,11 +1026,7 @@ Custom property | Description | Default
             this._isNumber(_target.date) &&
             !_target.classList.contains('is-disabled-day')
           ) {
-          if (this._chosenDaysOfMonth !== 99) {
-            var _node = Polymer.dom(this.$.daysOfMonth).querySelectorAll('div');
-            this.toggleClass('chosen-days-of-month', !1, _node[this._chosenDaysOfMonth]);
-          }
-          this.toggleClass('chosen-days-of-month', !0, _target);
+          // This will trigger _isChosenDaysOfMonth to recompute style.
           this.set('_chosenDaysOfMonth', _target.index);
 
           this.set('_selectedDate', _target.date);
@@ -1072,20 +1050,20 @@ Custom property | Description | Default
       // Re-compute class if the item (day of month) is the selected date.
       _isChosenDaysOfMonth: function(_item, _selectedYear, _selectedMonth, _selectedDate) {
         // able to retain selected daysOfMonth even after navigating to other months.
-        var _isChosenDaysOfMonth = this._chosenDaysOfMonth &&
+        var _isChosenDaysOfMonth = this._chosenDaysOfMonth >= 0 &&
                                    this._activeYear === _selectedYear &&
                                    this._activeMonth === _selectedMonth &&
                                    _item === _selectedDate;
         return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
       // Re-compute class if the item (day of month) is a disable day.
-      _isDisableDays: function(_index, _disableDays, _minDate, _maxDate, _item) {
+      _isDisableDays: function(_index, _shiftedDisableDays, _firstDayOfWeek, _minDate, _maxDate, _item) {
         var _isLessThanMinDate = null;
         var _isMoreThanMaxDate = null;
         var _isDisableDay = null;
         // _index % 7 gives values from 0 to 6.
         // and if _index matches some of these disableDays values return true.
-        var _isDisabledDays = this.disableDays.some(function(_n) {
+        var _isDisableDays = this._shiftedDisableDays.some(function(_n) {
           return _n === _index % 7;
         });
         // ------ < _minDate ---------------- _maxDate > ------
@@ -1112,8 +1090,8 @@ Custom property | Description | Default
         // a) _isDisabledDays (set by property disableDays),
         // b) _isLessThanMinDate (set by property minDate), and
         // c) _isMoreThanMaxDate (set by propery moreDate).
-        _isDisabledDay = _isDisabledDays || _isLessThanMinDate || _isMoreThanMaxDate;
-        return _isDisabledDay ? ' is-disabled-day' : '';
+        _isDisableDay = _isDisableDays || _isLessThanMinDate || _isMoreThanMaxDate;
+        return _isDisableDay ? ' is-disabled-day is-non-selectable' : '';
       },
 
       // Re-compute class when a year is selected at year page.
@@ -1121,39 +1099,39 @@ Custom property | Description | Default
         return _itemYear === _activeYear ? ' is-selected' : '';
       },
 
-      // TODO: Intl will replace this.
       _computeDaysOfWeek: function(_firstDayOfWeek, _locale) {
         // _daysOfWeek needs to be changed as well with firstDayOfWeek and locale.
-        if (_firstDayOfWeek >= 0 && _firstDayOfWeek < 7) {
-          var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+        var _firstDayOfWeek = _firstDayOfWeek > 0 && _firstDayOfWeek < 7 ? _firstDayOfWeek : 0;
 
-          // if locale is set and window.Intl is supported...
-          if (_locale && window.Intl) {
-            _dow = [];
-            var _today = new Date();
-            var _offsetDate = _today.getDate() - _today.getDay();
-            for (var i = 0; i < 7; i++) {
-              var _formatter = new window.Intl.DateTimeFormat(_locale, {
-                weekday: 'narrow'
-              }).format;
-              _today = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
-              _dow.push(_formatter(_today));
-            }
+        // if locale is set and window.Intl is supported...
+        if (_locale && window.Intl) {
+          _dow = [];
+          var _today = new Date();
+          var _offsetDate = _today.getDate() - _today.getDay();
+          for (var i = 0; i < 7; i++) {
+            var _formatter = new window.Intl.DateTimeFormat(_locale, {
+              weekday: 'narrow'
+            }).format;
+            _today = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
+            _dow.push(_formatter(_today));
           }
-
-          var _sliced = _dow.slice(_firstDayOfWeek);
-          var _rest = _dow.slice(0, _firstDayOfWeek);
-          var _concatted = Array.prototype.concat(_sliced, _rest);
-          this.set('_daysOfWeek', _concatted);
         }
+
+        var _sliced = _dow.slice(_firstDayOfWeek);
+        var _rest = _dow.slice(0, _firstDayOfWeek);
+        var _concatted = Array.prototype.concat(_sliced, _rest);
+        this.set('_daysOfWeek', _concatted);
       },
       // Re-compute the index of the selected date when a new date is selected
       // via user interaction.
-      _computeChosenDaysOfMonth: function(_daysOfMonth) {
+      _computeChosenDaysOfMonth: function(_daysOfMonth, _selectedDate) {
         // depends on _daysOfMonth and recalculate the index of _chosenDaysOfMonth.
-        var _newDaysOfMonthIdx = _daysOfMonth.indexOf(this._selectedDate);
-        if (_newDaysOfMonthIdx > 0) {
-          return _newDaysOfMonthIdx;
+        var _len = _daysOfMonth.length;
+        for (var i = 0; i < _len; i++) {
+          if (i >= 0 && _daysOfMonth[i].index === _selectedDate) {
+            return i;
+          }
         }
       },
 
@@ -1265,13 +1243,11 @@ Custom property | Description | Default
 				_temp = null;
       },
 
-      // TODO: At some degree, Intl will affect this too.
       // bind the selected date so that it's ready to be read from the outside world.
       _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
 				// show long date (eg. Fri, May 12 2017 instead.
         if (this.showLongDate) {
-          var _longDate = new Date(_selectedYear, _selectedMonth, _selectedDate).toDateString();
-					return _longDate.slice(0, 3) + ',' + _longDate.slice(3);
+          return this._computeShowLongDate(this.showLongDate, _selectedDate, this.locale, !0);
         }
 
 				var _formattedYear  = _selectedYear;
@@ -1330,29 +1306,33 @@ Custom property | Description | Default
         }, 1);
       },
       // Update date to show long date or short date.
-      _computeShowLongDate: function(_showLongDate, _selectedDate, _locale) {
+      _computeShowLongDate: function(_showLongDate, _selectedDate, _locale, _returnResult) {
         // var _isDateDefined = this._isUndefined(this._selectedDate);
         var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
+          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _options = {
             weekday: this.showLongDate ? 'short' : undefined,
             year: 'numeric',
             month: this.showLongDate ? 'short' : '2-digit',
             day: '2-digit'
           };
-          console.log(_locale);
-          console.log(this._selectedDate);
-          console.log(_longDate);
-          // _longDate = _longDate.toDateString();
-          // _longDate = _isDateDefined ? new Date().toDateString() : _longDate;
           _longDate = new window.Intl.DateTimeFormat(_locale, _options).format(_longDate);
+
+          if (_returnResult) {
+            return _longDate;
+          }
 
           this._setDate(_longDate);
         }else {
           _longDate = this._bindSelectedFulldate(this._selectedYear,
             this._selectedMonth, _selectedDate, this._format);
-          // _longDate = _isDateDefined ? this.date : _longDate;
+
+          if (_returnResult) {
+            return _longDate;
+          }
+
           this._setDate(_longDate);
         }
       },
@@ -1375,7 +1355,6 @@ Custom property | Description | Default
           }
         }
 
-        // console.log('_updateToReflectExternalChange:', _inputDate);
         var _showLongDate = this.showLongDate;
         var _yy = 0;
         var _mm = 0;
