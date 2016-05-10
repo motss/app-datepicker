@@ -299,7 +299,10 @@ Custom property | Description | Default
         }
 
         :host(:not(.vertical-view)) iron-selector.selected-fulldate {
-          width: calc(100% / 3 + 48px);
+          /* Fixed for IE11, Edge */
+          min-width: 164px;
+          width: 100%;
+          max-width: 164px;
           height: 100%;
         }
         :host(:not(.vertical-view)) div.selected-date {
@@ -307,6 +310,11 @@ Custom property | Description | Default
           @apply(--layout-vertical);
           @apply(--layout-start);
           @apply(--layout-center-justified);
+        }
+        /* Fixed for IE11, Edge */
+        :host(:not(.vertical-view)) div.selected-date > span {
+          max-width: 100%;
+          word-wrap: break-word;
         }
 
         :host(:not(.vertical-view)) neon-animated-pages.fullcalendar {
@@ -749,7 +757,7 @@ Custom property | Description | Default
         // necessary), or kick off any processes the element wants to perform.
         if (!window.Intl) {
           // var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
-          var _hrefs = [ '../polyfill/intl.html' ];
+          var _hrefs = [ '../intl.html' ];
 
           var _thisLocale = this.locale;
           var _thisActiveYear = this._activeYear;
