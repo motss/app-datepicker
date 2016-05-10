@@ -13,7 +13,7 @@
 <!-- ![jv-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-jv-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
-## Update (v2.4.0)
+## Update (v2.5.0)
 A list of new features have been added to the element:
 - `minDate` (dates that are smaller than the predefined `minDate` will be disabled)
 - `maxDate` (dates that are larger than the predefined `maxDate` will be disabled)
@@ -27,6 +27,8 @@ A list of new features have been added to the element:
 
 - `theme` (To change the theme of the datepicker. Available options: `dark-theme`, `light-theme`, `goog-theme`)
 - `view` (To forcefully change the view of the datepicker without respecting the orientation of the device: `horizontal`, `vertical`)
+
+- `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/jv-datepicker/components/jv-datepicker/demo/).
 
 See the [component page](http://motss.github.io/jv-datepicker/components/jv-datepicker/) for more information.
 

@@ -592,7 +592,7 @@ Custom property | Description | Default
          */
         minDate: {
           type: String,
-          value: '1000-00-01'
+          value: '1000/00/01'
         },
         /**
          * Maximum date for selection. Dates that are larger than the maximum
@@ -600,27 +600,20 @@ Custom property | Description | Default
          */
         maxDate: {
           type: String,
-          value: '9999-99-99'
+          value: '9999/99/99'
         },
         /**
-         * Format for the selected date. Default to `yyyy-mm-dd`. Eg. `2017-05-17`.
+         * Format for the selected date. Default to `yyyy/mm/dd`. Eg. `2017/05/17`.
          */
         format: {
           type: String,
           value: 'yyyy/mm/dd'
         },
         /**
-         * Selected date in the default format of `yyyy-mm-dd`. Eg. `2017-05-17`.
+         * Selected date in the default format of `yyyy/mm/dd`. Eg. `2017/05/17`.
          */
         date: {
           type: String,
-          value: function() {
-            var _now = new Date();
-            var _fullyear = _now.getFullYear();
-            var _month = this._padStart(_now.getMonth() + 1, 2, '0');
-            var _date = this._padStart(_now.getDate(), 2, '0');
-            return [_fullyear, _month, _date].join('/');
-          },
           notify: true,
           readOnly: true
         },
@@ -735,7 +728,7 @@ Custom property | Description | Default
       observers: [
         '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek, locale)',
         '_computeSeparateFormat(format)',
-        '_computeShowLongDate(showLongDate, _selectedDate, locale)',
+        '_computeShowLongDate(showLongDate, locale)',
         '_updateToReflectExternalChange(inputDate)',
         '_updateThemeColor(theme)',
         '_updateDatepickerView(view)',
@@ -757,7 +750,7 @@ Custom property | Description | Default
         // necessary), or kick off any processes the element wants to perform.
         if (!window.Intl) {
           // var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
-          var _hrefs = [ '../intl.html' ];
+          var _hrefs = [ 'intl.html' ];
 
           var _thisLocale = this.locale;
           var _thisActiveYear = this._activeYear;
@@ -785,6 +778,11 @@ Custom property | Description | Default
           //   console.error(err);
           // }, !0);
         }
+
+        // Set default value for date when created.
+        var _defaultTimeWhenCreated = new Date();
+        this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
+        this._computeShowLongDate(this.showLongDate, this.locale);
       },
 
       attached: function() {
@@ -1314,8 +1312,12 @@ Custom property | Description | Default
         }, 1);
       },
       // Update date to show long date or short date.
-      _computeShowLongDate: function(_showLongDate, _selectedDate, _locale, _returnResult) {
-        // var _isDateDefined = this._isUndefined(this._selectedDate);
+      _computeShowLongDate: function(_showLongDate, _locale, _returnResult) {
+        if (this._isUndefined(this._selectedDate)) {
+          return;
+        }
+
+        var _selectedDate = this._selectedDate;
         var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
@@ -1332,6 +1334,18 @@ Custom property | Description | Default
             return _longDate;
           }
 
+          // Fix for notorious IE.
+          if (window.navigator.msManipulationViewsEnabled) {
+            if (_locale.indexOf('en') >= 0 || _locale === '') {
+              var _parts = _longDate.split(', ');
+              var _temp = [];
+              for (var i = 0, len = _parts.length; i < len; i++) {
+                _temp[i] = encodeURIComponent(_parts[i]).replace(/\%[0-9A-Z]{2}/gi, '');
+              }
+              _longDate = _temp[0] + ', ' + _temp[1] + ' ' + _temp[2] + ', ' + _temp[3];
+            }
+          }
+
           this._setDate(_longDate);
         }else {
           _longDate = this._bindSelectedFulldate(this._selectedYear,
@@ -1345,21 +1359,66 @@ Custom property | Description | Default
         }
       },
 
-      // TODO: TO make things simple and works across different browsers, the input date string
+      // TO make things simple and works across different browsers, the input date string
       // has to be standardized - YYYY/MM/DD.
+      // http://dygraphs.com/date-formats.html
       _updateToReflectExternalChange: function(_inputDate) {
-        function _reformat(_m) {
-          var _nan = isNaN(parseFloat(_m));
-          if (_nan) {
-            var _re = /([0-9]+)[t|h|r|s|n|d]/i;
-            var _hasOrdinalSuffix = _re.exec(_m) !== null;
-            if (_hasOrdinalSuffix) {
-              return ('0' + _m).slice(-2);
-            }else {
-              return _m;
+        // Only locale with 'en' is accepted.
+        if (this.locale.indexOf('en') < 0 || this.locale === '') {
+          this._setInvalidDate(!0);
+          return;
+        }
+        // accepted input date string:
+        // 1. 2016 January 31
+        // 2. 2016 January 3
+        // 3. 2016 Jan 31
+        // 4. 2016 Jan 3
+        // 5. 2016/13/13
+        function _isValidDate(_id, _showLongDate) {
+          var _res = {
+            valid: !1,
+            result: ''
+          };
+          // Check if long input date is a valid date.
+          if (_showLongDate) {
+            var _ds = _id.split(', ');
+            if (_ds.length > 2) {
+              _ds = _ds[1].split(' ').join('/') + ', ' + _ds[2];
+              var _newDate = new Date(_ds);
+              if (_newDate.toString() === 'Invalid Date') {
+                return _res;
+              }else {
+                return {
+                  valid: !0,
+                  result: _newDate
+                };
+              }
             }
+
+            return _res;
+          }
+
+          // From here onwards, to check for short input date.
+          var _re1 = /^(\d{4})[\/](\d{1,2})[\/](\d{1,2})$/i;
+          var _re2 = /^(\d{4})[ ](\w+)[ ](\d{1,2})$/i;
+
+          var _validWithRe1 = _re1.exec(_id);
+          var _validWithRe2 = _re2.exec(_id);
+
+          if (_validWithRe1 === null && _validWithRe2 === null) {
+            return _res;
           }else {
-            return _m / 1000 < 1 ? ('0' + _m).slice(-2) : ('0' + _m).slice(-4);
+            var _resultToDate = null;
+            if (_validWithRe1 === null) {
+              _resultToDate = new Date(_validWithRe2[1] + ' ' + _validWithRe2[2] + ' ' + _validWithRe2[3]);
+            }else if (_validWithRe2 === null) {
+              _resultToDate = new Date(_validWithRe1[1], _validWithRe1[2] - 1, _validWithRe1[3]);
+            }
+
+            return {
+              valid: !0,
+              result: _resultToDate
+            };
           }
         }
 
@@ -1367,51 +1426,32 @@ Custom property | Description | Default
         var _yy = 0;
         var _mm = 0;
         var _dd = 0;
-        var _newDate = new Date(_inputDate);
-        this._setInvalidDate(!1);
-        // Encouraged to use standard format for long date.
-        if (!_showLongDate) {
-          var _re = /(\w+)[^a-zA-Z0-9]+(\w+)[^a-zA-Z0-9]+(\w+)/i;
-          var _m = _re.exec(_inputDate);
+        var _isValidDate = _isValidDate(_inputDate, _showLongDate);
 
-          if (_m === null) {
-            this._setInvalidDate(!0);
-            return;
-          }
+        if (_isValidDate.valid) {
+          var _vd = new Date(_isValidDate.result);
+          var _yy = _vd.getFullYear();
+          var _mm = _vd.getMonth();
+          this._setInvalidDate(!1);
 
-          var _my = _reformat(_m[1]);
-          var _mm = _reformat(_m[2]);
-          var _md = _reformat(_m[3]);
-          var _formattedInputDate = [_my, _mm, _md].join('-');
-          _newDate = new Date(_formattedInputDate);
-        }
-
-        if (_newDate == 'Invalid Date') {
-          this._computeShowLongDate(_showLongDate, this._selectedDate, this.locale);
+          this.set('_activeYear', _yy);
+          this.set('_activeMonth', _mm);
+          this.set('_selectedYear', _yy);
+          this.set('_selectedMonth', _mm);
+          this.set('_selectedDate', _vd.getDate());
+        }else {
+          this.set('_selectedDate', this._selectedDate || new Date().getDate());
+          this._computeShowLongDate(_showLongDate, this.locale);
           this._setInvalidDate(!0);
-          return;
         }
-
-        _yy = _newDate.getFullYear();
-        _mm = _newDate.getMonth();
-        _dd = _newDate.getDate();
-        this.set('_activeYear', _yy);
-        this.set('_activeMonth', _mm);
-        this.set('_selectedYear', _yy);
-        this.set('_selectedMonth', _mm);
-        this.set('_selectedDate', _dd);
-
-        // Run this method to format the final output.
-        // It is to ensure that even when date input is not complied to a standard date format,
-        // this method will do its job to rectify the problem.
-        this._computeShowLongDate(_showLongDate, this._selectedDate, this.locale);
       },
       /**
        * By default, buttons are required so that they are to confirm the date change.
        * This method allows force update the datepicker when there are no buttons inside the datepicker to confirm date change.
        */
       enforceDateChange: function() {
-        this._computeShowLongDate(this.showLongDate, this._selectedDate, this.locale);
+        this._setInvalidDate(!1);
+        this._computeShowLongDate(this.showLongDate, this.locale);
       },
 
       // Lodash's replacements.
@@ -1470,10 +1510,11 @@ Custom property | Description | Default
 
       // TODO: To add GIF to README.md.
       // TODO: To migrate 2nd datepicker to the same month when minDate is set on the 1st datepicker.
-      // TODO: User Intl for locales.
-      // TODO: Add supported browsers.
-      // TODO: Added polyfill for browsers without Intl.
-      // TODO: DRY up again.
+      // TODO: Input date with showLongDate will accept only format only.
+      // X - TODO: Add supported browsers.
+      // X - TODO: User Intl for locales.
+      // X - TODO: Added polyfill for browsers without Intl.
+      // X - TODO: DRY up again.
       // X - TODO: Fixed centering of selected year in the iron-list by hardcoded with fixed length of #items.
       // X - TODO: To add dist/ to contain minified version.
       // X - TODO: Templatize datepicker so that reduce element nodes on page load.
