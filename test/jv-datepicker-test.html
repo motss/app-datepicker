@@ -159,9 +159,13 @@
               if (i === 0 || i === 2 || i === 4) {
                 expect(datepicker.date).to.be.not.equal(_testDate);
               }else if (i == 5) {
-                // wrong weekday from input date but the datepicker wil correct that
-                // as long as the date is a valid input.
-                expect(datepicker.date).to.be.equal('Mon, May 25, 2020');
+                if (window.navigator.msManipulationViewsEnabled) {
+                  expect(datepicker.date).to.be.equal('Mon, May, 25, 2020');
+                }else {
+                  // wrong weekday from input date but the datepicker wil correct that
+                  // as long as the date is a valid input.
+                  expect(datepicker.date).to.be.equal('Mon, May 25, 2020');
+                }
               }else {
                 expect(datepicker.date).to.be.not.equal(_testDate2);
               }

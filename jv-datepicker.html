@@ -1334,15 +1334,11 @@ Custom property | Description | Default
             return _longDate;
           }
 
-          // Fix for notorious IE.
+          // Fix for notorious IE - add unknown spaces (%E2%80%8E) when formatting date with Intl.
+          // http://utf8-chartable.de/unicode-utf8-table.pl?start=8192&number=128
           if (window.navigator.msManipulationViewsEnabled) {
-            if (_locale.indexOf('en') >= 0 || _locale === '') {
-              var _parts = _longDate.split(', ');
-              var _temp = [];
-              for (var i = 0, len = _parts.length; i < len; i++) {
-                _temp[i] = encodeURIComponent(_parts[i]).replace(/\%[0-9A-Z]{2}/gi, '');
-              }
-              _longDate = _temp[0] + ', ' + _temp[1] + ' ' + _temp[2] + ', ' + _temp[3];
+            if (_locale || _locale === '') {
+              _longDate = decodeURIComponent(encodeURIComponent(_longDate).replace(/\%E2\%80\%8[0-9A-F]/gi, ''));
             }
           }
 
