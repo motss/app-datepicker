@@ -76,6 +76,23 @@ For `jv-datepicker-dialog`,
 
 4. Done.
 
+## Browser Compatibility
+##### `jv-datepicker` and `jv-datepicker-dialog`:
+- [x] Chrome/ Opera
+- [x] Firefox
+- [x] IE11/ Edge
+- [x] Chrome/Opera Android
+- [ ] Safari - unknown status, testing needed.
+- [ ] Safari iOS - unknown status, testing needed.
+
+##### [Intl.DateTimeFormat] (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat) (ECMAScript Internationalization API for `locale`) or for more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
+- [x] Chrome/ Opera
+- [x] Firefox
+- [x] IE11/ Edge
+- [x] Chrome/Opera Android
+- [ ] Safari - polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
+- [ ] Safari iOS - polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
+
 ## Throughput
 [![Throughput Graph](https://graphs.waffle.io/motss/jv-datepicker/throughput.svg)](https://waffle.io/motss/jv-datepicker/metrics/throughput)
 
