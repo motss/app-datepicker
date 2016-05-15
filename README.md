@@ -76,22 +76,17 @@ For `jv-datepicker-dialog`,
 
 4. Done.
 
-## Browser Compatibility
+## Browser Support
 ##### `jv-datepicker` and `jv-datepicker-dialog`:
-- [x] Chrome/ Opera
-- [x] Firefox
-- [x] IE11/ Edge
-- [x] Chrome/Opera Android
-- [ ] Safari - unknown status, testing needed.
-- [ ] Safari iOS - unknown status, testing needed.
+
+| <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/internet-explorer/internet-explorer_48x48.png" alt="IE" width="48px" height="48px"/><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/edge/edge_48x48.png" alt="Edge" width="48px" height="48px" /></br>IE/ Edge | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/firefox/firefox_48x48.png" alt="Firefox" width="48px" height="48px" /></br>Firefox | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome" width="48px" height="48px" /><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/opera/opera_48x48.png" alt="Opera" width="48px" height="48px" /></br>Chrome/ Opera | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome for Android" width="48px" height="48px" /></br>Chrome for Android | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="Safari" width="48px" height="48px" /></br>Safari | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="iOS Safari" width="48px" height="48px" /></br>iOS Safari |
+| --------- | --------- | --------- | --------- | --------- | --------- | --------- |
+| IE11, Edge | latest | latest | latest | unknown ? | unknown ?
 
 ##### [Intl.DateTimeFormat] (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat) (ECMAScript Internationalization API for `locale`) or for more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
-- [x] Chrome/ Opera
-- [x] Firefox
-- [x] IE11/ Edge
-- [x] Chrome/Opera Android
-- [ ] Safari - polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
-- [ ] Safari iOS - polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
+| <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/internet-explorer/internet-explorer_48x48.png" alt="IE" width="48px" height="48px"/><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/edge/edge_48x48.png" alt="Edge" width="48px" height="48px" /></br>IE/ Edge | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/firefox/firefox_48x48.png" alt="Firefox" width="48px" height="48px" /></br>Firefox | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome" width="48px" height="48px" /><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/opera/opera_48x48.png" alt="Opera" width="48px" height="48px" /></br>Chrome/ Opera | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome for Android" width="48px" height="48px" /></br>Chrome for Android | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="Safari" width="48px" height="48px" /></br>Safari | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="iOS Safari" width="48px" height="48px" /></br>iOS Safari |
+| --------- | --------- | --------- | --------- | --------- | --------- | --------- |
+| IE11, Edge | latest | latest | latest | polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js) | polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
 
 ## Throughput
 [![Throughput Graph](https://graphs.waffle.io/motss/jv-datepicker/throughput.svg)](https://waffle.io/motss/jv-datepicker/metrics/throughput)
