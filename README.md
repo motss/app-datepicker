@@ -2,7 +2,7 @@
 [![Bower version](https://badge.fury.io/bo/app-datepicker.svg)](http://badge.fury.io/bo/app-datepicker)
 [![Build Status](https://travis-ci.org/motss/app-datepicker.svg?branch=master)](https://travis-ci.org/motss/app-datepicker)
 
-# app-datepicker
+# app-datepicker (formerly `jv-datepicker`)
 <image src="https://cloud.githubusercontent.com/assets/10607759/14078902/232af734-f52c-11e5-9646-c0a5fb7899ef.png" alt="datepicker-light-theme" width="32%">
 <image src="https://cloud.githubusercontent.com/assets/10607759/14078900/22302dae-f52c-11e5-9bb9-fb84f31075a8.png" alt="datepicker-dark-theme" width="32%">
 <image src="https://cloud.githubusercontent.com/assets/10607759/14078901/22633d84-f52c-11e5-9041-02c805ac9843.png" alt="datepicker-goog-theme" width="32%">
@@ -13,21 +13,8 @@
 <!-- ![app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
-## Update (v2.5.0)
-A list of new features have been added to the element:
-- `minDate` (dates that are smaller than the predefined `minDate` will be disabled)
-- `maxDate` (dates that are larger than the predefined `maxDate` will be disabled)
-- `showLongDate` (to show long date instead of short date. Eg. Fri, May 12 2017)
-- `inputDate` (To allow date change from the external eg. `paper-input`)
-- `invalidDate` (Comes with `inputDate` to indicate whether the input date is in valid date format)
-- `noAnimation` (To enable/ disable all animations and transitions of the datepicker)
-- `pageEntryAnimation` (To customize the entry animation for page switching between months)
-- `pageExitAnimation` (To customize the exit animation for page switching between months)
-- `enforceDateChange` (A public method to force update a datepicker w/o any buttons to confirm date change)
-
-- `theme` (To change the theme of the datepicker. Available options: `dark-theme`, `light-theme`, `goog-theme`)
-- `view` (To forcefully change the view of the datepicker without respecting the orientation of the device: `horizontal`, `vertical`)
-
+## Update (v2.6.0)
+- **_As of v2.6.0 this element has been renamed to `app-datepicker` from `jv-datepicker`._**
 - `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/app-datepicker/components/app-datepicker/demo/).
 
 See the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more information.

@@ -1,19 +1,16 @@
 language: node_js
-sudo: false
-node_js: stable
+sudo: required
 dist: trusty
+node_js: stable
 addons:
   firefox: latest
   apt:
     sources:
-    - google-chrome
+      - google-chrome
     packages:
-    - google-chrome-stable
+      - google-chrome-stable
 before_script:
   - npm install -g bower polylint web-component-tester
   - bower install
-  - polylint
 script:
   - xvfb-run wct
-env:
-  - CXX=g++-4.8

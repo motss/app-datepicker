@@ -232,17 +232,17 @@ Custom property | Description | Default
       }
 
       /* Date hover styling */
-      div.days-of-month > div.each-days-of-month:not(.is-disabled-day):hover {
+      div.days-of-month > div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
         color: #f5f5f5;
         border-radius: 50%;
         background-color: #80cbc4;
       }
-      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:not(.is-disabled-day):hover {
+      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
         color: #777;
         border-radius: 50%;
         background-color: #b2dfdb;
       }
-      :host(.goog-theme) div.days-of-month > div.each-days-of-month:not(.is-disabled-day):hover {
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
         color: #f5f5f5;
         border-radius: 50%;
         background-color: #e57373;
