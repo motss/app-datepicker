@@ -4,7 +4,7 @@
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
   ],
-  "description": "A custom Datepicker element based on Google's Material Design built from scratch with Polymer",
+  "description": "A datepicker element based on Google's Material Design built from scratch with Polymer",
   "keywords": [
     "web-component",
     "web-components",

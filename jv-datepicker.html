@@ -88,7 +88,6 @@ Custom property | Description | Default
 `--jv-datepicker-button-ink-color` | Ink color of `paper-button` | #737373
 `--jv-datepicker` | Mixin applied to the datepicker | {}
 `--jv-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
-
 `--jv-datepicker-selected-year` | Mixin applied to the datepicker's selected year | {}
 `--jv-datepicker-selected-date` | Mixin applied to the datepicker's selected date | {}
 `--jv-datepicker-nav-month-year` | Mixin applied to the datepicker's nav-month-year | {}
@@ -230,6 +229,23 @@ Custom property | Description | Default
       }
       div.each-days-of-month:not(.is-non-selectable) {
         cursor: pointer;
+      }
+
+      /* Date hover styling */
+      div.days-of-month > div.each-days-of-month:not(.is-disabled-day):hover {
+        color: #f5f5f5;
+        border-radius: 50%;
+        background-color: #80cbc4;
+      }
+      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:not(.is-disabled-day):hover {
+        color: #777;
+        border-radius: 50%;
+        background-color: #b2dfdb;
+      }
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month:not(.is-disabled-day):hover {
+        color: #f5f5f5;
+        border-radius: 50%;
+        background-color: #e57373;
       }
 
       div.each-list-of-years {
@@ -495,11 +511,11 @@ Custom property | Description | Default
       <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="[[pageEntryAnimation]]" exit-animation="[[pageExitAnimation]]" on-neon-animation-finish="_onAnimationFinish">
         <div class="calendar-view" view="calendar">
           <div class="navigator">
-            <paper-icon-button icon="datepicker:chevron-left" on-transitionend="_decrementMonth" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-left" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
             <div id="navMonthYear" class="nav-month-year">
               [[_activeMonthYear]]
             </div>
-            <paper-icon-button icon="datepicker:chevron-right" on-transitionend="_incrementMonth" on-tap="_incrementMonth" noink="[[noAnimation]]"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-right" on-tap="_incrementMonth" noink="[[noAnimation]]"></paper-icon-button>
           </div>
 
           <div id="daysOfWeek" class="days-of-week">
@@ -884,12 +900,7 @@ Custom property | Description | Default
       _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek, _locale) {
         // Compute total number of days for a month.
         function _computeTotalDaysOfMonth(_year, _month) {
-          var _totalDaysOfMonth = 31;
-          if (_month === 1) {
-            _totalDaysOfMonth = new Date(_year, 1, 29).getMonth() === 1 ? 29 : 28;
-          }else if (_month === 3 || _month === 5 || _month === 8 || _month === 10) {
-            _totalDaysOfMonth = 30;
-          }
+          var _totalDaysOfMonth = new Date(_year, _month + 1, 0).getDate();
           return _totalDaysOfMonth;
         }
 
@@ -910,10 +921,7 @@ Custom property | Description | Default
         }).format;
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
           var _formatted = _formatter(new Date(_activeYear, _activeMonth, j));
-          var _dateObj = {
-            date: '',
-            index: ''
-          }
+          var _dateObj = { date: '', index: '' };
           if (i >= _start & i < _start + _totalDays) {
             _dateObj.date = _formatted;
             _dateObj.index = j;
@@ -940,53 +948,45 @@ Custom property | Description | Default
       // Increment the month via user interaction.
       _incrementMonth: function(ev) {
         this.debounce('_incrementMonth', function() {
-          var _type = ev.type;
-          if (_type === 'tap') {
-            this.set('_isIncrementMonth', !0);
-          }
+          this.set('_isIncrementMonth', !0);
+          window.requestAnimationFrame(function () {
+            var _month = this._activeMonth;
 
-          if (_type === 'transitionend' || this.noAnimation) {
-            if (this._isIncrementMonth) {
-              var _month = this._activeMonth;
-              if (++_month > 11) {
-                this._activeYear++;
-                _month = 0;
-              }
-              this.set('_activeMonth', _month);
-
-              if (!this.noAnimation) {
-                this.cancelAnimation();
-                this.playAnimation('incrementEntry');
-              }
-              this.set('_isIncrementMonth', !1);
+            if (++_month % 12 === 0) {
+              this._activeYear++;
             }
-          }
-        }, 1);
+            this.set('_activeMonth', _month % 12);
+
+            if (!this.noAnimation) {
+              this.cancelAnimation();
+              this.playAnimation('incrementEntry');
+            }
+
+            this.set('_isIncrementMonth', !1);
+          }.bind(this));
+        }, 100);
       },
       // Decrement the month via user interaction.
       _decrementMonth: function(ev) {
         this.debounce('_decrementMonth', function() {
-          var _type = ev.type;
-          if (_type === 'tap') {
-            this.set('_isDecrementMonth', !0);
-          }
+          this.set('_isDecrementMonth', !0);
+          window.requestAnimationFrame(function () {
+            var _month = this._activeMonth;
 
-          if (_type === 'transitionend' || this.noAnimation){
-            if (this._isDecrementMonth) {
-              var _month = this._activeMonth;
-              if (--_month < 0) {
-                this._activeYear--;
-                _month = 11;
-              }
-              this.set('_activeMonth', _month);
-              if (!this.noAnimation) {
-                this.cancelAnimation();
-                this.playAnimation('decrementEntry');
-              }
-              this.set('_isDecrementMonth', !1);
+            if (--_month < 0) {
+              this._activeYear--;
+              _month = 11;
             }
-          }
-        }, 1);
+            this.set('_activeMonth', _month);
+
+            if (!this.noAnimation) {
+              this.cancelAnimation();
+              this.playAnimation('decrementEntry');
+            }
+
+            this.set('_isDecrementMonth', !1);
+          }.bind(this));
+        }, 100);
       },
 
       // Re-compute active month year if new date is selected.
