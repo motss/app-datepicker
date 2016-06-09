@@ -3,21 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <title>jv-datepicker Demo</title>
+    <title>app-datepicker Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="fetch.html">
 
-    <link rel="import" href="../jv-datepicker.html">
-    <link rel="import" href="../jv-datepicker-dialog.html">
-    <link rel="import" href="../jv-datepicker-icons.html">
+    <link rel="import" href="../app-datepicker.html">
+    <link rel="import" href="../app-datepicker-dialog.html">
+    <link rel="import" href="../app-datepicker-icons.html">
     <link rel="import" href="../datepicker-slide-from-bottom-animation.html">
     <link rel="import" href="../datepicker-slide-from-top-animation.html">
-
-    <!-- <link rel="import" href="../dist/jv-datepicker.html">
-    <link rel="import" href="../dist/jv-datepicker-dialog.html">
-    <link rel="import" href="../dist/jv-datepicker-icons.html">
-    <link rel="import" href="../dist/datepicker-slide-from-bottom-animation.html">
-    <link rel="import" href="../dist/datepicker-slide-from-top-animation.html"> -->
 
     <link rel="import" href="../../iron-selector/iron-selector.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
@@ -90,7 +84,7 @@
         @apply(--layout-vertical);
         @apply(--layout-center-center);
       }
-      div.datepicker > jv-datepicker {
+      div.datepicker > app-datepicker {
         box-shadow: 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
       }
 
@@ -319,8 +313,8 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <jv-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]">
-            </jv-datepicker>
+            <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]">
+            </app-datepicker>
           </div>
           <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
           <div class="choose-max-date large">
@@ -333,13 +327,13 @@
           <div class="datepicker-dialog">
             <paper-button raised on-tap="_openDialog">Datepicker Dialog</paper-button>
             <paper-button disabled>[[dynamicDate]]</paper-button>
-            <jv-datepicker-dialog id="datepicker" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation" locale="[[locale]]"></jv-datepicker-dialog>
+            <app-datepicker-dialog id="datepicker" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation" locale="[[locale]]"></app-datepicker-dialog>
           </div>
           <h4>Datepicker dialog w/o any animation and transition</h4>
           <div class="datepicker-dialog">
             <paper-button noink raised on-tap="_openStaticDialog">Static datepicker Dialog</paper-button>
             <paper-button disabled>[[staticDate]]</paper-button>
-            <jv-datepicker-dialog id="static" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" no-animation locale="[[locale]]"></jv-datepicker-dialog>
+            <app-datepicker-dialog id="static" with-backdrop theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" no-animation locale="[[locale]]"></app-datepicker-dialog>
           </div>
         </div>
       </div>
@@ -444,7 +438,7 @@
       };
 
 
-      document.addEventListener('jv-datepicker-attached', function(ev) {
+      document.addEventListener('app-datepicker-attached', function(ev) {
         var _target = ev.target;
         window.setTimeout(function() {
           var _tel = _target.getElementsByTagName('*').length;

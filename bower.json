@@ -1,5 +1,5 @@
 {
-  "name": "jv-datepicker",
+  "name": "app-datepicker",
   "version": "2.5.1",
   "authors": [
     "motss <wes_ngrongsen@hotmail.com>"
@@ -18,9 +18,9 @@
     "datepicker",
     "motss"
   ],
-  "main": "jv-datepicker.html",
+  "main": "app-datepicker.html",
   "license": "MIT",
-  "homepage": "https://github.com/motss/jv-datepicker/",
+  "homepage": "https://github.com/motss/app-datepicker/",
   "ignore": [
     "/.*",
     "LICENSE",

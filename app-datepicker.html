@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="jv-datepicker-icons.html">
+<link rel="import" href="app-datepicker-icons.html">
 <link rel="import" href="datepicker-slide-from-left-animation.html">
 <link rel="import" href="datepicker-slide-from-right-animation.html">
 
@@ -22,17 +22,17 @@ An custom Polymer element created to provide a datepicker element that is more c
 
 Example:
 
-    <jv-datepicker><jv-datepicker>
-    <jv-datepicker-dialog></jv-datepicker-dialog>
-    <jv-datepicker-dialog modal></jv-datepicker-dialog>
-    <jv-datepicker-dialog with-backdrop></jv-datepicker-dialog>
-    <jv-datepicker view="horizontal"></jv-datepicker>
-    <jv-datepicker theme="dark-theme"></jv-datepicker>
+    <app-datepicker><app-datepicker>
+    <app-datepicker-dialog></app-datepicker-dialog>
+    <app-datepicker-dialog modal></app-datepicker-dialog>
+    <app-datepicker-dialog with-backdrop></app-datepicker-dialog>
+    <app-datepicker view="horizontal"></app-datepicker>
+    <app-datepicker theme="dark-theme"></app-datepicker>
 
-`jv-datepicker` provides a regular datepicker element.
-While `jv-datepicker-dialog` has a `jv-datepicker` being wrapped inside a dialog.
+`app-datepicker` provides a regular datepicker element.
+While `app-datepicker-dialog` has a `app-datepicker` being wrapped inside a dialog.
 
-~~### ( Coming soon!) Generating your own boilerplate code of the element `jv-datepicker` or `jv-datepicker-dialog`~~
+~~### ( Coming soon!) Generating your own boilerplate code of the element `app-datepicker` or `app-datepicker-dialog`~~
 
 ~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!~~
 
@@ -44,62 +44,62 @@ By default, the datepicker is in `light-theme` and now you are able to style alm
 
 Style the datepicker with CSS as you would a normal DOM element.
 
-    jv-datepicker-dialog#darkThemedDialog {
+    app-datepicker-dialog#darkThemedDialog {
       background: #424242;
-      --jv-datepicker-bg: #424242;
-      --jv-datepicker-selection-bg: #555555;
-      --jv-datepicker-selection-color: #cccccc;
-      --jv-datepicker-iron-selected: #FFFFFF;
-      --jv-datepicker-calendar-bg: #424242;
-      --jv-datepicker-calendar-color: #ffffff;
-      --jv-datepicker-weekdays-color: #c6c6c6;
-      --jv-datepicker-selected-day-bg: #80CBC4;
-      --jv-datepicker-selected-day-color: #555555;
-      --jv-datepicker-selected-year-bg: #f5f5f5;
-      --jv-datepicker-selected-year-color: #80CBC4;
-      --jv-datepicker-today-color: #80CBC4;
-      --jv-datepicker-disabled-color: #ffff00;
-      --jv-datepicker-icon-button-color: #ffff00;
-      --jv-datepicker-icon-button-ink-color: #ffff00;
-      --jv-datepicker-button-color: #80CBC4;
-      --jv-datepicker-button-ink-color: #bcbcbc;
+      --app-datepicker-bg: #424242;
+      --app-datepicker-selection-bg: #555555;
+      --app-datepicker-selection-color: #cccccc;
+      --app-datepicker-iron-selected: #FFFFFF;
+      --app-datepicker-calendar-bg: #424242;
+      --app-datepicker-calendar-color: #ffffff;
+      --app-datepicker-weekdays-color: #c6c6c6;
+      --app-datepicker-selected-day-bg: #80CBC4;
+      --app-datepicker-selected-day-color: #555555;
+      --app-datepicker-selected-year-bg: #f5f5f5;
+      --app-datepicker-selected-year-color: #80CBC4;
+      --app-datepicker-today-color: #80CBC4;
+      --app-datepicker-disabled-color: #ffff00;
+      --app-datepicker-icon-button-color: #ffff00;
+      --app-datepicker-icon-button-ink-color: #ffff00;
+      --app-datepicker-button-color: #80CBC4;
+      --app-datepicker-button-ink-color: #bcbcbc;
     }
 
 The following custom properties and mixin are also available for styling:
 
 Custom property | Description | Default
 ----------------|-------------|----------
-`--jv-datepicker-bg` | Background color of the datepicker | #fafafa
-`--jv-datepicker-selection-bg` | Background color of the display section (selectionView) | #009688
-`--jv-datepicker-selection-color` | Text color of the display section (selectionView) | #b2dfdb
-`--jv-datepicker-iron-selected` | Text color of the view selector | #fefefe
-`--jv-datepicker-calendar-bg` | Background color of calendar section | #fafafa
-`--jv-datepicker-calendar-color` | Text color of calendar section | #000
-`--jv-datepicker-weekdays-color` | Text color of weekdays | #9b9b9b
-`--jv-datepicker-selected-day-bg` | Background color of selected day | #009688
-`--jv-datepicker-selected-day-color` | Text color of selected day | #fff
-`--jv-datepicker-selected-year-bg` | Background color of selected year in year list | #f5f5f5
-`--jv-datepicker-selected-year-color` | Text color of selected year in year list | #009688
-`--jv-datepicker-today-color` | Text color of today's day | #009688
-`--jv-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
-`--jv-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
-`--jv-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
-`--jv-datepicker-button-color` | Color of `paper-button` | #009688
-`--jv-datepicker-button-ink-color` | Ink color of `paper-button` | #737373
-`--jv-datepicker` | Mixin applied to the datepicker | {}
-`--jv-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
-`--jv-datepicker-selected-year` | Mixin applied to the datepicker's selected year | {}
-`--jv-datepicker-selected-date` | Mixin applied to the datepicker's selected date | {}
-`--jv-datepicker-nav-month-year` | Mixin applied to the datepicker's nav-month-year | {}
-`--jv-datepicker-days-of-week` | Mixin applied to the datepicker's days-of-week | {}
-`--jv-datepicker-days-of-month` | Mixin applied to the datepicker's days-of-month | {}
-`--jv-datepicker-each-list-of-years` | Mixin applied to the datepicker's each-list-of-years | {}
+`--app-datepicker-bg` | Background color of the datepicker | #fafafa
+`--app-datepicker-selection-bg` | Background color of the display section (selectionView) | #009688
+`--app-datepicker-selection-color` | Text color of the display section (selectionView) | #b2dfdb
+`--app-datepicker-iron-selected` | Text color of the view selector | #fefefe
+`--app-datepicker-calendar-bg` | Background color of calendar section | #fafafa
+`--app-datepicker-calendar-color` | Text color of calendar section | #000
+`--app-datepicker-weekdays-color` | Text color of weekdays | #9b9b9b
+`--app-datepicker-selected-day-bg` | Background color of selected day | #009688
+`--app-datepicker-selected-day-color` | Text color of selected day | #fff
+`--app-datepicker-selected-year-bg` | Background color of selected year in year list | #f5f5f5
+`--app-datepicker-selected-year-color` | Text color of selected year in year list | #009688
+`--app-datepicker-today-color` | Text color of today's day | #009688
+`--app-datepicker-disabled-color` | Text color of disabled days | #9e9e9e
+`--app-datepicker-icon-buttons-color` | Text color of `paper-icon-button` | #737373
+`--app-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
+`--app-datepicker-button-color` | Color of `paper-button` | #009688
+`--app-datepicker-button-ink-color` | Ink color of `paper-button` | #737373
+`--app-datepicker` | Mixin applied to the datepicker | {}
+`--app-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
+`--app-datepicker-selected-year` | Mixin applied to the datepicker's selected year | {}
+`--app-datepicker-selected-date` | Mixin applied to the datepicker's selected date | {}
+`--app-datepicker-nav-month-year` | Mixin applied to the datepicker's nav-month-year | {}
+`--app-datepicker-days-of-week` | Mixin applied to the datepicker's days-of-week | {}
+`--app-datepicker-days-of-month` | Mixin applied to the datepicker's days-of-month | {}
+`--app-datepicker-each-list-of-years` | Mixin applied to the datepicker's each-list-of-years | {}
 
 @author motss
-@element jv-datepicker, jv-datepicker-dialog
+@element app-datepicker, app-datepicker-dialog
 @demo demo/index.html
 -->
-<dom-module id="jv-datepicker">
+<dom-module id="app-datepicker">
   <template strip-whitespace>
     <style>
       :host {
@@ -109,8 +109,8 @@ Custom property | Description | Default
         -ms-user-select: none;
         box-sizing: border-box;
 
-        background: var(--jv-datepicker-bg, #fafafa);
-        @apply(--jv-datepicker);
+        background: var(--app-datepicker-bg, #fafafa);
+        @apply(--app-datepicker);
         display: block;
       }
 
@@ -135,13 +135,13 @@ Custom property | Description | Default
       iron-selector.selected-fulldate {
         min-height: 84px;
         padding: 8px 24px;
-        color: var(--jv-datepicker-selection-color, #b2dfdb);
-        background-color: var(--jv-datepicker-selection-bg, #009688);
+        color: var(--app-datepicker-selection-color, #b2dfdb);
+        background-color: var(--app-datepicker-selection-bg, #009688);
         @apply(--layout-vertical);
       }
       div.selected-year.iron-selected,
       div.selected-date.iron-selected {
-        color: var(--jv-datepicker-iron-selected, #fefefe);
+        color: var(--app-datepicker-iron-selected, #fefefe);
       }
       div.selected-year {
         font-size: 14px;
@@ -150,7 +150,7 @@ Custom property | Description | Default
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center);
-        @apply(--jv-datepicker-selected-year);
+        @apply(--app-datepicker-selected-year);
       }
       div.selected-date {
         font-size: 32px;
@@ -159,15 +159,15 @@ Custom property | Description | Default
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center);
-        @apply(--jv-datepicker-selected-date);
+        @apply(--app-datepicker-selected-date);
       }
 
       neon-animated-pages.fullcalendar {
         width: 100%;
         height: 100%;
         overflow: hidden;
-        color: var(--jv-datepicker-calendar-color, #000);
-        background-color: var(--jv-datepicker-calendar-bg, #fafafa);
+        color: var(--app-datepicker-calendar-color, #000);
+        background-color: var(--app-datepicker-calendar-bg, #fafafa);
         @apply(--layout-vertical);
       }
       div.navigator {
@@ -183,14 +183,14 @@ Custom property | Description | Default
         font-weight: 500;
         text-align: center;
         @apply(--layout-flex-auto);
-        @apply(--jv-datepicker-nav-month-year);
+        @apply(--app-datepicker-nav-month-year);
       }
       div.days-of-week {
-        color: var(--jv-datepicker-weekdays-color, #848484);
+        color: var(--app-datepicker-weekdays-color, #848484);
         font-size: 12px;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
-        @apply(--jv-datepicker-days-of-week);
+        @apply(--app-datepicker-days-of-week);
       }
       div.each-days-of-week {
         padding: 13px;
@@ -205,7 +205,7 @@ Custom property | Description | Default
         @apply(--layout-horizontal);
         @apply(--layout-wrap);
         @apply(--layout-center-justified);
-        @apply(--jv-datepicker-days-of-month);
+        @apply(--app-datepicker-days-of-month);
       }
       div.each-days-of-month {
         height: 35px;
@@ -218,14 +218,14 @@ Custom property | Description | Default
       }
       div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
         border-radius: 50%;
-        background-color: var(--jv-datepicker-selected-day-bg, #009688);
-        color: var(--jv-datepicker-selected-day-color, #fff);
+        background-color: var(--app-datepicker-selected-day-bg, #009688);
+        color: var(--app-datepicker-selected-day-color, #fff);
       }
       div.days-of-month > div.each-days-of-month.is-today {
-        color: var(--jv-datepicker-today-color, #009688);
+        color: var(--app-datepicker-today-color, #009688);
       }
       div.days-of-month > .each-days-of-month.is-disabled-day {
-        color: var(--jv-datepicker-disabled-color, #9e9e9e);
+        color: var(--app-datepicker-disabled-color, #9e9e9e);
       }
       div.each-days-of-month:not(.is-non-selectable) {
         cursor: pointer;
@@ -254,24 +254,24 @@ Custom property | Description | Default
         cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
-        @apply(--jv-datepicker-each-list-of-years);
+        @apply(--app-datepicker-each-list-of-years);
       }
       div.each-list-of-years.is-selected {
-        background-color: var(--jv-datepicker-selected-year-bg, #f5f5f5);
-        color: var(--jv-datepicker-selected-year-color, #009688);
+        background-color: var(--app-datepicker-selected-year-bg, #f5f5f5);
+        color: var(--app-datepicker-selected-year-color, #009688);
         font-weight: 800;
       }
 
       /* paper-icon-button */
       paper-icon-button {
-        color: var(--jv-datepicker-icon-button-color, #737373);
-        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #737373);
+        color: var(--app-datepicker-icon-button-color, #737373);
+        --paper-icon-button-ink-color: var(--app-datepicker-icon-button-ink-color, #737373);
       }
 
       /* content tag selector */
       div.calendar-view > ::content > div.buttons {
-        color: var(--jv-datepicker-button-color, #009688);
-        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #737373);
+        color: var(--app-datepicker-button-color, #009688);
+        --paper-button-ink-color: var(--app-datepicker-button-ink-color, #737373);
         position: relative;
         padding: 8px 8px 8px 24px;
         margin: 0;
@@ -279,7 +279,7 @@ Custom property | Description | Default
         font-weight: 500;
         @apply(--layout-horizontal);
         @apply(--layout-end-justified);
-        @apply(--jv-datepicker-buttons);
+        @apply(--app-datepicker-buttons);
       }
 
       /* will-change: transform, however lag on the first time */
@@ -408,92 +408,92 @@ Custom property | Description | Default
 
       /* dark-theme */
       :host(.dark-theme) {
-        background-color: var(--jv-datepicker-bg, #424242);
+        background-color: var(--app-datepicker-bg, #424242);
       }
 
       :host(.dark-theme) iron-selector.selected-fulldate {
-        color: var(--jv-datepicker-selection-color, #9e9e9e);
-        background-color: var(--jv-datepicker-selection-bg, #555);
+        color: var(--app-datepicker-selection-color, #9e9e9e);
+        background-color: var(--app-datepicker-selection-bg, #555);
       }
       :host(.dark-theme) div.selected-year.iron-selected,
       :host(.dark-theme) div.selected-date.iron-selected {
-        color: var(--jv-datepicker-iron-selected, #f5f5f5);
+        color: var(--app-datepicker-iron-selected, #f5f5f5);
       }
       :host(.dark-theme) neon-animated-pages.fullcalendar {
-        color: var(--jv-datepicker-calendar-color, #f5f5f5);
-        background-color: var(--jv-datepicker-calendar-bg, #424242);
+        color: var(--app-datepicker-calendar-color, #f5f5f5);
+        background-color: var(--app-datepicker-calendar-bg, #424242);
       }
       :host(.dark-theme) div.days-of-week {
-        color: var(--jv-datepicker-weekdays-color, #7c7c7c);
+        color: var(--app-datepicker-weekdays-color, #7c7c7c);
       }
       :host(.dark-theme) div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
-        color: var(--jv-datepicker-selected-day-color, #555);
-        background-color: var(--jv-datepicker-selected-day-bg, #80cbc4);
+        color: var(--app-datepicker-selected-day-color, #555);
+        background-color: var(--app-datepicker-selected-day-bg, #80cbc4);
       }
       :host(.dark-theme) div.days-of-month > div.each-days-of-month.is-today {
-        color: var(--jv-datepicker-today-color, #80cbc4);
+        color: var(--app-datepicker-today-color, #80cbc4);
       }
       :host(.dark-theme) div.days-of-month > .each-days-of-month.is-disabled-day {
-        color: var(--jv-datepicker-disabled-color, #ffff00);
+        color: var(--app-datepicker-disabled-color, #ffff00);
       }
       :host(.dark-theme) div.each-list-of-years.is-selected {
-        background-color: var(--jv-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
-        color: var(--jv-datepicker-selected-year-color, #80cbc4);
+        background-color: var(--app-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
+        color: var(--app-datepicker-selected-year-color, #80cbc4);
         font-size: 26px;
         font-weight: 500;
       }
       :host(.dark-theme) paper-icon-button {
-        color: var(--jv-datepicker-icon-button-color, #ffff00);
-        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #212121);
+        color: var(--app-datepicker-icon-button-color, #ffff00);
+        --paper-icon-button-ink-color: var(--app-datepicker-icon-button-ink-color, #212121);
       }
       :host(.dark-theme) div.calendar-view > ::content > div.buttons > paper-button {
-        color: var(--jv-datepicker-button-color, #80cbc4);
-        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #bcbcbc);
+        color: var(--app-datepicker-button-color, #80cbc4);
+        --paper-button-ink-color: var(--app-datepicker-button-ink-color, #bcbcbc);
       }
 
       /* goog theme */
       :host(.goog-theme) {
-        background-color: var(--jv-datepicker-bg, #212121);
+        background-color: var(--app-datepicker-bg, #212121);
       }
 
       :host(.goog-theme) iron-selector.selected-fulldate {
-        color: var(--jv-datepicker-selection-color, #fff);
-        background-color: var(--jv-datepicker-selection-bg, #212121);
+        color: var(--app-datepicker-selection-color, #fff);
+        background-color: var(--app-datepicker-selection-bg, #212121);
       }
       :host(.goog-theme) div.selected-year.iron-selected,
       :host(.goog-theme) div.selected-date.iron-selected {
-        color: var(--jv-datepicker-iron-selected, #DA4336);
+        color: var(--app-datepicker-iron-selected, #DA4336);
       }
       :host(.goog-theme) neon-animated-pages.fullcalendar {
-        color: var(--jv-datepicker-calendar-color, #fff);
-        background-color: var(--jv-datepicker-calendar-bg, #212121);
+        color: var(--app-datepicker-calendar-color, #fff);
+        background-color: var(--app-datepicker-calendar-bg, #212121);
       }
       :host(.goog-theme) div.days-of-week {
-        color: var(--jv-datepicker-weekdays-color, #9e9e9e);
+        color: var(--app-datepicker-weekdays-color, #9e9e9e);
       }
       :host(.goog-theme) div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
-        color: var(--jv-datepicker-selected-day-color, #fff);
-        background-color: var(--jv-datepicker-selected-day-bg, #DA4336);
+        color: var(--app-datepicker-selected-day-color, #fff);
+        background-color: var(--app-datepicker-selected-day-bg, #DA4336);
       }
       :host(.goog-theme) div.days-of-month > div.each-days-of-month.is-today {
-        color: var(--jv-datepicker-today-color, #DA4336);
+        color: var(--app-datepicker-today-color, #DA4336);
       }
       :host(.goog-theme) div.days-of-month > .each-days-of-month.is-disabled-day {
-        color: var(--jv-datepicker-disabled-color, #646464);
+        color: var(--app-datepicker-disabled-color, #646464);
       }
       :host(.goog-theme) div.each-list-of-years.is-selected {
-        background-color: var(--jv-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
-        color: var(--jv-datepicker-selected-year-color, #DA4336);
+        background-color: var(--app-datepicker-selected-year-bg, rgba(0, 0, 0, 0));
+        color: var(--app-datepicker-selected-year-color, #DA4336);
         font-size: 26px;
         font-weight: 500;
       }
       :host(.goog-theme) paper-icon-button {
-        color: var(--jv-datepicker-icon-button-color, #DA4336);
-        --paper-icon-button-ink-color: var(--jv-datepicker-icon-button-ink-color, #616161);
+        color: var(--app-datepicker-icon-button-color, #DA4336);
+        --paper-icon-button-ink-color: var(--app-datepicker-icon-button-ink-color, #616161);
       }
       :host(.goog-theme) div.calendar-view > ::content > div.buttons > paper-button {
-        color: var(--jv-datepicker-button-color, #DA4336);
-        --paper-button-ink-color: var(--jv-datepicker-button-ink-color, #616161);
+        color: var(--app-datepicker-button-color, #DA4336);
+        --paper-button-ink-color: var(--app-datepicker-button-ink-color, #616161);
       }
 
     </style>
@@ -553,7 +553,7 @@ Custom property | Description | Default
 
   <script>
     Polymer({
-      is: 'jv-datepicker',
+      is: 'app-datepicker',
 
       hostAttributes: {
         role: 'datepicker',
@@ -865,7 +865,7 @@ Custom property | Description | Default
           this.$.dp.classList.remove('with-buttons');
         }
 
-        this.fire('jv-datepicker-attached');
+        this.fire('app-datepicker-attached');
       },
 
       detached: function() {
