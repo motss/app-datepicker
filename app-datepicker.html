@@ -1331,7 +1331,6 @@ Custom property | Description | Default
         var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
-          console.log('_showLongDate: ', _locale);
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _options = {
             weekday: this.showLongDate ? 'short' : undefined,
