@@ -35,29 +35,35 @@
         user-select: none;
         box-sizing: border-box;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
+        padding: 0;
+        margin: 0;
       }
 
       * {
         box-sizing: inherit;
       }
 
-      /* div.vertical-section */
-      div.vertical-section {
-        max-width: 400px;
+      .vertical-section-container {
+        @apply(--layout-center);
+      }
+
+      .vertical-section {
+        margin: 8px;
+        width: calc(100% - 8px);
       }
 
       /* all containers */
-      div.choose-theme,
-      div.choose-view,
-      div.choose-first-day-of-week,
-      div.choose-disabled-days,
-      div.choose-min-date,
-      div.choose-max-date,
-      div.choose-date-format-year,
-      div.choose-date-format-month,
-      div.choose-date-format-day,
-      div.show-long-date,
-      div.datepicker-dialog {
+      .choose-theme,
+      .choose-view,
+      .choose-first-day-of-week,
+      .choose-disabled-days,
+      .choose-min-date,
+      .choose-max-date,
+      .choose-date-format-year,
+      .choose-date-format-month,
+      .choose-date-format-day,
+      .show-long-date,
+      .datepicker-dialog {
         height: 64px;
         font-size: 12px;
         max-width: 310px;
@@ -66,25 +72,25 @@
         @apply(--layout-center);
         @apply(--layout-start-justified);
       }
-      div.choose-max-date.large {
+      .choose-max-date.large {
         max-width: 100%;
       }
-      div.choose-max-date.large > paper-button {
+      .choose-max-date.large > paper-button {
         margin-left: auto;
         margin-right: auto;
       }
-      div.choose-date-format {
+      .choose-date-format {
         margin: 8px 0;
         @apply(--layout-vertical);
         @apply(--layout-center);
         @apply(--layout-start);
       }
-      div.datepicker {
+      .datepicker {
         margin: 8px 0;
         @apply(--layout-vertical);
         @apply(--layout-center-center);
       }
-      div.datepicker > app-datepicker {
+      .datepicker > app-datepicker {
         box-shadow: 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
       }
 
@@ -109,8 +115,8 @@
         width: 55px;
         max-width: calc(100% / 3);
       }
-      div.choose-date-format-month iron-selector > div:nth-of-type(1),
-      div.choose-date-format-month iron-selector > div:nth-of-type(2) {
+      .choose-date-format-month iron-selector > div:nth-of-type(1),
+      .choose-date-format-month iron-selector > div:nth-of-type(2) {
         height: 42px;
         width: 64px;
         padding: 6px;
@@ -122,16 +128,16 @@
         width: 46px;
         margin-right: 8px;
       }
-      iron-selector > div.iron-selected {
+      iron-selector > .iron-selected {
         background-color: #009688;
         color: #fff;
       }
 
-      /* div.show-long-date */
-      div.show-long-date {
+      /* .show-long-date */
+      .show-long-date {
         font-weight: 500;
       }
-      div.show-long-date > iron-label {
+      .show-long-date > iron-label {
         text-align: left;
       }
       iron-label > div {
@@ -139,7 +145,7 @@
         font-size: 12px;
         font-style: italic;
       }
-      div.show-long-date > paper-checkbox {
+      .show-long-date > paper-checkbox {
         --paper-checkbox-checked-color: #009688;
         --paper-checkbox-checked-ink-color: #009688;
         --paper-checkbox-unchecked-ink-color: #009688;
@@ -192,25 +198,22 @@
      }
 
      /* media queries */
-     @media all and (max-width: 959px) {
-       body {
-         padding: 0;
-       }
-       div.vertical-section {
-         margin-left: 0;
-         margin-right: 0;
+     @media all and (min-width: 600px) {
+       .vertical-section {
+         width: auto;
        }
      }
-     @media all and (min-width: 960px) {
+     @media all and (min-width: 1090px) {
        /* when it's on tablet or larger screen split into 2 columns */
-       div.vertical-section-container {
+       .vertical-section-container {
          @apply(--layout-horizontal);
+         @apply(--layout-start);
          @apply(--layout-center-justified);
        }
      }
      /* where datepicker becomes landscape mode */
      @media all and (min-width: 960px) {
-       div.vertical-section {
+       .vertical-section {
          max-width: none;
        }
      }
@@ -220,7 +223,7 @@
   <body>
     <template is="dom-bind" id="demo">
       <div class="vertical-section-container">
-        <div class="vertical-section">
+        <div class="vertical-section first-vertical-section">
           <h3>Configuration</h3>
           <span>The result will reflect on the Datepicker (or the Datepicker dialog) shown below.</span>
           <div class="choose-theme">

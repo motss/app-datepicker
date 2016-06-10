@@ -115,7 +115,7 @@ Custom property | Description | Default
       }
 
       * {
-        box-sizing: inherit;
+        box-sizing: border-box;
       }
 
       div.datepicker {
@@ -134,7 +134,7 @@ Custom property | Description | Default
 
       iron-selector.selected-fulldate {
         min-height: 84px;
-        padding: 8px 24px;
+        padding: 8px 16px;
         color: var(--app-datepicker-selection-color, #b2dfdb);
         background-color: var(--app-datepicker-selection-bg, #009688);
         @apply(--layout-vertical);
@@ -147,7 +147,6 @@ Custom property | Description | Default
         font-size: 14px;
         font-weight: 800;
         height: 34px;
-        cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--app-datepicker-selected-year);
@@ -155,11 +154,15 @@ Custom property | Description | Default
       div.selected-date {
         font-size: 32px;
         font-weight: 800;
-        height: 34px;
-        cursor: pointer;
+        /*height: 34px;*/
         @apply(--layout-horizontal);
         @apply(--layout-center);
+        @apply(--layout-flex-auto);
         @apply(--app-datepicker-selected-date);
+      }
+      div.selected-year:hover,
+      div.selected-date > div:hover {
+        cursor: pointer;
       }
 
       neon-animated-pages.fullcalendar {
@@ -227,34 +230,36 @@ Custom property | Description | Default
       div.days-of-month > .each-days-of-month.is-disabled-day {
         color: var(--app-datepicker-disabled-color, #9e9e9e);
       }
-      div.each-days-of-month:not(.is-non-selectable) {
-        cursor: pointer;
-      }
 
       /* Date hover styling */
-      div.days-of-month > div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
+      div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
         color: #f5f5f5;
         border-radius: 50%;
         background-color: #80cbc4;
+        cursor: pointer;
       }
-      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
+      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
         color: #777;
         border-radius: 50%;
         background-color: #b2dfdb;
+        cursor: pointer;
       }
-      :host(.goog-theme) div.days-of-month > div.each-days-of-month:not(.is-disabled-day):not(.is-non-selectable):hover {
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
         color: #f5f5f5;
         border-radius: 50%;
         background-color: #e57373;
+        cursor: pointer;
       }
 
       div.each-list-of-years {
         height: 64px;
         font-size: 16px;
-        cursor: pointer;
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         @apply(--app-datepicker-each-list-of-years);
+      }
+      div.each-list-of-years:hover {
+        cursor: pointer;
       }
       div.each-list-of-years.is-selected {
         background-color: var(--app-datepicker-selected-year-bg, #f5f5f5);
@@ -322,15 +327,20 @@ Custom property | Description | Default
           height: 100%;
         }
         :host(:not(.vertical-view)) div.selected-date {
-          height: 68px;
           @apply(--layout-vertical);
           @apply(--layout-start);
-          @apply(--layout-center-justified);
+          @apply(--layout-start-justified);
         }
-        /* Fixed for IE11, Edge */
-        :host(:not(.vertical-view)) div.selected-date > span {
-          max-width: 100%;
+        /* Fix for IE11 */
+        :host(:not(.vertical-view)) div.selected-date > div {
+          width: 100%;
           word-wrap: break-word;
+        }
+        /* Hack for Edge 12+ */
+        @supports (-ms-accelerator:true) {
+          :host(:not(.vertical-view)) div.selected-date > div {
+            white-space: pre-wrap;
+          }
         }
 
         :host(:not(.vertical-view)) neon-animated-pages.fullcalendar {
@@ -504,7 +514,7 @@ Custom property | Description | Default
           [[_showSelectedYear]]
         </div>
         <div class="selected-date" view="calendar">
-          <span>[[_shortSelectedDate]]</span>
+          <div>[[_shortSelectedDate]]</div>
         </div>
       </iron-selector>
 
@@ -528,7 +538,7 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, _shiftedDisableDays.*, firstDayOfWeek, minDate, maxDate, item.index)]]" index="[[index]]" date="[[item.index]]">
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" aria-label$=[[item.index]]>
                 [[item.date]]
               </div>
             </template>
@@ -1063,7 +1073,7 @@ Custom property | Description | Default
         return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
       // Re-compute class if the item (day of month) is a disable day.
-      _isDisableDays: function(_index, _shiftedDisableDays, _firstDayOfWeek, _minDate, _maxDate, _item) {
+      _isDisableDays: function(_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
         var _isLessThanMinDate = null;
         var _isMoreThanMaxDate = null;
         var _isDisableDay = null;
@@ -1253,7 +1263,7 @@ Custom property | Description | Default
       _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
 				// show long date (eg. Fri, May 12 2017 instead.
         if (this.showLongDate) {
-          return this._computeShowLongDate(this.showLongDate, _selectedDate, this.locale, !0);
+          return this._computeShowLongDate(this.showLongDate,  this.locale, !0);
         }
 
 				var _formattedYear  = _selectedYear;
@@ -1321,6 +1331,7 @@ Custom property | Description | Default
         var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
+          console.log('_showLongDate: ', _locale);
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _options = {
             weekday: this.showLongDate ? 'short' : undefined,
@@ -1448,6 +1459,16 @@ Custom property | Description | Default
       enforceDateChange: function() {
         this._setInvalidDate(!1);
         this._computeShowLongDate(this.showLongDate, this.locale);
+      },
+
+      // Accessibility enhancment.
+      _shouldTabIndex: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+        return _item && _item >= 0 && !_isDisableDays ? 0 : -1;
+      },
+      _shouldAriaDisabled: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+        return !(_item && _item >= 0 && !_isDisableDays);
       },
 
       // Lodash's replacements.
