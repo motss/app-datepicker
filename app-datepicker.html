@@ -1086,8 +1086,8 @@ Custom property | Description | Default
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
         if (this._isNumber(_item)) {
-          var _minDate = null;
-          var _maxDate = null;
+          // var _minDate = null;
+          // var _maxDate = null;
           var _minDateObj = this._computeMinDate(_minDate);
           var _maxDateObj = this._computeMaxDate(_maxDate);
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
@@ -1161,7 +1161,7 @@ Custom property | Description | Default
       },
       // Extract date from the date string.
       _extractDateToParts: function(_dateString) {
-        if (!_dateString instanceof Date && typeof _dateString === 'string') {
+        if (!(_dateString instanceof Date) && typeof _dateString === 'string') {
           var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
           var m = re.exec(_dateString);
           if (m !== null) {
