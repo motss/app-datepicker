@@ -231,6 +231,12 @@ Custom property | Description | Default
         color: var(--app-datepicker-disabled-color, #9e9e9e);
       }
 
+      /* outline: none for non-selectable and disabled days */
+      div.days-of-month > .each-days-of-month.is-disabled-day,
+      div.days-of-month > .each-days-of-month.is-non-selectable {
+        outline: none;
+      }
+
       /* Date hover styling */
       div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
         color: #f5f5f5;
@@ -309,20 +315,22 @@ Custom property | Description | Default
 
       /* landscape */
       @media all and (orientation: landscape) {
+        :host(.horizontal-view) div#dp.datepicker,
         :host(:not(.vertical-view)) div#dp.datepicker {
           width: 512px;
           /* calc(288px - 47px) */
           height: 241px;
           @apply(--layout-horizontal);
         }
+        :host(.horizontal-view) div#dp.datepicker.with-buttons,
         :host(:not(.vertical-view)) div#dp.datepicker.with-buttons {
           height: 288px;
         }
-
+        :host(.horizontal-view) iron-selector.selected-fulldate,
         :host(:not(.vertical-view)) iron-selector.selected-fulldate {
           /* Fixed for IE11, Edge */
           min-width: 164px;
-          width: 100%;
+          width: calc(100% / 3 + 48px);
           max-width: 164px;
           height: 100%;
         }
@@ -337,22 +345,26 @@ Custom property | Description | Default
           word-wrap: break-word;
         }
         /* Hack for Edge 12+ */
-        @supports (-ms-accelerator:true) {
+        @supports (-ms-accelerator:true),
           :host(:not(.vertical-view)) div.selected-date > div {
             white-space: pre-wrap;
           }
         }
 
+        :host(.horizontal-view) neon-animated-pages.fullcalendar,
         :host(:not(.vertical-view)) neon-animated-pages.fullcalendar {
           height: 100%;
         }
+        :host(.horizontal-view) div.calendar-view,
         :host(:not(.vertical-view)) div.calendar-view {
           padding-bottom: 0;
         }
+        :host(.horizontal-view) div.navigator,
         :host(:not(.vertical-view)) div.navigator {
           padding: 2px 10px;
           margin-top: 0;
         }
+        :host(.horizontal-view) div.each-days-of-week,
         :host(:not(.vertical-view)) div.each-days-of-week {
           width: calc(100% / 7 - 20px);
           padding: 0;
@@ -362,7 +374,7 @@ Custom property | Description | Default
         :host(:not(.vertical-view)) div.days-of-month {
           margin-top: 8px;
         }
-
+        :host(.horizontal-view) div.each-days-of-month,
         :host(:not(.vertical-view)) div.each-days-of-month {
           height: 29px;
           margin-left: 10px;
@@ -370,57 +382,12 @@ Custom property | Description | Default
           width: calc(100% / 7 - 20px);
         }
       }
-
-      /* view=horizontal */
-      :host(.horizontal-view) div#dp.datepicker {
-        width: 512px;
-        /* calc(288px - 47px) */
-        height: 241px;
-        @apply(--layout-horizontal);
-      }
-      :host(.horizontal-view) div#dp.datepicker.with-buttons {
-        height: 288px;
-      }
-
-      :host(.horizontal-view) iron-selector.selected-fulldate {
-        width: calc(100% / 3 + 48px);
-        height: 100%;
-      }
-      :host(.horizontal-view) div.selected-date {
-        height: 68px;
-        @apply(--layout-vertical);
-        @apply(--layout-start);
-        @apply(--layout-center-justified);
-      }
-
-      :host(.horizontal-view) neon-animated-pages.fullcalendar {
-        height: 100%;
-      }
-      :host(.horizontal-view) div.calendar-view {
-        padding-bottom: 0;
-      }
-      :host(.horizontal-view) div.navigator {
-        padding: 2px 10px;
-        margin-top: 0;
-      }
-      :host(.horizontal-view) div.each-days-of-week {
-        width: calc(100% / 7 - 20px);
-        padding: 0;
-        margin-left: 10px;
-        margin-right: 10px;
-      }
-      :host(.horizontal-view) div.each-days-of-month {
-        height: 29px;
-        margin-left: 10px;
-        margin-right: 10px;
-        width: calc(100% / 7 - 20px);
-      }
+      /* End of landscape @media */
 
       /* dark-theme */
       :host(.dark-theme) {
         background-color: var(--app-datepicker-bg, #424242);
       }
-
       :host(.dark-theme) iron-selector.selected-fulldate {
         color: var(--app-datepicker-selection-color, #9e9e9e);
         background-color: var(--app-datepicker-selection-bg, #555);
@@ -1074,9 +1041,9 @@ Custom property | Description | Default
       },
       // Re-compute class if the item (day of month) is a disable day.
       _isDisableDays: function(_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isLessThanMinDate = null;
-        var _isMoreThanMaxDate = null;
-        var _isDisableDay = null;
+        var _isLessThanMinDate = !1;
+        var _isMoreThanMaxDate = !1;
+        var _isDisableDay = !1;
         // _index % 7 gives values from 0 to 6.
         // and if _index matches some of these disableDays values return true.
         var _isDisableDays = this._shiftedDisableDays.some(function(_n) {
@@ -1086,20 +1053,16 @@ Custom property | Description | Default
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
         if (this._isNumber(_item)) {
-          var _minDate = null;
-          var _maxDate = null;
-          var _minDateObj = this._computeMinDate(_minDate);
-          var _maxDateObj = this._computeMaxDate(_maxDate);
+          var _minDateObj = this._convertDateStringToDateObject(_minDate);
+          var _maxDateObj = this._convertDateStringToDateObject(_maxDate);
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
-          if (!this._isUndefined(_minDateObj)) {
-            _minDate = new Date(_minDateObj.year, _minDateObj.month - 1, _minDateObj.date);
-            _isLessThanMinDate = _currentDate < _minDate;
+          if (_minDateObj) {
+            _isLessThanMinDate = _currentDate.getTime() < _minDateObj.getTime();
           }
-          if (!this._isUndefined(_maxDateObj)) {
-            _maxDate = new Date(_maxDateObj.year, _maxDateObj.month - 1, _maxDateObj.date);
-            _isMoreThanMaxDate = _currentDate > _maxDate;
+          if (_maxDateObj) {
+            _isMoreThanMaxDate = _currentDate.getTime() > _maxDateObj.getTime();
           }
         }
         // To disable a date, it must be either one of the followings:
@@ -1151,30 +1114,11 @@ Custom property | Description | Default
         }
       },
 
-      // Get date from date string as the minimum date can be selected.
-      _computeMinDate: function(_minDate) {
-        return this._extractDateToParts(_minDate);
-      },
-      // Get date from date string as the maximum date can be selected.
-      _computeMaxDate: function(_maxDate) {
-        return this._extractDateToParts(_maxDate);
-      },
-      // Extract date from the date string.
-      _extractDateToParts: function(_dateString) {
-        if (!_dateString instanceof Date && typeof _dateString === 'string') {
-          var re = /(\d{4})[^a-zA-Z0-9]+(\d{2})[^a-zA-Z0-9]+(\d{2})/i;
-          var m = re.exec(_dateString);
-          if (m !== null) {
-            return {year: parseFloat(m[1]), month: parseFloat(m[2]), date: parseFloat(m[3])};
-          }
-        }else if (_dateString instanceof Date &&
-                  new Date(_dateString).toDateString() !== 'Invalid Date') {
-          return {
-            year: _dateString.getFullYear(),
-            month: _dateString.getMonth() + 1,
-            date: _dateString.getDate()
-          }
-        }
+      // Convert date string into date object.
+      _convertDateStringToDateObject: function (_date) {
+        var _checkDate = _date instanceof Date || typeof _date !== 'string' ? _date : new Date(_date);
+        var _isValidDate = _checkDate.toDateString() !== 'Invalid Date';
+        return _isValidDate ? _checkDate : null;
       },
 
       // Dynamically load items into the iron-list when switching page to year view.
@@ -1323,7 +1267,7 @@ Custom property | Description | Default
       },
       // Update date to show long date or short date.
       _computeShowLongDate: function(_showLongDate, _locale, _returnResult) {
-        if (this._isUndefined(this._selectedDate)) {
+        if (!this._selectedDate || typeof this._selectedDate === 'undefined') {
           return;
         }
 
@@ -1475,9 +1419,6 @@ Custom property | Description | Default
         var _len = -_length;
         var _str = (_chars + _string).slice(_len);
         return _str;
-      },
-      _isUndefined: function(_value) {
-        return _value === undefined;
       },
       _isNumber: function(_value) {
         // return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
