@@ -86,14 +86,20 @@ Custom property | Description | Default
 `--app-datepicker-icon-button-ink-color` | Ink color of `paper-icon-button` | #737373
 `--app-datepicker-button-color` | Color of `paper-button` | #009688
 `--app-datepicker-button-ink-color` | Ink color of `paper-button` | #737373
+`--app-datepicker-date-hover-color` | Color of hovered date | #737373
+`--app-datepicker-date-hover-background-color` | Background color of hovered date | #737373
+`--app-datepicker-year-hover-background-color` | Background color of hovered year at year list view | {}
 `--app-datepicker` | Mixin applied to the datepicker | {}
 `--app-datepicker-buttons` | Mixin applied to the datepicker's buttons | {}
-`--app-datepicker-selected-year` | Mixin applied to the datepicker's selected year | {}
-`--app-datepicker-selected-date` | Mixin applied to the datepicker's selected date | {}
+`--app-datepicker-selected-year` | Mixin applied to the datepicker's selected year at calendar view | {}
+`--app-datepicker-selected-date` | Mixin applied to the datepicker's selected date at calendar view | {}
 `--app-datepicker-nav-month-year` | Mixin applied to the datepicker's nav-month-year | {}
 `--app-datepicker-days-of-week` | Mixin applied to the datepicker's days-of-week | {}
 `--app-datepicker-days-of-month` | Mixin applied to the datepicker's days-of-month | {}
 `--app-datepicker-each-list-of-years` | Mixin applied to the datepicker's each-list-of-years | {}
+`--app-datepicker-selected-each-list-of-years` | Mixin applied to the datepicker's selected year at year list view | {}
+`--app-datepicker-year-hover` | Mixin applied to the datepicker's hovered year at year list view | {}
+
 
 @author motss
 @element app-datepicker, app-datepicker-dialog
@@ -231,30 +237,41 @@ Custom property | Description | Default
         color: var(--app-datepicker-disabled-color, #9e9e9e);
       }
 
+
       /* outline: none for non-selectable and disabled days */
       div.days-of-month > .each-days-of-month.is-disabled-day,
       div.days-of-month > .each-days-of-month.is-non-selectable {
         outline: none;
       }
-
       /* Date hover styling */
-      div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
-        color: #f5f5f5;
+      div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month),
+      div.days-of-month > div.each-days-of-month:focus:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
+        color: var(--app-datepicker-date-hover-color, #f5f5f5);
+        background-color: var(--app-datepicker-date-hover-background-color, #80cbc4);
         border-radius: 50%;
-        background-color: #80cbc4;
         cursor: pointer;
       }
-      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
-        color: #777;
-        border-radius: 50%;
-        background-color: #b2dfdb;
-        cursor: pointer;
+      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month),
+      :host(.dark-theme) div.days-of-month >  div.each-days-of-month:focus:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
+        color: var(--app-datepicker-date-hover-color, #777);
+        background-color: var(--app-datepicker-date-hover-background-color, #b2dfdb);
       }
-      :host(.goog-theme) div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
-        color: #f5f5f5;
-        border-radius: 50%;
-        background-color: #e57373;
-        cursor: pointer;
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month:hover:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month),
+      :host(.goog-theme) div.days-of-month > div.each-days-of-month:focus:not(.is-disabled-day):not(.is-non-selectable):not(.chosen-days-of-month) {
+        color: var(--app-datepicker-date-hover-color, #f5f5f5);
+        background-color: var(--app-datepicker-date-hover-background-color, #e57373);
+      }
+
+      /* Focus ring styling - replace outline with background-color */
+      div.each-list-of-years:focus,
+      div.each-days-of-month:focus {
+        outline: 0;
+      }
+      div.each-list-of-years:focus,
+      div.each-list-of-years:hover {
+        font-weight: 700;
+        background-color: var(--app-datepicker-year-hover-background-color, #e0e0e0);
+        @apply(--app-datepicker-year-hover);
       }
 
       div.each-list-of-years {
@@ -268,9 +285,10 @@ Custom property | Description | Default
         cursor: pointer;
       }
       div.each-list-of-years.is-selected {
-        background-color: var(--app-datepicker-selected-year-bg, #f5f5f5);
-        color: var(--app-datepicker-selected-year-color, #009688);
-        font-weight: 800;
+        color: #009688;
+        font-size: 24px;
+        font-weight: 700;
+        @apply(--app-datepicker-selected-each-list-of-years);
       }
 
       /* paper-icon-button */
@@ -345,7 +363,7 @@ Custom property | Description | Default
           word-wrap: break-word;
         }
         /* Hack for Edge 12+ */
-        @supports (-ms-accelerator:true),
+        @supports (-ms-accelerator:true) {
           :host(:not(.vertical-view)) div.selected-date > div {
             white-space: pre-wrap;
           }
@@ -477,11 +495,11 @@ Custom property | Description | Default
 
     <div id="dp" class="datepicker">
       <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
-        <div class="selected-year" view="year">
+        <div id="showSelectedYear" class="selected-year" view="year" tabindex="0" aria-label="year view">
           [[_showSelectedYear]]
         </div>
         <div class="selected-date" view="calendar">
-          <div>[[_shortSelectedDate]]</div>
+          <div tabindex="0" aria-label="calendar view">[[_shortSelectedDate]]</div>
         </div>
       </iron-selector>
 
@@ -515,9 +533,10 @@ Custom property | Description | Default
         </div>
 
         <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered">
-          <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish">
+          <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish" selected-item="{{_selectedListItem}}" selection-enabled>
             <template>
-              <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar">
+              <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar" on-keydown="_goCalendar">
+              <!-- <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar"> -->
                 [[item.year]]
               </div>
             </template>
@@ -695,6 +714,7 @@ Custom property | Description | Default
           type: Number,
           value: new Date().getDate()
         },
+        _selectedListItem: Object,
 
         _chosenDaysOfMonth: {
           type: Number,
@@ -1074,8 +1094,11 @@ Custom property | Description | Default
       },
 
       // Re-compute class when a year is selected at year page.
-      _isListOfYearsSelected: function(_itemYear, _activeYear) {
-        return _itemYear === _activeYear ? ' is-selected' : '';
+      // _isListOfYearsSelected: function(_itemYear, _activeYear) {
+      //   return _itemYear === _activeYear ? ' is-selected' : '';
+      // },
+      _isListOfYearsSelected: function(_selected) {
+        return _selected ? ' is-selected' : '';
       },
 
       _computeDaysOfWeek: function(_firstDayOfWeek, _locale) {
@@ -1135,7 +1158,17 @@ Custom property | Description | Default
         var _target = ev.detail;
         // TO fix the scrolling of iron-list, hard coded with fixed length of #items.
         if (_target && _target.toPage.tagName === 'IRON-LIST') {
-          this._updateListScroller(_target.toPage);
+          var _focusableItem = this._updateListScroller(_target.toPage);
+          // Automatically focus selected list of year at year view.
+          this.async(function () {
+            _target.toPage._focusPhysicalItem(_focusableItem);
+          }, 1);
+        }else {
+          // When user navigate to calendar view from list view,
+          // re-focus showSelectedYear.
+          this.async(function () {
+            this.$.showSelectedYear.focus();
+          }, 1);
         }
       },
       _updateListScroller: function(_list) {
@@ -1152,7 +1185,12 @@ Custom property | Description | Default
         // Scroll to selected year.
         this.async(function() {
           _list.scroll(0, _sli);
+          // Select initial item for the list.
+          _list.selectItem(this._activeYear - 1900);
         }, 17); // wait for at least 17ms to update the scroller position.
+
+        // Return index of item that should be focused on the list.
+        return this._activeYear - 1900;
       },
       // When first time switching page to year view, dynamically render iron-list.
       _onIronSelectorSelectedChanged: function(ev) {
@@ -1177,10 +1215,18 @@ Custom property | Description | Default
         }
       },
       _goCalendar: function(ev) {
+        // Listen for enter key from keyboard.
+        if (ev.type === 'keydown' && ev.keyCode !== 13) {
+          return;
+        }
+
         var _selectedYear = ev.model.item.year;
         // Set _activeYear and _selectedYear to the selected year.
         this.set('_activeYear', _selectedYear);
         this.set('_selectedYear', _selectedYear);
+        // Update selected item in iron-list.
+        this.$$('#listOfYears').selectItem(_selectedYear - 1900);
+
         // Go back to calendar page.
         this.set('_activeView', 'calendar');
       },
