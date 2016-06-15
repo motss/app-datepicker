@@ -536,7 +536,6 @@ Custom property | Description | Default
           <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish" selected-item="{{_selectedListItem}}" selection-enabled>
             <template>
               <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar" on-keydown="_goCalendar">
-              <!-- <div class$="each-list-of-years[[_isListOfYearsSelected(item.year, _activeYear)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar"> -->
                 [[item.year]]
               </div>
             </template>
@@ -1094,9 +1093,6 @@ Custom property | Description | Default
       },
 
       // Re-compute class when a year is selected at year page.
-      // _isListOfYearsSelected: function(_itemYear, _activeYear) {
-      //   return _itemYear === _activeYear ? ' is-selected' : '';
-      // },
       _isListOfYearsSelected: function(_selected) {
         return _selected ? ' is-selected' : '';
       },
