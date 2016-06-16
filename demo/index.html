@@ -66,7 +66,7 @@
       .datepicker-dialog {
         height: 64px;
         font-size: 12px;
-        max-width: 310px;
+        /*max-width: 310px;*/
         margin: 8px 0;
         @apply(--layout-horizontal);
         @apply(--layout-center);
@@ -93,6 +93,10 @@
       .datepicker > app-datepicker {
         box-shadow: 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
       }
+      .first-day-of-week {
+        width: 172px;
+        text-align: center;
+      }
 
       /* iron-selector related */
       iron-selector {
@@ -114,6 +118,9 @@
       .choose-theme iron-selector > div {
         width: 55px;
         max-width: calc(100% / 3);
+      }
+      .choose-view > div {
+        max-width: calc(100% - 24px - 24px - 46px);
       }
       .choose-date-format-month iron-selector > div:nth-of-type(1),
       .choose-date-format-month iron-selector > div:nth-of-type(2) {
@@ -192,15 +199,18 @@
         color: #737373;
       }
 
-     .flex {
+     /*.flex {
        text-align: center;
-       @apply(--layout-flex);
-     }
+     }*/
 
      /* media queries */
      @media all and (min-width: 600px) {
        .vertical-section {
          width: auto;
+       }
+
+       .first-vertical-section {
+         max-width: 500px;
        }
      }
      @media all and (min-width: 1090px) {
@@ -236,16 +246,19 @@
           </div>
           <div class="choose-view">
             <h5>View</h5>
-            <iron-selector selected="{{view}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged" attr-for-selected="view-selected">
-              <div view-selected="vertical">Vertical</div>
-              <div view-selected="horizontal">Horizontal</div>
-              <div view-selected="">Default</div>
-            </iron-selector>
+            <div>
+              <iron-selector selected="{{view}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged" attr-for-selected="view-selected">
+                <div view-selected="vertical">Vertical</div>
+                <div view-selected="horizontal">Horizontal</div>
+                <div view-selected="">Default</div>
+              </iron-selector>
+              <div class="small-note">* Horizontal mode only works on screen that is wide enough hence it does not work on portrait mobile.</div>
+            </div>
           </div>
           <div class="choose-first-day-of-week">
             <h5>First day of week</h5>
             <paper-icon-button icon="datepicker:chevron-left" action="decrement" on-tap="changeFirstDayOfWeek"></paper-icon-button>
-            <div class="flex">[[_chosenFirstDayOfWeek]]</div>
+            <div class="first-day-of-week">[[_chosenFirstDayOfWeek]]</div>
             <paper-icon-button icon="datepicker:chevron-right" action="increment" on-tap="changeFirstDayOfWeek"></paper-icon-button>
           </div>
           <div class="choose-disabled-days">

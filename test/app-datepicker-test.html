@@ -65,7 +65,7 @@
         context('test for minDate and maxDate', function () {
           it('should disable all dates before minDate && minDate is a date string', function () {
             var _currentDate = new Date();
-            var _minDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1), '3' ].join('/');
+            var _minDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '3' ].join('/');
             datepicker.minDate = _minDateString;
 
             Polymer.dom.flush();
@@ -76,7 +76,7 @@
 
           it('should disable all dates after maxDate && maxDate is a date string', function () {
             var _currentDate = new Date();
-            var _maxDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1), '20' ].join('/');
+            var _maxDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '20' ].join('/');
             datepicker.minDate = _maxDateString;
 
             Polymer.dom.flush();
