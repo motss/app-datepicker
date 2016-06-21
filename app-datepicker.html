@@ -1006,6 +1006,7 @@ Custom property | Description | Default
             day: 'numeric'
           }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
+          this._setDate([this._selectedYear, _selectedMonth, _selectedDate].join("/"));
         }
       },
       _computeShowSelectedYear: function(_selectedYear, _locale) {
