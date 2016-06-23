@@ -659,6 +659,14 @@ Custom property | Description | Default
           notify: true,
           readOnly: true
         },
+        
+        /**
+         * Auto update the `date` property when changed.
+         */
+        autoUpdateDate: {
+          type: Boolean,
+          value: false
+        },
 
         // month names, literally.
         _monthNames: {
@@ -1006,6 +1014,9 @@ Custom property | Description | Default
             day: 'numeric'
           }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
+          if(this.autoUpdateDate) {
+            this._setDate([this._selectedYear, _selectedMonth, _selectedDate].join("/"));
+          }
         }
       },
       _computeShowSelectedYear: function(_selectedYear, _locale) {
