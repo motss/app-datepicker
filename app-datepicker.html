@@ -1,7 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="app-datepicker-icons.html">
-<link rel="import" href="datepicker-slide-from-left-animation.html">
-<link rel="import" href="datepicker-slide-from-right-animation.html">
+<link rel="import" href="app-datepicker-animations.html">
 
 <link rel="import" href="../iron-selector/iron-selector.html">
 <link rel="import" href="../iron-list/iron-list.html">
@@ -10,10 +9,6 @@
 
 <link rel="import" href="../neon-animation/neon-animated-pages.html">
 <link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
-<link rel="import" href="../neon-animation/animations/fade-in-animation.html">
-<link rel="import" href="../neon-animation/animations/fade-out-animation.html">
-<link rel="import" href="../neon-animation/animations/slide-from-left-animation.html">
-<link rel="import" href="../neon-animation/animations/slide-from-right-animation.html">
 
 <!--
 Material Design: [Pickers](https://www.google.com/design/spec/components/pickers.html#pickers-date-pickers)
@@ -268,9 +263,27 @@ Custom property | Description | Default
         outline: 0;
       }
       div.each-list-of-years:focus,
-      div.each-list-of-years:hover {
+      div.each-list-of-years:hover,
+      div.each-list-of-years.is-selected:focus,
+      div.each-list-of-years.is-selected:hover {
         font-weight: 700;
         background-color: var(--app-datepicker-year-hover-background-color, #e0e0e0);
+        @apply(--app-datepicker-year-hover);
+      }
+      :host(.dark-theme) div.each-list-of-years:focus,
+      :host(.dark-theme) div.each-list-of-years:hover,
+      :host(.dark-theme) div.each-list-of-years.is-selected:focus,
+      :host(.dark-theme) div.each-list-of-years.is-selected:hover {
+        font-weight: 700;
+        background-color: var(--app-datepicker-year-hover-background-color, #616161);
+        @apply(--app-datepicker-year-hover);
+      }
+      :host(.goog-theme) div.each-list-of-years:focus,
+      :host(.goog-theme) div.each-list-of-years:hover,
+      :host(.goog-theme) div.each-list-of-years.is-selected:focus,
+      :host(.goog-theme) div.each-list-of-years.is-selected:hover {
+        font-weight: 700;
+        background-color: var(--app-datepicker-year-hover-background-color, #424242);
         @apply(--app-datepicker-year-hover);
       }
 
@@ -550,10 +563,6 @@ Custom property | Description | Default
     Polymer({
       is: 'app-datepicker',
 
-      hostAttributes: {
-        role: 'datepicker',
-      },
-
       behaviors: [
         Polymer.NeonAnimationRunnerBehavior
       ],
@@ -658,6 +667,13 @@ Custom property | Description | Default
           type: Boolean,
           notify: true,
           readOnly: true
+        },
+        /**
+         * Auto update the `date` property when changed.
+         */
+        autoUpdateDate: {
+          type: Boolean,
+          value: !1
         },
 
         // month names, literally.
@@ -1006,6 +1022,14 @@ Custom property | Description | Default
             day: 'numeric'
           }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
+
+          // When datepicker has no button for date confirmation,
+          // by asserting `autoUpdateDate` will trigger auto update on
+          // date change.
+          console.log(this.autoUpdateDate);
+          if (this.autoUpdateDate) {
+            this.enforceDateChange();
+          }
         }
       },
       _computeShowSelectedYear: function(_selectedYear, _locale) {
