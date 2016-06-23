@@ -10,8 +10,8 @@
     <link rel="import" href="../app-datepicker.html">
     <link rel="import" href="../app-datepicker-dialog.html">
     <link rel="import" href="../app-datepicker-icons.html">
-    <link rel="import" href="../datepicker-slide-from-bottom-animation.html">
-    <link rel="import" href="../datepicker-slide-from-top-animation.html">
+    <link rel="import" href="../animations/datepicker-slide-from-bottom-animation.html">
+    <link rel="import" href="../animations/datepicker-slide-from-top-animation.html">
 
     <link rel="import" href="../../iron-selector/iron-selector.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
@@ -63,6 +63,7 @@
       .choose-date-format-month,
       .choose-date-format-day,
       .show-long-date,
+      .auto-update-date,
       .datepicker-dialog {
         height: 64px;
         font-size: 12px;
@@ -152,7 +153,8 @@
         font-size: 12px;
         font-style: italic;
       }
-      .show-long-date > paper-checkbox {
+      .show-long-date > paper-checkbox,
+      .auto-update-date > paper-checkbox {
         --paper-checkbox-checked-color: #009688;
         --paper-checkbox-checked-ink-color: #009688;
         --paper-checkbox-unchecked-ink-color: #009688;
@@ -316,6 +318,15 @@
             </iron-label>
             <paper-checkbox id="showLongDate" checked="{{showLongDate}}"></paper-checkbox>
           </div>
+          <div class="auto-update-date">
+            <iron-label for="autoUpdateDate" class="flex">
+              Auto update date
+              <div class="">
+                It should be used when the datepicker is a standalone element and not inside an overlay/ dialog.
+              </div>
+            </iron-label>
+            <paper-checkbox id="autoUpdateDate" checked="{{autoUpdateDate}}"></paper-checkbox>
+          </div>
           <div class="locale" on-change="_onLocaleChange">
             <iron-label for="locale" class="flex">
               Locale
@@ -329,7 +340,7 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]">
+            <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]" auto-update-date="[[autoUpdateDate]]">
             </app-datepicker>
           </div>
           <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
@@ -394,6 +405,7 @@
 
       demo.theme = 'light-theme';
       demo.showLongDate = true;
+      demo.autoUpdateDate = false;
       demo.yearFormat = 0;
       demo.monthFormat = 2;
       demo.dayFormat = 1;
@@ -433,15 +445,9 @@
       };
 
       demo._onSelectedDateChanged = function(ev) {
-        var _target = ev.target;
-        // Only update the input value of paper-input when the date returned from
-        // the datepicker is in a valid format.
-        // if (!_target.invalidDate) {
-        //   // Update the value at the input after a certain delay.
-        //   // For instance, update the weekday for long date.
-        // }
+        var _value = ev.detail.value;
         this.async(function() {
-          this.$.eInput.updateValueAndPreserveCaret(ev.detail.value);
+          this.$.eInput.updateValueAndPreserveCaret(_value);
         }, 1500);
       };
 

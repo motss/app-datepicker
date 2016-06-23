@@ -86,6 +86,20 @@
           });
         });
 
+        context('test for autoUpdateDate', function () {
+          it('should not auto update date by default', function () {
+            expect(datepicker.autoUpdateDate).to.be.false;
+          });
+
+          it('should auto update date on date change without any date confirmation', function () {
+            datepicker.autoUpdateDate = !0;
+            datepicker.inputDate = '2016/7/7';
+
+            Polymer.dom.flush();
+            expect(datepicker.date).to.be.equal('2016/07/07');
+          });
+        });
+
         context('test for update to reflect external date change', function () {
           // All possibilityes = 2 * 4 * 3 = 24.
           // 'yyyy' 'mmmm' 'do' - N
