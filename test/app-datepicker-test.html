@@ -29,26 +29,21 @@
           datepicker = fixture('JvDatepicker');
         });
 
-        context('datepicker has role="datepicker"', function () {
-          it('should show "datepicker" for attribute role', function () {
-            expect(datepicker.getAttribute('role')).to.be.equal('datepicker');
-          });
-        });
-
         context('test inputs for correct selected view', function () {
           it('should select date view on start', function () {
-            var _ironSelector = datepicker.querySelector('iron-selector');
+            var _ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+
             expect(_ironSelector.selected).to.be.equal('calendar');
           });
 
           it('should select the correct view (year)', function () {
-            var _yearView = datepicker.querySelector('iron-selector .selected-year');
+            var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
             _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
             expect(_yearView.classList.contains('iron-selected')).to.be.true;
           });
 
           it('should select the correct view (date)', function () {
-            var _ironSelector = datepicker.querySelector('iron-selector'),
+            var _ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector'),
                 _dateView = _ironSelector.querySelector('div.selected-date'),
                 _yearView = _ironSelector.querySelector('div.selected-year');
             _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
@@ -77,12 +72,12 @@
           it('should disable all dates after maxDate && maxDate is a date string', function () {
             var _currentDate = new Date();
             var _maxDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '20' ].join('/');
-            datepicker.minDate = _maxDateString;
+            datepicker.maxDate = _maxDateString;
 
             Polymer.dom.flush();
             var _getDateFromDatepicker = Polymer.dom(datepicker.root).querySelectorAll('.each-days-of-month[aria-label="21"]');
             expect(_getDateFromDatepicker[0].classList.contains('is-disabled-day')).to.be.true;
-            expect(datepicker.minDate === _maxDateString).to.be.true;
+            expect(datepicker.maxDate === _maxDateString).to.be.true;
           });
         });
 

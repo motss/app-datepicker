@@ -14,7 +14,7 @@
 <!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
 ## Update (v2.7.0)
-- `autoUpdateDate` - proposed by #20 to allow datepicker to update `date` on date change if the datepicker is a standalone element.
+- `autoUpdateDate` - proposed by [#20](https://github.com/motss/app-datepicker/pull/20) to allow datepicker to update `date` on date change if the datepicker is a standalone element.
 - **_As of v2.6.0 this element has been renamed to `app-datepicker` from `jv-datepicker`._**
 - `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/app-datepicker/components/app-datepicker/demo/).
 
