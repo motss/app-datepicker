@@ -793,10 +793,9 @@ Custom property | Description | Default
           var _thisSet = this.set.bind(this);
           var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
           var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
-          var _thisComputeShortSelectedDate = this._computeShortSelectedDate.bind(this);
           var _thisComputeShowSelectedYear = this._computeShowSelectedYear.bind(this);
-          for (var i = 0; i < _hrefs.length; i++) {
-            this.importHref(this.resolveUrl(_hrefs[i]), function(ev) {
+          for (var i = 0; i < 2; i++) {
+            Polymer.Base.importHref(_hrefs[i], function(ev) {
               _thisComputeDaysOfWeek(_thisLocale);
               _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
               _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
