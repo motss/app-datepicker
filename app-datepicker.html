@@ -1383,8 +1383,11 @@ Custom property | Description | Default
       // has to be standardized - YYYY/MM/DD.
       // http://dygraphs.com/date-formats.html
       _updateToReflectExternalChange: function(_inputDate) {
-        // Only locale with 'en' is accepted.
-        if (this.locale.indexOf('en') < 0 || this.locale === '') {
+        // Due to limitation of input date received by platform's Date,
+        // inputDate was designed to only be able to accept inputs for the followings:
+        // short date for all locales in the format of yyyy/mm/dd or yyyy/d/m eg. 2016/06/06.
+        // long formatted date for en and en-* locale **ONLY** eg. Tue, Jul 5, 2016.
+        if (this.showLongDate && this.locale.indexOf('en') < 0) {
           this._setInvalidDate(!0);
           return;
         }
