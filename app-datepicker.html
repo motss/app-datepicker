@@ -723,15 +723,21 @@ Custom property | Description | Default
 
         _selectedYear: {
           type: Number,
-          value: new Date().getFullYear()
+          value: function () {
+            return new Date().getFullYear();
+          },
         },
         _selectedMonth: {
           type: Number,
-          value: new Date().getMonth()
+          value: function () {
+            return new Date().getMonth();
+          },
         },
         _selectedDate: {
           type: Number,
-          value: new Date().getDate()
+          value: function () {
+            return new Date().getDate();
+          },
         },
         _selectedListItem: Object,
 
@@ -771,60 +777,29 @@ Custom property | Description | Default
         '_computeShiftedDisableDays(firstDayOfWeek, disableDays.*)',
       ],
 
-      // Element Lifecycle
-
       ready: function() {
-        // `ready` is called after all elements have been configured, but
-        // propagates bottom-up. This element's children are ready, but parents
-        // are not.
-        //
-        // This is the point where you should make modifications to the DOM (when
-        // necessary), or kick off any processes the element wants to perform.
         if (!window.Intl) {
-          // var _hrefs = [ '../polyfill/moment.html', '../polyfill/intl.html' ];
           var _hrefs = [ 'intl.html' ];
 
-          var _thisLocale = this.locale;
-          var _thisActiveYear = this._activeYear;
-          var _thisActiveMonth = this._activeMonth;
-          var _thisSelectedYear = this._selectedYear;
-          var _thisSelectedMonth = this._selectedMonth;
-          var _thisSelectedDate = this._selectedDate;
-          var _thisSet = this.set.bind(this);
-          var _thisComputeDaysOfWeek = this._computeDaysOfWeek.bind(this);
-          var _thisComputeActiveMonthYear = this._computeActiveMonthYear.bind(this);
-          var _thisComputeShortSelectedDate = this._computeShortSelectedDate.bind(this);
-          var _thisComputeShowSelectedYear = this._computeShowSelectedYear.bind(this);
           for (var i = 0; i < _hrefs.length; i++) {
             this.importHref(this.resolveUrl(_hrefs[i]), function(ev) {
-              _thisComputeDaysOfWeek(_thisLocale);
-              _thisComputeActiveMonthYear(_thisActiveYear, _thisActiveMonth, _thisLocale);
-              _thisComputeShortSelectedDate(_thisSelectedMonth, _thisSelectedDate, _thisLocale);
-              _thisComputeShowSelectedYear(_thisSelectedYear, _thisLocale);
-            }, function(err) {
+              this._computeDaysOfWeek(this.loocale);
+              this._computeActiveMonthYear(this._activeYear, this._activeMonth, this.locale);
+              this._computeShortSelectedDate(this._selectedMonth, this._selectedDate, this.locale);
+              this._computeShowSelectedYear(this._selectedYear, this.locale);
+
+              // Set default value for date when created.
+              var _defaultTimeWhenCreated = new Date();
+              this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
+              this._computeShowLongDate(this.showLongDate, this.locale);
+            }.bind(this), function(err) {
               console.error(err);
             }, !0);
           }
-        }else if (!window.Intl.DateTimeFormat().resolvedOptions().timeZone) {
-          // Polymer.Base.importHref('../polyfill/moment.html', function(ev) {
-          // }, function(err) {
-          //   console.error(err);
-          // }, !0);
         }
-
-        // Set default value for date when created.
-        var _defaultTimeWhenCreated = new Date();
-        this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
-        this._computeShowLongDate(this.showLongDate, this.locale);
       },
 
       attached: function() {
-        // `attached` fires once the element and its parents have been inserted
-        // into a document.
-        //
-        // This is a good place to perform any work related to your element's
-        // visual state or active behavior (measuring sizes, beginning animations,
-        // loading resources, etc).
         if (!this.noAnimation) {
           this.set('animationConfig', {
             'incrementEntry': [
@@ -885,14 +860,7 @@ Custom property | Description | Default
         this.fire('app-datepicker-attached');
       },
 
-      detached: function() {
-        // The analog to `attached`, `detached` fires when the element has been
-        // removed from a document.
-        //
-        // Use this to clean up anything you did in `attached`.
-      },
-
-      // Element Behavior
+      detached: function () { },
 
       //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
       //  Days   31  28  31  30  31  30  31  31  30  31  30  31
