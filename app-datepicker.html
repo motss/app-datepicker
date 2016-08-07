@@ -783,7 +783,7 @@ Custom property | Description | Default
 
           for (var i = 0; i < _hrefs.length; i++) {
             this.importHref(this.resolveUrl(_hrefs[i]), function(ev) {
-              this._computeDaysOfWeek(this.loocale);
+              this._computeDaysOfWeek(this.locale);
               this._computeActiveMonthYear(this._activeYear, this._activeMonth, this.locale);
               this._computeShortSelectedDate(this._selectedMonth, this._selectedDate, this.locale);
               this._computeShowSelectedYear(this._selectedYear, this.locale);
