@@ -577,10 +577,12 @@ Custom property | Description | Default
          */
         locale: {
           type: String,
-          value: function() {
+          value: function () {
             if (window.Intl) {
               return new window.Intl.DateTimeFormat().resolvedOptions().locale;
             }
+
+            return 'en';
           }
         },
         /**
@@ -606,7 +608,7 @@ Custom property | Description | Default
          */
         disableDays: {
           type: Array,
-          value: function() {
+          value: function () {
             return [6, 0];
           }
         },
@@ -683,7 +685,7 @@ Custom property | Description | Default
         // month names, literally.
         _monthNames: {
           type: Array,
-          value: function() {
+          value: function () {
             return [ 'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December' ];
           }
@@ -708,13 +710,13 @@ Custom property | Description | Default
         },
         _activeYear: {
           type: Number,
-          value: function() {
+          value: function () {
             return new Date().getFullYear();
           }
         },
         _activeMonth: {
           type: Number,
-          value: function() {
+          value: function () {
             return new Date().getMonth();
           }
         },
@@ -743,7 +745,7 @@ Custom property | Description | Default
 
         _chosenDaysOfMonth: {
           type: Number,
-          value: function() {
+          value: function () {
             return new Date().getDate();
           }
         },
@@ -756,7 +758,7 @@ Custom property | Description | Default
         _isSelectedDateConfirmed: Boolean,
         _format: {
           type: Object,
-          value: function() {
+          value: function () {
             return {y: 'yyyy', m: 'mm', d: 'dd', s1: '/', s2: '/'};
           }
         },
@@ -777,29 +779,30 @@ Custom property | Description | Default
         '_computeShiftedDisableDays(firstDayOfWeek, disableDays.*)',
       ],
 
-      ready: function() {
+      ready: function () {
         if (!window.Intl) {
-          var _hrefs = [ 'intl.html' ];
+          this.importHref(this.resolveUrl('intl.html'), function (ev) {
+            var _ay = this._activeYear;
+            var _am = this._activeMonth;
+            var _lc = this.locale;
 
-          for (var i = 0; i < _hrefs.length; i++) {
-            this.importHref(this.resolveUrl(_hrefs[i]), function(ev) {
-              this._computeDaysOfWeek(this.locale);
-              this._computeActiveMonthYear(this._activeYear, this._activeMonth, this.locale);
-              this._computeShortSelectedDate(this._selectedMonth, this._selectedDate, this.locale);
-              this._computeShowSelectedYear(this._selectedYear, this.locale);
+            this._computeDaysOfWeek(_lc);
+            this._computeDaysOfMonth(_ay, _am, this.firstDayOfWeek, _lc);
+            this._computeActiveMonthYear(_ay, _am, _lc);
+            this._computeShortSelectedDate(this._selectedMonth, this._selectedDate, _lc);
+            this._computeShowSelectedYear(this._selectedYear, _lc);
 
-              // Set default value for date when created.
-              var _defaultTimeWhenCreated = new Date();
-              this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
-              this._computeShowLongDate(this.showLongDate, this.locale);
-            }.bind(this), function(err) {
-              console.error(err);
-            }, !0);
-          }
+            // Set default value for date when created.
+            var _defaultTimeWhenCreated = new Date();
+            this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
+            this._computeShowLongDate(this.showLongDate, _lc);
+          }.bind(this), function (err) {
+            console.error(err);
+          }, !0);
         }
       },
 
-      attached: function() {
+      attached: function () {
         if (!this.noAnimation) {
           this.set('animationConfig', {
             'incrementEntry': [
@@ -882,7 +885,12 @@ Custom property | Description | Default
       //  Sa Su Mo Tu We Th Fr
       //                     1        5 - 6 < 0 ? 6 : 5 - 6;
       // Compute the days for a month.
-      _computeDaysOfMonth: function(_activeYear, _activeMonth, _firstDayOfWeek, _locale) {
+      _computeDaysOfMonth: function (_activeYear, _activeMonth, _firstDayOfWeek, _locale) {
+        // No op for Intl is undefined (for Safari below v10.x.x).
+        if (!window.Intl) {
+          return;
+        }
+
         // Compute total number of days for a month.
         function _computeTotalDaysOfMonth(_year, _month) {
           var _totalDaysOfMonth = new Date(_year, _month + 1, 0).getDate();
@@ -921,9 +929,9 @@ Custom property | Description | Default
         this.set('_daysOfMonth', _daysOfMonth);
       },
       /// Re-compute disable days with firstDayOfWeek.
-      _computeShiftedDisableDays: function(_firstDayOfWeek, _isDisableDays) {
+      _computeShiftedDisableDays: function (_firstDayOfWeek, _isDisableDays) {
         _firstDayOfWeek = _firstDayOfWeek > 0 && _firstDayOfWeek < 7 ? _firstDayOfWeek : 0;
-        var _sdd = this.disableDays.map(function(_day) {
+        var _sdd = this.disableDays.map(function (_day) {
           _day = _day - _firstDayOfWeek;
           return _day < 0 ? 7 + _day : _day;
         });
@@ -931,8 +939,8 @@ Custom property | Description | Default
       },
 
       // Increment the month via user interaction.
-      _incrementMonth: function(ev) {
-        this.debounce('_incrementMonth', function() {
+      _incrementMonth: function (ev) {
+        this.debounce('_incrementMonth', function () {
           this.set('_isIncrementMonth', !0);
           window.requestAnimationFrame(function () {
             var _month = this._activeMonth;
@@ -952,8 +960,8 @@ Custom property | Description | Default
         }, 100);
       },
       // Decrement the month via user interaction.
-      _decrementMonth: function(ev) {
-        this.debounce('_decrementMonth', function() {
+      _decrementMonth: function (ev) {
+        this.debounce('_decrementMonth', function () {
           this.set('_isDecrementMonth', !0);
           window.requestAnimationFrame(function () {
             var _month = this._activeMonth;
@@ -975,7 +983,7 @@ Custom property | Description | Default
       },
 
       // Re-compute active month year if new date is selected.
-      _computeActiveMonthYear: function(_activeYear, _activeMonth, _locale) {
+      _computeActiveMonthYear: function (_activeYear, _activeMonth, _locale) {
         if (window.Intl) {
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _amy = new window.Intl.DateTimeFormat(_locale, {
@@ -986,7 +994,7 @@ Custom property | Description | Default
         }
       },
       // Re-compute short version of full date to show on the picker.
-      _computeShortSelectedDate: function(_selectedMonth, _selectedDate, _locale) {
+      _computeShortSelectedDate: function (_selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
@@ -1004,7 +1012,7 @@ Custom property | Description | Default
           }
         }
       },
-      _computeShowSelectedYear: function(_selectedYear, _locale) {
+      _computeShowSelectedYear: function (_selectedYear, _locale) {
         if (window.Intl) {
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _ssy = new window.Intl.DateTimeFormat(_locale, {
@@ -1015,7 +1023,7 @@ Custom property | Description | Default
       },
 
       // When a day of month is selected, a lot of tasks need to be carried out.
-      _chooseDaysOfMonth: function(ev) {
+      _chooseDaysOfMonth: function (ev) {
         var _target = ev.target;
         // daysOfMonth is chooseable when:
         // a) _target.date is of type Number,
@@ -1034,7 +1042,7 @@ Custom property | Description | Default
       },
 
       // Re-compute class when the item (day of month) is today's date.
-      _isToday: function(_item, _activeYear, _activeMonth) {
+      _isToday: function (_item, _activeYear, _activeMonth) {
         var _now = new Date();
         var _isToday = _item === _now.getDate() &&
                       _activeYear === _now.getFullYear() &&
@@ -1042,11 +1050,11 @@ Custom property | Description | Default
         return _isToday ? ' is-today' : '';
       },
       // Re-compute class when the item (day of month) is empty date & non-selectable.
-      _isEmptyDate: function(_item) {
+      _isEmptyDate: function (_item) {
         return this._isNumber(_item) ? '' : ' is-non-selectable';
       },
       // Re-compute class if the item (day of month) is the selected date.
-      _isChosenDaysOfMonth: function(_item, _selectedYear, _selectedMonth, _selectedDate) {
+      _isChosenDaysOfMonth: function (_item, _selectedYear, _selectedMonth, _selectedDate) {
         // able to retain selected daysOfMonth even after navigating to other months.
         var _isChosenDaysOfMonth = this._chosenDaysOfMonth >= 0 &&
                                    this._activeYear === _selectedYear &&
@@ -1055,13 +1063,13 @@ Custom property | Description | Default
         return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
       // Re-compute class if the item (day of month) is a disable day.
-      _isDisableDays: function(_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
+      _isDisableDays: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
         var _isLessThanMinDate = !1;
         var _isMoreThanMaxDate = !1;
         var _isDisableDay = !1;
         // _index % 7 gives values from 0 to 6.
         // and if _index matches some of these disableDays values return true.
-        var _isDisableDays = this._shiftedDisableDays.some(function(_n) {
+        var _isDisableDays = this._shiftedDisableDays.some(function (_n) {
           return _n === _index % 7;
         });
         // ------ < _minDate ---------------- _maxDate > ------
@@ -1089,11 +1097,11 @@ Custom property | Description | Default
       },
 
       // Re-compute class when a year is selected at year page.
-      _isListOfYearsSelected: function(_selected) {
+      _isListOfYearsSelected: function (_selected) {
         return _selected ? ' is-selected' : '';
       },
 
-      _computeDaysOfWeek: function(_firstDayOfWeek, _locale) {
+      _computeDaysOfWeek: function (_firstDayOfWeek, _locale) {
         // _daysOfWeek needs to be changed as well with firstDayOfWeek and locale.
         var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
         var _firstDayOfWeek = _firstDayOfWeek > 0 && _firstDayOfWeek < 7 ? _firstDayOfWeek : 0;
@@ -1119,7 +1127,7 @@ Custom property | Description | Default
       },
       // Re-compute the index of the selected date when a new date is selected
       // via user interaction.
-      _computeChosenDaysOfMonth: function(_daysOfMonth, _selectedDate) {
+      _computeChosenDaysOfMonth: function (_daysOfMonth, _selectedDate) {
         // depends on _daysOfMonth and recalculate the index of _chosenDaysOfMonth.
         var _len = _daysOfMonth.length;
         for (var i = 0; i < _len; i++) {
@@ -1137,7 +1145,7 @@ Custom property | Description | Default
       },
 
       // Dynamically load items into the iron-list when switching page to year view.
-      _updateList: function(_activeView) {
+      _updateList: function (_activeView) {
         for (var _newList = [], y = 1900, i = y; i <= 2100; i++) {
           _newList.push({ year: i });
         }
@@ -1146,7 +1154,7 @@ Custom property | Description | Default
       // On neon-animaition-finish, udpate scroller position of the iron-list.
       // It is to fix the iron-list so that the selected year will always be centered by
       // hardcoded with fixed length of #items.
-      _onAnimationFinish: function(ev) {
+      _onAnimationFinish: function (ev) {
         var _target = ev.detail;
         // TO fix the scrolling of iron-list, hard coded with fixed length of #items.
         if (_target && _target.toPage.tagName === 'IRON-LIST') {
@@ -1163,7 +1171,7 @@ Custom property | Description | Default
           }, 1);
         }
       },
-      _updateListScroller: function(_list) {
+      _updateListScroller: function (_list) {
         var _sl = Polymer.dom(_list.root).querySelector('#items');
         var _slh = _sl.getBoundingClientRect().height || 12863.994140625;
         var _sli = Math.floor(_slh / (2100 - 1900 + 1) * (this._activeYear - 1900 - 2)) + 1;
@@ -1175,7 +1183,7 @@ Custom property | Description | Default
         }
 
         // Scroll to selected year.
-        this.async(function() {
+        this.async(function () {
           _list.scroll(0, _sli);
           // Select initial item for the list.
           _list.selectItem(this._activeYear - 1900);
@@ -1185,7 +1193,7 @@ Custom property | Description | Default
         return this._activeYear - 1900;
       },
       // When first time switching page to year view, dynamically render iron-list.
-      _onIronSelectorSelectedChanged: function(ev) {
+      _onIronSelectorSelectedChanged: function (ev) {
         if (ev.detail.value === 'year') {
           if (!this._isListRendered) {
             this._updateList();
@@ -1198,15 +1206,15 @@ Custom property | Description | Default
           }
         }
       },
-      _onListRendered: function(ev) {
+      _onListRendered: function (ev) {
         // When noAnimation is truthy, this will update the list scroller.
         if (ev.target.if && this.noAnimation) {
-          this.async(function() {
+          this.async(function () {
             this._updateListScroller(this.$$('#listOfYears'));
           }, 1);
         }
       },
-      _goCalendar: function(ev) {
+      _goCalendar: function (ev) {
         // Listen for enter key from keyboard.
         if (ev.type === 'keydown' && ev.keyCode !== 13) {
           return;
@@ -1224,7 +1232,7 @@ Custom property | Description | Default
       },
 
       // split capturing group of format into year, month and date.
-      _computeSeparateFormat: function(_format) {
+      _computeSeparateFormat: function (_format) {
         var re = /(yyyy|yy)[^a-zA-Z0-9]+(mmmm|mmm|mm|m)[^a-zA-Z0-9]+(do|dd|d)/i;
         var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
         var m = re.exec(_format);
@@ -1242,7 +1250,7 @@ Custom property | Description | Default
       },
 
       // bind the selected date so that it's ready to be read from the outside world.
-      _bindSelectedFulldate: function(_selectedYear, _selectedMonth, _selectedDate, _format) {
+      _bindSelectedFulldate: function (_selectedYear, _selectedMonth, _selectedDate, _format) {
 				// show long date (eg. Fri, May 12 2017 instead.
         if (this.showLongDate) {
           return this._computeShowLongDate(this.showLongDate,  this.locale, !0);
@@ -1283,8 +1291,8 @@ Custom property | Description | Default
 				return _finalFormatted;
       },
       // method for content tag (eg. buttons).
-      _updateBindDate: function(ev) {
-        this.debounce('_updateBindDate', function() {
+      _updateBindDate: function (ev) {
+        this.debounce('_updateBindDate', function () {
           var _type = ev.type;
           if (_type === 'tap') {
             this.set('_isSelectedDateConfirmed', !0);
@@ -1304,8 +1312,8 @@ Custom property | Description | Default
         }, 1);
       },
       // Update date to show long date or short date.
-      _computeShowLongDate: function(_showLongDate, _locale, _returnResult) {
-        if (!this._selectedDate || typeof this._selectedDate === 'undefined') {
+      _computeShowLongDate: function (_showLongDate, _locale, _returnResult) {
+        if (!window.Intl || !this._selectedDate || typeof this._selectedDate === 'undefined') {
           return;
         }
 
@@ -1350,7 +1358,7 @@ Custom property | Description | Default
       // TO make things simple and works across different browsers, the input date string
       // has to be standardized - YYYY/MM/DD.
       // http://dygraphs.com/date-formats.html
-      _updateToReflectExternalChange: function(_inputDate) {
+      _updateToReflectExternalChange: function (_inputDate) {
         // Due to limitation of input date received by platform's Date,
         // inputDate was designed to only be able to accept inputs for the followings:
         // short date for all locales in the format of yyyy/mm/dd or yyyy/d/m eg. 2016/06/06.
@@ -1440,7 +1448,7 @@ Custom property | Description | Default
        * By default, buttons are required so that they are to confirm the date change.
        * This method allows force update the datepicker when there are no buttons inside the datepicker to confirm date change.
        */
-      enforceDateChange: function() {
+      enforceDateChange: function () {
         this._setInvalidDate(!1);
         this._computeShowLongDate(this.showLongDate, this.locale);
       },
@@ -1456,19 +1464,19 @@ Custom property | Description | Default
       },
 
       // Lodash's replacements.
-      _padStart: function(_string, _length, _chars) {
+      _padStart: function (_string, _length, _chars) {
         var _len = -_length;
         var _str = (_chars + _string).slice(_len);
         return _str;
       },
-      _isNumber: function(_value) {
+      _isNumber: function (_value) {
         // return typeof _value == 'number' || (!Number.isNaN(parseFloat(_value)) && Number.isFinite(_value));
         // Fallback: caused by IE11 as those methods are not supported in IE11.
         return typeof _value == 'number' || (!isNaN(parseFloat(_value)) && isFinite(_value));
       },
 
       // Update theme color.
-      _updateThemeColor: function(_theme) {
+      _updateThemeColor: function (_theme) {
         var _themes = ['dark-theme', 'light-theme', 'goog-theme'];
         var _themeIdx = _themes.indexOf(_theme);
         var _distributedButtons = Polymer.dom(this).querySelectorAll('paper-button');
@@ -1495,13 +1503,13 @@ Custom property | Description | Default
         this.updateStyles();
       },
       // Forcefully update the view of the datepicker.
-      _updateDatepickerView: function(_view) {
+      _updateDatepickerView: function (_view) {
         this.toggleClass('horizontal-view', _view === 'horizontal', this);
         this.toggleClass('vertical-view', _view === 'vertical', this);
       },
 
       // workaround to update custom property of distributed children until Polymer supports Native custom properties.
-      _updateDistributedButtonInkColorCustomProp: function(_node, _colorCode) {
+      _updateDistributedButtonInkColorCustomProp: function (_node, _colorCode) {
         _node.customStyle['--paper-button-ink-color'] = _colorCode;
         _node.updateStyles();
       },
