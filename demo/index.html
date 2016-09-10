@@ -58,6 +58,7 @@
       .choose-view,
       .choose-first-day-of-week,
       .choose-disabled-days,
+      .choose-disabled-dates,
       .choose-min-date,
       .choose-max-date,
       .choose-date-format-year,
@@ -276,6 +277,10 @@
               <div>Sat (6)</div>
             </iron-selector>
           </div>
+          <div class="choose-disabled-dates">
+            <h5>Disable dates</h5>
+            <paper-input label="disableDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{disableDate::input}}" on-value-changed="_onDisableDateChanged" error-message="Invalid date input!"></paper-input>
+          </div>
           <div class="choose-min-date">
             <h5>Min date</h5>
             <paper-input label="minDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{minDate::input}}" error-message="Invalid date input!"></paper-input>
@@ -341,7 +346,7 @@
         <div class="vertical-section">
           <h4>Datepicker</h4>
           <div class="datepicker">
-            <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]" auto-update-date="[[autoUpdateDate]]">
+            <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" disable-dates="[[disableDates]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]" auto-update-date="[[autoUpdateDate]]">
             </app-datepicker>
           </div>
           <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
@@ -443,6 +448,10 @@
       demo.onIronItemsChanged = function() {
         var _format = [_years[demo.yearFormat], _months[demo.monthFormat], _days[demo.dayFormat]].join('/');
         demo.format = _format;
+      };
+
+      demo._onDisableDateChanged = function(event) {
+        this.set('disableDates', [event.detail.value]);
       };
 
       demo._onSelectedDateChanged = function(ev) {
