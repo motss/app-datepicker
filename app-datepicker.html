@@ -1097,7 +1097,7 @@ Custom property | Description | Default
           }
           _isDisableDates = this.disableDates.some(function(date) {
             var _dateObj = this._convertDateStringToDateObject(date);
-            return _dateObj && _currentDate.getTime() == _dateObj.getTime();
+            return _dateObj && _currentDate.getTime() === _dateObj.getTime();
           }.bind(this));
         }
         // To disable a date, it must be either one of the followings:
