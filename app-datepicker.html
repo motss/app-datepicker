@@ -617,7 +617,9 @@ Custom property | Description | Default
          */
         disableDates: {
           type: Array,
-          value: []
+          value: function() {
+            return [];
+          }
         },
         /**
          * Minimum date for selection. Dates that are smaller than the minimum
