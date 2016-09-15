@@ -789,26 +789,6 @@ Custom property | Description | Default
       ],
 
       ready: function () {
-        if (!window.Intl) {
-          this.importHref(this.resolveUrl('intl.html'), function (ev) {
-            var _ay = this._activeYear;
-            var _am = this._activeMonth;
-            var _lc = this.locale;
-
-            this._computeDaysOfWeek(_lc);
-            this._computeDaysOfMonth(_ay, _am, this.firstDayOfWeek, _lc);
-            this._computeActiveMonthYear(_ay, _am, _lc);
-            this._computeShortSelectedDate(this._selectedMonth, this._selectedDate, _lc);
-            this._computeShowSelectedYear(this._selectedYear, _lc);
-
-            // Set default value for date when created.
-            var _defaultTimeWhenCreated = new Date();
-            this.set('_selectedDate', _defaultTimeWhenCreated.getDate());
-            this._computeShowLongDate(this.showLongDate, _lc);
-          }.bind(this), function (err) {
-            console.error(err);
-          }, !0);
-        }
       },
 
       attached: function () {

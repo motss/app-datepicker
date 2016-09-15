@@ -32,8 +32,7 @@
     "iron-selector": "polymerelements/iron-selector#^1.5.2",
     "neon-animation": "polymerelements/neon-animation#^1.2.3",
     "paper-icon-button": "polymerelements/paper-icon-button#^1.1.2",
-    "iron-iconset-svg": "polymerelements/iron-iconset-svg#^1.0.9",
-    "intl": "^1.2.4"
+    "iron-iconset-svg": "polymerelements/iron-iconset-svg#^1.0.9"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
@@ -46,6 +45,8 @@
     "paper-dialog": "PolymerElements/paper-dialog#^1.0.3",
     "web-component-tester": "^4.0.0",
     "iron-test-helpers": "polymerelements/iron-test-helpers#^1.1.5",
-    "test-fixture": "PolymerElements/test-fixture#^1.1.0"
+    "test-fixture": "PolymerElements/test-fixture#^1.1.0",
+    "fetch": "^1.0.0",
+    "intl": "^1.2.4"
   }
 }

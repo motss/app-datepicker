@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>app-datepicker Demo</title>
     <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script> window.Polymer = { lazyRegister: 'max', useNativeCSSProperties: !0, dom: 'shadow' }; </script>
+    <script>
+      window.Polymer = { lazyRegister: 'max', useNativeCSSProperties: !0, dom: 'shadow' };
+    </script>
+
     <link rel="import" href="fetch.html">
+    <link rel="import" href="../intl.html">
 
     <link rel="import" href="../app-datepicker.html">
     <link rel="import" href="../app-datepicker-dialog.html">
@@ -279,7 +283,7 @@
           </div>
           <div class="choose-disabled-dates">
             <h5>Disable dates</h5>
-            <paper-input label="disableDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{disableDate::input}}" on-value-changed="_onDisableDateChanged" error-message="Invalid date input!"></paper-input>
+            <paper-input label="disableDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate on-value-changed="_onDisableDateChanged" error-message="Invalid date input!"></paper-input>
           </div>
           <div class="choose-min-date">
             <h5>Min date</h5>
@@ -392,6 +396,10 @@
         });
       }
 
+      (function () {
+                
+      })();
+
       if (window.fetch) {
         _loadLocales('locales.json');
       }else {
@@ -450,7 +458,7 @@
         demo.format = _format;
       };
 
-      demo._onDisableDateChanged = function(event) {
+      demo._onDisableDateChanged = function(ev) {
         this.set('disableDates', [event.detail.value]);
       };
 
