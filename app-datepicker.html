@@ -540,7 +540,7 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*)]]" aria-label$=[[item.index]]>
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
                 [[item.date]]
               </div>
             </template>
@@ -610,6 +610,15 @@ Custom property | Description | Default
           type: Array,
           value: function () {
             return [6, 0];
+          }
+        },
+        /**
+         * Array of dates need to be disabled for selection.
+         */
+        disableDates: {
+          type: Array,
+          value: function() {
+            return [];
           }
         },
         /**
@@ -1067,6 +1076,7 @@ Custom property | Description | Default
         var _isLessThanMinDate = !1;
         var _isMoreThanMaxDate = !1;
         var _isDisableDay = !1;
+        var _isDisableDates = false;
         // _index % 7 gives values from 0 to 6.
         // and if _index matches some of these disableDays values return true.
         var _isDisableDays = this._shiftedDisableDays.some(function (_n) {
@@ -1087,12 +1097,17 @@ Custom property | Description | Default
           if (_maxDateObj) {
             _isMoreThanMaxDate = _currentDate.getTime() > _maxDateObj.getTime();
           }
+          _isDisableDates = this.disableDates.some(function(date) {
+            var _dateObj = this._convertDateStringToDateObject(date);
+            return _dateObj && _currentDate.getTime() === _dateObj.getTime();
+          }.bind(this));
         }
         // To disable a date, it must be either one of the followings:
         // a) _isDisabledDays (set by property disableDays),
-        // b) _isLessThanMinDate (set by property minDate), and
-        // c) _isMoreThanMaxDate (set by propery moreDate).
-        _isDisableDay = _isDisableDays || _isLessThanMinDate || _isMoreThanMaxDate;
+        // b) _isDisableDates (set by property disableDates),
+        // c) _isLessThanMinDate (set by property minDate), and
+        // d) _isMoreThanMaxDate (set by propery moreDate).
+        _isDisableDay = _isDisableDays || _isDisableDates || _isLessThanMinDate || _isMoreThanMaxDate;
         return _isDisableDay ? ' is-disabled-day is-non-selectable' : '';
       },
 
