@@ -57,7 +57,7 @@
           });
         });
 
-        context('text for disableDates', function () {
+        context('test for disableDates', function () {
           it('should disable all dates in the array', function () {
             datepicker.inputDate = '2016/01/01';
             datepicker.disableDates = ['2016/01/02', '2016/01/03', '2016/01/04'];
@@ -80,6 +80,24 @@
             expect(thirdDay.getAttribute('aria-disabled')).to.equal('');
             expect(fourthDay.getAttribute('aria-disabled')).to.equal('');
           });
+
+          it('should support falsy values', function() {
+            datepicker.disableDays = [];
+            datepicker.inputDate = '2016/01/01';
+            datepicker.disableDates = undefined;
+            Polymer.dom.flush();
+            datepicker.disableDates = null;
+            Polymer.dom.flush();
+            datepicker.disableDates = '';
+            Polymer.dom.flush();
+
+            var dates = datepicker.querySelectorAll('.each-days-of-month');
+            for (var i = 0; i < dates.length; i++) {
+              if (dates[i].getAttribute('aria-label')) {
+                expect(dates[i].classList.contains('is-disabled-day')).to.be.false;
+              }
+            }
+          })
         });
 
         context('test for minDate and maxDate', function () {

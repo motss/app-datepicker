@@ -1077,7 +1077,7 @@ Custom property | Description | Default
           if (_maxDateObj) {
             _isMoreThanMaxDate = _currentDate.getTime() > _maxDateObj.getTime();
           }
-          _isDisableDates = this.disableDates.some(function(date) {
+          _isDisableDates = this.disableDates && this.disableDates.length && this.disableDates.some(function(date) {
             var _dateObj = this._convertDateStringToDateObject(date);
             return _dateObj && _currentDate.getTime() === _dateObj.getTime();
           }.bind(this));
