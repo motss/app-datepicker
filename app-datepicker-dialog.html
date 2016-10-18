@@ -43,8 +43,8 @@
     theme="[[theme]]"
     locale="[[locale]]">
       <div class="buttons">
-        <paper-button noink="[[noAnimation]]" dialog-dismiss>cancel</paper-button>
-        <paper-button noink="[[noAnimation]]" dialog-confirm>ok</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
       </div>
     </app-datepicker>
   </template>
@@ -77,6 +77,14 @@
         pageEntryAnimation: String,
         pageExitAnimation: String,
         locale: String,
+        confirmLabel: {
+          type: String,
+          value: "ok"
+        },
+        dismissLabel: {
+          type: String,
+          value: "cancel"
+        },
 
         _readOnlyDate: String,
         _readOnlyInvalidDate: String,
