@@ -135,6 +135,9 @@ Custom property | Description | Default
 
         @apply(--layout-vertical);
       }
+      div.datepicker.with-week-numbers {
+        width: 343px;
+      }
       div.datepicker.with-buttons {
         /* calc(300px + 84px + 47px) */
         height: 431px;
@@ -199,7 +202,7 @@ Custom property | Description | Default
         font-size: 14px;
         font-weight: 500;
         text-align: center;
-        
+
         @apply(--layout-flex-auto);
         @apply(--app-datepicker-nav-month-year);
       }
@@ -369,6 +372,10 @@ Custom property | Description | Default
           height: 241px;
           @apply(--layout-horizontal);
         }
+        :host(:not(.vertical-view)) div#dp.datepicker.with-week-numbers {
+          width: 554px;
+        }
+
         :host(.horizontal-view) div#dp.datepicker.with-buttons,
         :host(:not(.vertical-view)) div#dp.datepicker.with-buttons {
           height: 288px;
@@ -418,6 +425,9 @@ Custom property | Description | Default
           margin-left: 10px;
           margin-right: 10px;
         }
+        :host(:not(.vertical-view)) div.with-week-numbers div.each-days-of-week {
+          width: calc(100% / 8 - 20px);
+        }
         :host(:not(.vertical-view)) div.days-of-month {
           margin-top: 8px;
         }
@@ -427,6 +437,9 @@ Custom property | Description | Default
           margin-left: 10px;
           margin-right: 10px;
           width: calc(100% / 7 - 20px);
+        }
+        :host(:not(.vertical-view)) div.with-week-numbers div.each-days-of-month {
+          width: calc(100% / 8 - 20px);
         }
       }
       /* End of landscape @media */
@@ -522,7 +535,7 @@ Custom property | Description | Default
 
     </style>
 
-    <div id="dp" class="datepicker">
+    <div id="dp" class$="datepicker[[_isWeekNumbered(showWeekNumbers)]]">
       <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
         <div id="showSelectedYear" class="selected-year" view="year" tabindex="0" aria-label="year view">
           [[_showSelectedYear]]
@@ -552,7 +565,7 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, item.weekNumber, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, item.weekNumber, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, item.weekNumber, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
                 [[item.date]]
               </div>
             </template>
@@ -702,6 +715,20 @@ Custom property | Description | Default
           type: Boolean,
           value: !1
         },
+        /**
+         * If true, display ISO 8601 week numbers.
+         */
+        showWeekNumbers: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * The label used to indicate the week numbers column. Defaults to W.
+         */
+        weekNumbersLabel: {
+          type: String,
+          value: 'W'
+        },
 
         // month names, literally.
         _monthNames: {
@@ -787,13 +814,13 @@ Custom property | Description | Default
       },
 
       observers: [
-        '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek, locale)',
+        '_computeDaysOfMonth(_activeYear, _activeMonth, firstDayOfWeek, locale, showWeekNumbers)',
         '_computeSeparateFormat(format)',
         '_computeShowLongDate(showLongDate, locale)',
         '_updateToReflectExternalChange(inputDate)',
         '_updateThemeColor(theme)',
         '_updateDatepickerView(view)',
-        '_computeDaysOfWeek(firstDayOfWeek, locale)',
+        '_computeDaysOfWeek(firstDayOfWeek, locale, showWeekNumbers, weekNumbersLabel)',
         '_computeActiveMonthYear(_activeYear, _activeMonth, locale)',
         '_computeShortSelectedDate(_selectedYear, _selectedMonth, _selectedDate, locale)',
         '_computeShowSelectedYear(_selectedYear, locale)',
@@ -866,6 +893,77 @@ Custom property | Description | Default
 
       detached: function () { },
 
+      /**
+       * Get the week number of the date in ISO 8601.
+       * Based on http://stackoverflow.com/a/6117889
+       * @param {Date} date
+       * @returns {number}
+       */
+      getWeekNumber: function getWeekNumber(inputDate) {
+        // Copy date to prevent modifying the original
+        var date = new Date(+inputDate);
+        date.setHours(0,0,0);
+        // Set to nearest Thursday: current date + 4 - current day number
+        // Make Sunday's day number 7
+        date.setDate(date.getDate() + 4 - (date.getDay() || 7));
+        // Get first day of year
+        var yearStart = new Date(date.getFullYear(), 0, 1);
+        // Calculate full weeks to nearest Thursday
+        var weekNumber = Math.ceil(( ( (date - yearStart) / 86400000) + 1) / 7);
+
+        return weekNumber;
+      },
+      /**
+       * Scan the array starting from index and get the first number 'index' property
+       * @param {Array<Object>} _daysOfMonth
+       * @param {number} index
+       * @returns {number}
+       */
+      _getFirstIndex: function _getFirstIndex(_daysOfMonth, index) {
+        for (var i = index; i < _daysOfMonth.length; i++) {
+          var item = _daysOfMonth[i];
+          if (item && item.index !== null && item.index !== undefined && item.index !== "") {
+            return item.index;
+          }
+        }
+        return undefined;
+      },
+      /**
+       * Add week numbers to correct indices
+       * @param {number} _activeYear
+       * @param {number} _activeMonth
+       * @param {Array<Object>} _daysOfMonth
+       * @returns {Array<Object>}
+       */
+      _computeWeekNumberedDaysOfMonth: function (_activeYear, _activeMonth, _daysOfMonth) {
+        var _weekNumbered = [];
+
+        for(var i = 0; i < _daysOfMonth.length; i++) {
+          // Add week number
+          if (i % 7 === 0) {
+            var firstIndex = this._getFirstIndex(_daysOfMonth, i);
+            if (firstIndex !== undefined) {
+              _weekNumbered.push({
+                // We use the first actual date index from the array scanning forwards
+                date: String(this.getWeekNumber(new Date(_activeYear, _activeMonth, firstIndex))),
+                index: null,
+                weekNumber: true
+              });
+            } else {
+              // There might not be a week number if e.g. we're calculating it for the last row, which doesn't contain any dates
+              _weekNumbered.push({
+                date: '',
+                index: null,
+                weekNumber: false
+              });
+            }
+          }
+          _weekNumbered.push(_daysOfMonth[i]);
+        }
+
+        return _weekNumbered;
+      },
+
       //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
       //  Days   31  28  31  30  31  30  31  31  30  31  30  31
       //   31?    0       2       4       6   7       9      11
@@ -886,7 +984,7 @@ Custom property | Description | Default
       //  Sa Su Mo Tu We Th Fr
       //                     1        5 - 6 < 0 ? 6 : 5 - 6;
       // Compute the days for a month.
-      _computeDaysOfMonth: function (_activeYear, _activeMonth, _firstDayOfWeek, _locale) {
+      _computeDaysOfMonth: function (_activeYear, _activeMonth, _firstDayOfWeek, _locale, showWeekNumbers) {
         // No op for Intl is undefined (for Safari below v10.x.x).
         if (!window.Intl) {
           return;
@@ -919,12 +1017,17 @@ Custom property | Description | Default
           if (i >= _start & i < _start + _totalDays) {
             _dateObj.date = _formatted;
             _dateObj.index = j;
+            _dateObj.weekNumber = false;
           }
           _daysOfMonth.push(_dateObj);
         }
 
         // Update _chosenDaysOfMonth for every new calendar being rendered.
         this.set('_chosenDaysOfMonth', this._computeChosenDaysOfMonth(_daysOfMonth, this._selectedDate));
+
+        if (showWeekNumbers) {
+          _daysOfMonth = this._computeWeekNumberedDaysOfMonth(_activeYear, _activeMonth, _daysOfMonth);
+        }
 
         // Update the old _daysOfMonth.
         this.set('_daysOfMonth', _daysOfMonth);
@@ -1054,6 +1157,9 @@ Custom property | Description | Default
       _isEmptyDate: function (_item) {
         return this._isNumber(_item) ? '' : ' is-non-selectable';
       },
+      _isWeekNumbered: function (showWeekNumbers) {
+        return showWeekNumbers ? ' with-week-numbers' : '';
+      },
       // Re-compute class if the item (day of month) is the selected date.
       _isChosenDaysOfMonth: function (_item, _selectedYear, _selectedMonth, _selectedDate) {
         // able to retain selected daysOfMonth even after navigating to other months.
@@ -1064,7 +1170,7 @@ Custom property | Description | Default
         return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
       // Re-compute class if the item (day of month) is a disable day.
-      _isDisableDays: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
+      _isDisableDays: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item, _isWeekNumber) {
         var _isLessThanMinDate = !1;
         var _isMoreThanMaxDate = !1;
         var _isDisableDay = !1;
@@ -1099,7 +1205,8 @@ Custom property | Description | Default
         // b) _isDisableDates (set by property disableDates),
         // c) _isLessThanMinDate (set by property minDate), and
         // d) _isMoreThanMaxDate (set by propery moreDate).
-        _isDisableDay = _isDisableDays || _isDisableDates || _isLessThanMinDate || _isMoreThanMaxDate;
+        // e) _isWeekNumber
+        _isDisableDay = _isDisableDays || _isDisableDates || _isLessThanMinDate || _isMoreThanMaxDate || _isWeekNumber;
         return _isDisableDay ? ' is-disabled-day is-non-selectable' : '';
       },
 
@@ -1108,7 +1215,7 @@ Custom property | Description | Default
         return _selected ? ' is-selected' : '';
       },
 
-      _computeDaysOfWeek: function (_firstDayOfWeek, _locale) {
+      _computeDaysOfWeek: function (_firstDayOfWeek, _locale, showWeekNumbers, weekNumbersLabel) {
         // _daysOfWeek needs to be changed as well with firstDayOfWeek and locale.
         var _dow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
         var _firstDayOfWeek = _firstDayOfWeek > 0 && _firstDayOfWeek < 7 ? _firstDayOfWeek : 0;
@@ -1132,6 +1239,10 @@ Custom property | Description | Default
         var _sliced = _dow.slice(_firstDayOfWeek);
         var _rest = _dow.slice(0, _firstDayOfWeek);
         var _concatted = Array.prototype.concat(_sliced, _rest);
+
+        if (showWeekNumbers) {
+            _concatted.unshift(weekNumbersLabel);
+        }
 
         this.set('_daysOfWeek', _concatted);
       },
@@ -1312,7 +1423,7 @@ Custom property | Description | Default
         _finalFormatted = _finalFormatted.replace(_format.y, _formattedYear);
         _finalFormatted = _finalFormatted.replace(_format.m, _formattedMonth);
         _finalFormatted = _finalFormatted.replace(_format.d, _formattedDate);
-        
+
 				return _finalFormatted;
       },
       // method for content tag (eg. buttons).
@@ -1479,12 +1590,12 @@ Custom property | Description | Default
       },
 
       // Accessibility enhancment.
-      _shouldTabIndex: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+      _shouldTabIndex: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item, _isWeekNumber) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item, _isWeekNumber);
         return _item && _item >= 0 && !_isDisableDays ? 0 : -1;
       },
-      _shouldAriaDisabled: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+      _shouldAriaDisabled: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item, _isWeekNumber) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item, _isWeekNumber);
         return !(_item && _item >= 0 && !_isDisableDays);
       },
 

@@ -41,7 +41,9 @@
     invalid-date="{{_readOnlyInvalidDate}}"
     view="[[view]]"
     theme="[[theme]]"
-    locale="[[locale]]">
+    locale="[[locale]]"
+    show-week-numbers="[[showWeekNumbers]]"
+    week-numbers-label="[[weekNumbersLabel]]">
       <div class="buttons">
         <paper-button noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
         <paper-button noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
@@ -84,6 +86,14 @@
         dismissLabel: {
           type: String,
           value: "cancel"
+        },
+        showWeekNumbers: {
+          type: Boolean,
+          value: false
+        },
+        weekNumbersLabel: {
+          type: String,
+          value: 'W'
         },
 
         _readOnlyDate: String,
