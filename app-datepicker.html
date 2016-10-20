@@ -783,7 +783,7 @@ Custom property | Description | Default
         '_updateDatepickerView(view)',
         '_computeDaysOfWeek(firstDayOfWeek, locale)',
         '_computeActiveMonthYear(_activeYear, _activeMonth, locale)',
-        '_computeShortSelectedDate(_selectedMonth, _selectedDate, locale)',
+        '_computeShortSelectedDate(_selectedYear, _selectedMonth, _selectedDate, locale)',
         '_computeShowSelectedYear(_selectedYear, locale)',
         '_computeShiftedDisableDays(firstDayOfWeek, disableDays.*)',
       ],
@@ -983,14 +983,14 @@ Custom property | Description | Default
         }
       },
       // Re-compute short version of full date to show on the picker.
-      _computeShortSelectedDate: function (_selectedMonth, _selectedDate, _locale) {
+      _computeShortSelectedDate: function (_selectedYear, _selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
           _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             weekday: 'short',
             month: 'short',
             day: 'numeric'
-          }).format(new Date(this._selectedYear, _selectedMonth, _selectedDate));
+          }).format(new Date(_selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
 
           // When datepicker has no button for date confirmation,
@@ -1024,8 +1024,8 @@ Custom property | Description | Default
           // This will trigger _isChosenDaysOfMonth to recompute style.
           this.set('_chosenDaysOfMonth', _target.index);
 
-          this.set('_selectedDate', _target.date);
           this.set('_selectedYear', this._activeYear);
+          this.set('_selectedDate', _target.date);
           this.set('_selectedMonth', this._activeMonth);
         }
       },
