@@ -302,9 +302,11 @@ Custom property | Description | Default
         cursor: pointer;
       }
       div.each-list-of-years.is-selected {
-        color: #009688;
         font-size: 24px;
         font-weight: 700;
+        color: var(--app-datepicker-selected-year-color, #009688);
+        background-color: var(--app-datepicker-selected-year-bg);
+
         @apply(--app-datepicker-selected-each-list-of-years);
       }
 
