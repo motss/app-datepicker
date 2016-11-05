@@ -1110,8 +1110,7 @@ Custom property | Description | Default
             var _formatter = new window.Intl.DateTimeFormat(_locale, {
               weekday: 'narrow'
             }).format;
-            _today = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
-            _dow.push(_formatter(_today));
+            _dow.push(_formatter(new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i)));
           }
         }
 
