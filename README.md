@@ -13,11 +13,13 @@
 <!-- ![app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
-## Update (v2.8.0)
+## Update (v2.9.0)
 - **_Happily to announce that `app-datepicker` is compatible with Polymer [v1.6.0](https://github.com/Polymer/polymer/releases/tag/v1.6.0) which supports Native CSS Custom Properties :kissing_cat:_**
 - `autoUpdateDate` - proposed by [#20](https://github.com/motss/app-datepicker/pull/20) to allow datepicker to update `date` on date change if the datepicker is a standalone element.
 - `disableDates` - proposed by [#45](https://github.com/motss/app-datepicker/pull/45) to support disabling dates defined by the user.
 - **_Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections._**
+- `confirmLabel` - proposed by [#61](https://github.com/motss/app-datepicker/pull/61) to customize text for the confirm button in `app-datepicker-dialog`.
+- `dismissLabel` - proposed by [#61](https://github.com/motss/app-datepicker/pull/61) to customize text for the dismiss button in `app-datepicker-dialog`.
 
 - **_As of v2.6.0 this element has been renamed to `app-datepicker` from `jv-datepicker`._**
 - `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/app-datepicker/components/app-datepicker/demo/).
