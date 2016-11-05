@@ -108,15 +108,14 @@ Custom property | Description | Default
   <template strip-whitespace>
     <style>
       :host {
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
+        display: block;
+        position: relative;
         box-sizing: border-box;
 
+        user-select: none;
         background: var(--app-datepicker-bg, #fafafa);
+
         @apply(--app-datepicker);
-        display: block;
       }
 
       * {
@@ -129,6 +128,7 @@ Custom property | Description | Default
         width: 300px;
         height: 384px;
         max-height: 384px;
+
         @apply(--layout-vertical);
       }
       div.datepicker.with-buttons {
@@ -142,6 +142,7 @@ Custom property | Description | Default
         padding: 8px 16px;
         color: var(--app-datepicker-selection-color, #b2dfdb);
         background-color: var(--app-datepicker-selection-bg, #009688);
+
         @apply(--layout-vertical);
       }
       div.selected-year.iron-selected,
@@ -152,6 +153,7 @@ Custom property | Description | Default
         font-size: 14px;
         font-weight: 800;
         height: 34px;
+
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--app-datepicker-selected-year);
@@ -160,6 +162,7 @@ Custom property | Description | Default
         font-size: 32px;
         font-weight: 800;
         /*height: 34px;*/
+
         @apply(--layout-horizontal);
         @apply(--layout-center);
         @apply(--layout-flex-auto);
@@ -176,6 +179,7 @@ Custom property | Description | Default
         overflow: hidden;
         color: var(--app-datepicker-calendar-color, #000);
         background-color: var(--app-datepicker-calendar-bg, #fafafa);
+
         @apply(--layout-vertical);
       }
       div.navigator {
@@ -183,6 +187,7 @@ Custom property | Description | Default
         padding: 3px 10px;
         position: relative;
         margin-top: 8px;
+
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
       }
@@ -190,6 +195,7 @@ Custom property | Description | Default
         font-size: 14px;
         font-weight: 500;
         text-align: center;
+        
         @apply(--layout-flex-auto);
         @apply(--app-datepicker-nav-month-year);
       }
@@ -570,7 +576,7 @@ Custom property | Description | Default
       is: 'app-datepicker',
 
       behaviors: [
-        Polymer.NeonAnimationRunnerBehavior
+        Polymer.NeonAnimationRunnerBehavior,
       ],
 
       properties: {
@@ -1108,18 +1114,21 @@ Custom property | Description | Default
           _dow = [];
           var _today = new Date();
           var _offsetDate = _today.getDate() - _today.getDay();
+          var _formatter = new window.Intl.DateTimeFormat(_locale, {
+            weekday: 'narrow'
+          }).format;
+          var newDate = null;
+
           for (var i = 0; i < 7; i++) {
-            var _formatter = new window.Intl.DateTimeFormat(_locale, {
-              weekday: 'narrow'
-            }).format;
-            _today = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
-            _dow.push(_formatter(_today));
+            newDate = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
+            _dow.push(_formatter(newDate));
           }
         }
 
         var _sliced = _dow.slice(_firstDayOfWeek);
         var _rest = _dow.slice(0, _firstDayOfWeek);
         var _concatted = Array.prototype.concat(_sliced, _rest);
+
         this.set('_daysOfWeek', _concatted);
       },
       // Re-compute the index of the selected date when a new date is selected
