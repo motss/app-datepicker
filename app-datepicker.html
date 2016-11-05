@@ -1239,19 +1239,33 @@ Custom property | Description | Default
 
       // split capturing group of format into year, month and date.
       _computeSeparateFormat: function (_format) {
-        var re = /(yyyy|yy)[^a-zA-Z0-9]+(mmmm|mmm|mm|m)[^a-zA-Z0-9]+(do|dd|d)/i;
-        var sym = /\w+([^a-zA-Z0-9]+)\w+([^a-zA-Z0-9]+)\w+/i;
+        var re = /^(yyyy|yy|m{1,4}|d{1,2}|do)\W+(yyyy|yy|m{1,4}|d{1,2}|do)\W+(yyyy|yy|m{1,4}|d{1,2}|do)$/g;
         var m = re.exec(_format);
-        var n = sym.exec(_format);
 				var _temp = {};
-		    if (m !== null && n !== null) {
-					_temp.y = m[1];
-					_temp.m = m[2];
-					_temp.d = m[3];
-					_temp.s1 = n[1];
-					_temp.s2 = n[2];
+        var _tempArr = [];
+		    if (m !== null) {
+          _tempArr.push(m[1]);
+          _tempArr.push(m[2]);
+          _tempArr.push(m[3]);
+
+          for (var i = 0, matched; i < 3; i++) {
+            matched = _tempArr[i];
+
+            if (matched.indexOf('y') >= 0) {
+					    _temp.y = matched;
+            } else if (matched.indexOf('m') >= 0) {
+					    _temp.m = matched;
+            } else if (matched.indexOf('d') >= 0) {
+					    _temp.d = matched;
+            }
+          }
 		    }
-				this.set('_format', _temp);
+
+        // Only set _format if the new format is valid.
+        if ('d' in _temp && 'm' in _temp && 'y' in _temp) {
+				  this.set('_format', _temp);
+        }
+
 				_temp = null;
       },
 
@@ -1265,7 +1279,7 @@ Custom property | Description | Default
 				var _formattedYear  = _selectedYear;
 				var _formattedMonth  = this._monthNames[_selectedMonth];
 				var _formattedDate  = _selectedDate;
-				var _finalFormatted = '';
+				var _finalFormatted = this.format;
         // compute new formatted year.
         if (_format.y === 'yy') {
           _formattedYear = _selectedYear%100;
@@ -1291,9 +1305,10 @@ Custom property | Description | Default
           _formattedDate = this._padStart(_formattedDate, 2, '0');
         }
         // set formatted value with user defined symbols.
-        _finalFormatted = _formattedYear + _format.s1 +
-                          _formattedMonth + _format.s2 + _formattedDate;
-
+        _finalFormatted = _finalFormatted.replace(_format.y, _formattedYear);
+        _finalFormatted = _finalFormatted.replace(_format.m, _formattedMonth);
+        _finalFormatted = _finalFormatted.replace(_format.d, _formattedDate);
+        
 				return _finalFormatted;
       },
       // method for content tag (eg. buttons).

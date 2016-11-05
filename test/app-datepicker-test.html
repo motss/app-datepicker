@@ -263,7 +263,176 @@
             expect(_temp.join(' ')).to.be.equal('dim. 31 janv. 2016');
           });
         });
+
+        context('test for dynamic date format', function () {
+          it('should produce correct date based on the format', function () {
+            var testFormats = [
+              "yyyy/mmmm/do",
+              "yyyy/mmmm/dd",
+              "yyyy/mmmm/d",
+              
+              "yyyy/mmm/do",
+              "yyyy/mmm/dd",
+              "yyyy/mmm/d",
+              
+              "yyyy/mm/do",
+              "yyyy/mm/dd",
+              "yyyy/mm/d",
+              
+              "yyyy/m/do",
+              "yyyy/m/dd",
+              "yyyy/m/d",
+
+              "yy/mmmm/do",
+              "yy/mmmm/dd",
+              "yy/mmmm/d",
+              
+              "yy/mmm/do",
+              "yy/mmm/dd",
+              "yy/mmm/d",
+              
+              "yy/mm/do",
+              "yy/mm/dd",
+              "yy/mm/d",
+
+              "yy/m/do",
+              "yy/m/dd",
+              "yy/m/d",
+            ];
+            var expectedResults = [
+              "2016/January/31st",
+              "2016/January/31",
+              "2016/January/31",
+              
+              "2016/Jan/31st",
+              "2016/Jan/31",
+              "2016/Jan/31",
+              
+              "2016/01/31st",
+              "2016/01/31",
+              "2016/01/31",
+              
+              "2016/1/31st",
+              "2016/1/31",
+              "2016/1/31",
+
+              "16/January/31st",
+              "16/January/31",
+              "16/January/31",
+              
+              "16/Jan/31st",
+              "16/Jan/31",
+              "16/Jan/31",
+              
+              "16/01/31st",
+              "16/01/31",
+              "16/01/31",
+
+              "16/1/31st",
+              "16/1/31",
+              "16/1/31",
+            ]; 
+
+            // Setup datepicker.
+            datepicker.showLongDate = !1;
+            datepicker.autoUdpateDate = !0;
+            datepicker.inputDate = '2016/01/31';
+            datepicker.locale = 'en-US';
+
+            // Start inputting the formats.
+            testFormats.forEach(function (format, idx) {
+              datepicker.format = format;
+              datepicker.enforceDateChange();
+
+              expect(datepicker.date).to.be.equal(expectedResults[idx]);
+            });
+          });
+        });
+
+        it('should produce correct date based on the format with random order of year, month, date', function () {
+          var testFormats = [
+            "do/mmmm/yyyy",
+            "dd/mmmm/yyyy",
+            "d/mmmm/yyyy",
+            
+            "mmm/do/yyyy",
+            "mmm/dd/yyyy",
+            "mmm/d/yyyy",
+            
+            "yyyy/mm/do",
+            "yyyy/mm/dd",
+            "yyyy/mm/d",
+            
+            "yyyy/m/do",
+            "yyyy/m/dd",
+            "yyyy/m/d",
+
+            "yy/mmmm/do",
+            "yy/mmmm/dd",
+            "yy/mmmm/d",
+
+            "mmm/yy/do",
+            "mmm/yy/dd",
+            "mmm/yy/d",
+            
+            "yy/mm/do",
+            "yy/mm/dd",
+            "yy/mm/d",
+
+            "yy/m/do",
+            "yy/m/dd",
+            "yy/m/d",
+          ];
+          var expectedResults = [
+            "31st/January/2016",
+            "31/January/2016",
+            "31/January/2016",
+            
+            "Jan/31st/2016",
+            "Jan/31/2016",
+            "Jan/31/2016",
+            
+            "2016/01/31st",
+            "2016/01/31",
+            "2016/01/31",
+            
+            "2016/1/31st",
+            "2016/1/31",
+            "2016/1/31",
+
+            "16/January/31st",
+            "16/January/31",
+            "16/January/31",
+            
+            "Jan/16/31st",
+            "Jan/16/31",
+            "Jan/16/31",
+            
+            "16/01/31st",
+            "16/01/31",
+            "16/01/31",
+
+            "16/1/31st",
+            "16/1/31",
+            "16/1/31",
+          ]; 
+
+          // Setup datepicker.
+          datepicker.showLongDate = !1;
+          datepicker.autoUdpateDate = !0;
+          datepicker.inputDate = '2016/01/31';
+          datepicker.locale = 'en-US';
+
+          // Start inputting the formats.
+          testFormats.forEach(function (format, idx) {
+            datepicker.format = format;
+            datepicker.enforceDateChange();
+
+            expect(datepicker.date).to.be.equal(expectedResults[idx]);
+          });
+        });
       });
+
     </script>
 
   </body>

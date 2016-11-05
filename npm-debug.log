@@ -1,0 +1,24 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\Nodist\\v-x64\\7.0.0\\node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\Nodist\\bin\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'run',
+1 verbose cli   'i',
+1 verbose cli   '-g',
+1 verbose cli   'web-component-tester' ]
+2 info using npm@3.10.9
+3 info using node@v7.0.0
+4 verbose stack Error: ENOENT: no such file or directory, open 'C:\Users\wes_n\OneDrive\motss-windows\app-datepicker\package.json'
+5 verbose cwd C:\Users\wes_n\OneDrive\motss-windows\app-datepicker
+6 error Windows_NT 10.0.14393
+7 error argv "C:\\Program Files (x86)\\Nodist\\v-x64\\7.0.0\\node.exe" "C:\\Program Files (x86)\\Nodist\\bin\\node_modules\\npm\\bin\\npm-cli.js" "run" "i" "-g" "web-component-tester"
+8 error node v7.0.0
+9 error npm  v3.10.9
+10 error path C:\Users\wes_n\OneDrive\motss-windows\app-datepicker\package.json
+11 error code ENOENT
+12 error errno -4058
+13 error syscall open
+14 error enoent ENOENT: no such file or directory, open 'C:\Users\wes_n\OneDrive\motss-windows\app-datepicker\package.json'
+15 error enoent ENOENT: no such file or directory, open 'C:\Users\wes_n\OneDrive\motss-windows\app-datepicker\package.json'
+15 error enoent This is most likely not a problem with npm itself
+15 error enoent and is related to npm not being able to find a file.
+16 verbose exit [ -4058, true ]
