@@ -1,0 +1,62 @@
+<dom-module id="app-datepicker">
+  <template strip-whitespace>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        box-sizing: border-box;
+        height: 100%;
+        width: 100%;
+        background-color: #fff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+    </style>
+
+    <h1>app-datepicker Live!!!</h1>
+    <pre></pre>
+
+  </template>
+</dom-module>
+
+<script>
+  class AppDatepicker extends Polymer.Element {
+    static get is() {
+      return 'app-datepicker';
+    }
+
+    get properties() {
+      return {
+
+      };
+    }
+
+    get observedAttributes() {
+      return [
+
+      ];
+    }
+
+    constructor() {
+      super();
+
+      console.info('created!');
+    }
+
+    connectedCallback() {
+      super.connectedCallback();
+
+      console.info('connected.');
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+
+      console.info('disconnected.');
+    }
+  }
+
+  window.customElements.define(AppDatepicker.is, AppDatepicker);
+</script>

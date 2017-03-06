@@ -1,0 +1,24 @@
+{
+  "extends": "eslint:recommended",
+  "ecmaVersion": 6,
+  "rules": {
+    "no-console": "off",
+    "no-var": "error",
+    "strict": "error"
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "globals": {
+    "customElements": true,
+    "HTMLImports": true,
+    "Polymer": true,
+    "ShadyDOM": true,
+    "ShadyCSS": true,
+    "goog": true
+  }
+}

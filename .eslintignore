@@ -1,0 +1,8 @@
+**/node_modules/**
+**/bower_components/**
+**/dist/**
+**/coverage/**
+**/*.spec.js
+**/*.test.js
+**/__tests__/**
+logs/**/*
