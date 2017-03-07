@@ -3,60 +3,67 @@
     <style>
       :host {
         display: block;
-        position: relative;
+        position: fixed;
         box-sizing: border-box;
         height: 100%;
         width: 100%;
-        background-color: #fff;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, .45);
+
+        --vertical-margin: 40px;
+        --horizontal-margin: 16px;
+        --max-content-container-width: 360px;
+        --max-content-container-height: 640px;
       }
 
       * {
         box-sizing: border-box;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+
+      .content-container {
+        display: flex;
+        flex-direction: column;
+
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        /*margin: var(--vertical-margin) var(--horizontal-margin);*/
+        width: calc(100% - (var(--horizontal-margin) * 2));
+        height: calc(100% - (var(--vertical-margin) * 2));
+        max-width: var(--max-content-container-width);
+        max-height: var(--max-content-container-height);
+        background-color: #fff;
+        box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14),
+                    0  6px 30px 5px rgba(0, 0, 0, 0.12),
+                    0  8px 10px -5px rgba(0, 0, 0, 0.4);
+      }
+
+      .header {
+        flex: 1;
+        background-color: #00796b;
+      }
+
+      .main {
+        flex: 5 1 auto;
+        background-color: #f1f1f1;
+      }
+
+      .footer {
+        flex: 1;
+        background-color: #fff;
       }
     </style>
 
-    <h1>app-datepicker Live!!!</h1>
-    <pre></pre>
+    <div class="content-container">
+      <div class="header"></div>
+      <div class="main"></div>
+      <div class="footer"></div>
+    </div>
 
   </template>
 </dom-module>
 
-<script>
-  class AppDatepicker extends Polymer.Element {
-    static get is() {
-      return 'app-datepicker';
-    }
-
-    get properties() {
-      return {
-
-      };
-    }
-
-    get observedAttributes() {
-      return [
-
-      ];
-    }
-
-    constructor() {
-      super();
-
-      console.info('created!');
-    }
-
-    connectedCallback() {
-      super.connectedCallback();
-
-      console.info('connected.');
-    }
-
-    disconnectedCallback() {
-      super.disconnectedCallback();
-
-      console.info('disconnected.');
-    }
-  }
-
-  window.customElements.define(AppDatepicker.is, AppDatepicker);
-</script>
+<script src="/app-datepicker.js"></script>

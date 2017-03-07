@@ -1,0 +1,43 @@
+{
+  "name": "app-datepicker",
+  "version": "3.0.0-preview",
+  "description": "A datepicker built with Google's Polymer and Material design",
+  "main": "app-datepicker.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "eslint . --ext js,html --ignore-path .eslintignore",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/motss/app-datepicker.git"
+  },
+  "keywords": [
+    "date",
+    "datepicker",
+    "motss",
+    "polymer",
+    "google",
+    "md",
+    "material",
+    "design",
+    "calendar",
+    "picker",
+    "web-components",
+    "web-component",
+    "seed"
+  ],
+  "author": "motss <wes.ngrongsen@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/motss/app-datepicker/issues"
+  },
+  "homepage": "https://github.com/motss/app-datepicker#readme",
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "eslint-config-google": "^0.7.1",
+    "eslint-plugin-html": "^2.0.1"
+  }
+}
