@@ -31,10 +31,13 @@
     "README.md"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#2.0.0-rc.1"
+    "polymer": "Polymer/polymer#2.0.0-rc.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#2.0-preview",
     "web-component-tester": "Polymer/web-component-tester#6.0.0-prerelease.6"
+  },
+  "resolutions": {
+    "polymer": "2.0.0-rc.1"
   }
 }
