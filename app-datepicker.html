@@ -474,6 +474,9 @@ Custom property | Description | Default
         color: var(--app-datepicker-button-color, #80cbc4);
         --paper-button-ink-color: var(--app-datepicker-button-ink-color, #bcbcbc);
       }
+      :host(.dark-theme) div.each-list-of-years:hover {
+        color: var(--app-datepicker-bg, #424242);
+      }
 
       /* goog theme */
       :host(.goog-theme) {
@@ -518,6 +521,9 @@ Custom property | Description | Default
       :host(.goog-theme) div.calendar-view > ::content > div.buttons > paper-button {
         color: var(--app-datepicker-button-color, #DA4336);
         --paper-button-ink-color: var(--app-datepicker-button-ink-color, #616161);
+      }
+      :host(.goog-theme) div.each-list-of-years:hover {
+        color: var(--app-datepicker-bg, #212121);
       }
 
     </style>
