@@ -106,7 +106,9 @@ For `app-datepicker-dialog`,
 | --- | --- | --- | ---
 | latest | latest | latest | 7+
 
-### [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat) (ECMAScript Internationalization API for `locale`) or for more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
+### [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)
+
+ECMAScript Internationalization API for `locale`. For more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
 
 
 | ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
