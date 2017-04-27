@@ -13,6 +13,13 @@
 <!-- ![app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
+
+
+See the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more information.
+
+An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
+
+
 ## Update (v2.9.0)
 - **_Happily to announce that `app-datepicker` is compatible with Polymer [v1.6.0](https://github.com/Polymer/polymer/releases/tag/v1.6.0) which supports Native CSS Custom Properties :kissing_cat:_**
 - `autoUpdateDate` - proposed by [#20](https://github.com/motss/app-datepicker/pull/20) to allow datepicker to update `date` on date change if the datepicker is a standalone element.
@@ -23,10 +30,6 @@
 
 - **_As of v2.6.0 this element has been renamed to `app-datepicker` from `jv-datepicker`._**
 - `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/app-datepicker/components/app-datepicker/demo/).
-
-See the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more information.
-
-An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
 Example:
 
@@ -71,16 +74,46 @@ For `app-datepicker-dialog`,
 4. Done.
 
 ## Browser Support
-##### `app-datepicker` and `app-datepicker-dialog`:
 
-| <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/internet-explorer/internet-explorer_48x48.png" alt="IE" width="48px" height="48px"/><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/edge/edge_48x48.png" alt="Edge" width="48px" height="48px" /></br>IE/ Edge | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/firefox/firefox_48x48.png" alt="Firefox" width="48px" height="48px" /></br>Firefox | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome" width="48px" height="48px" /><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/opera/opera_48x48.png" alt="Opera" width="48px" height="48px" /></br>Chrome/ Opera | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome for Android" width="48px" height="48px" /></br>Chrome for Android | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="Safari" width="48px" height="48px" /></br>Safari | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="iOS Safari" width="48px" height="48px" /></br>iOS Safari |
-| --------- | --------- | --------- | --------- | --------- | --------- | --------- |
-| IE11, Edge | latest | latest | latest | unknown ? | unknown ?
+### `app-datepicker` and `app-datepicker-dialog`:
 
-##### [Intl.DateTimeFormat] (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat) (ECMAScript Internationalization API for `locale`) or for more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
-| <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/internet-explorer/internet-explorer_48x48.png" alt="IE" width="48px" height="48px"/><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/edge/edge_48x48.png" alt="Edge" width="48px" height="48px" /></br>IE/ Edge | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/firefox/firefox_48x48.png" alt="Firefox" width="48px" height="48px" /></br>Firefox | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome" width="48px" height="48px" /><img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/opera/opera_48x48.png" alt="Opera" width="48px" height="48px" /></br>Chrome/ Opera | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/chrome/chrome_48x48.png" alt="Chrome for Android" width="48px" height="48px" /></br>Chrome for Android | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="Safari" width="48px" height="48px" /></br>Safari | <img src="https://raw.githubusercontent.com/paulirish/browser-logos/master/safari/safari_48x48.png" alt="iOS Safari" width="48px" height="48px" /></br>iOS Safari |
-| --------- | --------- | --------- | --------- | --------- | --------- | --------- |
-| IE11, Edge | latest | latest | latest | polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js) | polyfilled with [Intl.js](https://github.com/andyearnshaw/Intl.js)
+#### Microsoft Windows x64
+| ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
+| --- | --- | --- | --- | ---
+| 11 | 12+ | latest | latest | latest
+
+
+#### Linux x64
+| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
+| --- | --- | ---
+| latest | latest | latest
+
+
+#### Mac OS X
+| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
+| --- | --- | --- | ---
+| latest | latest | latest | 7+
+
+
+#### Android 4.4.4 and above
+
+| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Dev](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome-dev/chrome-dev_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) | ![Android WebView](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/android-webview-beta/android-webview-beta_48x48.png)
+| --- | --- | --- | ---
+| latest | latest | latest | latest
+
+#### iOS 7.1 and above
+| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) | ![Safari for iOS](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-ios/safari-ios_48x48.png)
+| --- | --- | --- | ---
+| latest | latest | latest | 7+
+
+### [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat) (ECMAScript Internationalization API for `locale`) or for more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
+
+
+| ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
+| --- | --- | --- | --- | --- | --- |
+| 11 | 12+ | latest | latest | latest | 10+ **
+
+___** [Intl Polyfill for unsupported browsers](https://github.com/andyearnshaw/Intl.js)___
 
 ## Throughput
 [![Throughput Graph](https://graphs.waffle.io/motss/app-datepicker/throughput.svg)](https://waffle.io/motss/app-datepicker/metrics/throughput)
