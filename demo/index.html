@@ -382,13 +382,24 @@
           return res.json();
         }).then(function(res) {
           var _select = document.createElement('select');
+          var hasIntl = typeof window.Intl !== 'undefined';
+          var getLocale = window.Intl.DateTimeFormat().resolvedOptions().locale || 'en-US';
+          getLocale = 'en-US-posix' ? 'en-US' : getLocale;
+
           for (var i = 0, len = res.length; i < len; i++) {
             var _opt = document.createElement('option');
             _opt.setAttribute('value', res[i].code);
+
+            if (res[i].code === getLocale) {
+              _opt.setAttribute('selected', '');
+            }
+
             _opt.innerHTML = res[i].code + ' - ' + res[i].name;
             _select.appendChild(_opt);
           }
-          _select.value = window.Intl.DateTimeFormat().resolvedOptions().locale || 'en';
+
+          console.log('local-machine-language - ', getLocale);
+
           var _locale = document.querySelector('.locale') || document.querySelector('template').content.querySelector('.locale');
           _locale.appendChild(_select);
         }).catch(function(error) {
@@ -455,7 +466,7 @@
       };
 
       demo._onDisableDateChanged = function(ev) {
-        this.set('disableDates', [event.detail.value]);
+        this.set('disableDates', [ev.detail.value]);
       };
 
       demo._onSelectedDateChanged = function(ev) {
