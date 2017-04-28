@@ -431,33 +431,34 @@
             });
           });
         });
+
+        context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
+          it('should fallback to default locale if window.Intl is undefined', function () {
+            var cachedIntl = window.Intl;
+
+            // Override Intl on browser.
+            window.Intl = null;
+
+            expect(datepicker.locale).to.be.equal('en-US');
+
+            // Restore Intl.
+            window.Intl = cachedIntl;
+          });
+
+          it('should fallback to default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
+            var cachedIntl = window.Intl;
+
+            // Override Intl on browser.
+            window.Intl.DateTimeFormat().resolvedOptions = {};
+
+            expect(datepicker.locale).to.be.equal('en-US');
+
+            // Restore Intl.
+            window.Intl = cachedIntl;
+          });
+        });
       });
 
-      context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
-        it('should fallback to default locale if window.Intl is undefined', function () {
-          var cachedIntl = window.Intl;
-
-          // Override Intl on browser.
-          window.Intl = null;
-
-          expect(datepicker.locale).to.be.equal('en-US');
-
-          // Restore Intl.
-          window.Intl = cachedIntl;
-        });
-
-        it('should fallback to default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
-          var cachedIntl = window.Intl;
-
-          // Override Intl on browser.
-          window.Intl.DateTimeFormat().resolvedOptions = {};
-
-          expect(datepicker.locale).to.be.equal('en-US');
-
-          // Restore Intl.
-          window.Intl = cachedIntl;
-        });
-      });
     </script>
   </body>
 </html>
