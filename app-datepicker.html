@@ -199,7 +199,7 @@ Custom property | Description | Default
         font-size: 14px;
         font-weight: 500;
         text-align: center;
-        
+
         @apply(--layout-flex-auto);
         @apply(--app-datepicker-nav-month-year);
       }
@@ -591,10 +591,14 @@ Custom property | Description | Default
           type: String,
           value: function () {
             if (window.Intl) {
-              return new window.Intl.DateTimeFormat().resolvedOptions().locale;
+              return (window.Intl
+                && window.Intl.DateTimeFormat
+                && window.Intl.DateTimeFormat().resolvedOptions
+                && window.Intl.DateTimeFormat().resolvedOptions().locale)
+                || 'en-US';
             }
 
-            return 'en';
+            return 'en-US';
           }
         },
         /**
@@ -909,7 +913,11 @@ Custom property | Description | Default
         }
 
         // Set up Intl.
-        _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+        _locale = _locale || ((window.Intl
+          && window.Intl.DateTimeFormat
+          && window.Intl.DateTimeFormat().resolvedOptions
+          && window.Intl.DateTimeFormat().resolvedOptions().locale)
+          || 'en-US');
         var _formatter = new window.Intl.DateTimeFormat(_locale, {
           day: 'numeric'
         }).format;
@@ -986,7 +994,11 @@ Custom property | Description | Default
       // Re-compute active month year if new date is selected.
       _computeActiveMonthYear: function (_activeYear, _activeMonth, _locale) {
         if (window.Intl) {
-          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || ((window.Intl
+            && window.Intl.DateTimeFormat
+            && window.Intl.DateTimeFormat().resolvedOptions
+            && window.Intl.DateTimeFormat().resolvedOptions().locale)
+            || 'en-US');
           var _amy = new window.Intl.DateTimeFormat(_locale, {
             month: 'short',
             year: 'numeric'
@@ -997,7 +1009,11 @@ Custom property | Description | Default
       // Re-compute short version of full date to show on the picker.
       _computeShortSelectedDate: function (_selectedYear, _selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
-          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || ((window.Intl
+            && window.Intl.DateTimeFormat
+            && window.Intl.DateTimeFormat().resolvedOptions
+            && window.Intl.DateTimeFormat().resolvedOptions().locale)
+            || 'en-US');
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             weekday: 'short',
             month: 'short',
@@ -1015,7 +1031,11 @@ Custom property | Description | Default
       },
       _computeShowSelectedYear: function (_selectedYear, _locale) {
         if (window.Intl) {
-          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || ((window.Intl
+            && window.Intl.DateTimeFormat
+            && window.Intl.DateTimeFormat().resolvedOptions
+            && window.Intl.DateTimeFormat().resolvedOptions().locale)
+            || 'en-US');
           var _ssy = new window.Intl.DateTimeFormat(_locale, {
             year: 'numeric'
           }).format(new Date(_selectedYear, 0, 1));
@@ -1312,7 +1332,7 @@ Custom property | Description | Default
         _finalFormatted = _finalFormatted.replace(_format.y, _formattedYear);
         _finalFormatted = _finalFormatted.replace(_format.m, _formattedMonth);
         _finalFormatted = _finalFormatted.replace(_format.d, _formattedDate);
-        
+
 				return _finalFormatted;
       },
       // method for content tag (eg. buttons).
@@ -1346,7 +1366,11 @@ Custom property | Description | Default
         var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
-          _locale = _locale || window.Intl.DateTimeFormat().resolvedOptions().locale;
+          _locale = _locale || ((window.Intl
+            && window.Intl.DateTimeFormat
+            && window.Intl.DateTimeFormat().resolvedOptions
+            && window.Intl.DateTimeFormat().resolvedOptions().locale)
+            || 'en-US');
           var _options = {
             weekday: this.showLongDate ? 'short' : undefined,
             year: 'numeric',
