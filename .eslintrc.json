@@ -12,7 +12,9 @@
     "es6": true
   },
   "plugins": [
-    "html"
+    "html",
+    "security",
+    "optimize-regex"
   ],
   "globals": {
     "customElements": true,

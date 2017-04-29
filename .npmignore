@@ -5,9 +5,9 @@ bower_components/
 build/
 .build/
 .tmp/
-npm-debug.log
+npm-debug.log*
 *.env
-yarn-error.log
+yarn-error.log*
 .firebaserc
 dist/
 coverage/

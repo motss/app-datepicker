@@ -1,0 +1,41 @@
+{
+  "comments": false,
+  "presets": [
+    ["env", { "targets": { "node": "current" } } ]
+  ],
+  "plugins": [
+    "transform-minify-booleans",
+    "transform-simplify-comparison-operators",
+    "transform-undefined-to-void",
+    "transform-merge-sibling-variables",
+    "transform-member-expression-literals",
+    "transform-property-literals",
+
+    "minify-constant-folding",
+    "minify-type-constructors",
+    "minify-flip-comparisons",
+    "minify-guarded-expressions",
+    "minify-infinity",
+    "minify-builtins",
+    "minify-simplify",
+    "minify-empty-function",
+    [ "minify-mangle-names", { "blacklist": { } } ],
+    [ "minify-dead-code-elimination", { "optimizeRawSize": true } ]
+  ],
+  "env": {
+    "build": {
+      "presets": [
+        "babili"
+      ],
+      "plugins": [
+        // "transform-remove-console",
+        "transform-remove-debugger"
+      ],
+      "ignore": [
+        "**/__mocks*__/*.js",
+        "**/__tests*__/*.dist.spec.js",
+        "**/__tests*__/*.spec.js"
+      ]
+    }
+  }
+}
