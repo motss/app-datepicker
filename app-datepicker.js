@@ -1,3 +1,6 @@
+// @ts-check
+
+/**
 /**
  * A contructor for AppDatepicker
  *
@@ -40,7 +43,6 @@ class AppDatepicker extends Polymer.Element {
    */
   get observedAttributes() {
     return [
-
     ];
   }
 

@@ -3,42 +3,58 @@
     <style>
       :host {
         display: block;
-        position: fixed;
         box-sizing: border-box;
-        height: 100%;
+        width: calc(100% - (var(--horizontal-margin) * 2));
+        height: calc(100% - (var(--vertical-margin) * 2));
+        max-width: var(--max-content-container-width);
+        max-height: var(--max-content-container-height);
+        border-radius: 2px;
+        font-size: 14px;
+
+        /*position: fixed;*/
+        /*height: 100%;
         width: 100%;
         top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, .45);
+        left: 0;*/
+        /*background-color: rgba(0, 0, 0, .45);*/
+
+        --default-datepicker-primary-color: #4285f4;
 
         --vertical-margin: 40px;
         --horizontal-margin: 16px;
-        --max-content-container-width: 360px;
-        --max-content-container-height: 640px;
+        --max-content-container-width: 252px;
+        --max-content-container-height: 424px;
+
+        --selected-year-color: #c7dbFc;
+        --selected-date-color: #fff;
       }
 
       * {
         box-sizing: border-box;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        font-size: 14px;
       }
 
       .content-container {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-rows: 80px 295px 49px;
 
-        position: relative;
-        top: 50%;
-        left: 50%;
-        transform: translate3d(-50%, -50%, 0);
-        /*margin: var(--vertical-margin) var(--horizontal-margin);*/
+        /*display: flex;*/
+        /*flex-direction: column;*/
+
+
+        /*position: relative;
         width: calc(100% - (var(--horizontal-margin) * 2));
         height: calc(100% - (var(--vertical-margin) * 2));
         max-width: var(--max-content-container-width);
         max-height: var(--max-content-container-height);
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
         background-color: #fff;
         box-shadow: 0 16px 24px 2px rgba(0, 0, 0, 0.14),
                     0  6px 30px 5px rgba(0, 0, 0, 0.12),
-                    0  8px 10px -5px rgba(0, 0, 0, 0.4);
+                    0  8px 10px -5px rgba(0, 0, 0, 0.4);*/
       }
 
       .header,
@@ -48,25 +64,101 @@
       }
 
       .header {
-        flex: 1;
-        background-color: #00796b;
+        display: grid;
+        grid-template-rows: minmax(0, 28px) minmax(0, 44px);
+        grid-template-columns: 14px auto 14px;
+        background-color: var(--datepicker-primary-color, var(--default-datepicker-primary-color));
+
+        /*flex: 1;*/
       }
+      .header > .selected-year {
+        grid-row: 1;
+        grid-column: 2;
+
+        position: absolute;
+        top: 6px;
+        left: -6px;
+        padding: 6px;
+
+        color: var(--selected-year, var(--selected-year-color));
+      }
+      .header > .selected-date {
+        grid-row: 2;
+        grid-column: 2;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 28px;
+
+        color: var(--selected-date, var(--selected-date-color));
+      }
+      .header > .selected-date > .selected-day {}
+      .header > .selected-date > .selected-month-date {}
 
       .main {
-        flex: 5 1 auto;
+        /*flex: 5 1 auto;*/
         background-color: #f1f1f1;
       }
 
-      .footer {
-        flex: 1;
+      .buttons-container {
+        /*flex: 1;*/
+
+        display: grid;
+        grid-template-columns: auto repeat(2, minmax(0, 59px)) 10px;
+        align-items: center;
+        justify-items: end;
+
         background-color: #fff;
       }
+      .buttons-container > .ok-button,
+      .buttons-container > .cancel-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: #fff;
+        border: none;
+        text-transform: uppercase;
+
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        width: 59px;
+        margin: 0;
+        padding: 3px 0;
+        font-weight: 700;
+
+        color: var(--datepicker-primary-color, var(--default-datepicker-primary-color));
+      }
+      .buttons-container > button:hover {
+        cursor: pointer;
+      }
+      .buttons-container > button:focus {
+        background-color: #e1e1e1;
+      }
+      .buttons-container > .cancel-button {
+        grid-column: 2;
+      }
+      .buttons-container > .ok-button {
+        grid-column: 3;
+      }
+
     </style>
 
     <div class="content-container">
-      <div class="header"></div>
+      <div class="header">
+        <div class="selected-year">2017</div>
+        <div class="selected-date">
+          Wed, May 5
+          <!--<div class="selected-day">Wed, </div>
+          <div class="selected-month-date">May 5</div>-->
+        </div>
+      </div>
       <div class="main"></div>
-      <div class="footer"></div>
+      <div class="buttons-container">
+        <button class="cancel-button">cancel</button>
+        <button class="ok-button">ok</button>
+      </div>
     </div>
 
   </template>
