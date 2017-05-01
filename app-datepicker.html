@@ -35,13 +35,32 @@
         font-size: 14px;
       }
 
+      button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+
+        padding: 0;
+        margin: 0;
+        border: none;
+        font-size: inherit;
+        color: inherit;
+        background-color: inherit;
+      }
+      button:hover {
+        cursor: pointer;
+      }
+
       .content-container {
         display: grid;
         grid-template-rows: 80px 295px 49px;
 
+        display: -ms-grid;
+        -ms-grid-rows: 80px 295px 49px;
+        -ms-grid-columns: 0 1fr 0;
+
         /*display: flex;*/
         /*flex-direction: column;*/
-
 
         /*position: relative;
         width: calc(100% - (var(--horizontal-margin) * 2));
@@ -67,30 +86,47 @@
         display: grid;
         grid-template-rows: minmax(0, 28px) minmax(0, 44px);
         grid-template-columns: 14px auto 14px;
-        background-color: var(--datepicker-primary-color, var(--default-datepicker-primary-color));
 
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        display: -ms-grid;
+        -ms-grid-rows: minmax(0, 28px) minmax(0, 44px);
+        -ms-grid-columns: 14px auto 14px;
+
+        background-color: var(--datepicker-primary-color, var(--default-datepicker-primary-color));
         /*flex: 1;*/
+      }
+      .header > .selected-year:hover,
+      .header > .selected-date:hover {
+        cursor: pointer;
       }
       .header > .selected-year {
         grid-row: 1;
         grid-column: 2;
+        justify-self: start;
 
-        position: absolute;
-        top: 6px;
-        left: -6px;
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        -ms-grid-column-align: start;
+
+        position: relative;
         padding: 6px;
-
+        top: 12px;
+        left: -6px;
+        background-color: rgba(0, 0, 0, 0);
         color: var(--selected-year, var(--selected-year-color));
       }
       .header > .selected-date {
         grid-row: 2;
         grid-column: 2;
+        justify-self: start;
 
-        position: absolute;
-        top: 0;
-        left: 0;
+        -ms-grid-row: 2;
+        -ms-grid-column: 2;
+        -ms-grid-column-align: start;
+
         font-size: 28px;
-
+        background-color: rgba(0, 0, 0, 0);
         color: var(--selected-date, var(--selected-date-color));
       }
       .header > .selected-date > .selected-day {}
@@ -98,48 +134,204 @@
 
       .main {
         /*flex: 5 1 auto;*/
+
+        -ms-grid-row: 2;
+        -ms-grid-column: 2;
+
         background-color: #f1f1f1;
       }
+      .main > .calendar-view,
+      .main > .year-view {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+      }
+      .main > .year-view {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .main > .calendar-view > .month-navigator {
+        display: grid;
+        grid-template-columns: 59px auto 59px;
+        grid-template-rows: 59px;
+        align-items: center;
+        justify-items: center;
+
+        display: -ms-grid;
+        -ms-grid-columns: 59px 1fr 59px;
+        -ms-grid-rows: 59x;
+        -ms-grid-row-align: center;
+        -ms-grid-column-align: center;
+      }
+      .main > .calendar-view > .month-navigator > .chevron-left-button,
+      .main > .calendar-view > .month-navigator > .chevron-right-button {
+        position: relative;
+        width: 59px;
+        height: 59px;
+        padding: calc((59px - 24px) / 2);
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+      }
+      .main > .calendar-view > .month-navigator > .chevron-left-button {
+        /*left: 3px;*/
+        -ms-grid-row: 1;
+        -ms-grid-column: 1;
+
+        background-image: url('/image/ic_chevron_left_black_24px.svg');
+      }
+      .main > .calendar-view > .month-navigator > .selected-month-year {
+        display: grid;
+        justify-items: center;
+
+        -ms-grid-row: 1;
+        -ms-grid-column: 2;
+        display: -ms-grid;
+        -ms-grid-row-align: center;
+        -ms-grid-column-align: center;
+
+        font-weight: 700;
+      }
+      .main > .calendar-view > .month-navigator > .chevron-right-button {
+        /*right: 3px;*/
+        -ms-grid-row: 1;
+        -ms-grid-column: 3;
+
+        background-image: url('/image/ic_chevron_right_black_24px.svg');
+      }
+
+      .main > .calendar-view > .weekdays-container {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 34px));
+        grid-template-rows: minmax(0, 34px);
+        align-items: center;
+        justify-items: center;
+
+        display: -ms-grid;
+        -ms-grid-rows: 59px;
+        -ms-grid-rows: 34px;
+        -ms-grid-columns: (minmax(0, 34px))[7];
+
+        padding: 0 16px;
+        color: #757575;
+        font-weight: 700;
+      }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(n) {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+
+        display: grid;
+
+        width: 34px;
+        height: 34px;
+      }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(1) { -ms-grid-row: 1; -ms-grid-column: 1; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(2) { -ms-grid-row: 1; -ms-grid-column: 2; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(3) { -ms-grid-row: 1; -ms-grid-column: 3; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(4) { -ms-grid-row: 1; -ms-grid-column: 4; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(5) { -ms-grid-row: 1; -ms-grid-column: 5; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(6) { -ms-grid-row: 1; -ms-grid-column: 6; }
+      .main > .calendar-view > .weekdays-container > div:nth-of-type(7) { -ms-grid-row: 1; -ms-grid-column: 7; }
+
+      .main > .calendar-view > .dates-container {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 34px));
+        grid-template-rows: repeat(6, minmax(0, 34px));
+        align-items: center;
+        justify-items: center;
+
+        display: -ms-grid;
+        -ms-grid-rows: (minmax(0, 34px))[7];
+        -ms-grid-columns: (minmax(0, 34px))[6];
+        -ms-grid-row-align: center;
+        -ms-grid-column-align: center;
+
+        position: relative;
+        top: -3px;
+        padding: 0 16px;
+        font-weight: 700;
+      }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n):empty {
+        background-color: inherit;
+        color: inherit;
+      }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n) {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+
+        display: grid;
+
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background-color: var(--default-datepicker-primary-color);
+        color: #fff;
+      }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n) { -ms-grid-column: 7; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n - 1) { -ms-grid-column: 6; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n - 2) { -ms-grid-column: 5; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n - 3) { -ms-grid-column: 4; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n - 4) { -ms-grid-column: 3; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(7n - 5) { -ms-grid-column: 2; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n + 8) { -ms-grid-row: 2; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n + 15) { -ms-grid-row: 3; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n + 22) { -ms-grid-row: 4; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n + 29) { -ms-grid-row: 5; }
+      .main > .calendar-view > .dates-container > div:nth-of-type(n + 36) { -ms-grid-row: 6; }
 
       .buttons-container {
         /*flex: 1;*/
+        display: -ms-grid;
+        -ms-grid-columns: 1fr (minmax(0, 59px))[2] 10px;
+        -ms-grid-rows: (minmax(0, 1fr))[3];
 
         display: grid;
         grid-template-columns: auto repeat(2, minmax(0, 59px)) 10px;
         align-items: center;
         justify-items: end;
 
+        -ms-grid-row: 3;
+        -ms-grid-column: 2;
+
         background-color: #fff;
       }
       .buttons-container > .ok-button,
       .buttons-container > .cancel-button {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-color: #fff;
-        border: none;
-        text-transform: uppercase;
-
         display: grid;
         align-items: center;
         justify-content: center;
+
         width: 59px;
         margin: 0;
         padding: 3px 0;
         font-weight: 700;
-
+        background-color: #fff;
         color: var(--datepicker-primary-color, var(--default-datepicker-primary-color));
-      }
-      .buttons-container > button:hover {
-        cursor: pointer;
+        text-transform: uppercase;
       }
       .buttons-container > button:focus {
         background-color: #e1e1e1;
       }
       .buttons-container > .cancel-button {
+        -ms-grid-row: 2;
+        -ms-grid-column: 2;
+
         grid-column: 2;
       }
       .buttons-container > .ok-button {
+        -ms-grid-row: 2;
+        -ms-grid-column: 3;
+
         grid-column: 3;
       }
 
@@ -147,14 +339,75 @@
 
     <div class="content-container">
       <div class="header">
-        <div class="selected-year">2017</div>
-        <div class="selected-date">
+        <button class="selected-year">2017</button>
+        <button class="selected-date">
           Wed, May 5
           <!--<div class="selected-day">Wed, </div>
           <div class="selected-month-date">May 5</div>-->
-        </div>
+        </button>
       </div>
-      <div class="main"></div>
+      <div class="main">
+        <div class="calendar-view">
+          <div class="month-navigator">
+            <button class="chevron-left-button"></button>
+            <div class="selected-month-year">May 2017</div>
+            <button class="chevron-right-button"></button>
+          </div>
+          <div class="weekdays-container">
+            <div class="sunday">
+              <div class="sunday-text">
+                S
+              </div>
+            </div>
+            <div class="monday">M</div>
+            <div class="tuesday">T</div>
+            <div class="wednesday">W</div>
+            <div class="thursday">T</div>
+            <div class="friday">F</div>
+            <div class="saturday">S</div>
+          </div>
+          <div class="dates-container">
+            <div class="date-0"></div>
+            <div class="date-0"></div>
+            <div class="date-0"></div>
+            <div class="date-0"></div>
+            <div class="date-0"></div>
+            <div class="date-0"></div>
+            <div class="date-1">1</div>
+            <div class="date-2">2</div>
+            <div class="date-3">3</div>
+            <div class="date-4">4</div>
+            <div class="date-5">5</div>
+            <div class="date-6">6</div>
+            <div class="date-7">7</div>
+            <div class="date-8">8</div>
+            <div class="date-9">9</div>
+            <div class="date-10">10</div>
+            <div class="date-11">11</div>
+            <div class="date-12">12</div>
+            <div class="date-13">13</div>
+            <div class="date-14">14</div>
+            <div class="date-15">15</div>
+            <div class="date-16">16</div>
+            <div class="date-17">17</div>
+            <div class="date-18">18</div>
+            <div class="date-19">19</div>
+            <div class="date-20">20</div>
+            <div class="date-21">21</div>
+            <div class="date-22">22</div>
+            <div class="date-23">23</div>
+            <div class="date-24">24</div>
+            <div class="date-25">25</div>
+            <div class="date-26">26</div>
+            <div class="date-27">27</div>
+            <div class="date-28">28</div>
+            <div class="date-29">29</div>
+            <div class="date-30">30</div>
+            <div class="date-31">31</div>
+          </div>
+        </div>
+        <div class="year-view"></div>
+      </div>
       <div class="buttons-container">
         <button class="cancel-button">cancel</button>
         <button class="ok-button">ok</button>
