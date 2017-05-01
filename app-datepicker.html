@@ -373,9 +373,9 @@
 
     <div class="content-container">
       <div class="header">
-        <button class="selected-year">2017</button>
+        <button class="selected-year">{{_activeDateObject.fullYear}}</button>
         <button class="selected-date">
-          Wed, May 5
+          {{_activeDateObject.shortWeekday}}, {{_activeDateObject.shortMonth}} {{_activeDateObject.date}}
           <!--<div class="selected-day">Wed, </div>
           <div class="selected-month-date">May 5</div>-->
         </button>

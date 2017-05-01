@@ -5,7 +5,8 @@
     "no-console": "off",
     "strict": "error",
     "no-var": "off",
-    "new-cap": ["error", { "capIsNewExceptions": ["Polymer"] }]
+    "new-cap": ["error", { "capIsNewExceptions": ["Polymer"] }],
+    "valid-jsdoc": [2, { "prefer": { "return": "returns" }, "requireReturn": false }]
   },
   "env": {
     "browser": true,
