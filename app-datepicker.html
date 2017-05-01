@@ -140,6 +140,7 @@
 
         background-color: #f1f1f1;
       }
+
       .main > .calendar-view,
       .main > .year-view {
         position: absolute;
@@ -149,22 +150,53 @@
         height: 100%;
         opacity: 1;
       }
+
+      /*.main > .calendar-view {
+        opacity: 0;
+        pointer-events: none;
+      }*/
+
       .main > .year-view {
         opacity: 0;
         pointer-events: none;
+        margin: 0;
+        padding: 0;
       }
-      .main > .calendar-view > .month-navigator {
+      .main > .year-view > .li-year {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+
         display: grid;
-        grid-template-columns: 59px auto 59px;
-        grid-template-rows: 59px;
         align-items: center;
         justify-items: center;
 
+        width: 100%;
+        height: 42px;
+        font-weight: 700;
+        color: #212121;
+        list-style-type: none;
+      }
+      .main > .year-view > .li-year-selected {
+        color: var(--li-year-selected-color, var(--default-datepicker-primary-color));
+        font-size: 22px;
+      }
+
+      .main > .calendar-view > .month-navigator {
         display: -ms-grid;
         -ms-grid-columns: 59px 1fr 59px;
         -ms-grid-rows: 59x;
         -ms-grid-row-align: center;
         -ms-grid-column-align: center;
+
+        display: grid;
+        grid-template-columns: 59px auto 59px;
+        grid-template-rows: 59px;
+        align-items: center;
+        justify-items: center;
       }
       .main > .calendar-view > .month-navigator > .chevron-left-button,
       .main > .calendar-view > .month-navigator > .chevron-right-button {
@@ -214,6 +246,8 @@
         -ms-grid-rows: 34px;
         -ms-grid-columns: (minmax(0, 34px))[7];
 
+        position: relative;
+        top: -4px;
         padding: 0 16px;
         color: #757575;
         font-weight: 700;
@@ -406,7 +440,15 @@
             <div class="date-31">31</div>
           </div>
         </div>
-        <div class="year-view"></div>
+        <ol class="year-view">
+          <li class="li-year year-2014">2014</li>
+          <li class="li-year year-2014">2015</li>
+          <li class="li-year year-2014">2016</li>
+          <li class="li-year li-year-selected year-2014">2017</li>
+          <li class="li-year year-2014">2018</li>
+          <li class="li-year year-2014">2019</li>
+          <li class="li-year year-2014">2020</li>
+        </ol>
       </div>
       <div class="buttons-container">
         <button class="cancel-button">cancel</button>

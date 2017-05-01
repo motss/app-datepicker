@@ -30,6 +30,49 @@ class AppDatepicker extends Polymer.Element {
    */
   get properties() {
     return {
+      disableDates: {
+        type: Array,
+      },
+
+      disableDays: {
+        type: Array,
+      },
+
+      firstDayOfWeek: {
+        type: String,
+      },
+
+      format: {
+        type: String,
+      },
+
+      inputDate: {
+        type: Date,
+      },
+
+      locale: {
+        type: String,
+      },
+
+      maxDate: {
+        type: Date,
+      },
+
+      minDate: {
+        type: Date,
+      },
+
+      noAnimation: {
+        type: Boolean,
+      },
+
+      selectedDate: {
+        type: Date,
+      },
+
+      selectedView: {
+        type: String,
+      },
 
     };
   }
