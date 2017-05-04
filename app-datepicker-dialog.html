@@ -25,29 +25,34 @@
       }
     </style>
 
-    <app-datepicker id="datePicker" class="no-padding"
-    first-day-of-week="[[firstDayOfWeek]]"
-    disable-days="[[disableDays]]"
-    disable-dates="[[disableDates]]"
-    min-date="[[minDate]]"
-    max-date="[[maxDate]]"
-    format="[[format]]"
-    date="{{_readOnlyDate}}"
-    input-date="[[inputDate]]"
-    show-long-date="[[showLongDate]]"
-    no-animation="[[noAnimation]]"
-    page-entry-animation="[[pageEntryAnimation]]"
-    page-exit-animation="[[pageExitAnimation]]"
-    invalid-date="{{_readOnlyInvalidDate}}"
-    view="[[view]]"
-    theme="[[theme]]"
-    locale="[[locale]]">
+    <app-datepicker
+      id="datePicker"
+      class="no-padding"
+      first-day-of-week="[[firstDayOfWeek]]"
+      disable-days="[[disableDays]]"
+      disable-dates="[[disableDates]]"
+      min-date="[[minDate]]"
+      max-date="[[maxDate]]"
+      format="[[format]]"
+      date="{{_readOnlyDate}}"
+      auto-update-date="{{autoUpdateDate}}"
+      input-date="[[inputDate]]"
+      show-long-date="[[showLongDate]]"
+      no-animation="[[noAnimation]]"
+      page-entry-animation="[[pageEntryAnimation]]"
+      page-exit-animation="[[pageExitAnimation]]"
+      invalid-date="{{_readOnlyInvalidDate}}"
+      view="[[view]]"
+      theme="[[theme]]"
+      locale="[[locale]]"
+    >
       <div class="buttons">
-        <paper-button noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
-        <paper-button noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-dismiss>[[dismissLabel]]</paper-button>
+        <paper-button noink="[[noAnimation]]" dialog-confirm>[[confirmLabel]]</paper-button>
       </div>
     </app-datepicker>
   </template>
+
   <script>
     Polymer({
       is: 'app-datepicker-dialog',
@@ -88,6 +93,8 @@
 
         _readOnlyDate: String,
         _readOnlyInvalidDate: String,
+
+        autoUpdateDate: Boolean
       },
 
       behaviors: [
