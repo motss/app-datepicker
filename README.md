@@ -33,7 +33,7 @@ An custom Polymer element built from scratch to provide a datepicker based on Go
 
 Example:
 
-    <app-datepicker><app-datepicker>
+    <app-datepicker></app-datepicker>
     <app-datepicker view="horizontal"></app-datepicker>
     <app-datepicker theme="dark-theme"></app-datepicker>
     <app-datepicker-dialog modal></app-datepicker-dialog>
