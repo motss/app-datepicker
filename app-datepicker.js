@@ -87,6 +87,11 @@ class AppDatepicker extends Polymer.Element {
         type: String,
       },
 
+      activeDateObject: {
+        type: Object,
+        readOnly: true,
+      },
+
     };
   }
 
@@ -113,7 +118,7 @@ class AppDatepicker extends Polymer.Element {
   static get observers() {
     return [
       // TODO: More to come.
-      'setupDatepicker(locale)',
+      'setupDatepicker(locale, firstDayOfWeek)',
     ];
   }
 
@@ -170,7 +175,7 @@ class AppDatepicker extends Polymer.Element {
     const month = now.getMonth();
     const fullYear = now.getFullYear();
 
-    this._activeDateObject = {
+    this._setActiveDateObject({
       date,
       day,
       month,
@@ -182,14 +187,14 @@ class AppDatepicker extends Polymer.Element {
       shortMonth: AppDatepicker.parseDateToMonth(lang, now),
       shortWeekday: AppDatepicker.parseDateToWeekday(lang, now),
 
-      weekdays: AppDatepicker.setupWeekdays(lang),
+      weekdays: AppDatepicker.setupWeekdays(lang, fdow),
       daysOfMonth: AppDatepicker.setupDaysOfMonth(lang, fullYear, month, fdow),
-    };
+    });
 
     /* Update selectedDate based on inputDate or fallback Date object */
     this._setSelectedDate(now.toJSON());
 
-    console.log(this._activeDateObject);
+    console.log(this.activeDateObject);
     console.log(this.inputDate.toJSON(), this.selectedDate);
   }
 
@@ -205,12 +210,8 @@ class AppDatepicker extends Polymer.Element {
    * @memberof AppDatepicker
    */
   static setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
-    console.log(locale, fullYear, month, firstDayOfWeek);
-
+    let startDay = new Date(fullYear, month, 1).getDay();
     const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
-    const startDay = new Date(fullYear, month, 1).getDay();
-    const normalizedStartDay = AppDatepicker
-      .getFirstDayOfWeek(firstDayOfWeek, startDay);
     const hasNativeIntl = AppDatepicker.hasNativeIntl;
     const formatter = hasNativeIntl
       ? new window.Intl.DateTimeFormat(locale, {
@@ -227,12 +228,17 @@ class AppDatepicker extends Polymer.Element {
       }).format
       : (d) => d;
 
+    // NOTE: Shift days with firstDayOfWeek.
+    if (AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek)) {
+      startDay -= firstDayOfWeek;
+      startDay = startDay < 0 ? 7 + startDay : startDay;
+    }
+
     for (let i = 0, j = 1 - startDay; i < 42; i++, j++) {
       const fullDate = new Date(fullYear, month, j);
       const date = formatter(fullDate);
       const dateLabel = labelFormatter(fullDate);
-      const nd = normalizedStartDay;
-      const shouldPushDate = i >= nd && i < nd + totalDays;
+      const shouldPushDate = i >= startDay && (i < startDay + totalDays);
       const dayOfMonth = shouldPushDate
         ? {dateLabel, date, dateIndex: j}
         : {};
@@ -245,23 +251,16 @@ class AppDatepicker extends Polymer.Element {
 
 
   /**
-   * Normalize day with pre-defined first day of week.
+   * Check if the value of firstDayOfWeek is valid.
    *
    * @static
    * @param {number} firstDayOfWeek - First day of week.
-   * @param {number} day - Current day.
-   * @returns {number} Normalized day with first day of week.
+   * @returns {boolean} True if firstDayOfWeek is valid.
    *
    * @memberof AppDatepicker
    */
-  static getFirstDayOfWeek(firstDayOfWeek, day) {
-    if (firstDayOfWeek > 0 && firstDayOfWeek < 7) {
-      const startDay = day - firstDayOfWeek;
-
-      return startDay < 0 ? 7 + startDay : startDay;
-    }
-
-    return day;
+  static withinFirstDayOfWeekRange(firstDayOfWeek) {
+    return firstDayOfWeek > 0 && firstDayOfWeek < 7;
   }
 
   /**
@@ -283,12 +282,22 @@ class AppDatepicker extends Polymer.Element {
    *
    * @static
    * @param {string} locale - Locale to format weekdays.
+   * @param {number} firstDayOfWeek - First day of the week.
    * @returns {string[]} Array of formatted weekdays.
    *
    * @memberof AppDatepicker
    */
-  static setupWeekdays(locale) {
-    if (AppDatepicker.hasNativeIntl) {
+  static setupWeekdays(locale, firstDayOfWeek) {
+    const hasNativeIntl = AppDatepicker.hasNativeIntl;
+    const fdow = AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek) ? firstDayOfWeek : 0;
+    const dows = hasNativeIntl
+      ? AppDatepicker.defaultWeekdaysDates
+      : AppDatepicker.defaultWeekdays;
+    const sliced = dows.slice(fdow);
+    const rest = dows.slice(0, fdow);
+    const shifted = Array.prototype.concat.apply(sliced, rest);
+
+    if (hasNativeIntl) {
       const formatter = new window.Intl.DateTimeFormat(locale, {
         weekday: 'narrow',
       }).format;
@@ -296,21 +305,13 @@ class AppDatepicker extends Polymer.Element {
         weekday: 'long',
       }).format;
 
-      return [
-        new Date('2017-05-07'),
-        new Date('2017-05-08'),
-        new Date('2017-05-09'),
-        new Date('2017-05-10'),
-        new Date('2017-05-11'),
-        new Date('2017-05-12'),
-        new Date('2017-05-13'),
-      ].map((date) => ({
+      return shifted.map((date) => ({
         weekdayLabel: labelFormatter(date),
         weekday: formatter(date),
       }));
     }
 
-    return AppDatepicker.defaultWeekdays.map((wd) => {
+    return shifted.map((wd) => {
       return {
         weekdayLabel: wd,
         weekday: wd.slice(0, 1),
@@ -506,6 +507,26 @@ class AppDatepicker extends Polymer.Element {
       'October',
       'November',
       'December',
+    ];
+  }
+
+  /**
+   * Default weekdays in Date objects.
+   *
+   * @readonly
+   * @static
+   *
+   * @memberof AppDatepicker
+   */
+  static get defaultWeekdaysDates() {
+    return [
+      new Date('2017-05-07'),
+      new Date('2017-05-08'),
+      new Date('2017-05-09'),
+      new Date('2017-05-10'),
+      new Date('2017-05-11'),
+      new Date('2017-05-12'),
+      new Date('2017-05-13'),
     ];
   }
 

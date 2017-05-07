@@ -373,25 +373,25 @@
 
     <div class="content-container">
       <div class="header">
-        <button class="selected-year">[[_activeDateObject.longFullYear]]</button>
-        <button class="selected-date">[[_activeDateObject.shortWeekday]], [[_activeDateObject.shortMonth]] [[_activeDateObject.shortDay]]</button>
+        <button class="selected-year">[[activeDateObject.longFullYear]]</button>
+        <button class="selected-date">[[activeDateObject.shortWeekday]], [[activeDateObject.shortMonth]] [[activeDateObject.shortDay]]</button>
       </div>
       <div class="main">
         <div class="calendar-view">
           <div class="month-navigator">
             <button class="chevron-left-button"></button>
-            <div class="selected-month-year">[[_activeDateObject.longMonth]] [[_activeDateObject.longFullYear]]</div>
+            <div class="selected-month-year">[[activeDateObject.longMonth]] [[activeDateObject.longFullYear]]</div>
             <button class="chevron-right-button"></button>
           </div>
 
           <div class="weekdays-container">
-              <template is="dom-repeat" strip-whitespace items="[[_activeDateObject.weekdays]]">
+              <template is="dom-repeat" strip-whitespace items="[[activeDateObject.weekdays]]">
                 <div class$="weekday-[[index]]" aria-label$="[[item.weekdayLabel]]">[[item.weekday]]</div>
               </template>
           </div>
 
           <div class="dates-container">
-            <template is="dom-repeat" strip-whitespace items="[[_activeDateObject.daysOfMonth]]">
+            <template is="dom-repeat" strip-whitespace items="[[activeDateObject.daysOfMonth]]">
               <div class$="date-[[item.dateIndex]]" aria-label$="[[item.dateLabel]]">[[item.date]]</div>
             </template>
           </div>

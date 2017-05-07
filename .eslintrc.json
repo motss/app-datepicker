@@ -6,7 +6,8 @@
     "strict": "error",
     "no-var": "off",
     "new-cap": ["error", { "capIsNewExceptions": ["Polymer"] }],
-    "valid-jsdoc": [2, { "prefer": { "return": "returns" }, "requireReturn": false }]
+    "valid-jsdoc": [2, { "prefer": { "return": "returns" }, "requireReturn": false }],
+    "max-len": ["error", 100]
   },
   "env": {
     "browser": true,
