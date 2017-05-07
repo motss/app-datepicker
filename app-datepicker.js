@@ -1,6 +1,3 @@
-// @ts-check
-
-/**
 /**
  * A contructor for AppDatepicker
  *
@@ -156,7 +153,7 @@ class AppDatepicker extends Polymer.Element {
     this._setSelectedDate(now.toJSON());
 
     console.log(this._activeDateObject);
-    console.log(this.inputDate, this.selectedDate);
+    console.log(this.inputDate.toJSON(), this.selectedDate);
   }
 
   /**
@@ -242,11 +239,17 @@ class AppDatepicker extends Polymer.Element {
    */
   parseInputDate(inputDate) {
     if (typeof inputDate === 'undefined'
-      || inputDate.toString() === 'Invalid Date') {
+      || inputDate.toJSON() === null) {
       return null;
     }
 
-    return inputDate;
+    // NOTE: Defaults to UTC datetime.
+    const fy = inputDate.getFullYear();
+    const m = inputDate.getMonth();
+    const d = inputDate.getDate();
+    const nd = new Date(Date.UTC(fy, m, d));
+
+    return nd;
   }
 
   /**
