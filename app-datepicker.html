@@ -373,71 +373,27 @@
 
     <div class="content-container">
       <div class="header">
-        <button class="selected-year">{{_activeDateObject.fullYear}}</button>
-        <button class="selected-date">
-          {{_activeDateObject.shortWeekday}}, {{_activeDateObject.shortMonth}} {{_activeDateObject.date}}
-          <!--<div class="selected-day">Wed, </div>
-          <div class="selected-month-date">May 5</div>-->
-        </button>
+        <button class="selected-year">[[_activeDateObject.longFullYear]]</button>
+        <button class="selected-date">[[_activeDateObject.shortWeekday]], [[_activeDateObject.shortMonth]] [[_activeDateObject.shortDay]]</button>
       </div>
       <div class="main">
         <div class="calendar-view">
           <div class="month-navigator">
             <button class="chevron-left-button"></button>
-            <div class="selected-month-year">May 2017</div>
+            <div class="selected-month-year">[[_activeDateObject.longMonth]] [[_activeDateObject.longFullYear]]</div>
             <button class="chevron-right-button"></button>
           </div>
+
           <div class="weekdays-container">
-            <div class="sunday">
-              <div class="sunday-text">
-                S
-              </div>
-            </div>
-            <div class="monday">M</div>
-            <div class="tuesday">T</div>
-            <div class="wednesday">W</div>
-            <div class="thursday">T</div>
-            <div class="friday">F</div>
-            <div class="saturday">S</div>
+              <template is="dom-repeat" strip-whitespace items="[[_activeDateObject.weekdays]]">
+                <div class$="weekday-[[index]]" aria-label$="[[item.weekdayLabel]]">[[item.weekday]]</div>
+              </template>
           </div>
+
           <div class="dates-container">
-            <div class="date-0"></div>
-            <div class="date-0"></div>
-            <div class="date-0"></div>
-            <div class="date-0"></div>
-            <div class="date-0"></div>
-            <div class="date-0"></div>
-            <div class="date-1">1</div>
-            <div class="date-2">2</div>
-            <div class="date-3">3</div>
-            <div class="date-4">4</div>
-            <div class="date-5">5</div>
-            <div class="date-6">6</div>
-            <div class="date-7">7</div>
-            <div class="date-8">8</div>
-            <div class="date-9">9</div>
-            <div class="date-10">10</div>
-            <div class="date-11">11</div>
-            <div class="date-12">12</div>
-            <div class="date-13">13</div>
-            <div class="date-14">14</div>
-            <div class="date-15">15</div>
-            <div class="date-16">16</div>
-            <div class="date-17">17</div>
-            <div class="date-18">18</div>
-            <div class="date-19">19</div>
-            <div class="date-20">20</div>
-            <div class="date-21">21</div>
-            <div class="date-22">22</div>
-            <div class="date-23">23</div>
-            <div class="date-24">24</div>
-            <div class="date-25">25</div>
-            <div class="date-26">26</div>
-            <div class="date-27">27</div>
-            <div class="date-28">28</div>
-            <div class="date-29">29</div>
-            <div class="date-30">30</div>
-            <div class="date-31">31</div>
+            <template is="dom-repeat" strip-whitespace items="[[_activeDateObject.daysOfMonth]]">
+              <div class$="date-[[item.dateIndex]]" aria-label$="[[item.dateLabel]]">[[item.date]]</div>
+            </template>
           </div>
         </div>
         <ol class="year-view">
