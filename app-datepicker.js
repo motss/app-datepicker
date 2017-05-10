@@ -27,6 +27,7 @@ class AppDatepicker extends Polymer.Element {
    */
   static get properties() {
     return {
+      // TODO: To implement disable dates
       disableDates: {
         type: Array,
       },
@@ -41,6 +42,7 @@ class AppDatepicker extends Polymer.Element {
         value: () => 0,
       },
 
+      // TODO: To implement format.
       format: {
         type: String,
         value: () => 'yyyy-mm-dd',
@@ -62,9 +64,10 @@ class AppDatepicker extends Polymer.Element {
 
       minDate: {
         type: Date,
-        value: () => new Date('1970/1/1').toJSON(),
+        value: () => new Date('1970/01/01').toJSON(),
       },
 
+      // TODO: To implement noAnimation flag.
       noAnimation: {
         type: Boolean,
       },
@@ -75,6 +78,7 @@ class AppDatepicker extends Polymer.Element {
         reflectToAttribute: true,
       },
 
+      // TODO: To implement selectedView flag.
       selectedView: {
         type: String,
       },
@@ -110,7 +114,7 @@ class AppDatepicker extends Polymer.Element {
   static get observers() {
     return [
       // TODO: More to come.
-      'setupDatepicker(locale, firstDayOfWeek)',
+      'setupDatepicker(locale, firstDayOfWeek, disableDays.*, minDate, maxDate)',
     ];
   }
 
@@ -323,6 +327,103 @@ class AppDatepicker extends Polymer.Element {
   }
 
   /**
+   * Find the row number of a date.
+   *
+   * @static
+   * @param {number} dateIndex - Date number.
+   * @returns {number} Row number of a date in a calendar.
+   *
+   * @memberof AppDatepicker
+   */
+  static dateToCalendarRow(dateIndex) {
+    return Math.floor(dateIndex / 7);
+  }
+
+  /**
+   * Find the column number of a date.
+   *
+   * @static
+   * @param {number} dateIndex - Date number.
+   * @returns {number} Column number of a date in a calendar.
+   *
+   * @memberof AppDatepicker
+   */
+  static dateToCalendarCol(dateIndex) {
+    return dateIndex - 7 * AppDatepicker.dateToCalendarRow(dateIndex);
+  }
+
+  /**
+   * True if the input date is before the minimum allowed date.
+   *
+   * @static
+   * @param {string|Date} inputDate - Input date.
+   * @param {string|Date} [minDate=new Date('1970/01/01')] - Minimum allowed date.
+   *  Defaults to '1970/01/01'.
+   * @returns {boolean} True if the input date is before the minimum allowed date.
+   *
+   * @memberof AppDatepicker
+   */
+  static isBeforeThanMinDate(inputDate, minDate = new Date('1970/01/01')) {
+    if (!AppDatepicker.isValidDate(minDate)) {
+      console.warn(`${minDate} is not a valid Date object`);
+      return false;
+    }
+
+    if (!AppDatepicker.isValidDate(inputDate)) {
+      console.warn(`${inputDate} is not a valid Date object`);
+      return false;
+    }
+
+    const newDate = typeof minDate === 'string' ? new Date(minDate) : minDate;
+    const newInputDate = typeof inputDate === 'string' ? new Date(inputDate) : inputDate;
+    const ndFullYear = newDate.getFullYear();
+    const ndMonth = newDate.getMonth();
+    const ndDate = newDate.getDate();
+    const nidFullYear = newInputDate.getFullYear();
+    const nidMonth = newInputDate.getMonth();
+    const nidDate = newInputDate.getDate();
+    const ndTime = +new Date(ndFullYear, ndMonth, ndDate);
+    const nidTime = +new Date(nidFullYear, nidMonth, nidDate);
+
+    return nidTime < ndTime;
+  }
+
+  /**
+   * True if the input date is afer the maximum allowed date.
+   *
+   * @static
+   * @param {string|Date} inputDate - Input date.
+   * @param {string|Date} [maxDate=new Date('9999/12/31')] - Maximum allowed date.
+   * @returns {boolean} True if the input date is after the maximum allowed date.
+   *
+   * @memberof AppDatepicker
+   */
+  static isAfterThanMaxDate(inputDate, maxDate = new Date('9999/12/31')) {
+    if (!AppDatepicker.isValidDate(maxDate)) {
+      console.warn(`${maxDate} is not a valid Date object`);
+      return false;
+    }
+
+    if (!AppDatepicker.isValidDate(inputDate)) {
+      console.warn(`${inputDate} is not a valid Date object`);
+      return false;
+    }
+
+    const newDate = typeof maxDate === 'string' ? new Date(maxDate) : maxDate;
+    const newInputDate = typeof inputDate === 'string' ? new Date(inputDate) : inputDate;
+    const ndFullYear = newDate.getFullYear();
+    const ndMonth = newDate.getMonth();
+    const ndDate = newDate.getDate();
+    const nidFullYear = newInputDate.getFullYear();
+    const nidMonth = newInputDate.getMonth();
+    const nidDate = newInputDate.getDate();
+    const ndTime = +new Date(ndFullYear, ndMonth, ndDate);
+    const nidTime = +new Date(nidFullYear, nidMonth, nidDate);
+
+    return nidTime > ndTime;
+  }
+
+  /**
    * Parse input date into Date object.
    *
    * @param {Date} inputDate - Date object as input.
@@ -425,6 +526,9 @@ class AppDatepicker extends Polymer.Element {
    */
   setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
     let startDay = new Date(fullYear, month, 1).getDay();
+    const disableDays = this.disableDays.slice();
+    const minDate = this.minDate;
+    const maxDate = this.maxDate;
     const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
     const hasNativeIntl = AppDatepicker.hasNativeIntl;
     const formatter = hasNativeIntl
@@ -453,9 +557,12 @@ class AppDatepicker extends Polymer.Element {
       const date = formatter(fullDate);
       const dateLabel = labelFormatter(fullDate);
       const shouldPushDate = i >= startDay && (i < startDay + totalDays);
-      const today = this.isTheDateToday(fullDate);
+      const isToday = this.isTheDateToday(fullDate); // TODO: This method should be a static one.
+      const isDisableDay = AppDatepicker.isBeforeThanMinDate(fullDate, minDate)
+        || AppDatepicker.isAfterThanMaxDate(fullDate, maxDate)
+        || disableDays.some(dd => dd === AppDatepicker.dateToCalendarCol(j));
       const dayOfMonth = shouldPushDate
-        ? {date, dateIndex: j, dateLabel, today: today ? 'is-today' : ''}
+        ? {date, dateIndex: j, dateLabel, today: isToday ? 'is-today' : '', disable: isDisableDay ? 'is-disable' : ''}
         : {};
 
       daysOfMonth.push(dayOfMonth);
