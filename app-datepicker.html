@@ -308,6 +308,8 @@
         width: 34px;
         height: 34px;
         border-radius: 50%;
+      }
+      .main > .calendar-view > .dates-container > div.is-today {
         background-color: var(--default-datepicker-primary-color);
         color: #fff;
       }
@@ -392,7 +394,7 @@
 
           <div class="dates-container">
             <template is="dom-repeat" strip-whitespace items="[[activeDateObject.daysOfMonth]]">
-              <div class$="date-[[item.dateIndex]]" aria-label$="[[item.dateLabel]]">[[item.date]]</div>
+              <div class$="date-[[item.dateIndex]] [[item.today]]" aria-label$="[[item.dateLabel]]">[[item.date]]</div>
             </template>
           </div>
         </div>

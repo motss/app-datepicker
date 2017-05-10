@@ -52,15 +52,7 @@ class AppDatepicker extends Polymer.Element {
 
       locale: {
         type: String,
-        value: () => {
-          const localeFromNativeIntl = window.Intl
-            && window.Intl.DateTimeFormat
-            && new window.Intl.DateTimeFormat().resolvedOptions
-            && new window.Intl.DateTimeFormat().resolvedOptions().locale;
-          const localeFromNavigator = window.navigator.language;
-
-          return localeFromNativeIntl || localeFromNavigator || 'en-US';
-        },
+        value: () => AppDatepicker.localeFromNativeIntl,
       },
 
       maxDate: {
@@ -161,96 +153,6 @@ class AppDatepicker extends Polymer.Element {
   }
 
   /**
-   *
-   *
-   *
-   * @memberof AppDatepicker
-   */
-  setupDatepicker() {
-    const now = this.parseInputDate(this.inputDate) || new Date();
-    const lang = this.locale;
-    const fdow = this.firstDayOfWeek;
-    const date = now.getDate();
-    const day = now.getDay();
-    const month = now.getMonth();
-    const fullYear = now.getFullYear();
-
-    this._setActiveDateObject({
-      date,
-      day,
-      month,
-      fullYear,
-
-      longMonth: AppDatepicker.parseDateToMonth(lang, now, 'long'),
-      longFullYear: AppDatepicker.parseDateToFullYear(lang, now, 'numeric'),
-      shortDay: AppDatepicker.parseDateToDay(lang, now),
-      shortMonth: AppDatepicker.parseDateToMonth(lang, now),
-      shortWeekday: AppDatepicker.parseDateToWeekday(lang, now),
-
-      weekdays: AppDatepicker.setupWeekdays(lang, fdow),
-      daysOfMonth: AppDatepicker.setupDaysOfMonth(lang, fullYear, month, fdow),
-    });
-
-    /* Update selectedDate based on inputDate or fallback Date object */
-    this._setSelectedDate(now.toJSON());
-
-    console.log(this.activeDateObject);
-    console.log(this.inputDate.toJSON(), this.selectedDate);
-  }
-
-  /**
-   * Setup days of a month.
-   *
-   * @param {string} locale - Locale to format days of month.
-   * @param {number} fullYear - Full year of the active date object.
-   * @param {number} month - Month of the active date object.
-   * @param {number} firstDayOfWeek - First day of the week.
-   * @returns {string[]} Array of days of a month.
-   *
-   * @memberof AppDatepicker
-   */
-  static setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
-    let startDay = new Date(fullYear, month, 1).getDay();
-    const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
-    const hasNativeIntl = AppDatepicker.hasNativeIntl;
-    const formatter = hasNativeIntl
-      ? new window.Intl.DateTimeFormat(locale, {
-          day: 'numeric',
-        }).format
-      : (d) => d.getDate();
-    let daysOfMonth = [];
-    const labelFormatter = hasNativeIntl
-      ? new window.Intl.DateTimeFormat(locale, {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      }).format
-      : (d) => d;
-
-    // NOTE: Shift days with firstDayOfWeek.
-    if (AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek)) {
-      startDay -= firstDayOfWeek;
-      startDay = startDay < 0 ? 7 + startDay : startDay;
-    }
-
-    for (let i = 0, j = 1 - startDay; i < 42; i++, j++) {
-      const fullDate = new Date(fullYear, month, j);
-      const date = formatter(fullDate);
-      const dateLabel = labelFormatter(fullDate);
-      const shouldPushDate = i >= startDay && (i < startDay + totalDays);
-      const dayOfMonth = shouldPushDate
-        ? {dateLabel, date, dateIndex: j}
-        : {};
-
-      daysOfMonth.push(dayOfMonth);
-    }
-
-    return daysOfMonth;
-  }
-
-
-  /**
    * Check if the value of firstDayOfWeek is valid.
    *
    * @static
@@ -275,48 +177,6 @@ class AppDatepicker extends Polymer.Element {
    */
   static getTotalDaysOfMonth(fullYear, month) {
     return new Date(fullYear, month + 1, 0).getDate();
-  }
-
-  /**
-   * Setup weekdays in text format.
-   *
-   * @static
-   * @param {string} locale - Locale to format weekdays.
-   * @param {number} firstDayOfWeek - First day of the week.
-   * @returns {string[]} Array of formatted weekdays.
-   *
-   * @memberof AppDatepicker
-   */
-  static setupWeekdays(locale, firstDayOfWeek) {
-    const hasNativeIntl = AppDatepicker.hasNativeIntl;
-    const fdow = AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek) ? firstDayOfWeek : 0;
-    const dows = hasNativeIntl
-      ? AppDatepicker.defaultWeekdaysDates
-      : AppDatepicker.defaultWeekdays;
-    const sliced = dows.slice(fdow);
-    const rest = dows.slice(0, fdow);
-    const shifted = Array.prototype.concat.apply(sliced, rest);
-
-    if (hasNativeIntl) {
-      const formatter = new window.Intl.DateTimeFormat(locale, {
-        weekday: 'narrow',
-      }).format;
-      const labelFormatter = new window.Intl.DateTimeFormat(locale, {
-        weekday: 'long',
-      }).format;
-
-      return shifted.map((date) => ({
-        weekdayLabel: labelFormatter(date),
-        weekday: formatter(date),
-      }));
-    }
-
-    return shifted.map((wd) => {
-      return {
-        weekdayLabel: wd,
-        weekday: wd.slice(0, 1),
-      };
-    });
   }
 
   /**
@@ -444,6 +304,25 @@ class AppDatepicker extends Polymer.Element {
   }
 
   /**
+   * Check if the input date is valid.
+   *
+   * @static
+   * @param {any} inputDate
+   * @returns
+   *
+   * @memberof AppDatepicker
+   */
+  static isValidDate(inputDate) {
+    if (typeof inputDate === 'string') {
+      return (new Date(inputDate)).toJSON() !== null;
+    } else if (inputDate instanceof Date) {
+      return inputDate.toJSON() !== null;
+    }
+
+    return false;
+  }
+
+  /**
    * Parse input date into Date object.
    *
    * @param {Date} inputDate - Date object as input.
@@ -452,7 +331,7 @@ class AppDatepicker extends Polymer.Element {
    * @memberOf AppDatepicker
    */
   parseInputDate(inputDate) {
-    if (typeof inputDate === 'undefined' || inputDate.toJSON() === null) {
+    if (!AppDatepicker.isValidDate(inputDate)) {
       return null;
     }
 
@@ -463,6 +342,187 @@ class AppDatepicker extends Polymer.Element {
     const nd = new Date(Date.UTC(fy, m, d));
 
     return nd;
+  }
+
+  /**
+   * Check if the input date is today's date.
+   *
+   * @param {Date} date - Date object.
+   * @returns {boolean} True if the input date is today's date.
+   *
+   * @memberof AppDatepicker
+   */
+  isTheDateToday(inputDate) {
+    if (!AppDatepicker.isValidDate(inputDate)) {
+      return false;
+    }
+
+    const now = new Date();
+    const tdFullYear = now.getFullYear();
+    const tdMonth = now.getMonth();
+    const tdDate = now.getDate();
+    const fy = inputDate.getFullYear();
+    const m = inputDate.getMonth();
+    const d = inputDate.getDate();
+    const isFullYearEqual = tdFullYear === fy;
+    const isMonthEqual = tdMonth === m;
+    const isDateEqual = tdDate === d;
+
+    return isFullYearEqual && isMonthEqual && isDateEqual;
+  }
+
+  /**
+   * Setup weekdays in text format.
+   *
+   * @param {string} locale - Locale to format weekdays.
+   * @param {number} firstDayOfWeek - First day of the week.
+   * @returns {string[]} Array of formatted weekdays.
+   *
+   * @memberof AppDatepicker
+   */
+  setupWeekdays(locale, firstDayOfWeek) {
+    const hasNativeIntl = AppDatepicker.hasNativeIntl;
+    const fdow = AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek) ? firstDayOfWeek : 0;
+    const dows = hasNativeIntl
+      ? AppDatepicker.defaultWeekdaysDates
+      : AppDatepicker.defaultWeekdays;
+    const sliced = dows.slice(fdow);
+    const rest = dows.slice(0, fdow);
+    const shifted = Array.prototype.concat.apply(sliced, rest);
+
+    if (hasNativeIntl) {
+      const formatter = new window.Intl.DateTimeFormat(locale, {
+        weekday: 'narrow',
+      }).format;
+      const labelFormatter = new window.Intl.DateTimeFormat(locale, {
+        weekday: 'long',
+      }).format;
+
+      return shifted.map((date) => ({
+        weekdayLabel: labelFormatter(date),
+        weekday: formatter(date),
+      }));
+    }
+
+    return shifted.map((wd) => {
+      return {
+        weekdayLabel: wd,
+        weekday: wd.slice(0, 1),
+      };
+    });
+  }
+
+  /**
+   * Setup days of a month.
+   *
+   * @param {string} locale - Locale to format days of month.
+   * @param {number} fullYear - Full year of the active date object.
+   * @param {number} month - Month of the active date object.
+   * @param {number} firstDayOfWeek - First day of the week.
+   * @returns {string[]} Array of days of a month.
+   *
+   * @memberof AppDatepicker
+   */
+  setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
+    let startDay = new Date(fullYear, month, 1).getDay();
+    const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
+    const hasNativeIntl = AppDatepicker.hasNativeIntl;
+    const formatter = hasNativeIntl
+      ? new window.Intl.DateTimeFormat(locale, {
+          day: 'numeric',
+        }).format
+      : (d) => d.getDate();
+    let daysOfMonth = [];
+    const labelFormatter = hasNativeIntl
+      ? new window.Intl.DateTimeFormat(locale, {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }).format
+      : (d) => d;
+
+    // NOTE: Shift days with firstDayOfWeek.
+    if (AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek)) {
+      startDay -= firstDayOfWeek;
+      startDay = startDay < 0 ? 7 + startDay : startDay;
+    }
+
+    for (let i = 0, j = 1 - startDay; i < 42; i++, j++) {
+      const fullDate = new Date(fullYear, month, j);
+      const date = formatter(fullDate);
+      const dateLabel = labelFormatter(fullDate);
+      const shouldPushDate = i >= startDay && (i < startDay + totalDays);
+      const today = this.isTheDateToday(fullDate);
+      const dayOfMonth = shouldPushDate
+        ? {date, dateIndex: j, dateLabel, today: today ? 'is-today' : ''}
+        : {};
+
+      daysOfMonth.push(dayOfMonth);
+    }
+
+    return daysOfMonth;
+  }
+
+  /**
+   *
+   *
+   *
+   * @memberof AppDatepicker
+   */
+  setupDatepicker() {
+    const now = this.parseInputDate(this.inputDate) || new Date();
+    const lang = this.locale || AppDatepicker.localeFromNativeIntl;
+    const fdow = this.firstDayOfWeek || 0; // TODO: Is this needed?
+    const date = now.getDate();
+    const day = now.getDay();
+    const month = now.getMonth();
+    const fullYear = now.getFullYear();
+
+    this._setActiveDateObject({
+      locale: lang,
+      firstDayOfWeek: fdow,
+
+      date,
+      day,
+      month,
+      fullYear,
+
+      longMonth: AppDatepicker.parseDateToMonth(lang, now, 'long'),
+      longFullYear: AppDatepicker.parseDateToFullYear(lang, now, 'numeric'),
+      shortDay: AppDatepicker.parseDateToDay(lang, now),
+      shortMonth: AppDatepicker.parseDateToMonth(lang, now),
+      shortWeekday: AppDatepicker.parseDateToWeekday(lang, now),
+
+      weekdays: this.setupWeekdays(lang, fdow),
+      daysOfMonth: this.setupDaysOfMonth(lang, fullYear, month, fdow),
+    });
+
+    /* Update selectedDate based on inputDate or fallback Date object */
+    this._setSelectedDate(now.toJSON());
+
+    console.log(this.activeDateObject);
+    console.log(this.inputDate.toJSON(), this.selectedDate);
+  }
+
+
+  /**
+   * Get the locale from native Intl object.
+   *
+   * @readonly
+   * @static
+   * @returns {string} Locale from native Intl object or 'en-US' as fallback value.
+   *
+   * @memberof AppDatepicker
+   */
+  static get localeFromNativeIntl() {
+    const localeFromNativeIntl = window.Intl
+      && window.Intl.DateTimeFormat
+      && new window.Intl.DateTimeFormat().resolvedOptions
+      && new window.Intl.DateTimeFormat().resolvedOptions().locale;
+    const localeFromNavigator = window.navigator.language;
+
+    return localeFromNativeIntl || localeFromNavigator || 'en-US';
   }
 
   /**
@@ -535,3 +595,4 @@ class AppDatepicker extends Polymer.Element {
 window.customElements.define(AppDatepicker.is, AppDatepicker);
 
 // TODO: toUTCString or toJSON will return date string with UTC offset.
+// TODO: new Date(null) is a valid Date object.
