@@ -707,6 +707,9 @@ Custom property | Description | Default
           value: !1
         },
 
+        // Always reset selected date on dialog close. See https://github.com/motss/app-datepicker/issues/74.
+        alwaysResetSelectedDateOnDialogClose: Boolean,
+
         // month names, literally.
         _monthNames: {
           type: Array,
@@ -1352,6 +1355,10 @@ Custom property | Description | Default
               var _confirmDate = this._bindSelectedFulldate(_sy, _sm, _sd, _f);
               this._setDate(_confirmDate);
               this.set('_isSelectedDateConfirmed', !1);
+
+              if (this.alwaysResetSelectedDateOnDialogClose) {
+                this.resetDate();
+              }
             }
           }
         }, 1);
@@ -1477,6 +1484,10 @@ Custom property | Description | Default
         var _isValidDate = _isValidDate(_inputDate, _showLongDate);
 
         if (_isValidDate.valid) {
+          if (this.alwaysResetSelectedDateOnDialogClose) {
+            return;
+          }
+
           var _vd = new Date(_isValidDate.result);
           var _yy = _vd.getFullYear();
           var _mm = _vd.getMonth();
@@ -1500,6 +1511,25 @@ Custom property | Description | Default
       enforceDateChange: function () {
         this._setInvalidDate(!1);
         this._computeShowLongDate(this.showLongDate, this.locale);
+      },
+
+      // reset date to today's date if alwaysResetSelectedDateOnDialogClose is set.
+      resetDate: function () {
+        if (this._isSelectedDateConfirmed) {
+          return;
+        }
+
+        var now = new Date();
+        var nowFy = now.getFullYear();
+        var nowM = now.getMonth();
+        var nowD = now.getDate();
+
+        this.set('_activeYear', nowFy);
+        this.set('_activeMonth', nowM);
+        this.set('_selectedYear', nowFy);
+        this.set('_selectedMonth', nowM);
+        this.set('_selectedDate', nowD);
+        this._setInvalidDate(false);
       },
 
       // Accessibility enhancment.

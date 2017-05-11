@@ -41,7 +41,9 @@
     invalid-date="{{_readOnlyInvalidDate}}"
     view="[[view]]"
     theme="[[theme]]"
-    locale="[[locale]]">
+    locale="[[locale]]"
+    no-animation
+    always-reset-selected-date-on-dialog-close="[[alwaysResetSelectedDateOnDialogClose]]">
       <div class="buttons">
         <paper-button noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
         <paper-button noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
@@ -85,6 +87,7 @@
           type: String,
           value: "cancel"
         },
+        alwaysResetSelectedDateOnDialogClose: Boolean,
 
         _readOnlyDate: String,
         _readOnlyInvalidDate: String,
@@ -96,7 +99,17 @@
       ],
       listeners: {
         'neon-animation-finish': '_onNeonAnimationFinish',
+        'iron-overlay-closed': '_alwaysResetSelectedDate',
       },
+
+      _alwaysResetSelectedDate: function () {
+        if (this.alwaysResetSelectedDateOnDialogClose) {
+          this.async(function () {
+            this.$.datePicker.resetDate();
+          }.bind(this), 1);
+        }
+      },
+
       observers: [
         '_updateReadOnlyDate(_readOnlyDate)',
         '_updateReadOnlyInvalidDate(_readOnlyInvalidDate)',
