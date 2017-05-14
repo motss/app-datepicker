@@ -485,7 +485,7 @@ class AppDatepicker extends Polymer.Element {
    */
   static parseDisableDates(disableDates) {
     const isValidDisableDates = disableDates
-      && disableDates instanceof Array
+      && Array.isArray(disableDates)
       && disableDates.length;
 
     if (!isValidDisableDates) {
@@ -559,7 +559,7 @@ class AppDatepicker extends Polymer.Element {
   setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
     let startDay = new Date(fullYear, month, 1).getDay();
     const disableDays = this.disableDays
-      && this.disableDays instanceof Array
+      && Array.isArray(this.disableDays)
       && this.disableDays.length
       ? this.disableDays.slice()
       : [];
