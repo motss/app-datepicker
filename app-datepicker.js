@@ -27,7 +27,6 @@ class AppDatepicker extends Polymer.Element {
    */
   static get properties() {
     return {
-      // TODO: To implement disable dates
       disableDates: {
         type: Array,
       },
@@ -59,12 +58,12 @@ class AppDatepicker extends Polymer.Element {
 
       maxDate: {
         type: Date,
-        value: () => new Date('9999/12/31').toJSON(),
+        value: () => new Date('9999-12-31').toJSON(),
       },
 
       minDate: {
         type: Date,
-        value: () => new Date('1970/01/01').toJSON(),
+        value: () => new Date('1970-01-01').toJSON(),
       },
 
       // TODO: To implement noAnimation flag.
@@ -114,7 +113,7 @@ class AppDatepicker extends Polymer.Element {
   static get observers() {
     return [
       // TODO: More to come.
-      'setupDatepicker(locale, firstDayOfWeek, disableDays.*, minDate, maxDate)',
+      'setupDatepicker(locale, firstDayOfWeek, minDate, maxDate, disableDays.*, disableDates.*)',
     ];
   }
 
@@ -363,7 +362,7 @@ class AppDatepicker extends Polymer.Element {
    *
    * @memberof AppDatepicker
    */
-  static isBeforeThanMinDate(inputDate, minDate = new Date('1970/01/01')) {
+  static isBeforeThanMinDate(inputDate, minDate = new Date('1970-01-01')) {
     if (!AppDatepicker.isValidDate(minDate)) {
       console.warn(`${minDate} is not a valid Date object`);
       return false;
@@ -398,7 +397,7 @@ class AppDatepicker extends Polymer.Element {
    *
    * @memberof AppDatepicker
    */
-  static isAfterThanMaxDate(inputDate, maxDate = new Date('9999/12/31')) {
+  static isAfterThanMaxDate(inputDate, maxDate = new Date('9999-12-31')) {
     if (!AppDatepicker.isValidDate(maxDate)) {
       console.warn(`${maxDate} is not a valid Date object`);
       return false;
@@ -424,36 +423,15 @@ class AppDatepicker extends Polymer.Element {
   }
 
   /**
-   * Parse input date into Date object.
-   *
-   * @param {Date} inputDate - Date object as input.
-   * @returns {Date} Valid Date object.
-   *
-   * @memberOf AppDatepicker
-   */
-  parseInputDate(inputDate) {
-    if (!AppDatepicker.isValidDate(inputDate)) {
-      return null;
-    }
-
-    // NOTE: Defaults to UTC datetime.
-    const fy = inputDate.getFullYear();
-    const m = inputDate.getMonth();
-    const d = inputDate.getDate();
-    const nd = new Date(Date.UTC(fy, m, d));
-
-    return nd;
-  }
-
-  /**
    * Check if the input date is today's date.
    *
+   * @static
    * @param {Date} date - Date object.
    * @returns {boolean} True if the input date is today's date.
    *
    * @memberof AppDatepicker
    */
-  isTheDateToday(inputDate) {
+  static isTheDateToday(inputDate) {
     if (!AppDatepicker.isValidDate(inputDate)) {
       return false;
     }
@@ -470,6 +448,60 @@ class AppDatepicker extends Polymer.Element {
     const isDateEqual = tdDate === d;
 
     return isFullYearEqual && isMonthEqual && isDateEqual;
+  }
+
+  /**
+   * Parse input date into UTC Date object instead of local time.
+   *
+   * @static
+   * @param {Date} inputDate - Date object as input.
+   * @returns {Date} Valid Date object in UTC instead of local time.
+   *
+   * @memberOf AppDatepicker
+   */
+  static parseInputDateIntoUTC(inputDate) {
+    if (!AppDatepicker.isValidDate(inputDate)) {
+      return null;
+    }
+
+
+    // NOTE: Defaults to UTC datetime.
+    const fy = inputDate.getFullYear();
+    const m = inputDate.getMonth();
+    const d = inputDate.getDate();
+    const nd = new Date(Date.UTC(fy, m, d));
+
+    return nd;
+  }
+
+  /**
+   * Filter and process disable dates into valid ones.
+   *
+   * @static
+   * @param {Object[]} disableDates - A list of disable dates with its override style.
+   * @returns {Object[]} A list of valid disable dates with its override style.
+   *
+   * @memberof AppDatepicker
+   */
+  static parseDisableDates(disableDates) {
+    const isValidDisableDates = disableDates
+      && disableDates instanceof Array
+      && disableDates.length;
+
+    if (!isValidDisableDates) {
+      return [];
+    }
+
+    return disableDates.reduce((prev, cur) => {
+      if (!AppDatepicker.isValidDate(cur.date)) {
+        return prev;
+      }
+
+      return prev.concat({
+        time: new Date(cur.date).getTime(),
+        overrideStyle: cur.style,
+      });
+    }, []);
   }
 
   /**
@@ -526,7 +558,12 @@ class AppDatepicker extends Polymer.Element {
    */
   setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
     let startDay = new Date(fullYear, month, 1).getDay();
-    const disableDays = this.disableDays.slice();
+    const disableDays = this.disableDays
+      && this.disableDays instanceof Array
+      && this.disableDays.length
+      ? this.disableDays.slice()
+      : [];
+    const disableDates = AppDatepicker.parseDisableDates(this.disableDates);
     const minDate = this.minDate;
     const maxDate = this.maxDate;
     const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
@@ -552,21 +589,38 @@ class AppDatepicker extends Polymer.Element {
       startDay = startDay < 0 ? 7 + startDay : startDay;
     }
 
+    console.time('setupDaysOfMonth');
     for (let i = 0, j = 1 - startDay; i < 42; i++, j++) {
-      const fullDate = new Date(fullYear, month, j);
+      const fullDate = new Date(Date.UTC(fullYear, month, j)); // NOTE: Always UTC date.
       const date = formatter(fullDate);
       const dateLabel = labelFormatter(fullDate);
       const shouldPushDate = i >= startDay && (i < startDay + totalDays);
-      const isToday = this.isTheDateToday(fullDate); // TODO: This method should be a static one.
-      const isDisableDay = AppDatepicker.isBeforeThanMinDate(fullDate, minDate)
+      const isToday = AppDatepicker.isTheDateToday(fullDate);
+      const hasDisableDay = disableDays.length > 0
+        && disableDays.some(dd => dd === AppDatepicker.dateToCalendarCol(j));
+      let hasDisableDateOverrideStyle = '';
+      const hasDisableDate = disableDates.length > 0
+        && disableDates.some(dd => {
+          const isEqualTime = dd.time === fullDate.getTime();
+
+          if (isEqualTime) {
+            hasDisableDateOverrideStyle = dd.overrideStyle;
+          }
+
+          return isEqualTime;
+        });
+      let isDisableDay = AppDatepicker.isBeforeThanMinDate(fullDate, minDate)
         || AppDatepicker.isAfterThanMaxDate(fullDate, maxDate)
-        || disableDays.some(dd => dd === AppDatepicker.dateToCalendarCol(j));
+        || hasDisableDay
+        || hasDisableDate;
+
       const dayOfMonth = shouldPushDate
-        ? {date, dateIndex: j, dateLabel, today: isToday ? 'is-today' : '', disable: isDisableDay ? 'is-disable' : ''}
+        ? {date, dateIndex: j, dateLabel, today: isToday ? 'is-today' : '', disable: isDisableDay ? 'is-disable' : '', overrideStyle: isDisableDay ? hasDisableDateOverrideStyle : ''}
         : {};
 
       daysOfMonth.push(dayOfMonth);
     }
+    console.timeEnd('setupDaysOfMonth');
 
     return daysOfMonth;
   }
@@ -578,7 +632,8 @@ class AppDatepicker extends Polymer.Element {
    * @memberof AppDatepicker
    */
   setupDatepicker() {
-    const now = this.parseInputDate(this.inputDate) || new Date();
+    const inputDate = AppDatepicker.isValidDate(this.inputDate) ? this.inputDate : new Date();
+    const now = AppDatepicker.parseInputDateIntoUTC(inputDate);
     const lang = this.locale || AppDatepicker.localeFromNativeIntl;
     const fdow = this.firstDayOfWeek || 0; // TODO: Is this needed?
     const date = now.getDate();
@@ -586,6 +641,7 @@ class AppDatepicker extends Polymer.Element {
     const month = now.getMonth();
     const fullYear = now.getFullYear();
 
+    // TODO: To add disableDays, disableDates.
     this._setActiveDateObject({
       locale: lang,
       firstDayOfWeek: fdow,

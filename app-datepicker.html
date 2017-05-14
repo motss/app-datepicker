@@ -401,7 +401,7 @@
 
           <div class="dates-container">
             <template is="dom-repeat" strip-whitespace items="[[activeDateObject.daysOfMonth]]">
-              <div class$="date-[[item.dateIndex]] [[item.today]] [[item.disable]]" aria-label$="[[item.dateLabel]]">[[item.date]]</div>
+              <div class$="date-[[item.dateIndex]] [[item.today]] [[item.disable]]" aria-label$="[[item.dateLabel]]" style$="[[item.overrideStyle]]">[[item.date]]</div>
             </template>
           </div>
         </div>
