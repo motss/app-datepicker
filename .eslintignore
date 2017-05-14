@@ -5,6 +5,6 @@
 **/*.spec.js
 **/*.test.js
 **/__test*__/**
-logs/**/*
+logs/**/[.^]*
 **/demo/**
 **/test*/**

@@ -36,6 +36,10 @@
   },
   "homepage": "https://github.com/motss/app-datepicker#readme",
   "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-babili": "0.0.12",
+    "babel-preset-env": "^1.4.0",
     "eslint": "^3.17.1",
     "eslint-config-google": "^0.7.1",
     "eslint-plugin-html": "^2.0.1",

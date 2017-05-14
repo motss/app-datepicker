@@ -31,7 +31,7 @@
     "README.md"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#v2.0.0-rc.7",
+    "polymer": "Polymer/polymer#v2.0.0-rc.9",
     "css-grid-polyfill": "FremyCompany/css-grid-polyfill#^1.1.0"
   },
   "devDependencies": {
