@@ -138,9 +138,6 @@ class AppDatepicker extends Polymer.Element {
     super.connectedCallback();
 
     console.info('connected.');
-
-    // Setup datepicker.
-    // this.setupDatepicker();
   }
 
   /**
@@ -507,13 +504,14 @@ class AppDatepicker extends Polymer.Element {
   /**
    * Setup weekdays in text format.
    *
+   * @static
    * @param {string} locale - Locale to format weekdays.
    * @param {number} firstDayOfWeek - First day of the week.
    * @returns {string[]} Array of formatted weekdays.
    *
    * @memberof AppDatepicker
    */
-  setupWeekdays(locale, firstDayOfWeek) {
+  static setupWeekdays(locale, firstDayOfWeek) {
     const hasNativeIntl = AppDatepicker.hasNativeIntl;
     const fdow = AppDatepicker.withinFirstDayOfWeekRange(firstDayOfWeek) ? firstDayOfWeek : 0;
     const dows = hasNativeIntl
@@ -548,24 +546,22 @@ class AppDatepicker extends Polymer.Element {
   /**
    * Setup days of a month.
    *
+   * @static
    * @param {string} locale - Locale to format days of month.
    * @param {number} fullYear - Full year of the active date object.
    * @param {number} month - Month of the active date object.
    * @param {number} firstDayOfWeek - First day of the week.
+   * @param {Date} minDate - Minimum allowed date.
+   * @param {Date} maxDate - Maximum allowed date.
+   * @param {number[]} disableDays - A list of the index of the weekdays need to be disabled.
+   * @param {Object[]} disableDates - A list of dates need to be disabled.
+   *  Each contains the date string and override style to be applied to a disabled date.
    * @returns {string[]} Array of days of a month.
    *
    * @memberof AppDatepicker
    */
-  setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek) {
+  static setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek, minDate, maxDate, disableDays, disableDates) {
     let startDay = new Date(fullYear, month, 1).getDay();
-    const disableDays = this.disableDays
-      && Array.isArray(this.disableDays)
-      && this.disableDays.length
-      ? this.disableDays.slice()
-      : [];
-    const disableDates = AppDatepicker.parseDisableDates(this.disableDates);
-    const minDate = this.minDate;
-    const maxDate = this.maxDate;
     const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
     const hasNativeIntl = AppDatepicker.hasNativeIntl;
     const formatter = hasNativeIntl
@@ -597,7 +593,7 @@ class AppDatepicker extends Polymer.Element {
       const shouldPushDate = i >= startDay && (i < startDay + totalDays);
       const isToday = AppDatepicker.isTheDateToday(fullDate);
       const hasDisableDay = disableDays.length > 0
-        && disableDays.some(dd => dd === AppDatepicker.dateToCalendarCol(j));
+        && disableDays.some(dd => dd.day === AppDatepicker.dateToCalendarCol(j));
       let hasDisableDateOverrideStyle = '';
       const hasDisableDate = disableDates.length > 0
         && disableDates.some(dd => {
@@ -636,12 +632,27 @@ class AppDatepicker extends Polymer.Element {
     const now = AppDatepicker.parseInputDateIntoUTC(inputDate);
     const lang = this.locale || AppDatepicker.localeFromNativeIntl;
     const fdow = this.firstDayOfWeek || 0; // TODO: Is this needed?
+    const minD = this.minDate;
+    const maxD = this.maxDate;
+    const dsbDays = this.disableDays
+      && Array.isArray(this.disableDays)
+      && this.disableDays.length
+      ? this.disableDays.map(dd => ({
+        day: dd,
+        dayLabel: AppDatepicker.hasNativeIntl
+          ? new window.Intl.DateTimeFormat(lang, {
+            weekday: 'long',
+          }).format(AppDatepicker.defaultWeekdaysDates[dd])
+          : AppDatepicker.defaultWeekdays[dd],
+      }))
+      : [];
+    const dsbDates = AppDatepicker.parseDisableDates(this.disableDates);
+
     const date = now.getDate();
     const day = now.getDay();
     const month = now.getMonth();
     const fullYear = now.getFullYear();
 
-    // TODO: To add disableDays, disableDates.
     this._setActiveDateObject({
       locale: lang,
       firstDayOfWeek: fdow,
@@ -657,8 +668,13 @@ class AppDatepicker extends Polymer.Element {
       shortMonth: AppDatepicker.parseDateToMonth(lang, now),
       shortWeekday: AppDatepicker.parseDateToWeekday(lang, now),
 
-      weekdays: this.setupWeekdays(lang, fdow),
-      daysOfMonth: this.setupDaysOfMonth(lang, fullYear, month, fdow),
+      weekdays: AppDatepicker.setupWeekdays(lang, fdow),
+      daysOfMonth: AppDatepicker.setupDaysOfMonth(lang, fullYear, month, fdow, minD, maxD, dsbDays, dsbDates),
+
+      minDate: minD,
+      maxDate: maxD,
+      disableDays: dsbDays,
+      disableDates: dsbDates,
     });
 
     /* Update selectedDate based on inputDate or fallback Date object */
