@@ -10,7 +10,7 @@
 <!-- Example: The page turns pink. -->
 
 ### Live Demo
-<!-- Example: https://jsbin.com/cagaye/edit?html,output -->
+<!-- Example: https://jsbin.com/nanejerivi/edit?html,output -->
 
 ### Steps to reproduce
 
@@ -22,10 +22,11 @@
 
 ### Browsers Affected
 <!-- Check all that apply -->
-- [ ] Chrome
+- [ ] Chrome/ Opera
 - [ ] Firefox
+- [ ] Safari 10+
 - [ ] Safari 9
 - [ ] Safari 8
 - [ ] Safari 7
-- [ ] Edge
+- [ ] Edge 12+
 - [ ] IE 11

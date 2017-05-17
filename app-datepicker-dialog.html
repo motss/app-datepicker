@@ -44,10 +44,8 @@
     locale="[[locale]]"
     no-animation
     always-reset-selected-date-on-dialog-close="[[alwaysResetSelectedDateOnDialogClose]]">
-      <div class="buttons">
-        <paper-button noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
-        <paper-button noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
-      </div>
+        <paper-button slot="dismiss-button" noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
+        <paper-button slot="confirm-button" noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
     </app-datepicker>
   </template>
   <script>

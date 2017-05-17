@@ -119,7 +119,7 @@ Custom property | Description | Default
         user-select: none;
         background: var(--app-datepicker-bg, #fafafa);
 
-        @apply(--app-datepicker);
+        @apply --app-datepicker;
       }
 
       * {
@@ -127,16 +127,14 @@ Custom property | Description | Default
       }
 
       div.datepicker {
-        /* calc(300px + 84px) */
         position: relative;
         width: 300px;
         height: 384px;
         max-height: 384px;
 
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
       }
       div.datepicker.with-buttons {
-        /* calc(300px + 84px + 47px) */
         height: 431px;
         max-height: 431px;
       }
@@ -147,7 +145,7 @@ Custom property | Description | Default
         color: var(--app-datepicker-selection-color, #b2dfdb);
         background-color: var(--app-datepicker-selection-bg, #009688);
 
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
       }
       div.selected-year.iron-selected,
       div.selected-date.iron-selected {
@@ -158,19 +156,18 @@ Custom property | Description | Default
         font-weight: 800;
         height: 34px;
 
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--app-datepicker-selected-year);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --app-datepicker-selected-year;
       }
       div.selected-date {
         font-size: 32px;
         font-weight: 800;
-        /*height: 34px;*/
 
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--layout-flex-auto);
-        @apply(--app-datepicker-selected-date);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-flex-auto;
+        @apply --app-datepicker-selected-date;
       }
       div.selected-year:hover,
       div.selected-date > div:hover {
@@ -184,7 +181,7 @@ Custom property | Description | Default
         color: var(--app-datepicker-calendar-color, #000);
         background-color: var(--app-datepicker-calendar-bg, #fafafa);
 
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
       }
       div.navigator {
         max-height: 46px;
@@ -192,38 +189,37 @@ Custom property | Description | Default
         position: relative;
         margin-top: 8px;
 
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
       }
       div.nav-month-year {
         font-size: 14px;
         font-weight: 500;
         text-align: center;
 
-        @apply(--layout-flex-auto);
-        @apply(--app-datepicker-nav-month-year);
+        @apply --layout-flex-auto;
+        @apply --app-datepicker-nav-month-year;
       }
       div.days-of-week {
         color: var(--app-datepicker-weekdays-color, #848484);
         font-size: 12px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        @apply(--app-datepicker-days-of-week);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        @apply --app-datepicker-days-of-week;
       }
       div.each-days-of-week {
         padding: 13px;
         max-height: 32px;
         width: 41px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
       }
       div.days-of-month {
-        /*padding-bottom: 8px;*/
         font-size: 13px;
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
-        @apply(--layout-center-justified);
-        @apply(--app-datepicker-days-of-month);
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
+        @apply --layout-center-justified;
+        @apply --app-datepicker-days-of-month;
       }
       div.each-days-of-month {
         height: 35px;
@@ -231,8 +227,8 @@ Custom property | Description | Default
         margin-left: 3px;
         margin-right: 3px;
         position: relative;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
       }
       div > div.days-of-month > div.each-days-of-month.chosen-days-of-month {
         border-radius: 50%;
@@ -282,7 +278,7 @@ Custom property | Description | Default
       div.each-list-of-years.is-selected:hover {
         font-weight: 700;
         background-color: var(--app-datepicker-year-hover-background-color, #e0e0e0);
-        @apply(--app-datepicker-year-hover);
+        @apply --app-datepicker-year-hover;
       }
       :host(.dark-theme) div.each-list-of-years:focus,
       :host(.dark-theme) div.each-list-of-years:hover,
@@ -290,7 +286,7 @@ Custom property | Description | Default
       :host(.dark-theme) div.each-list-of-years.is-selected:hover {
         font-weight: 700;
         background-color: var(--app-datepicker-year-hover-background-color, #616161);
-        @apply(--app-datepicker-year-hover);
+        @apply --app-datepicker-year-hover;
       }
       :host(.goog-theme) div.each-list-of-years:focus,
       :host(.goog-theme) div.each-list-of-years:hover,
@@ -298,15 +294,15 @@ Custom property | Description | Default
       :host(.goog-theme) div.each-list-of-years.is-selected:hover {
         font-weight: 700;
         background-color: var(--app-datepicker-year-hover-background-color, #424242);
-        @apply(--app-datepicker-year-hover);
+        @apply --app-datepicker-year-hover;
       }
 
       div.each-list-of-years {
         height: 64px;
         font-size: 16px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        @apply(--app-datepicker-each-list-of-years);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        @apply --app-datepicker-each-list-of-years;
       }
       div.each-list-of-years:hover {
         cursor: pointer;
@@ -317,7 +313,7 @@ Custom property | Description | Default
         color: var(--app-datepicker-selected-year-color, #009688);
         background-color: var(--app-datepicker-selected-year-bg);
 
-        @apply(--app-datepicker-selected-each-list-of-years);
+        @apply --app-datepicker-selected-each-list-of-years;
       }
 
       /* paper-icon-button */
@@ -327,7 +323,7 @@ Custom property | Description | Default
       }
 
       /* content tag selector */
-      div.calendar-view > ::content > div.buttons {
+      .buttons {
         color: var(--app-datepicker-button-color, #009688);
         --paper-button-ink-color: var(--app-datepicker-button-ink-color, #737373);
         position: relative;
@@ -335,9 +331,9 @@ Custom property | Description | Default
         margin: 0;
         font-size: 12px;
         font-weight: 500;
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
-        @apply(--app-datepicker-buttons);
+        @apply --layout-horizontal;
+        @apply --layout-end-justified;
+        @apply --app-datepicker-buttons;
       }
 
       /* will-change: transform, however lag on the first time */
@@ -365,9 +361,8 @@ Custom property | Description | Default
         :host(.horizontal-view) div#dp.datepicker,
         :host(:not(.vertical-view)) div#dp.datepicker {
           width: 512px;
-          /* calc(288px - 47px) */
           height: 241px;
-          @apply(--layout-horizontal);
+          @apply --layout-horizontal;
         }
         :host(.horizontal-view) div#dp.datepicker.with-buttons,
         :host(:not(.vertical-view)) div#dp.datepicker.with-buttons {
@@ -382,9 +377,9 @@ Custom property | Description | Default
           height: 100%;
         }
         :host(:not(.vertical-view)) div.selected-date {
-          @apply(--layout-vertical);
-          @apply(--layout-start);
-          @apply(--layout-start-justified);
+          @apply --layout-vertical;
+          @apply --layout-start;
+          @apply --layout-start-justified;
         }
         /* Fix for IE11 */
         :host(:not(.vertical-view)) div.selected-date > div {
@@ -470,7 +465,7 @@ Custom property | Description | Default
         color: var(--app-datepicker-icon-button-color, #ffff00);
         --paper-icon-button-ink-color: var(--app-datepicker-icon-button-ink-color, #212121);
       }
-      :host(.dark-theme) div.calendar-view > ::content > div.buttons > paper-button {
+      :host(.dark-theme) ::slotted(paper-button) {
         color: var(--app-datepicker-button-color, #80cbc4);
         --paper-button-ink-color: var(--app-datepicker-button-ink-color, #bcbcbc);
       }
@@ -515,7 +510,7 @@ Custom property | Description | Default
         color: var(--app-datepicker-icon-button-color, #DA4336);
         --paper-icon-button-ink-color: var(--app-datepicker-icon-button-ink-color, #616161);
       }
-      :host(.goog-theme) div.calendar-view > ::content > div.buttons > paper-button {
+      :host(.goog-theme) ::slotted(paper-button) {
         color: var(--app-datepicker-button-color, #DA4336);
         --paper-button-ink-color: var(--app-datepicker-button-ink-color, #616161);
       }
@@ -558,7 +553,10 @@ Custom property | Description | Default
             </template>
           </div>
 
-          <content select=".buttons"></content>
+          <div class="buttons">
+            <slot name="dismiss-button"></slot>
+            <slot name="confirm-button"></slot>
+          </div>
         </div>
 
         <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered">
@@ -846,21 +844,23 @@ Custom property | Description | Default
           this.set('pageExitAnimation', 'fade-out-animation');
         }
         // setup distributed children.
-        var _content = this.getEffectiveChildren();
-        var _paperButtons = Polymer.dom(_content[0]).querySelectorAll('paper-button');
-        // workaround to check for _content[0] as paper-button outside of
+        var effectiveChildren = this.getEffectiveChildren();
+
+        console.log(effectiveChildren);
+        // var _paperButtons = Polymer.dom(effectiveChildren[0]).querySelectorAll('paper-button');
+        // workaround to check for effectiveChildren[0] as paper-button outside of
         // this element will be queried as well even though outside of content tag.
-        if (_content[0] && _paperButtons.length > 0) {
-          for (var i = 0; i < _paperButtons.length; i++) {
+        if (effectiveChildren && effectiveChildren.length > 0) {
+          for (var i = 0; i < effectiveChildren.length; i++) {
             // addEventListener to paper-button with dialog-confirm.
-            if (_paperButtons[i].hasAttribute('dialog-confirm')) {
+            if (effectiveChildren[i].hasAttribute('dialog-confirm')) {
               // attach event handler which first binded to this scope.
-              _paperButtons[i].addEventListener('tap', this._updateBindDate.bind(this));
-              _paperButtons[i].addEventListener('transitionend', this._updateBindDate.bind(this));
+              effectiveChildren[i].addEventListener('tap', this._updateBindDate.bind(this));
+              effectiveChildren[i].addEventListener('transitionend', this._updateBindDate.bind(this));
             }
             // Polymer's polyfill for custom properties does not apply to distributed children.
             // https://www.polymer-project.org/1.0/docs/devguide/styling.html
-            this._updateDistributedButtonInkColorCustomProp(_paperButtons[i], '#737373');
+            this._updateDistributedButtonInkColorCustomProp(effectiveChildren[i], '#737373');
           }
           // update to a new height for datepicker if paper-buttons present.
           this.$.dp.classList.add('with-buttons');
@@ -1589,8 +1589,9 @@ Custom property | Description | Default
 
       // workaround to update custom property of distributed children until Polymer supports Native custom properties.
       _updateDistributedButtonInkColorCustomProp: function (_node, _colorCode) {
-        _node.customStyle['--paper-button-ink-color'] = _colorCode;
-        _node.updateStyles();
+        _node.updateStyles({
+          '--paper-button-ink-color': _colorCode,
+        });
       },
 
       // TODO: To add GIF to README.md.
