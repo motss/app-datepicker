@@ -3,9 +3,9 @@
 [![Build Status](https://travis-ci.org/motss/app-datepicker.svg?branch=master)](https://travis-ci.org/motss/app-datepicker)
 
 # app-datepicker (formerly `jv-datepicker`)
-<image src="https://cloud.githubusercontent.com/assets/10607759/14078902/232af734-f52c-11e5-9646-c0a5fb7899ef.png" alt="datepicker-light-theme" width="32%">
-<image src="https://cloud.githubusercontent.com/assets/10607759/14078900/22302dae-f52c-11e5-9bb9-fb84f31075a8.png" alt="datepicker-dark-theme" width="32%">
-<image src="https://cloud.githubusercontent.com/assets/10607759/14078901/22633d84-f52c-11e5-9041-02c805ac9843.png" alt="datepicker-goog-theme" width="32%">
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078902/232af734-f52c-11e5-9646-c0a5fb7899ef.png" alt="datepicker-light-theme" width="296">
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078900/22302dae-f52c-11e5-9bb9-fb84f31075a8.png" alt="datepicker-dark-theme" width="296">
+<image src="https://cloud.githubusercontent.com/assets/10607759/14078901/22633d84-f52c-11e5-9041-02c805ac9843.png" alt="datepicker-goog-theme" width="296">
 
 <!-- ![light-themed-app-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/10119266/ce6d5b0e-64c3-11e5-843d-1310de755315.png)
 ![dark-themed-app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/10119265/c9ad900c-64c3-11e5-937e-338a770eebea.png) -->
@@ -20,16 +20,10 @@ See the [component page](http://motss.github.io/app-datepicker/components/app-da
 An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
 
-## Update (v2.9.0)
-- **_Happily to announce that `app-datepicker` is compatible with Polymer [v1.6.0](https://github.com/Polymer/polymer/releases/tag/v1.6.0) which supports Native CSS Custom Properties :kissing_cat:_**
-- `autoUpdateDate` - proposed by [#20](https://github.com/motss/app-datepicker/pull/20) to allow datepicker to update `date` on date change if the datepicker is a standalone element.
-- `disableDates` - proposed by [#45](https://github.com/motss/app-datepicker/pull/45) to support disabling dates defined by the user.
-- **_Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections._**
-- `confirmLabel` - proposed by [#61](https://github.com/motss/app-datepicker/pull/61) to customize text for the confirm button in `app-datepicker-dialog`.
-- `dismissLabel` - proposed by [#61](https://github.com/motss/app-datepicker/pull/61) to customize text for the dismiss button in `app-datepicker-dialog`.
-
-- **_As of v2.6.0 this element has been renamed to `app-datepicker` from `jv-datepicker`._**
-- `locale` (To change the locale of the datepicker, available language codes can be found in the [demo](http://motss.github.io/app-datepicker/components/app-datepicker/demo/).
+## Update (v2.10.0)
+- **Pleased to announce that `app-datepicker` is now compatible with both Polymer 1.x and Polymer 2.0 stable.**
+- **Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections.**
+- `alwaysResetSelectedDateOnDialogClose` - proposed by [#74](https://github.com/motss/app-datepicker/issues/74) to allow datepicker to reset the selected date to today's date once the datepicker closes and the demo has this included as well.
 
 Example:
 
@@ -56,18 +50,28 @@ Now with mixins, head over to the [component page](http://motss.github.io/app-da
 1. Install with bower.
 `bower install --save app-datepicker`
 
-2. Load the web component and the dependencies.
+2. Load the dependencies and the Intl polyfill if needed.
 
-For `app-datepicker`,
+    Load [`Intl Polyfill`](https://github.com/andyearnshaw/Intl.js) for unsupported browsers via feature detection,
 
-```html
-<link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker.html">
-```
-For `app-datepicker-dialog`,
+    ```js
+    if (window.Intl) {
+      var intlPolyfill = document.createElement('script');
+      intlPolyfill.src = 'path_to_intl_polyfill';
+      document.head.appendChild(intlPolyfill);
+    }
+    ```
 
-```html
-<link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker-dialog.html">
-```
+    For `app-datepicker`,
+
+    ```html
+    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker.html">
+    ```
+    For `app-datepicker-dialog`,
+
+    ```html
+    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker-dialog.html">
+    ```
 
 3. Markup with `<app-datepicker></app-datepicker>` or `<app-datepicker-dialog></app-datepicker-dialog>`.
 
