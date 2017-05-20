@@ -87,6 +87,11 @@ class AppDatepicker extends Polymer.Element {
         readOnly: true,
       },
 
+      isCustomElementConnected: {
+        type: Boolean,
+        readOnly: true,
+      },
+
     };
   }
 
@@ -113,7 +118,7 @@ class AppDatepicker extends Polymer.Element {
   static get observers() {
     return [
       // TODO: More to come.
-      'setupDatepicker(locale, firstDayOfWeek, minDate, maxDate, disableDays.*, disableDates.*)',
+      'setupDatepicker(isCustomElementConnected, locale, firstDayOfWeek, minDate, maxDate, disableDays.*, disableDates.*)',
     ];
   }
 
@@ -136,6 +141,9 @@ class AppDatepicker extends Polymer.Element {
    */
   connectedCallback() {
     super.connectedCallback();
+
+    /* NOTE: To ensure and defer rendering to when or after connectedCallback. */
+    this._setIsCustomElementConnected(true);
 
     console.info('connected.');
   }
@@ -560,7 +568,14 @@ class AppDatepicker extends Polymer.Element {
    *
    * @memberof AppDatepicker
    */
-  static setupDaysOfMonth(locale, fullYear, month, firstDayOfWeek, minDate, maxDate, disableDays, disableDates) {
+  static setupDaysOfMonth(isCustomElementConnected, locale, fullYear, month, firstDayOfWeek, minDate, maxDate, disableDays, disableDates) {
+    /* NOTE: Do nothing when the element has yet to be connected to the DOM. */
+    if (!isCustomElementConnected) {
+      console.info('Custom element yet to be connected');
+
+      return;
+    }
+
     let startDay = new Date(fullYear, month, 1).getDay();
     const totalDays = AppDatepicker.getTotalDaysOfMonth(fullYear, month);
     const hasNativeIntl = AppDatepicker.hasNativeIntl;
@@ -622,6 +637,29 @@ class AppDatepicker extends Polymer.Element {
   }
 
   /**
+   * Deeply freeze an object.
+   *
+   * @static
+   * @param {Object} obj - An Object that needs to be frozen.
+   * @returns {Object} A frozen object which its property cannot be modified.
+   *
+   * @memberof AppDatepicker
+   */
+  static deepFreeze(obj) {
+    const propNames = Object.getOwnPropertyNames(obj);
+
+    propNames.map((propName) => {
+      const prop = obj[propName];
+
+      if (prop instanceof Object && prop !== null) {
+        AppDatepicker.deepFreeze(prop);
+      }
+    });
+
+    return Object.freeze(obj);
+  }
+
+  /**
    *
    *
    *
@@ -653,7 +691,7 @@ class AppDatepicker extends Polymer.Element {
     const month = now.getMonth();
     const fullYear = now.getFullYear();
 
-    this._setActiveDateObject({
+    this._setActiveDateObject(AppDatepicker.deepFreeze({
       locale: lang,
       firstDayOfWeek: fdow,
 
@@ -675,7 +713,7 @@ class AppDatepicker extends Polymer.Element {
       maxDate: maxD,
       disableDays: dsbDays,
       disableDates: dsbDates,
-    });
+    }));
 
     /* Update selectedDate based on inputDate or fallback Date object */
     this._setSelectedDate(now.toJSON());
