@@ -519,11 +519,11 @@ Custom property | Description | Default
 
     <div id="dp" class="datepicker">
       <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
-        <div id="showSelectedYear" class="selected-year" view="year" tabindex="0" aria-label="year view">
+        <div id="showSelectedYear" class="selected-year" tabindex="0" view="year" aria-label="year view">
           [[_showSelectedYear]]
         </div>
-        <div class="selected-date" view="calendar">
-          <div tabindex="0" aria-label="calendar view">[[_shortSelectedDate]]</div>
+        <div class="selected-date" view="calendar" tabindex="0">
+          <div aria-label="calendar view">[[_shortSelectedDate]]</div>
         </div>
       </iron-selector>
 

@@ -6,9 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script>
-      window.Polymer = { lazyRegister: 'max', useNativeCSSProperties: !0, dom: 'shadow' };
+      // window.Polymer = { useNativeCSSProperties: !0, dom: 'shadow' };
     </script>
 
     <link rel="import" href="fetch.html">
@@ -542,8 +542,8 @@
 
       demo._onSelectedDateChanged = function(ev) {
         var _value = ev.detail.value;
-        this.async(function() {
-          this.$.eInput.updateValueAndPreserveCaret(_value);
+        window.setTimeout(function() {
+          demo.$.eInput.updateValueAndPreserveCaret(_value);
         }, 1500);
       };
 
@@ -562,6 +562,17 @@
           var _tel = _target.getElementsByTagName('*').length;
           console.log('Total element nodes w/ Lazy-Loading:', _tel);
         }, 1);
+      });
+
+      window.addEventListener('load', function () {
+        window.setTimeout(function() {
+          var now = new Date();
+          var fy = now.getFullYear();
+          var m = now.getMonth() + 1;
+          var d = now.getDate();
+
+          demo.$.eInput.updateValueAndPreserveCaret(fy + '/' + ('0' + m).slice(-2) + '/' + ('0' + d).slice(-2));
+        }, 100);
       });
     </script>
 
