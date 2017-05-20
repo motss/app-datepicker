@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
   <head>
+    <title>app-datepicker-tests</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
@@ -15,7 +17,7 @@
   <body>
 
     <!-- Setting up test-fixture for app-datepicker -->
-    <test-fixture id="JvDatepicker">
+    <test-fixture id="appDatepicker">
       <template>
         <app-datepicker></app-datepicker>
       </template>
@@ -26,7 +28,7 @@
       describe('<app-datepicker>', function () {
         var datepicker;
         beforeEach(function () {
-          datepicker = fixture('JvDatepicker');
+          datepicker = fixture('appDatepicker');
         });
 
         context('test inputs for correct selected view', function () {
@@ -36,23 +38,45 @@
             expect(_ironSelector.selected).to.be.equal('calendar');
           });
 
-          it('should select the correct view (year)', function () {
+           it('should select the correct view (year)', function () {
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
             var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
-            _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
-            expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0
+
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            }
           });
 
           it('should select the correct view (date)', function () {
-            var _ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector'),
-                _dateView = _ironSelector.querySelector('div.selected-date'),
-                _yearView = _ironSelector.querySelector('div.selected-year');
-            _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
-            _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
-            expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+            var _dateView = ironSelector.querySelector('div.selected-date');
+            var _yearView = ironSelector.querySelector('div.selected-year');
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0;
+
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+
+              ironSelector.selected = 'calendar';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            }
           });
 
           it('should show correct locale based on the system', function () {
-            var _systemLocale = window.navigator.language;
+            var _systemLocale = window.navigator.language || 'en-US';
+
             expect(datepicker.locale).to.be.equal(_systemLocale);
           });
         });
@@ -235,13 +259,13 @@
               if (i === 0 || i === 2 || i === 4) {
                 expect(datepicker.date).to.be.not.equal(_testDate);
               }else if (i == 5) {
-                if (window.navigator.msManipulationViewsEnabled) {
-                  expect(datepicker.date).to.be.equal('Mon, May, 25, 2020');
-                }else {
+                // if (window.navigator.msManipulationViewsEnabled) {
+                //   expect(datepicker.date).to.be.equal('Mon, May, 25, 2020');
+                // }else {
                   // wrong weekday from input date but the datepicker wil correct that
                   // as long as the date is a valid input.
                   expect(datepicker.date).to.be.equal('Mon, May 25, 2020');
-                }
+                // }
               }else {
                 expect(datepicker.date).to.be.not.equal(_testDate2);
               }

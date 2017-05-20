@@ -1,6 +1,8 @@
 language: node_js
 sudo: required
-dist: trusty
+before_script:
+  - npm install -g polymer-cli
+  - polymer install --variants
 node_js: stable
 addons:
   firefox: latest
@@ -9,8 +11,6 @@ addons:
       - google-chrome
     packages:
       - google-chrome-stable
-before_script:
-  - npm install -g bower polylint web-component-tester
-  - bower install
 script:
-  - xvfb-run wct
+  - xvfb-run polymer test
+dist: trusty
