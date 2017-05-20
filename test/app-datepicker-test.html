@@ -38,37 +38,41 @@
             expect(_ironSelector.selected).to.be.equal('calendar');
           });
 
-          // it('should select the correct view (year)', function (done) {
-          //   var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
-          //   var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
+           it('should select the correct view (year)', function () {
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+            var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0
 
-          //   ironSelector.addEventListener('selected-changed', function tapOnYearView() {
-          //     // ironSelector.removeEventListener('selected-changed', tapOnYearView);
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            }
+          });
 
-          //     expect(_yearView.classList.contains('iron-selected')).to.be.true;
+          it('should select the correct view (date)', function () {
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+            var _dateView = ironSelector.querySelector('div.selected-date');
+            var _yearView = ironSelector.querySelector('div.selected-year');
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0;
 
-          //     done();
-          //   });
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
 
-          //   _yearView.dispatchEvent(new CustomEvent('tap', { bubbles: true }));
-          // });
-
-          // it('should select the correct view (date)', function (done) {
-          //   var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
-          //   var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
-          //   var _dateView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-date');
-
-          //   ironSelector.addEventListener('selected-changed', function tapOnDateView() {
-          //     // ironSelector.removeEventListener('selected-changed', tapOnDateView);
-
-          //     expect(_dateView.classList.contains('iron-selected')).to.be.true;
-
-          //     done();
-          //   });
-
-          //   _yearView.dispatchEvent(new CustomEvent('tap', { bubbles: true }));
-          //   _dateView.dispatchEvent(new CustomEvent('tap', { bubbles: true }));
-          // });
+              ironSelector.selected = 'calendar';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            }
+          });
 
           it('should show correct locale based on the system', function () {
             var _systemLocale = window.navigator.language || 'en-US';
