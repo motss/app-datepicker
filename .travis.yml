@@ -13,3 +13,4 @@ addons:
       - google-chrome-stable
 script:
   - xvfb-run polymer test
+dist: trusty
