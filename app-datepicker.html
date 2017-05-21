@@ -920,15 +920,15 @@ Custom property | Description | Default
           && window.Intl.DateTimeFormat().resolvedOptions
           && window.Intl.DateTimeFormat().resolvedOptions().locale)
           || 'en-US');
-        var _formatter = new window.Intl.DateTimeFormat(_locale, {
-          day: 'numeric'
-        }).format;
+        var _formatter = window.Intl && window.Intl.DateTimeFormat
+          ? new window.Intl.DateTimeFormat(_locale, { day: 'numeric' }).format
+          : function dateTimeFormatShim(date) { return date.getDate() };
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
           var _formatted = _formatter(new Date(_activeYear, _activeMonth, j));
           var _dateObj = { date: '', index: '' };
           if (i >= _start & i < _start + _totalDays) {
-            _dateObj.date = _formatted;
-            _dateObj.index = j;
+            _dateObj.date = +_formatted;
+            _dateObj.index = +j;
           }
           _daysOfMonth.push(_dateObj);
         }

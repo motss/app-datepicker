@@ -76,8 +76,9 @@
 
           it('should show correct locale based on the system', function () {
             var _systemLocale = window.navigator.language || 'en-US';
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
 
-            expect(datepicker.locale).to.be.equal(_systemLocale);
+            expect(datepickerLocale).to.be.equal(_systemLocale);
           });
         });
 
@@ -459,11 +460,12 @@
         context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
           it('should fallback to default locale if window.Intl is undefined', function () {
             var cachedIntl = window.Intl;
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
 
             // Override Intl on browser.
             window.Intl = null;
 
-            expect(datepicker.locale).to.be.equal('en-US');
+            expect(datepickerLocale).to.be.equal('en-US');
 
             // Restore Intl.
             window.Intl = cachedIntl;
@@ -471,11 +473,12 @@
 
           it('should fallback to default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
             var cachedIntl = window.Intl;
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
 
             // Override Intl on browser.
             window.Intl.DateTimeFormat().resolvedOptions = {};
 
-            expect(datepicker.locale).to.be.equal('en-US');
+            expect(datepickerLocale).to.be.equal('en-US');
 
             // Restore Intl.
             window.Intl = cachedIntl;
