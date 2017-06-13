@@ -921,10 +921,10 @@ Custom property | Description | Default
           && window.Intl.DateTimeFormat().resolvedOptions().locale)
           || 'en-US');
         var _formatter = window.Intl && window.Intl.DateTimeFormat
-          ? new window.Intl.DateTimeFormat(_locale, { day: 'numeric' }).format
+          ? new window.Intl.DateTimeFormat(_locale, { timeZone: 'UTC', day: 'numeric' }).format
           : function dateTimeFormatShim(date) { return date.getDate() };
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
-          var _formatted = _formatter(new Date(_activeYear, _activeMonth, j));
+          var _formatted = _formatter(Date.UTC(_activeYear, _activeMonth, j));
           var _dateObj = { date: '', index: '' };
           if (i >= _start & i < _start + _totalDays) {
             _dateObj.date = +_formatted;
@@ -1002,9 +1002,10 @@ Custom property | Description | Default
             && window.Intl.DateTimeFormat().resolvedOptions().locale)
             || 'en-US');
           var _amy = new window.Intl.DateTimeFormat(_locale, {
+            timeZone: 'UTC',
             month: 'short',
             year: 'numeric'
-          }).format(new Date(_activeYear, _activeMonth, 1));
+          }).format(Date.UTC(_activeYear, _activeMonth, 1));
           this.set('_activeMonthYear', _amy);
         }
       },
@@ -1017,10 +1018,11 @@ Custom property | Description | Default
             && window.Intl.DateTimeFormat().resolvedOptions().locale)
             || 'en-US');
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
+            timeZone: 'UTC',
             weekday: 'short',
             month: 'short',
             day: 'numeric'
-          }).format(new Date(_selectedYear, _selectedMonth, _selectedDate));
+          }).format(Date.UTC(_selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
 
           // When datepicker has no button for date confirmation,
@@ -1039,8 +1041,9 @@ Custom property | Description | Default
             && window.Intl.DateTimeFormat().resolvedOptions().locale)
             || 'en-US');
           var _ssy = new window.Intl.DateTimeFormat(_locale, {
+            timeZone: 'UTC',
             year: 'numeric'
-          }).format(new Date(_selectedYear, 0, 1));
+          }).format(Date.UTC(_selectedYear, 0, 1));
           this.set('_showSelectedYear', _ssy);
         }
       },
@@ -1141,12 +1144,13 @@ Custom property | Description | Default
           var _today = new Date();
           var _offsetDate = _today.getDate() - _today.getDay();
           var _formatter = new window.Intl.DateTimeFormat(_locale, {
+            timeZone: 'UTC',
             weekday: 'narrow'
           }).format;
           var newDate = null;
 
           for (var i = 0; i < 7; i++) {
-            newDate = new Date(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
+            newDate = Date.UTC(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
             _dow.push(_formatter(newDate));
           }
         }
@@ -1369,7 +1373,7 @@ Custom property | Description | Default
         }
 
         var _selectedDate = this._selectedDate;
-        var _longDate = new Date(this._selectedYear, this._selectedMonth, _selectedDate);
+        var _longDate = Date.UTC(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
           _locale = _locale || ((window.Intl
@@ -1378,6 +1382,7 @@ Custom property | Description | Default
             && window.Intl.DateTimeFormat().resolvedOptions().locale)
             || 'en-US');
           var _options = {
+            timeZone: 'UTC',
             weekday: this.showLongDate ? 'short' : undefined,
             year: 'numeric',
             month: this.showLongDate ? 'short' : '2-digit',
