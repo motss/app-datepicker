@@ -18,10 +18,11 @@ See the [component page](http://motss.github.io/app-datepicker/components/app-da
 An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
 
-## Update (v2.10.0)
+## Update (v2.11.0)
 - **Pleased to announce that `app-datepicker` is now compatible with both Polymer 1.x and Polymer 2.0 stable.**
 - **Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections.**
 - `alwaysResetSelectedDateOnDialogClose` - proposed by [#74](https://github.com/motss/app-datepicker/issues/74) to allow datepicker to reset the selected date to today's date once the datepicker closes and the demo has this included as well.
+- As of `v2.11`, all dates will no longer include users' local system's timezone offset and all will be default to GMT/ UTC timezone. For more info, please see [#89](https://github.com/motss/app-datepicker/pull/89).
 
 Example:
 
