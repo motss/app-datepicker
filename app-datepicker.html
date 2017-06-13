@@ -1458,15 +1458,27 @@ Custom property | Description | Default
           }
 
           // From here onwards, to check for short input date.
-          var re = /^(\d{4})[\W\s]+(\d{1,2})[\W\s]+(\d{1,2})$/i;
-          var validWithRe = re.exec(_id);
+          var _re1 = /^(\d{4})\W+(\d{1,2})\W+(\d{1,2})$/i;
+          var _re2 = /^(\d{4})[ ](\w+)[ ](\d{1,2})$/i;
 
-          return !validWithRe
-            ? _res
-            : {
-              valid: true,
-              result: new Date(+validWithRe[1], +validWithRe[2] - 1,  +validWithRe[3])
+          var _validWithRe1 = _re1.exec(_id);
+          var _validWithRe2 = _re2.exec(_id);
+
+          if (_validWithRe1 === null && _validWithRe2 === null) {
+            return _res;
+          }else {
+            var _resultToDate = null;
+            if (_validWithRe1 === null) {
+              _resultToDate = new Date(_validWithRe2[1] + ' ' + _validWithRe2[2] + ' ' + _validWithRe2[3]);
+            }else if (_validWithRe2 === null) {
+              _resultToDate = new Date(+_validWithRe1[1], +_validWithRe1[2] - 1, +_validWithRe1[3]);
+            }
+
+            return {
+              valid: !0,
+              result: _resultToDate
             };
+          }
         }
 
         var _showLongDate = this.showLongDate;
