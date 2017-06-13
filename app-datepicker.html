@@ -644,12 +644,28 @@ Custom property | Description | Default
           value: '1000/00/01'
         },
         /**
+         * Minimum date for selection. Dates that are smaller than the minimum
+         * date will be disabled for selection.
+         */
+        minDateObj: {
+          type: Number,
+          computed: '_truncateDateTimeNil(minDate)'
+        },
+        /**
          * Maximum date for selection. Dates that are larger than the maximum
          * date will be disabled for selection.
          */
         maxDate: {
           type: String,
           value: '9999/99/99'
+        },
+        /**
+         * Maximum date for selection. Dates that are larger than the maximum
+         * date will be disabled for selection.
+         */
+        maxDateObj: {
+          type: Number,
+          computed: '_truncateDateTimeNil(maxDate)'
         },
         /**
          * Format for the selected date. Default to `yyyy/mm/dd`. Eg. `2017/05/17`.
@@ -1103,20 +1119,18 @@ Custom property | Description | Default
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
         if (this._isNumber(_item)) {
-          var _minDateObj = this._convertDateStringToDateObject(_minDate);
-          var _maxDateObj = this._convertDateStringToDateObject(_maxDate);
-          var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
+          var _currentDate = this._truncateDateTime(new Date(this._activeYear, this._activeMonth, _item));
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
-          if (_minDateObj) {
-            _isLessThanMinDate = _currentDate.getTime() < _minDateObj.getTime();
+          if (this.minDateObj) {
+            _isLessThanMinDate = _currentDate < this.minDateObj;
           }
-          if (_maxDateObj) {
-            _isMoreThanMaxDate = _currentDate.getTime() > _maxDateObj.getTime();
+          if (this.maxDateObj) {
+            _isMoreThanMaxDate = _currentDate > this.maxDateObj;
           }
           _isDisableDates = this.disableDates && this.disableDates.length && this.disableDates.some(function(date) {
             var _dateObj = this._convertDateStringToDateObject(date);
-            return _dateObj && _currentDate.getTime() === _dateObj.getTime();
+            return _dateObj && _currentDate === this._truncateDateTime(_dateObj);
           }.bind(this));
         }
         // To disable a date, it must be either one of the followings:
@@ -1126,6 +1140,22 @@ Custom property | Description | Default
         // d) _isMoreThanMaxDate (set by propery moreDate).
         _isDisableDay = _isDisableDays || _isDisableDates || _isLessThanMinDate || _isMoreThanMaxDate;
         return _isDisableDay ? ' is-disabled-day is-non-selectable' : '';
+      },
+
+      // get truncated time
+      _truncateDateTime: function(date) {
+        date.setHours(0,0,0,0);
+        return date.getTime();
+      },
+      // get truncated time
+      _truncateDateTimeNil: function(date) {
+        if(date) {
+          var dateObj = this._convertDateStringToDateObject(date);
+          if(dateObj) {
+            return this._truncateDateTime(dateObj);
+          }
+        }
+        return null;
       },
 
       // Re-compute class when a year is selected at year page.
@@ -1177,7 +1207,7 @@ Custom property | Description | Default
       _convertDateStringToDateObject: function (_date) {
         var _checkDate = _date instanceof Date || typeof _date !== 'string' ? _date : new Date(_date);
         var _isValidDate = _checkDate.toDateString() !== 'Invalid Date';
-        return _isValidDate ? _checkDate : null;
+        return _isValidDate ? _checkDate: null;
       },
 
       // Dynamically load items into the iron-list when switching page to year view.
