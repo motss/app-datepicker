@@ -294,10 +294,10 @@
                   }
                 },
                 remove: function() {
-                    datepicker.removeEventListener(this.dateChanged);
+                    datepicker.removeEventListener('date-changed', this.dateChanged);
                 }
             };
-            datepicker.addEventListener('date-changed', _localCB.dateChanged.bind(_localCB));
+            datepicker.addEventListener('date-changed', _localCB.dateChanged);
             datepicker.enforceDateChange();
           });
         });
