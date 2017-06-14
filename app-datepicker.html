@@ -36,6 +36,10 @@ While `app-datepicker-dialog` has a `app-datepicker` being wrapped inside a dial
 
 ~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!~~
 
+### Max, min dates and disabled dates
+
+For all these properties, you must use ISO date formats: **yyyy-mm-dd**. These changes can break your old code.
+
 ### Styling
 
 By default, the datepicker is in `light-theme` and now you are able to style almost all possible sections of the datepicker with your own choices of color.
@@ -588,15 +592,7 @@ Custom property | Description | Default
         locale: {
           type: String,
           value: function () {
-            if (window.Intl) {
-              return (window.Intl
-                && window.Intl.DateTimeFormat
-                && window.Intl.DateTimeFormat().resolvedOptions
-                && window.Intl.DateTimeFormat().resolvedOptions().locale)
-                || 'en-US';
-            }
-
-            return 'en-US';
+            return this._getDefaultLocale();
           }
         },
         /**
@@ -628,6 +624,7 @@ Custom property | Description | Default
         },
         /**
          * Array of dates need to be disabled for selection.
+         * The format for any disable date must be a valid ISO format (yyyy-mm-dd).
          */
         disableDates: {
           type: Array,
@@ -638,18 +635,42 @@ Custom property | Description | Default
         /**
          * Minimum date for selection. Dates that are smaller than the minimum
          * date will be disabled for selection.
+         * The format for minDate must be a valid ISO format (yyyy-mm-dd).
          */
         minDate: {
           type: String,
-          value: '1000/00/01'
+          value: function() {
+              return null;
+          }
+        },
+        /**
+         * Minimum date for selection. Dates that are smaller than the minimum
+         * date will be disabled for selection.
+         * @private
+         */
+        minDateObj: {
+          type: Date,
+          computed: '_convertISODateStringToDateObject(minDate)'
         },
         /**
          * Maximum date for selection. Dates that are larger than the maximum
          * date will be disabled for selection.
+         * The format for minDate must be a valid ISO format (yyyy-mm-dd).
          */
         maxDate: {
           type: String,
-          value: '9999/99/99'
+          value: function() {
+            return null;
+          }
+        },
+        /**
+         * Maximum date for selection. Dates that are larger than the maximum
+         * date will be disabled for selection.
+         * @private
+         */
+        maxDateObj: {
+          type: Date,
+          computed: '_convertISODateStringToDateObject(maxDate)'
         },
         /**
          * Format for the selected date. Default to `yyyy/mm/dd`. Eg. `2017/05/17`.
@@ -872,6 +893,21 @@ Custom property | Description | Default
 
       detached: function () { },
 
+      // get the default locale
+      _getDefaultLocale: function() {
+        var locale = null;
+        if(window.Intl
+          && window.Intl.DateTimeFormat
+          && window.Intl.DateTimeFormat().resolvedOptions
+          && window.Intl.DateTimeFormat().resolvedOptions().locale) {
+          locale = window.Intl.DateTimeFormat().resolvedOptions().locale;
+        }
+        if(!locale || locale === 'und' || locale === 'null') {
+          locale = navigator.language || 'en-US';
+        }
+        return locale === 'en-US-posix' ? 'en-US' : locale;
+      },
+
       //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
       //  Days   31  28  31  30  31  30  31  31  30  31  30  31
       //   31?    0       2       4       6   7       9      11
@@ -915,11 +951,7 @@ Custom property | Description | Default
         }
 
         // Set up Intl.
-        _locale = _locale || ((window.Intl
-          && window.Intl.DateTimeFormat
-          && window.Intl.DateTimeFormat().resolvedOptions
-          && window.Intl.DateTimeFormat().resolvedOptions().locale)
-          || 'en-US');
+        _locale = _locale || this._getDefaultLocale();
         var _formatter = window.Intl && window.Intl.DateTimeFormat
           ? new window.Intl.DateTimeFormat(_locale, { timeZone: 'UTC', day: 'numeric' }).format
           : function dateTimeFormatShim(date) { return date.getDate() };
@@ -996,11 +1028,7 @@ Custom property | Description | Default
       // Re-compute active month year if new date is selected.
       _computeActiveMonthYear: function (_activeYear, _activeMonth, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._getDefaultLocale();
           var _amy = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             month: 'short',
@@ -1012,11 +1040,7 @@ Custom property | Description | Default
       // Re-compute short version of full date to show on the picker.
       _computeShortSelectedDate: function (_selectedYear, _selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._getDefaultLocale();
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             weekday: 'short',
@@ -1035,11 +1059,7 @@ Custom property | Description | Default
       },
       _computeShowSelectedYear: function (_selectedYear, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._getDefaultLocale();
           var _ssy = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             year: 'numeric'
@@ -1090,8 +1110,6 @@ Custom property | Description | Default
       },
       // Re-compute class if the item (day of month) is a disable day.
       _isDisableDays: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isLessThanMinDate = !1;
-        var _isMoreThanMaxDate = !1;
         var _isDisableDay = !1;
         var _isDisableDates = false;
         // _index % 7 gives values from 0 to 6.
@@ -1102,29 +1120,37 @@ Custom property | Description | Default
         // ------ < _minDate ---------------- _maxDate > ------
         // if _item is of type Number.
         // if converted _item into new Date() < minDate or > maxDate.
-        if (this._isNumber(_item)) {
-          var _minDateObj = this._convertDateStringToDateObject(_minDate);
-          var _maxDateObj = this._convertDateStringToDateObject(_maxDate);
+        // if it is disabled avoid check min or max value
+        if (!_isDisableDates && this._isNumber(_item)) {
+          var _isLessThanMinDate = !1;
+          var _isMoreThanMaxDate = !1;
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
-          if (_minDateObj) {
-            _isLessThanMinDate = _currentDate.getTime() < _minDateObj.getTime();
+          if (this.minDateObj) {
+            _isLessThanMinDate = _currentDate < this.minDateObj;
           }
-          if (_maxDateObj) {
-            _isMoreThanMaxDate = _currentDate.getTime() > _maxDateObj.getTime();
+          if (this.maxDateObj) {
+            _isMoreThanMaxDate = _currentDate > this.maxDateObj;
           }
-          _isDisableDates = this.disableDates && this.disableDates.length && this.disableDates.some(function(date) {
-            var _dateObj = this._convertDateStringToDateObject(date);
-            return _dateObj && _currentDate.getTime() === _dateObj.getTime();
-          }.bind(this));
+          // if any of min or max disables the date, avoid unnecessary extra computation
+          if(_isLessThanMinDate || _isMoreThanMaxDate) {
+              _isDisableDates = true;
+          } else {
+            // now disableDates contains ISO date strings, so we only need to find converted _currentDate in the array
+            _currentDate = this._convertDateToISODateString(_currentDate);
+            _isDisableDates = this.disableDates && this.disableDates.length && this.disableDates.some(function(date) {
+                return date === _currentDate;
+            });
+          }
         }
         // To disable a date, it must be either one of the followings:
         // a) _isDisabledDays (set by property disableDays),
         // b) _isDisableDates (set by property disableDates),
         // c) _isLessThanMinDate (set by property minDate), and
         // d) _isMoreThanMaxDate (set by propery moreDate).
-        _isDisableDay = _isDisableDays || _isDisableDates || _isLessThanMinDate || _isMoreThanMaxDate;
+        // c) and d) now are handle internally so we dont need unnecessary extra computation
+        _isDisableDay = _isDisableDays || _isDisableDates;
         return _isDisableDay ? ' is-disabled-day is-non-selectable' : '';
       },
 
@@ -1173,7 +1199,53 @@ Custom property | Description | Default
         }
       },
 
+      // Convert date ISO string into date object.
+      _convertISODateStringToDateObject: function(dateString) {
+        var d = null;
+        if(dateString) {
+          if(dateString.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
+            try {
+              // we will use client TZ to do the logic
+              d = new Date(dateString.split('-'));
+              if(!this._validDateInstance(d)) {
+                  d = null;
+              }
+            } catch (_) {
+                console.warn('provided dateString is not a valid date: ' + dateString);
+                d = null;
+            }
+          }
+        }
+        return d;
+      },
+      // convert a date to a ISO string date (yyyy-mm-dd)
+      _convertDateToISODateString: function(date) {
+        if(date) {
+          var year = '' + date.getFullYear();
+          while(year.length < 4) {
+            year = '0' + year;
+          }
+          var month = '' + (date.getMonth() + 1);
+          if(date.getMonth() < 9) {
+            month = '0' + month;
+          }
+          var day = '' + date.getDate();
+          if(date.getDate() < 10) {
+            day = '0' + day;
+          }
+          // always yyyy-mm-dd
+          return [year, month, day].join('-');
+        }
+        return null;
+      },
+      // checks if provided date is a valid date
+      _validDateInstance: function(d) {
+        return Object.prototype.toString.call(d) === "[object Date]" && !isNaN(d.getTime());
+      },
+
       // Convert date string into date object.
+      // @deprecated this method can be removed
+      // @see _convertISODateStringToDateObject
       _convertDateStringToDateObject: function (_date) {
         var _checkDate = _date instanceof Date || typeof _date !== 'string' ? _date : new Date(_date);
         var _isValidDate = _checkDate.toDateString() !== 'Invalid Date';
@@ -1376,11 +1448,7 @@ Custom property | Description | Default
         var _longDate = Date.UTC(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._getDefaultLocale();
           var _options = {
             timeZone: 'UTC',
             weekday: this.showLongDate ? 'short' : undefined,
