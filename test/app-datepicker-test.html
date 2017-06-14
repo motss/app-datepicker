@@ -75,7 +75,7 @@
           });
 
           it('should show correct locale based on the system', function () {
-            var _systemLocale = window.navigator.language || 'en-US';
+            var _systemLocale = datepicker._getDefaultLocale();
             var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
 
             expect(datepickerLocale).to.be.equal(_systemLocale);
@@ -85,7 +85,7 @@
         context('test for disableDates', function () {
           it('should disable all dates in the array', function () {
             datepicker.inputDate = '2016/01/01';
-            datepicker.disableDates = ['2016/01/02', '2016/01/03', '2016/01/04'];
+            datepicker.disableDates = ['2016-01-02', '2016-01-03', '2016-01-04'];
 
             Polymer.dom.flush();
 
@@ -128,7 +128,8 @@
         context('test for minDate and maxDate', function () {
           it('should disable all dates before minDate && minDate is a date string', function () {
             var _currentDate = new Date();
-            var _minDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '3' ].join('/');
+            _currentDate.setDate(3);
+            var _minDateString = datepicker._convertDateToISODateString(_currentDate);
             datepicker.minDate = _minDateString;
 
             Polymer.dom.flush();
@@ -139,7 +140,8 @@
 
           it('should disable all dates after maxDate && maxDate is a date string', function () {
             var _currentDate = new Date();
-            var _maxDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '20' ].join('/');
+            _currentDate.setDate(20);
+            var _maxDateString = datepicker._convertDateToISODateString(_currentDate);
             datepicker.maxDate = _maxDateString;
 
             Polymer.dom.flush();
@@ -276,16 +278,27 @@
           it('should display correct output date when locale is changed', function () {
             datepicker.showLongDate = !0;
             datepicker.inputDate = 'Sun, Jan 31, 2016';
+            var _localCB = {
+                dateChanged: function(e) {
+                  try {
+                    datepicker.locale = 'fr-FR';
+                    // IE11 broke it again.
+                    var _toSplit = datepicker.date.split(' ');
+                    var _temp = [];
+                    for (var i = 0, len = _toSplit.length; i < len; i++) {
+                      _temp[i] = encodeURIComponent(_toSplit[i]).replace(/\%[0-9A-Z]{2}/gi, '');
+                    }
+                    expect(_temp.join(' ')).to.be.equal('dim. 31 janv. 2016');
+                  } finally {
+                    this.remove();
+                  }
+                },
+                remove: function() {
+                    datepicker.removeEventListener(this.dateChanged);
+                }
+            };
+            datepicker.addEventListener('date-changed', _localCB.dateChanged.bind(_localCB));
             datepicker.enforceDateChange();
-            datepicker.locale = 'fr-FR';
-
-            // IE11 broke it again.
-            var _toSplit = datepicker.date.split(' ');
-            var _temp = [];
-            for (var i = 0, len = _toSplit.length; i < len; i++) {
-              _temp[i] = encodeURIComponent(_toSplit[i]).replace(/\%[0-9A-Z]{2}/gi, '');
-            }
-            expect(_temp.join(' ')).to.be.equal('dim. 31 janv. 2016');
           });
         });
 
@@ -460,25 +473,29 @@
         context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
           it('should fallback to default locale if window.Intl is undefined', function () {
             var cachedIntl = window.Intl;
-            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
-
             // Override Intl on browser.
             window.Intl = null;
 
-            expect(datepickerLocale).to.be.equal('en-US');
+            var defaultLocale = navigator.language || 'en-US';
+            defaultLocale = defaultLocale === 'en-US-posix' ? 'en-US' : defaultLocale;
+
+            // we cannot use datepicker.locale just because it is loaded before
+            var datepickerLocale = datepicker._getDefaultLocale();
+
+            expect(datepickerLocale).to.be.equal(defaultLocale);
 
             // Restore Intl.
             window.Intl = cachedIntl;
           });
 
-          it('should fallback to default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
+          it('should fallback to navigator or default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
             var cachedIntl = window.Intl;
-            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
-
+            var defaultLocale = navigator.language || 'en-US';
+            defaultLocale = defaultLocale === 'en-US-posix' ? 'en-US' : defaultLocale;
             // Override Intl on browser.
             window.Intl.DateTimeFormat().resolvedOptions = {};
 
-            expect(datepickerLocale).to.be.equal('en-US');
+            expect(datepicker._getDefaultLocale()).to.be.equal(defaultLocale);
 
             // Restore Intl.
             window.Intl = cachedIntl;
