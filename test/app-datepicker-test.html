@@ -129,7 +129,7 @@
           it('should disable all dates before minDate && minDate is a date string', function () {
             var _currentDate = new Date();
             _currentDate.setDate(3);
-            var _minDateString = datepicker._convertDateToISODateString(_currentDate);
+            var _minDateString = datepicker._convertAnyDateToDateObject(_currentDate);
             datepicker.minDate = _minDateString;
 
             Polymer.dom.flush();
@@ -141,7 +141,7 @@
           it('should disable all dates after maxDate && maxDate is a date string', function () {
             var _currentDate = new Date();
             _currentDate.setDate(20);
-            var _maxDateString = datepicker._convertDateToISODateString(_currentDate);
+            var _maxDateString = datepicker._convertAnyDateToDateObject(_currentDate);
             datepicker.maxDate = _maxDateString;
 
             Polymer.dom.flush();
