@@ -36,9 +36,17 @@ While `app-datepicker-dialog` has a `app-datepicker` being wrapped inside a dial
 
 ~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided. Let's go and check out the demo!~~
 
-### Max, min dates and disabled dates
+### Min and max dates
 
-For all these properties, you must use ISO date formats: **yyyy-mm-dd**. These changes can break your old code.
+[minDate](#app-datepicker:property-minDate) and [maxDate](#app-datepicker:property-maxDate) will accept any string date that
+[Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) constructor accepts or
+any valid [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date).
+
+### Disable dates
+
+[disableDates](#app-datepicker:property-disableDates) can be an `Array` of date strings, any valid
+ [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
+ or any combination of date strings and dates.
 
 ### Styling
 
@@ -551,7 +559,7 @@ Custom property | Description | Default
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
             <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDateObj, maxDateObj, item.index, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDateObj, maxDateObj, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDateObj, maxDateObj, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
                 [[item.date]]
               </div>
             </template>
@@ -624,7 +632,7 @@ Custom property | Description | Default
         },
         /**
          * Array of dates need to be disabled for selection.
-         * The format for any disable date must be a valid ISO format (yyyy-mm-dd).
+         * @type {(string|Date)[]}
          */
         disableDates: {
           type: Array,
@@ -635,13 +643,11 @@ Custom property | Description | Default
         /**
          * Minimum date for selection. Dates that are smaller than the minimum
          * date will be disabled for selection.
-         * The format for minDate must be a valid ISO format (yyyy-mm-dd).
+         * @type {string|Date}
          */
         minDate: {
-          type: String,
-          value: function() {
-              return null;
-          }
+          type: Object,
+          value: '1000/00/01'
         },
         /**
          * Minimum date for selection. Dates that are smaller than the minimum
@@ -650,18 +656,16 @@ Custom property | Description | Default
          */
         minDateObj: {
           type: Date,
-          computed: '_convertISODateStringToDateObject(minDate)'
+          computed: '_convertAnyDateToDateObject(minDate)'
         },
         /**
          * Maximum date for selection. Dates that are larger than the maximum
          * date will be disabled for selection.
-         * The format for minDate must be a valid ISO format (yyyy-mm-dd).
+         * @type {string|Date}
          */
         maxDate: {
-          type: String,
-          value: function() {
-            return null;
-          }
+          type: Object,
+          value: '9999/99/99'
         },
         /**
          * Maximum date for selection. Dates that are larger than the maximum
@@ -670,7 +674,7 @@ Custom property | Description | Default
          */
         maxDateObj: {
           type: Date,
-          computed: '_convertISODateStringToDateObject(maxDate)'
+          computed: '_convertAnyDateToDateObject(maxDate)'
         },
         /**
          * Format for the selected date. Default to `yyyy/mm/dd`. Eg. `2017/05/17`.
@@ -1109,7 +1113,7 @@ Custom property | Description | Default
         return _isChosenDaysOfMonth ? ' chosen-days-of-month' : '';
       },
       // Re-compute class if the item (day of month) is a disable day.
-      _isDisableDays: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
+      _isDisableDays: function (_index, _firstDayOfWeek, _minDateObj, _maxDateObj, _item) {
         var _isDisableDay = !1;
         var _isDisableDates = false;
         // _index % 7 gives values from 0 to 6.
@@ -1127,21 +1131,20 @@ Custom property | Description | Default
           var _currentDate = new Date(this._activeYear, this._activeMonth, _item);
           // run two different obj differently just in case only one of them
           // is defined and still be able to update disabled days.
-          if (this.minDateObj) {
-            _isLessThanMinDate = _currentDate < this.minDateObj;
+          if (_minDateObj) {
+            _isLessThanMinDate = _currentDate < _minDateObj;
           }
-          if (this.maxDateObj) {
-            _isMoreThanMaxDate = _currentDate > this.maxDateObj;
+          if (_maxDateObj) {
+            _isMoreThanMaxDate = _currentDate > _maxDateObj;
           }
           // if any of min or max disables the date, avoid unnecessary extra computation
           if(_isLessThanMinDate || _isMoreThanMaxDate) {
               _isDisableDates = true;
           } else {
-            // now disableDates contains ISO date strings, so we only need to find converted _currentDate in the array
-            _currentDate = this._convertDateToISODateString(_currentDate);
             _isDisableDates = this.disableDates && this.disableDates.length && this.disableDates.some(function(date) {
-                return date === _currentDate;
-            });
+                var _dateObj = this._convertAnyDateToDateObject(date);
+                return _dateObj && _currentDate.getTime() === _dateObj.getTime();
+            }.bind(this));
           }
         }
         // To disable a date, it must be either one of the followings:
@@ -1199,44 +1202,42 @@ Custom property | Description | Default
         }
       },
 
-      // Convert date ISO string into date object.
-      _convertISODateStringToDateObject: function(dateString) {
+      // Convert any dateString into date object.
+      _convertAnyDateToDateObject: function(_date) {
         var d = null;
-        if(dateString) {
-          if(dateString.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
-            try {
+        if(_date) {
+          if(typeof _date !== 'string') {
+            if(this._validDateInstance(_date)) {
               // we will use client TZ to do the logic
-              d = new Date(dateString.split('-'));
-              if(!this._validDateInstance(d)) {
+              d = new Date(_date.getFullYear(),_date.getMonth(),_date.getDate());
+            }
+          } else {
+            if(_date.match(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)) {
+              try {
+                // we will use client TZ to do the logic
+                d = new Date(_date.split('-'));
+                if(!this._validDateInstance(d)) {
                   d = null;
-              }
-            } catch (_) {
+                }
+              } catch (_) {
                 console.warn('provided dateString is not a valid date: ' + dateString);
                 d = null;
+              }
+            } else {
+              try {
+                // we will use client TZ to do the logic
+                var temp = new Date(_date);
+                if(this._validDateInstance(temp)) {
+                  d = new Date(temp.getFullYear(),temp.getMonth(),temp.getDate());
+                }
+              } catch (_) {
+                console.warn('provided dateString is not a valid date: ' + dateString);
+                d = null;
+              }
             }
           }
         }
         return d;
-      },
-      // convert a date to a ISO string date (yyyy-mm-dd)
-      _convertDateToISODateString: function(date) {
-        if(date) {
-          var year = '' + date.getFullYear();
-          while(year.length < 4) {
-            year = '0' + year;
-          }
-          var month = '' + (date.getMonth() + 1);
-          if(date.getMonth() < 9) {
-            month = '0' + month;
-          }
-          var day = '' + date.getDate();
-          if(date.getDate() < 10) {
-            day = '0' + day;
-          }
-          // always yyyy-mm-dd
-          return [year, month, day].join('-');
-        }
-        return null;
       },
       // checks if provided date is a valid date
       _validDateInstance: function(d) {
@@ -1245,7 +1246,7 @@ Custom property | Description | Default
 
       // Convert date string into date object.
       // @deprecated this method can be removed
-      // @see _convertISODateStringToDateObject
+      // @see _convertAnyDateToDateObject
       _convertDateStringToDateObject: function (_date) {
         var _checkDate = _date instanceof Date || typeof _date !== 'string' ? _date : new Date(_date);
         var _isValidDate = _checkDate.toDateString() !== 'Invalid Date';
@@ -1605,12 +1606,12 @@ Custom property | Description | Default
       },
 
       // Accessibility enhancment.
-      _shouldTabIndex: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+      _shouldTabIndex: function (_index, _firstDayOfWeek, _minDateObj, _maxDateObj, _item) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDateObj, _maxDateObj, _item);
         return _item && _item >= 0 && !_isDisableDays ? 0 : -1;
       },
-      _shouldAriaDisabled: function (_index, _firstDayOfWeek, _minDate, _maxDate, _item) {
-        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDate, _maxDate, _item);
+      _shouldAriaDisabled: function (_index, _firstDayOfWeek, _minDateObj, _maxDateObj, _item) {
+        var _isDisableDays = this._isDisableDays(_index, _firstDayOfWeek, _minDateObj, _maxDateObj, _item);
         return !(_item && _item >= 0 && !_isDisableDays);
       },
 
