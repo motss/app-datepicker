@@ -926,9 +926,9 @@ Custom property | Description | Default
         for (var i = 0, j = 1 - _start; i < 42; i++, j++) {
           var _formatted = _formatter(Date.UTC(_activeYear, _activeMonth, j));
           var _dateObj = { date: '', index: '' };
-          if (i >= _start & i < _start + _totalDays) {
-            _dateObj.date = +_formatted;
-            _dateObj.index = +j;
+          if (i >= _start && i < _start + _totalDays) {
+            _dateObj.date = ''+_formatted;
+            _dateObj.index = ''+j;
           }
           _daysOfMonth.push(_dateObj);
         }
