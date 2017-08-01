@@ -518,7 +518,7 @@ Custom property | Description | Default
     </style>
 
     <div id="dp" class="datepicker">
-      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged">
+      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged" fallback-selection="calendar">
         <div id="showSelectedYear" class="selected-year" tabindex="0" view="year" aria-label="year view">
           [[_showSelectedYear]]
         </div>
@@ -559,9 +559,9 @@ Custom property | Description | Default
           </div>
         </div>
 
-        <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered">
+        <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered" strip-whitespace>
           <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish" selected-item="{{_selectedListItem}}" selection-enabled>
-            <template>
+            <template strip-whitespace>
               <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar" on-keydown="_goCalendar">
                 [[item.year]]
               </div>
