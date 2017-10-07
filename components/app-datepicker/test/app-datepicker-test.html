@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+  <head>
+    <title>app-datepicker-tests</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../test-fixture/test-fixture-mocha.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../../test-fixture/test-fixture.html">
+
+    <link rel="import" href="../app-datepicker.html">
+  </head>
+  <body>
+
+    <!-- Setting up test-fixture for app-datepicker -->
+    <test-fixture id="appDatepicker">
+      <template>
+        <app-datepicker></app-datepicker>
+      </template>
+    </test-fixture>
+
+    <script>
+      'use strict';
+      describe('<app-datepicker>', function () {
+        var datepicker;
+        beforeEach(function () {
+          datepicker = fixture('appDatepicker');
+        });
+
+        context('test inputs for correct selected view', function () {
+          it('should select date view on start', function () {
+            var _ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+
+            expect(_ironSelector.selected).to.be.equal('calendar');
+          });
+
+           it('should select the correct view (year)', function () {
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+            var _yearView = Polymer.dom(datepicker.root).querySelector('iron-selector .selected-year');
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0
+
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+            }
+          });
+
+          it('should select the correct view (date)', function () {
+            var ironSelector = Polymer.dom(datepicker.root).querySelector('iron-selector');
+            var _dateView = ironSelector.querySelector('div.selected-date');
+            var _yearView = ironSelector.querySelector('div.selected-year');
+            var isMainlinePolymer = parseFloat(Polymer.version) >= 2.0;
+
+            if (isMainlinePolymer) {
+              ironSelector.selected = 'year';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_yearView.classList.contains('iron-selected')).to.be.true;
+
+              ironSelector.selected = 'calendar';
+              ironSelector.forceSynchronousItemUpdate();
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            } else {
+              _yearView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              _dateView.dispatchEvent(new CustomEvent('tap', {bubbles: true}));
+              expect(_dateView.classList.contains('iron-selected')).to.be.true;
+            }
+          });
+
+          it('should show correct locale based on the system', function () {
+            var _systemLocale = window.navigator.language || 'en-US';
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
+
+            expect(datepickerLocale).to.be.equal(_systemLocale);
+          });
+        });
+
+        context('test for disableDates', function () {
+          it('should disable all dates in the array', function () {
+            datepicker.inputDate = '2016/01/01';
+            datepicker.disableDates = ['2016/01/02', '2016/01/03', '2016/01/04'];
+
+            Polymer.dom.flush();
+
+            var secondDay = datepicker.$$('.each-days-of-month[aria-label="2"]');
+            var thirdDay = datepicker.$$('.each-days-of-month[aria-label="3"]');
+            var fourthDay = datepicker.$$('.each-days-of-month[aria-label="4"]');
+
+            expect(secondDay.classList.contains('is-disabled-day')).to.be.true;
+            expect(thirdDay.classList.contains('is-disabled-day')).to.be.true;
+            expect(fourthDay.classList.contains('is-disabled-day')).to.be.true;
+
+            expect(secondDay.tabIndex).to.equal(-1);
+            expect(thirdDay.tabIndex).to.equal(-1);
+            expect(fourthDay.tabIndex).to.equal(-1);
+
+            expect(secondDay.getAttribute('aria-disabled')).to.equal('');
+            expect(thirdDay.getAttribute('aria-disabled')).to.equal('');
+            expect(fourthDay.getAttribute('aria-disabled')).to.equal('');
+          });
+
+          it('should support falsy values', function() {
+            datepicker.disableDays = [];
+            datepicker.inputDate = '2016/01/01';
+            datepicker.disableDates = undefined;
+            Polymer.dom.flush();
+            datepicker.disableDates = null;
+            Polymer.dom.flush();
+            datepicker.disableDates = '';
+            Polymer.dom.flush();
+
+            var dates = datepicker.querySelectorAll('.each-days-of-month');
+            for (var i = 0; i < dates.length; i++) {
+              if (dates[i].getAttribute('aria-label')) {
+                expect(dates[i].classList.contains('is-disabled-day')).to.be.false;
+              }
+            }
+          })
+        });
+
+        context('test for minDate and maxDate', function () {
+          it('should disable all dates before minDate && minDate is a date string', function () {
+            var _currentDate = new Date();
+            var _minDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '3' ].join('/');
+            datepicker.minDate = _minDateString;
+
+            Polymer.dom.flush();
+            var _getDateFromDatepicker = Polymer.dom(datepicker.root).querySelectorAll('.each-days-of-month[aria-label="2"]');
+            expect(_getDateFromDatepicker[0].classList.contains('is-disabled-day')).to.be.true;
+            expect(datepicker.minDate === _minDateString).to.be.true;
+          });
+
+          it('should disable all dates after maxDate && maxDate is a date string', function () {
+            var _currentDate = new Date();
+            var _maxDateString = [ _currentDate.getFullYear(), _currentDate.getMonth() + 1, '20' ].join('/');
+            datepicker.maxDate = _maxDateString;
+
+            Polymer.dom.flush();
+            var _getDateFromDatepicker = Polymer.dom(datepicker.root).querySelectorAll('.each-days-of-month[aria-label="21"]');
+            expect(_getDateFromDatepicker[0].classList.contains('is-disabled-day')).to.be.true;
+            expect(datepicker.maxDate === _maxDateString).to.be.true;
+          });
+        });
+
+        context('test for autoUpdateDate', function () {
+          it('should not auto update date by default', function () {
+            expect(datepicker.autoUpdateDate).to.be.false;
+          });
+
+          it('should auto update date on date change without any date confirmation', function () {
+            datepicker.autoUpdateDate = !0;
+            datepicker.inputDate = '2016/7/7';
+
+            Polymer.dom.flush();
+            expect(datepicker.date).to.be.equal('2016/07/07');
+          });
+        });
+
+        context('test for update to reflect external date change', function () {
+          // All possibilityes = 2 * 4 * 3 = 24.
+          // 'yyyy' 'mmmm' 'do' - N
+          // 'yyyy' 'mmmm' 'dd' - P
+          // 'yyyy' 'mmmm' 'd' - P
+          //
+          // 'yyyy' 'mmm' 'do' - N
+          // 'yyyy' 'mmm' 'dd' - P
+          // 'yyyy' 'mmm' 'd' - P
+          //
+          // 'yyyy' 'mm' 'do' - N
+          // 'yyyy' 'mm' 'dd' - P
+          // 'yyyy' 'mm' 'd' - P
+          //
+          // 'yyyy' 'm' 'do' - N
+          // 'yyyy' 'm' 'dd' - P
+          // 'yyyy' 'm' 'd' - P
+          //
+          // 'yy' 'mmmm' 'do' - N
+          // 'yy' 'mmmm' 'dd' - P
+          // 'yy' 'mmmm' 'd' - P
+          //
+          // 'yy' 'mmm' 'do' - N
+          // 'yy' 'mmm' 'dd' - P
+          // 'yy' 'mmm' 'd' - P
+          //
+          // 'yy' 'mm' 'do' - N
+          // 'yy' 'mm' 'dd' - F*
+          // 'yy' 'mm' 'd' - F*
+          //
+          // 'yy' 'm' 'do' - N
+          // 'yy' 'm' 'dd' - F*
+          // 'yy' 'm' 'd' - F*
+          it('should show correct output date when showLongDate is falsy', function () {
+            // var _allPossibilities = [
+            //   '2016 January 31st', '2016 January 31', '2016 January 3',
+            //   '2016 Jan 31st', '2016 Jan 31', '2016 Jan 3',
+            //   '2016 01 31st', '2016 01 31', '2016 01 3',
+            //   '2016 1 31st', '2016 1 31', '2016 1 3',
+            //   '16 January 31st', '16 January 31', '16 January 3',
+            //   '16 Jan 31st', '16 Jan 31', '16 Jan 3',
+            //   '16 01 31st', '16 01 31', '16 01 3',
+            //   '16 1 31st', '16 1 31', '16 1 3'
+            // ];
+            // accepted input date string:
+            // 1. 2016 January 31
+            // 2. 2016 January 3
+            // 3. 2016 Jan 31
+            // 4. 2016 Jan 3
+            // 5. 2016/13/13
+            var _acceptedInputDateStrings = [
+              '2016 January 31', '2016 January 3', '2016 Jan 31', '2016 Jan 3', '2015/13/31'
+            ];
+            var _testDate = new Date(2016, 0, 31);
+            var _testDate2 = new Date(2016, 0, 3);
+
+            datepicker.showLongDate = !1;
+            for (var i = 0, len = _acceptedInputDateStrings.length; i < len; i++) {
+              datepicker.inputDate = _acceptedInputDateStrings[i];
+              datepicker.enforceDateChange();
+
+              var _getDate = [
+                _testDate2.getFullYear(),
+                ('0' + (_testDate2.getMonth() + 1)).slice(-2),
+                ('0' + _testDate2.getDate()).slice(-2)
+              ].join('/');
+              if (i === 0 || i === 2 || i === 4) {
+                _getDate = [
+                  _testDate.getFullYear(),
+                  ('0' + (_testDate.getMonth() + 1)).slice(-2),
+                  ('0' + _testDate.getDate()).slice(-2)
+                ].join('/');
+                expect(datepicker.date).to.be.equal(_getDate);
+              }else {
+                expect(datepicker.date).to.be.equal(_getDate);
+              }
+            }
+          });
+
+          it('should show correct output date when showLongDate is truthy', function () {
+            var _acceptedInputDateStrings = [
+              '2016 January 31', '2016 January 3', '2016 Jan 31', '2016 Jan 3', '2015/13/31',
+              'Fri, May 25, 2020'
+            ];
+            var _testDate = 'Sun, Jan 31, 2016';
+            var _testDate2 = 'Sun, Jan 3, 2016';
+
+            datepicker.showLongDate = !0;
+            datepicker.locale = 'en';
+
+            for (var i = 0, len = _acceptedInputDateStrings.length; i < len; i++) {
+              datepicker.inputDate = _acceptedInputDateStrings[i];
+              datepicker.enforceDateChange();
+
+              if (i === 0 || i === 2 || i === 4) {
+                expect(datepicker.date).to.be.not.equal(_testDate);
+              }else if (i == 5) {
+                // if (window.navigator.msManipulationViewsEnabled) {
+                //   expect(datepicker.date).to.be.equal('Mon, May, 25, 2020');
+                // }else {
+                  // wrong weekday from input date but the datepicker wil correct that
+                  // as long as the date is a valid input.
+                  expect(datepicker.date).to.be.equal('Mon, May 25, 2020');
+                // }
+              }else {
+                expect(datepicker.date).to.be.not.equal(_testDate2);
+              }
+            }
+          });
+
+          it('should display correct output date when locale is changed', function () {
+            datepicker.showLongDate = !0;
+            datepicker.inputDate = 'Sun, Jan 31, 2016';
+            datepicker.enforceDateChange();
+            datepicker.locale = 'fr-FR';
+
+            // IE11 broke it again.
+            var _toSplit = datepicker.date.split(' ');
+            var _temp = [];
+            for (var i = 0, len = _toSplit.length; i < len; i++) {
+              _temp[i] = encodeURIComponent(_toSplit[i]).replace(/\%[0-9A-Z]{2}/gi, '');
+            }
+            expect(_temp.join(' ')).to.be.equal('dim. 31 janv. 2016');
+          });
+        });
+
+        context('test for dynamic date format', function () {
+          it('should produce correct date based on the format', function () {
+            var testFormats = [
+              "yyyy/mmmm/do",
+              "yyyy/mmmm/dd",
+              "yyyy/mmmm/d",
+
+              "yyyy/mmm/do",
+              "yyyy/mmm/dd",
+              "yyyy/mmm/d",
+
+              "yyyy/mm/do",
+              "yyyy/mm/dd",
+              "yyyy/mm/d",
+
+              "yyyy/m/do",
+              "yyyy/m/dd",
+              "yyyy/m/d",
+
+              "yy/mmmm/do",
+              "yy/mmmm/dd",
+              "yy/mmmm/d",
+
+              "yy/mmm/do",
+              "yy/mmm/dd",
+              "yy/mmm/d",
+
+              "yy/mm/do",
+              "yy/mm/dd",
+              "yy/mm/d",
+
+              "yy/m/do",
+              "yy/m/dd",
+              "yy/m/d",
+            ];
+            var expectedResults = [
+              "2016/January/31st",
+              "2016/January/31",
+              "2016/January/31",
+
+              "2016/Jan/31st",
+              "2016/Jan/31",
+              "2016/Jan/31",
+
+              "2016/01/31st",
+              "2016/01/31",
+              "2016/01/31",
+
+              "2016/1/31st",
+              "2016/1/31",
+              "2016/1/31",
+
+              "16/January/31st",
+              "16/January/31",
+              "16/January/31",
+
+              "16/Jan/31st",
+              "16/Jan/31",
+              "16/Jan/31",
+
+              "16/01/31st",
+              "16/01/31",
+              "16/01/31",
+
+              "16/1/31st",
+              "16/1/31",
+              "16/1/31",
+            ];
+
+            // Setup datepicker.
+            datepicker.showLongDate = !1;
+            datepicker.autoUdpateDate = !0;
+            datepicker.inputDate = '2016/01/31';
+            datepicker.locale = 'en-US';
+
+            // Start inputting the formats.
+            testFormats.forEach(function (format, idx) {
+              datepicker.format = format;
+              datepicker.enforceDateChange();
+
+              expect(datepicker.date).to.be.equal(expectedResults[idx]);
+            });
+          });
+
+          it('should produce correct date based on the format with random order of year, month, date', function () {
+            var testFormats = [
+              "do/mmmm/yyyy",
+              "dd/mmmm/yyyy",
+              "d/mmmm/yyyy",
+
+              "mmm/do/yyyy",
+              "mmm/dd/yyyy",
+              "mmm/d/yyyy",
+
+              "yyyy/mm/do",
+              "yyyy/mm/dd",
+              "yyyy/mm/d",
+
+              "yyyy/m/do",
+              "yyyy/m/dd",
+              "yyyy/m/d",
+
+              "yy/mmmm/do",
+              "yy/mmmm/dd",
+              "yy/mmmm/d",
+
+              "mmm/yy/do",
+              "mmm/yy/dd",
+              "mmm/yy/d",
+
+              "yy/mm/do",
+              "yy/mm/dd",
+              "yy/mm/d",
+
+              "yy/m/do",
+              "yy/m/dd",
+              "yy/m/d",
+            ];
+            var expectedResults = [
+              "31st/January/2016",
+              "31/January/2016",
+              "31/January/2016",
+
+              "Jan/31st/2016",
+              "Jan/31/2016",
+              "Jan/31/2016",
+
+              "2016/01/31st",
+              "2016/01/31",
+              "2016/01/31",
+
+              "2016/1/31st",
+              "2016/1/31",
+              "2016/1/31",
+
+              "16/January/31st",
+              "16/January/31",
+              "16/January/31",
+
+              "Jan/16/31st",
+              "Jan/16/31",
+              "Jan/16/31",
+
+              "16/01/31st",
+              "16/01/31",
+              "16/01/31",
+
+              "16/1/31st",
+              "16/1/31",
+              "16/1/31",
+            ];
+
+            // Setup datepicker.
+            datepicker.showLongDate = !1;
+            datepicker.autoUdpateDate = !0;
+            datepicker.inputDate = '2016/01/31';
+            datepicker.locale = 'en-US';
+
+            // Start inputting the formats.
+            testFormats.forEach(function (format, idx) {
+              datepicker.format = format;
+              datepicker.enforceDateChange();
+
+              expect(datepicker.date).to.be.equal(expectedResults[idx]);
+            });
+          });
+        });
+
+        context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
+          it('should fallback to default locale if window.Intl is undefined', function () {
+            var cachedIntl = window.Intl;
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
+
+            // Override Intl on browser.
+            window.Intl = null;
+
+            expect(datepickerLocale).to.be.equal('en-US');
+
+            // Restore Intl.
+            window.Intl = cachedIntl;
+          });
+
+          it('should fallback to default locale when window.Intl.DateTimeFormat().resolvedOptions is undefined', function () {
+            var cachedIntl = window.Intl;
+            var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
+
+            // Override Intl on browser.
+            window.Intl.DateTimeFormat().resolvedOptions = {};
+
+            expect(datepickerLocale).to.be.equal('en-US');
+
+            // Restore Intl.
+            window.Intl = cachedIntl;
+          });
+        });
+
+        context('test to ensure that days of month not showing NaN for languages other than en-US which contains other character', function () {
+          it('should show the correct character for non en-US', function () {
+            // Set locale to zh-CN.
+            datepicker.locale = 'zh-CN';
+
+            expect(datepicker.locale).to.be.equal('zh-CN');
+            expect(Array.from(Polymer.dom(datepicker.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+                   .map(n => n.textContent.trim())
+                   .some(n => 'NaN' === n)).to.be.false;
+
+            // Test another locale by setting to 'ja-JP'.
+            datepicker.locale = 'ja-JP';
+
+            expect(datepicker.locale).to.be.equal('ja-JP');
+            expect(Array.from(Polymer.dom(datepicker.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+                   .map(n => n.textContent.trim())
+                   .some(n => 'NaN' === n)).to.be.false;
+          });
+        });
+      });
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <title>app-datepicker-tests</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+  </head>
+  <body>
+    <script>
+      // Load and run all tests (.html, .js):
+      WCT.loadSuites([
+        'app-datepicker-test.html?wc-shadydom=true&wc-ce=true', // shady
+        'app-datepicker-test.html?dom=shadow' // shadow
+      ]);
+    </script>
+  </body>
+</html>
