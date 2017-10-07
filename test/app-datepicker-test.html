@@ -491,15 +491,15 @@
             datepicker.locale = 'zh-CN';
 
             expect(datepicker.locale).to.be.equal('zh-CN');
-            expect(Array.from(datepicker.shadowRoot.querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+            expect(Array.from(Polymer.dom($0.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
                    .map(n => n.textContent.trim())
                    .some(n => 'NaN' === n)).to.be.false;
 
             // Test another locale by setting to 'ja-JP'.
             datepicker.locale = 'ja-JP';
 
-            expect(datepicker.locale).to.be.equal('zh-CN');
-            expect(Array.from(datepicker.shadowRoot.querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+            expect(datepicker.locale).to.be.equal('ja-JP');
+            expect(Array.from(Polymer.dom($0.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
                    .map(n => n.textContent.trim())
                    .some(n => 'NaN' === n)).to.be.false;
           });
