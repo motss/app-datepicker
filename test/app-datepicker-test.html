@@ -484,6 +484,26 @@
             window.Intl = cachedIntl;
           });
         });
+
+        context('test to ensure that days of month not showing NaN for languages other than en-US which contains other character', function () {
+          it('should show the correct character for non en-US', function () {
+            // Set locale to zh-CN.
+            datepicker.locale = 'zh-CN';
+
+            expect(datepicker.locale).to.be.equal('zh-CN');
+            expect(Array.from(Polymer.dom(datepicker.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+                   .map(n => n.textContent.trim())
+                   .some(n => 'NaN' === n)).to.be.false;
+
+            // Test another locale by setting to 'ja-JP'.
+            datepicker.locale = 'ja-JP';
+
+            expect(datepicker.locale).to.be.equal('ja-JP');
+            expect(Array.from(Polymer.dom(datepicker.root).querySelector('neon-animated-pages').querySelectorAll('.days-of-month > .each-days-of-month'))
+                   .map(n => n.textContent.trim())
+                   .some(n => 'NaN' === n)).to.be.false;
+          });
+        });
       });
 
     </script>
