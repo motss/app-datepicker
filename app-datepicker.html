@@ -712,21 +712,24 @@ Custom property | Description | Default
       ],
 
       properties: {
+        _defaultLocale: {
+          type: String,
+          value: function () {
+            return (
+              window.Intl
+                && window.Intl.DateTimeFormat
+                && window.Intl.DateTimeFormat().resolvedOptions
+                && window.Intl.DateTimeFormat().resolvedOptions().locale
+            ) || 'en-US';
+          }
+        },
         /**
          * Set locale for the datepicker.
          */
         locale: {
           type: String,
           value: function () {
-            if (window.Intl) {
-              return (window.Intl
-                && window.Intl.DateTimeFormat
-                && window.Intl.DateTimeFormat().resolvedOptions
-                && window.Intl.DateTimeFormat().resolvedOptions().locale)
-                || 'en-US';
-            }
-
-            return 'en-US';
+            return this._defaultLocale;
           }
         },
         /**
@@ -1045,11 +1048,7 @@ Custom property | Description | Default
         }
 
         // Set up Intl.
-        _locale = _locale || ((window.Intl
-          && window.Intl.DateTimeFormat
-          && window.Intl.DateTimeFormat().resolvedOptions
-          && window.Intl.DateTimeFormat().resolvedOptions().locale)
-          || 'en-US');
+        _locale = _locale || this._defaultLocale;
         var _formatter = window.Intl && window.Intl.DateTimeFormat
           ? new window.Intl.DateTimeFormat(_locale, { timeZone: 'UTC', day: 'numeric' }).format
           : function dateTimeFormatShim(date) { return date.getDate() };
@@ -1057,8 +1056,13 @@ Custom property | Description | Default
           var _formatted = _formatter(Date.UTC(_activeYear, _activeMonth, j));
           var _dateObj = { date: '', index: '' };
           if (i >= _start & i < _start + _totalDays) {
-            _dateObj.date = +_formatted;
-            _dateObj.index = +j;
+            /**
+             * NOTE: Coercing '_formatted' to a number will cause
+             * dates in other languages that contain other character
+             * to become a NaN.
+             */
+            _dateObj.date = _formatted;
+            _dateObj.index = j;
           }
           _daysOfMonth.push(_dateObj);
         }
@@ -1126,11 +1130,7 @@ Custom property | Description | Default
       // Re-compute active month year if new date is selected.
       _computeActiveMonthYear: function (_activeYear, _activeMonth, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._defaultLocale;
           var _amy = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             month: 'short',
@@ -1142,11 +1142,7 @@ Custom property | Description | Default
       // Re-compute short version of full date to show on the picker.
       _computeShortSelectedDate: function (_selectedYear, _selectedMonth, _selectedDate, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._defaultLocale;
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             weekday: 'short',
@@ -1165,11 +1161,7 @@ Custom property | Description | Default
       },
       _computeShowSelectedYear: function (_selectedYear, _locale) {
         if (window.Intl) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._defaultLocale;
           var _ssy = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
             year: 'numeric'
@@ -1506,11 +1498,7 @@ Custom property | Description | Default
         var _longDate = Date.UTC(this._selectedYear, this._selectedMonth, _selectedDate);
 
         if (_showLongDate) {
-          _locale = _locale || ((window.Intl
-            && window.Intl.DateTimeFormat
-            && window.Intl.DateTimeFormat().resolvedOptions
-            && window.Intl.DateTimeFormat().resolvedOptions().locale)
-            || 'en-US');
+          _locale = _locale || this._defaultLocale;
           var _options = {
             timeZone: 'UTC',
             weekday: this.showLongDate ? 'short' : undefined,
