@@ -1193,6 +1193,12 @@ Custom property | Description | Default
             this._isNumber(_target.date) &&
             !_target.classList.contains('is-disabled-day')
           ) {
+
+          //added by Paul Christian Rueda @ 10/12/2015 4:16PM
+          //fire event on when day is selected
+          //will be used to handle events on outside implementation(Mainly to support the rc-datepicker)
+          this.fire('day-select',{date : this.date});
+
           // This will trigger _isChosenDaysOfMonth to recompute style.
           this.set('_chosenDaysOfMonth', _target.index);
 
