@@ -192,7 +192,7 @@ Custom property | Description | Default
         -webkit-flex: 1 1 auto;
         flex: 1 1 auto;
 
-        font-size: 32px;
+        font-size: 26px;
         font-weight: 800;
 
         @apply --app-datepicker-selected-date;
@@ -919,6 +919,21 @@ Custom property | Description | Default
           }
         },
 
+          /***
+           * property that set the weekday view format  eg. short / long
+           */
+          selectedWeekdayView: {
+              type: String,
+              value : "short"
+          },
+          /***
+           * property that set the month view format  eg. short / long
+           */
+          selectedMonthView: {
+              type: String,
+              value : "long"
+          }
+
       },
 
       observers: [
@@ -1154,8 +1169,8 @@ Custom property | Description | Default
             || 'en-US');
           var _ssd = new window.Intl.DateTimeFormat(_locale, {
             timeZone: 'UTC',
-            weekday: 'short',
-            month: 'short',
+            weekday: this.selectedWeekdayView,
+            month: this.selectedMonthView,
             day: 'numeric'
           }).format(Date.UTC(_selectedYear, _selectedMonth, _selectedDate));
           this.set('_shortSelectedDate', _ssd);
@@ -1193,6 +1208,12 @@ Custom property | Description | Default
             this._isNumber(_target.date) &&
             !_target.classList.contains('is-disabled-day')
           ) {
+
+          //added by Paul Christian Rueda @ 10/12/2015 4:16PM
+          //fire event on when day is selected
+          //will be used to handle events on outside implementation(Mainly to support the rc-datepicker)
+          this.fire('day-select',{date : this.date});
+
           // This will trigger _isChosenDaysOfMonth to recompute style.
           this.set('_chosenDaysOfMonth', _target.index);
 
