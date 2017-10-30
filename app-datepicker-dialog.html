@@ -26,26 +26,26 @@
     </style>
 
     <app-datepicker id="datePicker" class="no-padding"
-    first-day-of-week="[[firstDayOfWeek]]"
-    disable-days="[[disableDays]]"
-    disable-dates="[[disableDates]]"
-    min-date="[[minDate]]"
-    max-date="[[maxDate]]"
-    format="[[format]]"
-    date="{{_readOnlyDate}}"
-    input-date="[[inputDate]]"
-    show-long-date="[[showLongDate]]"
-    no-animation="[[noAnimation]]"
-    page-entry-animation="[[pageEntryAnimation]]"
-    page-exit-animation="[[pageExitAnimation]]"
-    invalid-date="{{_readOnlyInvalidDate}}"
-    view="[[view]]"
-    theme="[[theme]]"
-    locale="[[locale]]"
-    no-animation
-    always-reset-selected-date-on-dialog-close="[[alwaysResetSelectedDateOnDialogClose]]">
-        <paper-button slot="dismiss-button" noink="[[noAnimation]]" dialog-dismiss>[[ dismissLabel ]]</paper-button>
-        <paper-button slot="confirm-button" noink="[[noAnimation]]" dialog-confirm>[[ confirmLabel ]]</paper-button>
+                    first-day-of-week="[[firstDayOfWeek]]"
+                    disable-days="[[disableDays]]"
+                    disable-dates="[[disableDates]]"
+                    min-date="[[minDate]]"
+                    max-date="[[maxDate]]"
+                    format="[[format]]"
+                    date="{{_readOnlyDate}}"
+                    input-date="[[inputDate]]"
+                    show-long-date="[[showLongDate]]"
+                    no-animation="[[noAnimation]]"
+                    page-entry-animation="[[pageEntryAnimation]]"
+                    page-exit-animation="[[pageExitAnimation]]"
+                    invalid-date="{{_readOnlyInvalidDate}}"
+                    view="[[view]]"
+                    theme="[[theme]]"
+                    locale="[[locale]]"
+                    no-animation
+                    always-reset-selected-date-on-dialog-close="[[alwaysResetSelectedDateOnDialogClose]]">
+      <paper-button slot="dismiss-button" noink="[[noAnimation]]" dialog-dismiss on-tap="_onDismissClicked">[[ dismissLabel ]]</paper-button>
+      <paper-button slot="confirm-button" noink="[[noAnimation]]" dialog-confirm on-tap="_onConfirmClicked">[[ confirmLabel ]]</paper-button>
     </app-datepicker>
   </template>
   <script>
@@ -145,6 +145,14 @@
       _updateDatepickerView: function() {
         this.notifyResize();
       },
+      // Dispatching event when cancel is clicked
+      _onDismissClicked: function() {
+        this.dispatchEvent(new CustomEvent('app-datepicker-ondismiss', {bubbles: true, composed: true}));
+      },
+      // Dispatching event when confirm is clicked
+      _onConfirmClicked: function() {
+        this.dispatchEvent(new CustomEvent('app-datepicker-onconfirm', {bubbles: true, composed: true}));
+      }
 
     });
   </script>
