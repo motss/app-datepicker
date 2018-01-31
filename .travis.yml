@@ -1,16 +1,11 @@
 language: node_js
-sudo: required
-before_script:
-  - npm install -g polymer-cli
-  - polymer install --variants
-node_js: stable
-addons:
-  firefox: latest
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
-script:
-  - xvfb-run polymer test
 dist: trusty
+node_js:
+  - v8
+  - v9
+script:
+  - npm run check
+#   - npm run test
+# after_script:
+#   - 'cat ./coverage/lcov.info | coveralls'
+#   - 'cat ./coverage/lcov.info | codecov'

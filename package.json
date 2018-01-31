@@ -1,0 +1,61 @@
+{
+  "name": "app-datepicker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Material Design based datepicker element built with Polymer",
+  "keywords": [
+    "app-datepicker",
+    "node",
+    "typescript"
+  ],
+  "homepage": "https://github.com/motss/app-datepicker",
+  "license": "MIT",
+  "author": {
+    "name": "Rong Sen Ng",
+    "email": "wes.ngrongsen@gmail.com",
+    "url": "https://github.com/motss"
+  },
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:motss/app-datepicker.git"
+  },
+  "scripts": {
+    "build": "npm run ts && cross-env NODE_ENV=production gulp build && npm run cleanup",
+    "build:debug": "npm run ts && gulp build && npm run cleanup",
+    "check": "npm run lint && npm run nsp",
+    "cleanup": "rm -rf gulpfile.js",
+    "gulp": "npm run ts && gulp",
+    "lint": "npm run ts && gulp lint && npm run cleanup",
+    "nsp": "nsp check",
+    "prepublishOnly": "npm run check && npm run build",
+    "ts": "tsc --target esnext --lib esnext,esnext.asynciterable --module commonjs gulpfile.ts"
+  },
+  "dependencies": {
+    "@polymer/lit-element": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^9.4.0",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-minify": "^0.2.0",
+    "cross-env": "^5.1.3",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.1",
+    "gulp-sequence": "^1.0.0",
+    "gulp-tslint": "^8.1.2",
+    "gulp-typescript": "^3.2.4",
+    "nsp": "^3.1.0",
+    "tslint": "^5.9.1",
+    "tslint-config-airbnb": "^5.5.0",
+    "tslint-consistent-codestyle": "^1.11.0",
+    "tslint-immutable": "^4.5.1",
+    "typescript": "^2.6.2"
+  },
+  "engines": {
+    "node": ">= 8.9.0",
+    "npm": ">= 5.5.1"
+  }
+}

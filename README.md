@@ -1,127 +1,135 @@
-[![GitHub version](https://badge.fury.io/gh/motss%2Fapp-datepicker.svg)](http://badge.fury.io/gh/motss%2Fapp-datepicker)
-[![Bower version](https://badge.fury.io/bo/app-datepicker.svg)](http://badge.fury.io/bo/app-datepicker)
-[![Build Status](https://travis-ci.org/motss/app-datepicker.svg?branch=master)](https://travis-ci.org/motss/app-datepicker)
+<div align="center" style="text-align: center;">
+  <h1 style="border-bottom: none;">app-datepicker</h1>
 
-# app-datepicker (formerly `jv-datepicker`)
-![img-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/26274668/48b75cce-3d81-11e7-81aa-b79ab9b90d36.png)
+  <p>Better greeting message</p>
+</div>
 
-<!-- ![light-themed-app-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/10119266/ce6d5b0e-64c3-11e5-843d-1310de755315.png)
-![dark-themed-app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/10119265/c9ad900c-64c3-11e5-937e-338a770eebea.png) -->
-<!-- ![app-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/9871233/c9e33d04-5bc4-11e5-8af9-d93d080d8815.PNG) -->
-<!-- ![app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
-<!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
+<hr />
 
+[![NPM][nodei-badge]][nodei-url]
 
+[![Build Status][travis-badge]][travis-url]
+[![Version][version-badge]][version-url]
+[![Downloads][downloads-badge]][downloads-url]
+[![MIT License][mit-license-badge]][mit-license-url]
+[![Dependency Status][daviddm-badge]][daviddm-url]
+[![NSP Status][nsp-badge]][nsp-url]
 
-See the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more information.
+[![Code of Conduct][coc-badge]][coc-url]
 
-An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
+[![codebeat-badge]][codebeat-url]
+[![codacy-badge]][codacy-url]
+[![inch-badge]][inch-url]
 
+> Material Design based datepicker element built with Polymer
 
-## Update (v2.11.0)
-- **Pleased to announce that `app-datepicker` is now compatible with both Polymer 1.x and Polymer 2.0 stable.**
-- **Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections.**
-- `alwaysResetSelectedDateOnDialogClose` - proposed by [#74](https://github.com/motss/app-datepicker/issues/74) to allow datepicker to reset the selected date to today's date once the datepicker closes and the demo has this included as well.
-- As of `v2.11`, all dates will no longer include users' local system's timezone offset and all will be default to GMT/ UTC timezone. For more info, please see [#89](https://github.com/motss/app-datepicker/pull/89).
+## Table of contents
 
-Example:
+- [Pre-requisite](#pre-requisite)
+- [Setup](#setup)
+  - [Install](#install)
+  - [Usage](#usage)
+    - [Node.js](#nodejs)
+    - [Native ES modules or TypeScript](#native-es-modules-or-typescript)
+- [API Reference](#api-reference)
+  - [greeting(name)](#greetingname)
+  - [greetingSync(name)](#greetingsyncname)
+- [License](#license)
 
-    <app-datepicker></app-datepicker>
-    <app-datepicker view="horizontal"></app-datepicker>
-    <app-datepicker theme="dark-theme"></app-datepicker>
-    <app-datepicker-dialog modal></app-datepicker-dialog>
-    <app-datepicker-dialog with-backdrop></app-datepicker-dialog>
-    <app-datepicker-dialog></app-datepicker-dialog>
+## Pre-requisites
 
-`app-datepicker` provides a regular datepicker element.
-While `app-datepicker-dialog` has a `app-datepicker` being wrapped inside a dialog.
+- [Node.js][node-js-url] >= 8.9.0
+- [NPM][npm-url] >= 5.5.1 ([NPM][npm-url] comes with [Node.js][node-js-url] so there is no need to install separately.)
 
+## Setup
 
-~~## ( Coming soon!) Generating your own boilerplate code of the compounds~~
-~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided.~~
+### Install
 
+```sh
+# Install via NPM
+$ npm install --save app-datepicker
+```
 
-## Styling
-Now with mixins, head over to the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more details.
+### Usage
 
+#### Node.js
 
-## Getting Started
-1. Install with bower.
-`bower install --save app-datepicker`
+```js
+const greeting = require('app-datepicker');
+```
 
-2. Load the dependencies and the Intl polyfill if needed.
+#### Native ES modules or TypeScript
 
-    Load [`Intl Polyfill`](https://github.com/andyearnshaw/Intl.js) for unsupported browsers via feature detection,
+```ts
+// @ts-check
 
-    ```js
-    if (window.Intl) {
-      var intlPolyfill = document.createElement('script');
-      intlPolyfill.src = 'path_to_intl_polyfill';
-      document.head.appendChild(intlPolyfill);
-    }
-    ```
+import greeting from 'app-datepicker';
+```
 
-    For `app-datepicker`,
+## API Reference
 
-    ```html
-    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker.html">
-    ```
-    For `app-datepicker-dialog`,
+### greeting(name)
 
-    ```html
-    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker-dialog.html">
-    ```
+  - name <[string][string-mdn-url]> Name of the person to greet at.
+  - returns: <[Promise][promise-mdn-url]&lt;[string][string-mdn-url]&gt;> Promise which resolves with a greeting message.
 
-3. Markup with `<app-datepicker></app-datepicker>` or `<app-datepicker-dialog></app-datepicker-dialog>`.
+### greetingSync(name)
 
-4. Done.
-
-## Browser Support
-
-### `app-datepicker` and `app-datepicker-dialog`:
-
-#### Microsoft Windows x64
-| ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
-| --- | --- | --- | --- | ---
-| 11 | 12+ | latest | latest | latest
-
-
-#### Linux x64
-| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
-| --- | --- | ---
-| latest | latest | latest
-
-
-#### Mac OS X
-| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
-| --- | --- | --- | ---
-| latest | latest | latest | 7+
-
-
-#### Android 4.4.4 and above
-
-| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Dev](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome-dev/chrome-dev_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) | ![Android WebView](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/android-webview-beta/android-webview-beta_48x48.png)
-| --- | --- | --- | ---
-| latest | latest | latest | latest
-
-#### iOS 7.1 and above
-| ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) | ![Safari for iOS](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-ios/safari-ios_48x48.png)
-| --- | --- | --- | ---
-| latest | latest | latest | 7+
-
-### [Intl.DateTimeFormat](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)
-
-ECMAScript Internationalization API for `locale`. For more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
-
-
-| ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
-| --- | --- | --- | --- | --- | --- |
-| 11 | 12+ | latest | latest | latest | 10+ **
-
-___** [Intl Polyfill for unsupported browsers](https://github.com/andyearnshaw/Intl.js)___
-
-## Throughput
-[![Throughput Graph](https://graphs.waffle.io/motss/app-datepicker/throughput.svg)](https://waffle.io/motss/app-datepicker/metrics/throughput)
+This methods works the same as `greeting(name)` except that this is the synchronous version.
 
 ## License
-[MIT License](http://motss.mit-license.org/) © Rong Sen Ng
+
+[MIT License](https://motss.mit-license.org/) © Rong Sen Ng
+
+
+
+[typescript-url]: https://github.com/Microsoft/TypeScript
+[node-js-url]: https://nodejs.org
+[npm-url]: https://www.npmjs.com
+[node-releases-url]: https://nodejs.org/en/download/releases
+
+[array-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+[boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[function-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
+[map-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+[number-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+[object-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
+[promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[regexp-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+[set-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
+[string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
+
+
+
+[nodei-badge]: https://nodei.co/npm/app-datepicker.png?downloads=true&downloadRank=true&stars=true
+
+[travis-badge]: https://img.shields.io/travis/motss/app-datepicker.svg?style=flat-square
+
+[version-badge]: https://img.shields.io/npm/v/app-datepicker.svg?style=flat-square
+[downloads-badge]: https://img.shields.io/npm/dm/app-datepicker.svg?style=flat-square
+[mit-license-badge]: https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square
+[nsp-badge]: https://nodesecurity.io/orgs/motss/projects/a1c57ec8-9c17-4912-932b-f1ff6284e2ae/badge?style=flat-square
+[daviddm-badge]: https://img.shields.io/david/motss/app-datepicker.svg?style=flat-square
+
+[coc-badge]: https://img.shields.io/badge/code%20of-conduct-ff69b4.svg?style=flat-square
+
+[codebeat-badge]: https://codebeat.co/badges/e486e791-12b7-4198-b834-0fa5bd04e1c3?style=flat-square
+[codacy-badge]: https://api.codacy.com/project/badge/Grade/a70d1556b4e74711a162c4fd4dbb68a1?style=flat-square
+[inch-badge]: http://inch-ci.org/github/motss/app-datepicker.svg?branch=master&style=flat-square
+
+
+
+[nodei-url]: https://nodei.co/npm/app-datepicker
+
+[travis-url]: https://travis-ci.org/motss/app-datepicker
+[version-url]: https://npmjs.org/package/app-datepicker
+[downloads-url]: http://www.npmtrends.com/app-datepicker
+[mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE
+[nsp-url]: https://nodesecurity.io/orgs/motss/projects/a1c57ec8-9c17-4912-932b-f1ff6284e2ae
+[daviddm-url]: https://david-dm.org/motss/app-datepicker
+
+[coc-url]: https://github.com/motss/app-datepicker/blob/master/CODE_OF_CONDUCT.md
+
+[codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master
+[codacy-url]: https://www.codacy.com/app/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker&amp;utm_campaign=Badge_Grade
+[inch-url]: http://inch-ci.org/github/motss/app-datepicker

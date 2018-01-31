@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "allowUnusedLabels": true,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "removeComments": true,
+    "traceResolution": false,
+    "newLine": "LF",
+    "experimentalDecorators": true,
+    "lib": [
+      "dom.iterable",
+      "dom",
+      "esnext.asynciterable",
+      "esnext"
+    ],
+    "moduleResolution": "node",
+    "module": "es2015",
+    "target": "esnext",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "rootDir": "src",
+    "outDir": ".",
+    "declaration": true,
+    "declarationDir": "."
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
