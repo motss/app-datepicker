@@ -1,43 +1,39 @@
 // @ts-check
 
-/** Import project dependencies */
-import {
-  html,
-  LitElement,
-} from '../node_modules/@polymer/lit-element/lit-element.js';
+import * as Polymer from '../node_modules/@polymer/polymer/polymer-element.js';
 
-class AppDatepicker extends LitElement {
+export class AppDatepicker extends Polymer.Element {
   static get is() {
     return 'app-datepicker';
   }
 
-  static get properties() {
-    return {};
+  static get template() {
+    console.log('🚧 template', Polymer);
+
+    return Polymer.html`
+      <style>
+        :host {
+          display: block;
+        }
+      </style>
+
+      <h1>${AppDatepicker.is}</h1>
+
+      <p>[[inputDate]]</p>
+    `;
   }
 
   constructor() {
     super();
   }
 
-  public ready() {
-    super.ready();
-  }
-
-  public render({}) {
-    return html`
-      <style>
-        :host {
-          display: block;
-        }
-
-        * {
-          box-sizing: border-box;
-        }
-      </style>
-
-      <h1>${AppDatepicker.is}</h1>
-      <slot></slot>
-    `;
+  static get properties() {
+    return {
+      inputDate: {
+        type: String,
+        value: () => new Date(),
+      },
+    };
   }
 }
 

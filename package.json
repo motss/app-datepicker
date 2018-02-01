@@ -29,24 +29,13 @@
     "lint": "npm run ts && gulp lint && npm run cleanup",
     "nsp": "nsp check",
     "prepublishOnly": "npm run check && npm run build",
-    "ts": "tsc --target esnext --lib esnext,esnext.asynciterable --module commonjs gulpfile.ts"
+    "ts": "tsc --target esnext --lib dom,dom.iterable,esnext,esnext.asynciterable --module esnext src/app-datepicker.ts"
   },
   "dependencies": {
-    "@polymer/lit-element": "^0.1.0"
+    "@polymer/polymer": "^3.0.0-pre.7",
+    "@webcomponents/webcomponentsjs": "^1.1.0"
   },
   "devDependencies": {
-    "@types/node": "^9.4.0",
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-minify": "^0.2.0",
-    "cross-env": "^5.1.3",
-    "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.1",
-    "gulp-sequence": "^1.0.0",
-    "gulp-tslint": "^8.1.2",
-    "gulp-typescript": "^3.2.4",
     "nsp": "^3.1.0",
     "tslint": "^5.9.1",
     "tslint-config-airbnb": "^5.5.0",
@@ -57,5 +46,18 @@
   "engines": {
     "node": ">= 8.9.0",
     "npm": ">= 5.5.1"
+  },
+  "flat": true,
+  "resolutions": {
+    "chalk": "2.3.0",
+    "ansi-styles": "3.2.0",
+    "supports-color": "4.5.0",
+    "lodash": "4.17.4",
+    "string-width": "2.1.1",
+    "is-fullwidth-code-point": "2.0.0",
+    "strip-ansi": "4.0.0",
+    "ansi-regex": "3.0.0",
+    "tsutils": "2.20.0",
+    "esutils": "2.0.2"
   }
 }
