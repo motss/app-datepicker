@@ -2,7 +2,90 @@
 # yarn lockfile v1
 
 
-"@polymer/polymer@^3.0.0-pre.7":
+"@polymer/font-roboto@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/font-roboto/-/font-roboto-3.0.0-pre.7.tgz#b703c70aae998502192e106525851ebb82b5dacf"
+
+"@polymer/iron-a11y-keys-behavior@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-a11y-keys-behavior/-/iron-a11y-keys-behavior-3.0.0-pre.7.tgz#c27d93a9573232a980903f6861d080167c8abfcf"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-behaviors@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-behaviors/-/iron-behaviors-3.0.0-pre.7.tgz#7a1405d326e60f658abe94b1914c7d208c36316d"
+  dependencies:
+    "@polymer/iron-a11y-keys-behavior" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-checked-element-behavior@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-checked-element-behavior/-/iron-checked-element-behavior-3.0.0-pre.7.tgz#907612c0718a990fc21a58fbdca0bd3b5c041a4a"
+  dependencies:
+    "@polymer/iron-form-element-behavior" "^3.0.0-pre.7"
+    "@polymer/iron-validatable-behavior" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-flex-layout@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-flex-layout/-/iron-flex-layout-3.0.0-pre.7.tgz#38806ef3b8fe4f9ea8ccfc6062dd3d9314c6a2a8"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-form-element-behavior@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-form-element-behavior/-/iron-form-element-behavior-3.0.0-pre.7.tgz#de75642246411e06f53b225f150d7218b6b9db4b"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-meta@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-meta/-/iron-meta-3.0.0-pre.7.tgz#201d330a27440a425a238a66dd1e64e8b7e2ed5f"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/iron-validatable-behavior@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-validatable-behavior/-/iron-validatable-behavior-3.0.0-pre.7.tgz#f970b1be66d4f0eb68241fc7717a4bde2e167578"
+  dependencies:
+    "@polymer/iron-meta" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/paper-behaviors@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-behaviors/-/paper-behaviors-3.0.0-pre.7.tgz#5cb7771c39cc9316213423de5106cf9fbd52dd42"
+  dependencies:
+    "@polymer/iron-behaviors" "^3.0.0-pre.7"
+    "@polymer/iron-checked-element-behavior" "^3.0.0-pre.7"
+    "@polymer/paper-ripple" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/paper-button@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-button/-/paper-button-3.0.0-pre.7.tgz#54ff76a7e0ccb7fdcd90f94fc1d815f47a7aa580"
+  dependencies:
+    "@polymer/iron-flex-layout" "^3.0.0-pre.7"
+    "@polymer/paper-behaviors" "^3.0.0-pre.7"
+    "@polymer/paper-styles" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/paper-ripple@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-ripple/-/paper-ripple-3.0.0-pre.7.tgz#8ea300282dc78c5a1f7c00e3d683deec76f3ce85"
+  dependencies:
+    "@polymer/iron-a11y-keys-behavior" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/paper-styles@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/paper-styles/-/paper-styles-3.0.0-pre.7.tgz#3a0df9190708c227392be11b65205dc5e56fd263"
+  dependencies:
+    "@polymer/font-roboto" "^3.0.0-pre.7"
+    "@polymer/iron-flex-layout" "^3.0.0-pre.7"
+    "@polymer/polymer" "^3.0.0-pre.7"
+
+"@polymer/polymer@3.0.0-pre.7", "@polymer/polymer@^3.0.0-pre.7":
   version "3.0.0-pre.7"
   resolved "https://registry.yarnpkg.com/@polymer/polymer/-/polymer-3.0.0-pre.7.tgz#c1e9720e47fae91d5e79f40064c12c97df19935f"
   dependencies:
@@ -27,11 +110,11 @@ ansi-escapes@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.0.0.tgz#ec3e8b4e9f8064fc02c3ac9b65f1c275bda8ef92"
 
-ansi-regex@^2.0.0, ansi-regex@^3.0.0:
+ansi-regex@3.0.0, ansi-regex@^2.0.0, ansi-regex@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-3.0.0.tgz#ed0317c322064f79466c02966bddb605ab37d998"
 
-ansi-styles@^2.2.1, ansi-styles@^3.1.0:
+ansi-styles@3.2.0, ansi-styles@^2.2.1, ansi-styles@^3.1.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.0.tgz#c159b8d5be0f9e5a6f346dab94f16ce022161b88"
   dependencies:
@@ -76,7 +159,7 @@ camelcase@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-4.1.0.tgz#d545635be1e33c542649c69173e5de6acfae34dd"
 
-chalk@^1.1.3, chalk@^2.0.0, chalk@^2.1.0, chalk@^2.3.0:
+chalk@2.3.0, chalk@^1.1.3, chalk@^2.0.0, chalk@^2.1.0, chalk@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
   dependencies:
@@ -198,7 +281,7 @@ esprima@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.0.tgz#4499eddcd1110e0b218bacf2fa7f7f59f55ca804"
 
-esutils@^1.1.6, esutils@^2.0.2:
+esutils@2.0.2, esutils@^1.1.6, esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
 
@@ -334,7 +417,7 @@ is-builtin-module@^1.0.0:
   dependencies:
     builtin-modules "^1.0.0"
 
-is-fullwidth-code-point@^1.0.0, is-fullwidth-code-point@^2.0.0:
+is-fullwidth-code-point@2.0.0, is-fullwidth-code-point@^1.0.0, is-fullwidth-code-point@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-2.0.0.tgz#a3b30a5c4f199183167aaab93beefae3ddfb654f"
 
@@ -387,7 +470,7 @@ locate-path@^2.0.0:
     p-locate "^2.0.0"
     path-exists "^3.0.0"
 
-lodash@^3.10.1, lodash@^4.3.0:
+lodash@4.17.4, lodash@^3.10.1, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -631,14 +714,14 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-string-width@^1.0.1, string-width@^2.0.0, string-width@^2.1.0:
+string-width@2.1.1, string-width@^1.0.1, string-width@^2.0.0, string-width@^2.1.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-2.1.1.tgz#ab93f27a8dc13d28cac815c462143a6d9012ae9e"
   dependencies:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^4.0.0"
 
-strip-ansi@^3.0.0, strip-ansi@^3.0.1, strip-ansi@^4.0.0:
+strip-ansi@4.0.0, strip-ansi@^3.0.0, strip-ansi@^3.0.1, strip-ansi@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
   dependencies:
@@ -652,7 +735,7 @@ strip-eof@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/strip-eof/-/strip-eof-1.0.0.tgz#bb43ff5598a6eb05d89b59fcd129c983313606bf"
 
-supports-color@^2.0.0, supports-color@^4.0.0:
+supports-color@4.5.0, supports-color@^2.0.0, supports-color@^4.0.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-4.5.0.tgz#be7a0de484dec5c5cddf8b3d59125044912f635b"
   dependencies:
@@ -722,7 +805,7 @@ tslint@^5.9.1:
     tslib "^1.8.0"
     tsutils "^2.12.1"
 
-tsutils@^1.4.0, tsutils@^2.12.1, tsutils@^2.12.2:
+tsutils@2.20.0, tsutils@^1.4.0, tsutils@^2.12.1, tsutils@^2.12.2:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.20.0.tgz#303394064bc80be8ee04e10b8609ae852e9312d3"
   dependencies:
