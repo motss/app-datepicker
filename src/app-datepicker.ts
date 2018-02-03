@@ -33,22 +33,20 @@ export class AppDatepicker extends Polymer.Element {
         }
 
         .datepicker__header {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-
           width: 100%;
           height: var(--app-datepicker-header-height);
           background-color: #4285F4;
+
+          @apply --layout-horizontal;
+          @apply --layout-center;
         }
 
         .header__selector {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-
           width: 100%;
           padding: 0 14px;
+
+          @apply --layout-vertical;
+          @apply --layout-center-justified;
         }
         .selector__year,
         .selector__calendar {
