@@ -1,5 +1,6 @@
 // @ts-check
 
+import '../node_modules/@polymer/iron-selector/iron-selector.js';
 import '../node_modules/@polymer/paper-button/paper-button.js';
 import * as Polymer from '../node_modules/@polymer/polymer/polymer-element.js';
 
@@ -32,9 +33,44 @@ export class AppDatepicker extends Polymer.Element {
         }
 
         .datepicker__header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
           width: 100%;
           height: var(--app-datepicker-header-height);
           background-color: #4285F4;
+        }
+
+        .header__selector {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          width: 100%;
+          padding: 0 14px;
+        }
+        .selector__year,
+        .selector__calendar {
+          color: #fff;
+          opacity: .7;
+
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
+        .selector__year.iron-selected,
+        .selector__calendar.iron-selected {
+          opacity: 1;
+        }
+        .selector__year:hover,
+        .selector__calendar:hover {
+          cursor: pointer;
+        }
+        .selector__year {
+          font-size: 14px;
+        }
+        .selector__calendar {
+          font-size: 28px;
         }
 
         .datepicker__main {
@@ -52,7 +88,14 @@ export class AppDatepicker extends Polymer.Element {
         }
       </style>
 
-      <div class="datepicker__header"></div>
+      <div class="datepicker__header">
+        <iron-selector class="header__selector"
+          selected="{{selectedView}}"
+          attr-for-selected="view">
+          <div class="selector__year" view="year">[[_selectedYear]]</div>
+          <div class="selector__calendar" view="calendar">[[_selectedFormattedDate]]</div>
+        </iron-selector>
+      </div>
 
       <div class="datepicker__main"></div>
 
@@ -70,10 +113,46 @@ export class AppDatepicker extends Polymer.Element {
   static get properties() {
     return {
       inputDate: {
-        type: String,
+        type: Date,
         value: () => new Date(),
       },
+      selectedView: {
+        type: String,
+        value: () => 'year',
+      },
+
+      _selectedDate: {
+        type: Date,
+        value: () => new Date(),
+      },
+      _selectedYear: {
+        type: String,
+        value: () => new Date().getUTCFullYear(),
+        computed: 'computeSelectedYear(_selectedDate)',
+      },
+      _selectedFormattedDate: {
+        type: String,
+        computed: 'computeSelectedFormattedDate(_selectedDate)',
+      },
     };
+  }
+
+  private computeSelectedYear(selectedDate) {
+    return this.formatDateWithIntl(selectedDate, {
+      year: 'numeric',
+    });
+  }
+
+  private computeSelectedFormattedDate(selectedDate) {
+    return this.formatDateWithIntl(selectedDate, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+  }
+
+  private formatDateWithIntl(date: Date, opts: Intl.DateTimeFormatOptions, lang = 'en-US') {
+    return Intl.DateTimeFormat(lang || 'en-US', { ...(opts || {}), }).format(new Date(date));
   }
 }
 

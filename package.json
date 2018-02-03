@@ -32,6 +32,7 @@
     "ts": "tsc --target esnext --lib dom,dom.iterable,esnext,esnext.asynciterable --module esnext src/app-datepicker.ts"
   },
   "dependencies": {
+    "@polymer/iron-selector": "^3.0.0-pre.7",
     "@polymer/paper-button": "^3.0.0-pre.7",
     "@polymer/polymer": "^3.0.0-pre.7",
     "@webcomponents/webcomponentsjs": "^1.1.0"

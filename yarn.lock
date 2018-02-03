@@ -45,6 +45,12 @@
   dependencies:
     "@polymer/polymer" "^3.0.0-pre.7"
 
+"@polymer/iron-selector@^3.0.0-pre.7":
+  version "3.0.0-pre.7"
+  resolved "https://registry.yarnpkg.com/@polymer/iron-selector/-/iron-selector-3.0.0-pre.7.tgz#9f1f0e4dc14fdac6858c77aafe627b63f18c4c9f"
+  dependencies:
+    "@polymer/polymer" "^3.0.0-pre.7"
+
 "@polymer/iron-validatable-behavior@^3.0.0-pre.7":
   version "3.0.0-pre.7"
   resolved "https://registry.yarnpkg.com/@polymer/iron-validatable-behavior/-/iron-validatable-behavior-3.0.0-pre.7.tgz#f970b1be66d4f0eb68241fc7717a4bde2e167578"
