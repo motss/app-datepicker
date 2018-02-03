@@ -32,6 +32,20 @@ export class AppDatepicker extends Polymer.Element {
           box-sizing: border-box;
         }
 
+        .btn--reset {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+          margin: 0;
+          padding: 0;
+          background-color: inherit;
+          color: inherit;
+          font-size: inherit;
+          border: none;
+          box-sizing: border-box;
+        }
+
         .datepicker__header {
           width: 100%;
           height: var(--app-datepicker-header-height);
@@ -55,6 +69,8 @@ export class AppDatepicker extends Polymer.Element {
 
           text-overflow: ellipsis;
           overflow: hidden;
+
+          @apply --layout-horizontal;
         }
         .selector__year.iron-selected,
         .selector__calendar.iron-selected {
@@ -90,8 +106,10 @@ export class AppDatepicker extends Polymer.Element {
         <iron-selector class="header__selector"
           selected="{{selectedView}}"
           attr-for-selected="view">
-          <div class="selector__year" view="year">[[_selectedYear]]</div>
-          <div class="selector__calendar" view="calendar">[[_selectedFormattedDate]]</div>
+          <button class="btn--reset selector__year"
+            view="year">[[_selectedYear]]</button>
+          <button class="btn--reset selector__calendar"
+            view="calendar">[[_selectedFormattedDate]]</button>
         </iron-selector>
       </div>
 
