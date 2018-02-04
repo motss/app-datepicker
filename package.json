@@ -32,8 +32,10 @@
     "ts": "tsc --target esnext --lib dom,dom.iterable,esnext,esnext.asynciterable --module esnext src/app-datepicker.ts"
   },
   "dependencies": {
+    "@polymer/iron-iconset-svg": "^3.0.0-pre.7",
     "@polymer/iron-selector": "^3.0.0-pre.7",
     "@polymer/paper-button": "^3.0.0-pre.7",
+    "@polymer/paper-icon-button": "^3.0.0-pre.7",
     "@polymer/polymer": "^3.0.0-pre.7",
     "@webcomponents/webcomponentsjs": "^1.1.0"
   },
@@ -61,6 +63,17 @@
     "ansi-regex": "3.0.0",
     "tsutils": "2.20.0",
     "esutils": "2.0.2",
-    "@polymer/polymer": "3.0.0-pre.7"
+    "@polymer/polymer": "3.0.0-pre.7",
+    "@polymer/iron-flex-layout": "3.0.0-pre.7",
+    "@polymer/paper-behaviors": "3.0.0-pre.7",
+    "@polymer/paper-styles": "3.0.0-pre.7",
+    "@polymer/iron-behaviors": "3.0.0-pre.7",
+    "@polymer/iron-checked-element-behavior": "3.0.0-pre.7",
+    "@polymer/paper-ripple": "3.0.0-pre.7",
+    "@polymer/iron-a11y-keys-behavior": "3.0.0-pre.7",
+    "@polymer/iron-form-element-behavior": "3.0.0-pre.7",
+    "@polymer/iron-validatable-behavior": "3.0.0-pre.7",
+    "@polymer/iron-meta": "3.0.0-pre.7",
+    "@polymer/font-roboto": "3.0.0-pre.7"
   }
 }

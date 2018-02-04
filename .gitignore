@@ -17,7 +17,7 @@ demo*/
 node_modules/
 
 # .js files
-*.js
-*.jsx
+# *.js
+# *.jsx
 *.d.ts*
 gulpfile*.js
