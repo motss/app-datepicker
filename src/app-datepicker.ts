@@ -237,20 +237,16 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   private onSelectedYearChanged(ev) {
-    console.log(
-      '🚧 onSelectedYearChanged',
-      ev,
-      this.selectorViewYear,
-      this.selectedYear,
-      (+this.selectedYear - 1900 - 2) * 50
-    );
+    if (ev.detail && ev.detail.value && ev.detail.value.year) {
+      const selectedYear = ev.detail.value.year;
 
-    Promise.resolve()
-      .then(() => {
-        window.requestAnimationFrame(() => {
-          this.selectorViewYear.scrollTo(0, (+this.selectedYear - 1900 - 3) * 50);
+      Promise.resolve()
+        .then(() => {
+          window.requestAnimationFrame(() => {
+            this.selectorViewYear.scrollTo(0, (+selectedYear - 1900 - 3) * 50);
+          });
         });
-      });
+    }
   }
 
   private computeAllAvailableYears(selectedYear) {
