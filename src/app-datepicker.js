@@ -162,6 +162,19 @@ export class AppDatepicker extends Polymer.Element {
           right: 16px;
         }
 
+        .view-calendar__full-calendar > table {
+          width: 100%;
+        }
+        .view-calendar__full-calendar > table tr {
+          padding: 0 16px;
+        }
+        .view-calendar__full-calendar > table tr > th,
+        .view-calendar__full-calendar > table tr > td {
+          width: 40px;
+          height: 40px;
+          text-align: center;
+        }
+
         .datepicker__footer {
           background-color: #fff;
           width: 100%;
@@ -222,7 +235,6 @@ export class AppDatepicker extends Polymer.Element {
                 on-tap="incrementSelectedMonth"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__short-weekdays"></div>
             <div class="view-calendar__full-calendar"></div>
           </div>
         </iron-selector>
@@ -243,7 +255,7 @@ export class AppDatepicker extends Polymer.Element {
     return {
       inputDate: {
         type: Date,
-        value: () => new Date(),
+        value: () => AppDatepicker.toUTCDate(new Date()),
       },
       selectedView: {
         type: String,
@@ -251,33 +263,53 @@ export class AppDatepicker extends Polymer.Element {
       },
       selectedYear: {
         type: String,
-        value: () => new Date().getUTCFullYear(),
+        value: () => AppDatepicker.toUTCDate(new Date()).getUTCFullYear(),
       },
 
       _selectedDate: {
         type: Date,
         readOnly: true,
-        value: () => new Date(),
+        value: () => AppDatepicker.toUTCDate(new Date()),
         // TODO: This should be computed with selectedYear, selectedMonth, selectedDay.
         // computed: 'computeSelectedDate()',
       },
-      // _selectedFormattedDate: {
-      //   type: String,
-      //   readOnly: true,
-      //   computed: 'computeSelectedFormattedDate(_selectedDate)',
-      // },
-      // _selectedFormattedMonth: {
-      //   type: String,
-      //   readOnly: true,
-      //   computed: 'computeSelectedFormattedMonth(_selectedDate)',
-      // },
 
       __allAvailableYears: {
         type: Array,
         readOnly: true,
         computed: 'computeAllAvailableYears(selectedYear)',
       },
+      __allWeekdays: {
+        type: Array,
+        readOnly: true,
+        value: () => {
+          return Array.from(Array(7), (_, i) => {
+            const d = new Date(Date.UTC(2017, 0, i + 1));
+
+            return {
+              original: d,
+              label: AppDatepicker.formatDateWithIntl(d, {
+                weekday: 'long',
+              }),
+              value: AppDatepicker.formatDateWithIntl(d, {
+                weekday: 'narrow',
+              }),
+            };
+          });
+        },
+      },
+      __allDaysInMonth: {
+        type: Array,
+        readOnly: true,
+        computed: 'computeAllDaysInMonth(_selectedDate)',
+      },
     };
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    this.setupFullCalendar(this.__allWeekdays, this.__allDaysInMonth);
   }
 
   onSelectedViewChanged(ev) {
@@ -322,13 +354,13 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   computeSelectedFormattedYear(selectedDate) {
-    return this.formatDateWithIntl(selectedDate, {
+    return AppDatepicker.formatDateWithIntl(selectedDate, {
       year: 'numeric',
     });
   }
 
   computeSelectedFormattedDate(selectedDate) {
-    return this.formatDateWithIntl(selectedDate, {
+    return AppDatepicker.formatDateWithIntl(selectedDate, {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -336,7 +368,7 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   computeSelectedFormattedMonth(selectedDate) {
-    return this.formatDateWithIntl(selectedDate, {
+    return AppDatepicker.formatDateWithIntl(selectedDate, {
       month: 'long',
       year: 'numeric',
     });
@@ -359,7 +391,7 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   decrementSelectedMonth() {
-    const selectedYear = new Date(this._selectedDate).getUTCFullYear() - 1;
+    const selectedYear = AppDatepicker.toUTCDate(this._selectedDate).getUTCFullYear() - 1;
 
     this.setProperties({
       selectedYear,
@@ -370,7 +402,7 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   incrementSelectedMonth() {
-    const selectedYear = new Date(this._selectedDate).getUTCFullYear() + 1;
+    const selectedYear = AppDatepicker.toUTCDate(this._selectedDate).getUTCFullYear() + 1;
 
     this.setProperties({
       selectedYear,
@@ -380,18 +412,94 @@ export class AppDatepicker extends Polymer.Element {
     }, true);
   }
 
-  formatDateWithIntl(date, opts, lang = 'en-US') {
-    return Intl.DateTimeFormat(lang || 'en-US', { ...(opts || {}), }).format(new Date(date));
-  }
-
   centerYearListScroller(selectedYear) {
     window.requestAnimationFrame(() => {
       this.selectorViewYear.scrollTo(0, (+selectedYear - 1900 - 3) * 50);
     });
   }
 
+  computeAllDaysInMonth(selectedDate) {
+    const fy = selectedDate.getUTCFullYear();
+    const selectedMonth = selectedDate.getUTCMonth();
+    const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
+    const firstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay();
+
+    return Array.from(Array(Math.ceil(totalDays / 7)))
+      .reduce((p, n, i) => {
+        return p.concat([
+          [
+            ...(
+              firstWeekday > 0 && i < 1
+                ? Array.from(Array(firstWeekday), n => ({ original: '', label: '', value: '' }))
+                : []
+            ),
+            ...Array.from(Array(7 - (i < 1 ? firstWeekday : 0)), (n, ni) => {
+              const day = (i * 7) + ni + 1;
+
+              if (day > totalDays) {
+                return {
+                  original: '',
+                  label: '',
+                  value: '',
+                };
+              }
+
+              const d = new Date(Date.UTC(fy, selectedMonth, day));
+
+              return {
+                original: d,
+                label: AppDatepicker.formatDateWithIntl(d, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  weekday: 'short',
+                }),
+                value: AppDatepicker.formatDateWithIntl(d, {
+                  day: 'numeric',
+                }),
+              };
+            }),
+          ],
+      ]);
+    }, []);
+  }
+
+  setupFullCalendar() {
+    console.log('🚧 computeFullCalendar', this.__allWeekdays, this.__allDaysInMonth);
+
+    const tmpl = document.createElement('template');
+
+    tmpl.innerHTML = `<table><tr>${
+      this.__allWeekdays.map(n => `<th>${n.value}</th>`).join('')
+    }</tr>${
+      this.__allDaysInMonth.map((n) => {
+        return `<tr>${
+          n.map(m => `<td>${m.value}</td>`).join('')
+        }</tr>`;
+      }).join('')
+    }</table>`;
+
+    console.log('🚧 computeFullCalendar', tmpl, this.shadowRoot.querySelector('.view-calendar__full-calendar'));
+
+    this.shadowRoot.querySelector('.view-calendar__full-calendar').innerHTML = tmpl.innerHTML;
+  }
+
   get selectorViewYear() {
     return this.shadowRoot.querySelector('.selector__view-year');
+  }
+
+  static toUTCDate(date) {
+    const toDate = new Date(date);
+    const fy = toDate.getUTCFullYear();
+    const m = toDate.getUTCMonth();
+    const d = toDate.getUTCDate();
+
+    return new Date(Date.UTC(fy, m, d));
+  }
+
+  static formatDateWithIntl(date, opts, lang = 'en-US') {
+    return Intl.DateTimeFormat(lang || 'en-US', { ...(opts || {}), })
+      .format(AppDatepicker.toUTCDate(date));
   }
 }
 
