@@ -1,11 +1,13 @@
 // @ts-check
 
-import '../node_modules/@polymer/iron-pages/iron-pages.js';
 import '../node_modules/@polymer/iron-selector/iron-selector.js';
 import '../node_modules/@polymer/paper-button/paper-button.js';
 import * as Polymer from '../node_modules/@polymer/polymer/polymer-element.js';
 
 export class AppDatepicker extends Polymer.Element {
+  public shadowRoot: any;
+  public selectedYear: string;
+
   static get is() {
     return 'app-datepicker';
   }
@@ -112,12 +114,30 @@ export class AppDatepicker extends Polymer.Element {
           opacity: 1;
           pointer-events: auto;
         }
-        .main__selector > .selector__view-year {
+
+        .selector__view-year {
           overflow: auto;
         }
-        .main__selector > .selector__view-year > .view-year__year-list {
-          /** DEBUG: Test oveflow in year list view */
-          height: 999px;
+        .selector__view-year > .view-year__year-list {
+          overflow: auto;
+
+          @apply --layout-vertical;
+        }
+        .selector__view-year > .view-year__year-list > .year-list__year {
+          color: #212121;
+          font-size: 16px;
+
+          padding: 16px;
+        }
+        .selector__view-year > .view-year__year-list > .year-list__year.iron-selected {
+          color: var(--app-datepicker-primary-color);
+          font-size: 24px;
+          font-weight: 700;
+
+          --paper-button-ink-color: #848484;
+        }
+        .selector__view-year > .view-year__year-list > .year-list__year:hover {
+          cursor: pointer;
         }
 
         .datepicker__footer {
@@ -143,7 +163,7 @@ export class AppDatepicker extends Polymer.Element {
           selected="{{selectedView}}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
-            view="year">[[_selectedYear]]</button>
+            view="year">[[selectedYear]]</button>
           <button class="btn--reset selector__calendar"
             view="calendar">[[_selectedFormattedDate]]</button>
         </iron-selector>
@@ -154,7 +174,19 @@ export class AppDatepicker extends Polymer.Element {
           selected="{{selectedView}}"
           attr-for-selected="view">
           <div class="selector__view-year" view="year">
-            <div class="view-year__year-list">year</div>
+            <iron-selector class="view-year__year-list"
+              selected="{{selectedYear}}"
+              on-selected-item-changed="onSelectedYearChanged"
+              attr-for-selected="year">
+              <template is="dom-repeat"
+                items="[[__allAvailableYears]]"
+                as="year"
+                strip-whitespace>
+                <button class="btn--reset year-list__year"
+                  year="[[year.label]]">[[year.label]]</button>
+              </template>
+            </iron-selector>
+            <!-- <div class="view-year__year-list"></div> -->
           </div>
           <div class="selector__view-calendar" view="calendar">Calendar</div>
         </iron-selector>
@@ -181,21 +213,51 @@ export class AppDatepicker extends Polymer.Element {
         type: String,
         value: () => 'year',
       },
+      selectedYear: {
+        type: String,
+        value: () => new Date().getUTCFullYear(),
+        computed: 'computeSelectedYear(_selectedDate)',
+      },
 
       _selectedDate: {
         type: Date,
         value: () => new Date(),
       },
-      _selectedYear: {
-        type: String,
-        value: () => new Date().getUTCFullYear(),
-        computed: 'computeSelectedYear(_selectedDate)',
-      },
       _selectedFormattedDate: {
         type: String,
         computed: 'computeSelectedFormattedDate(_selectedDate)',
       },
+
+      __allAvailableYears: {
+        type: Array,
+        readOnly: true,
+        computed: 'computeAllAvailableYears(selectedYear)',
+      },
     };
+  }
+
+  private onSelectedYearChanged(ev) {
+    console.log(
+      '🚧 onSelectedYearChanged',
+      ev,
+      this.selectorViewYear,
+      this.selectedYear,
+      (+this.selectedYear - 1900 - 2) * 50
+    );
+
+    Promise.resolve()
+      .then(() => {
+        window.requestAnimationFrame(() => {
+          this.selectorViewYear.scrollTo(0, (+this.selectedYear - 1900 - 3) * 50);
+        });
+      });
+  }
+
+  private computeAllAvailableYears(selectedYear) {
+    return Array.from(Array(2100 - 1900 + 1))
+      .map((_, i) => ({
+        label: 1900 + i,
+      }));
   }
 
   private computeSelectedYear(selectedDate) {
@@ -214,6 +276,10 @@ export class AppDatepicker extends Polymer.Element {
 
   private formatDateWithIntl(date: Date, opts: Intl.DateTimeFormatOptions, lang = 'en-US') {
     return Intl.DateTimeFormat(lang || 'en-US', { ...(opts || {}), }).format(new Date(date));
+  }
+
+  get selectorViewYear() {
+    return this.shadowRoot.querySelector('.selector__view-year');
   }
 }
 
