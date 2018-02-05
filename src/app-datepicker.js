@@ -170,9 +170,19 @@ export class AppDatepicker extends Polymer.Element {
         }
         .view-calendar__full-calendar > table tr > th,
         .view-calendar__full-calendar > table tr > td {
+          max-width: 40px;
+          max-height: 40px;
+          width: 100%;
+          height: 100%;
+          text-align: center;
+        }
+        .view-calendar__full-calendar > table tr > td > paper-button {
+          min-width: 0;
           width: 40px;
           height: 40px;
-          text-align: center;
+          margin: 0;
+          padding: 0;
+          border-radius: 50%;
         }
 
         .datepicker__footer {
@@ -302,14 +312,13 @@ export class AppDatepicker extends Polymer.Element {
         type: Array,
         readOnly: true,
         computed: 'computeAllDaysInMonth(_selectedDate)',
+        observer: 'setupFullCalendar',
       },
     };
   }
 
   connectedCallback() {
     super.connectedCallback();
-
-    this.setupFullCalendar(this.__allWeekdays, this.__allDaysInMonth);
   }
 
   onSelectedViewChanged(ev) {
@@ -391,22 +400,34 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   decrementSelectedMonth() {
-    const selectedYear = AppDatepicker.toUTCDate(this._selectedDate).getUTCFullYear() - 1;
+    const od = AppDatepicker.toUTCDate(this._selectedDate);
+    const nfy = od.getUTCFullYear();
+    const nm = od.getUTCMonth();
+    const nd = od.getUTCDate();
+    const newDate = new Date(Date.UTC(nfy, nm - 1, nd));
+
+    const selectedYear = newDate.getUTCFullYear();
 
     this.setProperties({
       selectedYear,
-      _selectedDate: this.updateSelectedDate(this._selectedDate, {
+      _selectedDate: this.updateSelectedDate(newDate, {
         year: selectedYear,
       }),
     }, true);
   }
 
   incrementSelectedMonth() {
-    const selectedYear = AppDatepicker.toUTCDate(this._selectedDate).getUTCFullYear() + 1;
+    const od = AppDatepicker.toUTCDate(this._selectedDate);
+    const nfy = od.getUTCFullYear();
+    const nm = od.getUTCMonth();
+    const nd = od.getUTCDate();
+    const newDate = new Date(Date.UTC(nfy, nm + 1, nd));
+
+    const selectedYear = newDate.getUTCFullYear();
 
     this.setProperties({
       selectedYear,
-      _selectedDate: this.updateSelectedDate(this._selectedDate, {
+      _selectedDate: this.updateSelectedDate(newDate, {
         year: selectedYear,
       }),
     }, true);
@@ -465,23 +486,29 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   setupFullCalendar() {
-    console.log('🚧 computeFullCalendar', this.__allWeekdays, this.__allDaysInMonth);
+    // console.log('🚧 computeFullCalendar', this.__allWeekdays, this.__allDaysInMonth);
 
-    const tmpl = document.createElement('template');
+    Promise.resolve()
+      .then(() => {
+        const tmpl = document.createElement('template');
 
-    tmpl.innerHTML = `<table><tr>${
-      this.__allWeekdays.map(n => `<th>${n.value}</th>`).join('')
-    }</tr>${
-      this.__allDaysInMonth.map((n) => {
-        return `<tr>${
-          n.map(m => `<td>${m.value}</td>`).join('')
-        }</tr>`;
-      }).join('')
-    }</table>`;
+        tmpl.innerHTML = `<table><tr>${
+          this.__allWeekdays.map(n => `<th>${n.value}</th>`).join('')
+        }</tr>${
+          this.__allDaysInMonth.map((n) => {
+            return `<tr>${
+              n.map(m =>
+                `<td><paper-button aria-label="${m.label}">${m.value}</paper-button></td>`)
+                .join('')
+            }</tr>`;
+          }).join('')
+        }</table>`;
 
-    console.log('🚧 computeFullCalendar', tmpl, this.shadowRoot.querySelector('.view-calendar__full-calendar'));
-
-    this.shadowRoot.querySelector('.view-calendar__full-calendar').innerHTML = tmpl.innerHTML;
+        return tmpl;
+      })
+      .then((tmpl) => {
+        this.shadowRoot.querySelector('.view-calendar__full-calendar').innerHTML = tmpl.innerHTML;
+      });
   }
 
   get selectorViewYear() {
