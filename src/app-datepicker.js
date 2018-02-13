@@ -29,6 +29,7 @@ export class AppDatepicker extends LitElement {
       selectedYear: String,
 
       _selectedDate: Date,
+      _todayDate: Date,
 
       __allAvailableYears: Array,
       __allWeekdays: Array,
@@ -54,6 +55,7 @@ export class AppDatepicker extends LitElement {
     selectedYear,
 
     _selectedDate,
+    _todayDate,
 
     __allAvailableYears,
     __allWeekdays,
@@ -63,7 +65,9 @@ export class AppDatepicker extends LitElement {
       __allWeekdays,
       this.computeAllDaysInMonth(_selectedDate),
       min,
-      max
+      max,
+      _selectedDate,
+      _todayDate
     );
 
     return html`
@@ -274,6 +278,15 @@ export class AppDatepicker extends LitElement {
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled {
           color: rgba(0, 0, 0, .26);
         }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected {
+          background-color: var(--app-datepicker-selected-day-bg, var(--app-datepicker-primary-color));
+          color: var(--app-datepicker-selected-day-color, #fff);
+        }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--today,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today {
+          color: var(--app-datepicker-today-color, var(--app-datepicker-primary-color));
+        }
 
         .datepicker__footer {
           display: flex;
@@ -352,6 +365,8 @@ export class AppDatepicker extends LitElement {
   }
 
   initProps() {
+    const defaultToday = AppDatepicker.toUTCDate(new Date());
+
     this.min = this.min == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
       : this.min;
@@ -359,16 +374,18 @@ export class AppDatepicker extends LitElement {
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MAX_DATE}-12-31`))
       : this.max;
     this.value = this.value == null
-      ? AppDatepicker.toUTCDate(new Date())
+      ? defaultToday
       : this.value;
     this.selectedView = this.selectedView == null
       ? 'calendar'
       : this.selectedView;
     this.selectedYear = this.selectedYear == null
-      ? AppDatepicker.toUTCDate(new Date()).getUTCFullYear()
+      ? defaultToday.getUTCFullYear()
       : this.selectedYear;
 
-    this._selectedDate = AppDatepicker.toUTCDate(new Date());
+    this._selectedDate = defaultToday;
+    this._todayDate = defaultToday;
+
     this.__allWeekdays = Array.from(Array(7), (_, i) => {
       const d = new Date(Date.UTC(2017, 0, i + 1));
 
@@ -542,7 +559,7 @@ export class AppDatepicker extends LitElement {
     }, []);
   }
 
-  setupCalendar(allWeekdays, allDaysInMonth, min, max) {
+  setupCalendar(allWeekdays, allDaysInMonth, min, max, selectedDate, todayDate) {
     let hasMinDate = false;
     let hasMaxDate = false;
     const d = html`<table><tr>${
@@ -564,6 +581,14 @@ export class AppDatepicker extends LitElement {
             : html`<td><div class$="full-calendar__day${
               oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp
                 ? ' day--disabled'
+                : ''
+            }${
+              +todayDate === oriTimestamp
+                ? ' day--today'
+                : ''
+            }${
+              +selectedDate === +oriTimestamp
+                ? ' day--selected'
                 : ''
             }" aria-label$="${d.label}">${d.value}</div></td>`;
         });
