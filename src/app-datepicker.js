@@ -2,20 +2,53 @@
 import '../node_modules/@polymer/iron-selector/iron-selector.js';
 import '../node_modules/@polymer/paper-button/paper-button.js';
 import '../node_modules/@polymer/paper-icon-button/paper-icon-button.js';
-import * as Polymer from '../node_modules/@polymer/polymer/polymer-element.js';
+import {
+  html,
+  LitElement,
+
+  classString,
+  renderAttributes,
+  styleString,
+} from '../node_modules/@polymer/lit-element/lit-element.js';
 
 /** Import other modules */
 import './app-datepicker-icons.js';
 
-export class AppDatepicker extends Polymer.Element {
+export class AppDatepicker extends LitElement {
   static get is() {
     return 'app-datepicker';
   }
 
-  static get template() {
-    console.log('🚧 template', Polymer);
+  static get properties() {
+    return {
+      inputDate: Date,
+      selectedView: String,
+      selectedYear: String,
 
-    return Polymer.html`
+      _selectedDate: Date,
+      __allAvailableYears: Array,
+      __allWeekdays: Array,
+      __allDaysInMonth: Array,
+    };
+  }
+
+  constructor() {
+    super();
+
+    this.initElement();
+  }
+
+  render({
+    inputDate,
+    selectedView,
+    selectedYear,
+
+    _selectedDate,
+    __allAvailableYears,
+    __allWeekdays,
+    __allDaysInMonth,
+  }) {
+    return html`
       <style>
         :host {
           display: block;
@@ -55,16 +88,18 @@ export class AppDatepicker extends Polymer.Element {
           height: var(--app-datepicker-header-height);
           background-color: var(--app-datepicker-primary-color);
 
-          @apply --layout-horizontal;
-          @apply --layout-center;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
         }
 
         .header__selector {
           width: 100%;
           padding: 0 14px;
 
-          @apply --layout-vertical;
-          @apply --layout-center-justified;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
         .selector__year,
         .selector__calendar {
@@ -74,7 +109,8 @@ export class AppDatepicker extends Polymer.Element {
           text-overflow: ellipsis;
           overflow: hidden;
 
-          @apply --layout-horizontal;
+          display: flex;
+          flex-direction: row;
         }
         .selector__year.iron-selected,
         .selector__calendar.iron-selected {
@@ -98,6 +134,8 @@ export class AppDatepicker extends Polymer.Element {
             100% - var(--app-datepicker-header-height) - var(--app-datepicker-footer-height)
           );
           background-color: #fff;
+
+          border: 1px solid #ddd;
         }
 
         .main__selector > * {
@@ -119,9 +157,10 @@ export class AppDatepicker extends Polymer.Element {
           overflow: auto;
         }
         .selector__view-year > .view-year__year-list {
-          overflow: auto;
+          display: flex;
+          flex-direction: column;
 
-          @apply --layout-vertical;
+          overflow: auto;
         }
         .selector__view-year > .view-year__year-list > .year-list__year {
           color: #212121;
@@ -142,10 +181,12 @@ export class AppDatepicker extends Polymer.Element {
 
         /** .selector__view-calendar {} */
         .view-calendar__month-selector {
-          padding: 16px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
 
-          @apply --layout-horizontal;
-          @apply --layout-center-center;
+          padding: 16px;
         }
         .view-calendar__month-selector > .month-selector__prev-month,
         .view-calendar__month-selector > .month-selector__next-month {
@@ -156,44 +197,68 @@ export class AppDatepicker extends Polymer.Element {
           padding: 16px;
         }
         .view-calendar__month-selector > .month-selector__prev-month {
-          left: 16px;
+          left: 8px;
         }
         .view-calendar__month-selector > .month-selector__next-month {
-          right: 16px;
+          right: 8px;
         }
 
-        .view-calendar__full-calendar > table {
-          width: 100%;
+        .view-calendar__full-calendar {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
         }
-        .view-calendar__full-calendar > table tr {
-          padding: 0 16px;
+        table,
+        tr,
+        td,
+        th {
+          margin: 0;
+          padding: 0;
+          border-collapse: collapse;
+
+          border: 1px solid #ddd;
+        }
+        .view-calendar__full-calendar > table {
+          width: calc(100% - 8px * 2);
+          padding: 0 8px;
         }
         .view-calendar__full-calendar > table tr > th,
         .view-calendar__full-calendar > table tr > td {
-          max-width: 40px;
-          max-height: 40px;
-          width: 100%;
-          height: 100%;
+          position: relative;
+          width: calc(100% / 7);
           text-align: center;
         }
-        .view-calendar__full-calendar > table tr > td > paper-button {
-          min-width: 0;
-          width: 40px;
-          height: 40px;
-          margin: 0;
-          padding: 0;
+        .view-calendar__full-calendar > table tr > td:after {
+          display: block;
+          content: '';
+          margin-top: 100%;
+        }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
           border-radius: 50%;
         }
 
         .datepicker__footer {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-end;
+
           background-color: #fff;
           width: 100%;
           height: var(--app-datepicker-footer-height);
           padding: 0 8px 0 0;
-
-          @apply --layout-horizontal;
-          @apply --layout-center;
-          @apply --layout-end-justified;
         }
         .datepicker__footer > paper-button {
           color: var(--app-datepicker-primary-color);
@@ -205,47 +270,48 @@ export class AppDatepicker extends Polymer.Element {
 
       <div class="datepicker__header">
         <iron-selector class="header__selector"
-          selected="{{selectedView}}"
+          selected="${selectedView}"
+          on-selected-changed="${(ev) => { this.selectedView = ev.detail.value; }}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
-            view="year">[[computeSelectedFormattedYear(_selectedDate)]]</button>
+            view="year">${this.computeSelectedFormattedYear(_selectedDate)}</button>
           <button class="btn--reset selector__calendar"
-            view="calendar">[[computeSelectedFormattedDate(_selectedDate)]]</button>
+            view="calendar">${this.computeSelectedFormattedDate(_selectedDate)}</button>
         </iron-selector>
       </div>
 
       <div class="datepicker__main">
         <iron-selector class="main__selector"
-          selected="{{selectedView}}"
-          on-selected-item-changed="onSelectedViewChanged"
+          selected="${selectedView}"
+          on-selected-item-changed="${ev => this.onSelectedViewChanged(ev)}"
           attr-for-selected="view">
           <div class="selector__view-year" view="year">
             <iron-selector class="view-year__year-list"
-              selected="{{selectedYear}}"
-              on-selected-item-changed="onSelectedYearChanged"
-              attr-for-selected="year">
-              <template is="dom-repeat"
-                items="[[__allAvailableYears]]"
-                as="year"
-                strip-whitespace>
-                <button class="btn--reset year-list__year"
-                  year="[[year.label]]">[[year.label]]</button>
-              </template>
-            </iron-selector>
+              selected="${selectedYear}"
+              on-selected-item-changed="${ev => this.onSelectedYearChanged(ev)}"
+              attr-for-selected="year">${
+              this
+                .computeAllAvailableYears(selectedYear)
+                .map(year =>
+                  html`<button class="btn--reset year-list__year"
+                  year="${year.label}">${year.label}</button>`)
+            }</iron-selector>
           </div>
 
           <div class="selector__view-calendar" view="calendar">
             <div class="view-calendar__month-selector">
               <paper-icon-button class="month-selector__prev-month"
                 icon="datepicker:chevron-left"
-                on-tap="decrementSelectedMonth"></paper-icon-button>
-              <div>[[computeSelectedFormattedMonth(_selectedDate)]]</div>
+                on-tap="${ev => this.decrementSelectedMonth(ev)}"></paper-icon-button>
+              <div>${this.computeSelectedFormattedMonth(_selectedDate)}</div>
               <paper-icon-button class="month-selector__next-month"
                 icon="datepicker:chevron-right"
-                on-tap="incrementSelectedMonth"></paper-icon-button>
+                on-tap="${ev => this.incrementSelectedMonth(ev)}"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__full-calendar"></div>
+            <div class="view-calendar__full-calendar">${
+              this.setupCalendar(__allWeekdays, this.computeAllDaysInMonth(_selectedDate))
+            }</div>
           </div>
         </iron-selector>
       </div>
@@ -257,74 +323,35 @@ export class AppDatepicker extends Polymer.Element {
     `;
   }
 
-  constructor() {
-    super();
-  }
+  initElement() {
+    this.inputDate = this.inputDate == null
+      ? AppDatepicker.toUTCDate(new Date())
+      : this.inputDate;
+    this.selectedView = this.selectedView == null
+      ? 'calendar'
+      : this.selectedView;
+    this.selectedYear = this.selectedYear == null
+      ? AppDatepicker.toUTCDate(new Date()).getUTCFullYear()
+      : this.selectedYear;
 
-  static get properties() {
-    return {
-      inputDate: {
-        type: Date,
-        value: () => AppDatepicker.toUTCDate(new Date()),
-      },
-      selectedView: {
-        type: String,
-        value: () => 'calendar',
-      },
-      selectedYear: {
-        type: String,
-        value: () => AppDatepicker.toUTCDate(new Date()).getUTCFullYear(),
-      },
+    this._selectedDate = AppDatepicker.toUTCDate(new Date());
+    this.__allWeekdays = Array.from(Array(7), (_, i) => {
+      const d = new Date(Date.UTC(2017, 0, i + 1));
 
-      _selectedDate: {
-        type: Date,
-        readOnly: true,
-        value: () => AppDatepicker.toUTCDate(new Date()),
-        // TODO: This should be computed with selectedYear, selectedMonth, selectedDay.
-        // computed: 'computeSelectedDate()',
-      },
-
-      __allAvailableYears: {
-        type: Array,
-        readOnly: true,
-        computed: 'computeAllAvailableYears(selectedYear)',
-      },
-      __allWeekdays: {
-        type: Array,
-        readOnly: true,
-        value: () => {
-          return Array.from(Array(7), (_, i) => {
-            const d = new Date(Date.UTC(2017, 0, i + 1));
-
-            return {
-              original: d,
-              label: AppDatepicker.formatDateWithIntl(d, {
-                weekday: 'long',
-              }),
-              value: AppDatepicker.formatDateWithIntl(d, {
-                weekday: 'narrow',
-              }),
-            };
-          });
-        },
-      },
-      __allDaysInMonth: {
-        type: Array,
-        readOnly: true,
-        computed: 'computeAllDaysInMonth(_selectedDate)',
-        observer: 'setupFullCalendar',
-      },
-    };
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
+      return {
+        original: d,
+        label: AppDatepicker.formatDateWithIntl(d, {
+          weekday: 'long',
+        }),
+        value: AppDatepicker.formatDateWithIntl(d, {
+          weekday: 'narrow',
+        }),
+      };
+    });
   }
 
   onSelectedViewChanged(ev) {
     if (ev.detail && ev.detail.value) {
-      console.log('🚧 onSelectedViewChanged', ev, this.selectedYear);
-
       const selectedView = ev.detail.value.getAttribute('view');
 
       if (/^year/i.test(selectedView)) {
@@ -342,14 +369,11 @@ export class AppDatepicker extends Polymer.Element {
         .then(() => this.centerYearListScroller(selectedYear))
         .then(() => {
           window.requestAnimationFrame(() => {
-            console.log('🚧 onSelectedYearChanged', selectedYear);
-
-            this.setProperties({
-              selectedView: 'calendar',
-              _selectedDate: this.updateSelectedDate(this._selectedDate, {
-                year: selectedYear,
-              }),
-            }, true);
+            this.selectedView = 'calendar';
+            this.selectedYear = selectedYear;
+            this._selectedDate = this.updateSelectedDate(this._selectedDate, {
+              year: selectedYear,
+            });
           });
         });
     }
@@ -408,12 +432,10 @@ export class AppDatepicker extends Polymer.Element {
 
     const selectedYear = newDate.getUTCFullYear();
 
-    this.setProperties({
-      selectedYear,
-      _selectedDate: this.updateSelectedDate(newDate, {
-        year: selectedYear,
-      }),
-    }, true);
+    this.selectedYear = selectedYear;
+    this._selectedDate = this.updateSelectedDate(newDate, {
+      year: selectedYear,
+    });
   }
 
   incrementSelectedMonth() {
@@ -425,18 +447,16 @@ export class AppDatepicker extends Polymer.Element {
 
     const selectedYear = newDate.getUTCFullYear();
 
-    this.setProperties({
-      selectedYear,
-      _selectedDate: this.updateSelectedDate(newDate, {
-        year: selectedYear,
-      }),
-    }, true);
+    this.selectedYear = selectedYear;
+    this._selectedDate = this.updateSelectedDate(newDate, {
+      year: selectedYear,
+    });
   }
 
   centerYearListScroller(selectedYear) {
-    window.requestAnimationFrame(() => {
+    // window.requestAnimationFrame(() => {
       this.selectorViewYear.scrollTo(0, (+selectedYear - 1900 - 3) * 50);
-    });
+    // });
   }
 
   computeAllDaysInMonth(selectedDate) {
@@ -485,30 +505,19 @@ export class AppDatepicker extends Polymer.Element {
     }, []);
   }
 
-  setupFullCalendar() {
-    // console.log('🚧 computeFullCalendar', this.__allWeekdays, this.__allDaysInMonth);
+  setupCalendar(allWeekdays, allDaysInMonth) {
+    const d = html`<table><tr>${
+      allWeekdays.map(weekday => html`<th>${weekday.value}</th>`)
+    }</tr>${
+      allDaysInMonth
+        .map((day) => {
+          return html`<tr>${
+            day.map(d => html`<td><div class="full-calendar__day" aria-label="${d.label}">${d.value}</div></td>`)
+          }</tr>`;
+        })
+    }</table>`;
 
-    Promise.resolve()
-      .then(() => {
-        const tmpl = document.createElement('template');
-
-        tmpl.innerHTML = `<table><tr>${
-          this.__allWeekdays.map(n => `<th>${n.value}</th>`).join('')
-        }</tr>${
-          this.__allDaysInMonth.map((n) => {
-            return `<tr>${
-              n.map(m =>
-                `<td><paper-button aria-label="${m.label}">${m.value}</paper-button></td>`)
-                .join('')
-            }</tr>`;
-          }).join('')
-        }</table>`;
-
-        return tmpl;
-      })
-      .then((tmpl) => {
-        this.shadowRoot.querySelector('.view-calendar__full-calendar').innerHTML = tmpl.innerHTML;
-      });
+    return d;
   }
 
   get selectorViewYear() {
@@ -525,7 +534,10 @@ export class AppDatepicker extends Polymer.Element {
   }
 
   static formatDateWithIntl(date, opts, lang = 'en-US') {
-    return Intl.DateTimeFormat(lang || 'en-US', { ...(opts || {}), })
+    return Intl.DateTimeFormat(
+      lang || 'en-US',
+      { ...(opts || {}) }
+    )
       .format(AppDatepicker.toUTCDate(date));
   }
 }

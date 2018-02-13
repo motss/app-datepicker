@@ -32,18 +32,18 @@
     "ts": "tsc --target esnext --lib dom,dom.iterable,esnext,esnext.asynciterable --module esnext src/app-datepicker.ts"
   },
   "dependencies": {
-    "@polymer/iron-iconset-svg": "^3.0.0-pre.7",
-    "@polymer/iron-selector": "^3.0.0-pre.7",
-    "@polymer/paper-button": "^3.0.0-pre.7",
-    "@polymer/paper-icon-button": "^3.0.0-pre.7",
-    "@polymer/polymer": "^3.0.0-pre.7",
+    "@polymer/iron-iconset-svg": "^3.0.0-pre.8",
+    "@polymer/iron-selector": "^3.0.0-pre.8",
+    "@polymer/lit-element": "^0.1.1",
+    "@polymer/paper-button": "^3.0.0-pre.8",
+    "@polymer/paper-icon-button": "^3.0.0-pre.8",
     "@webcomponents/webcomponentsjs": "^1.1.0"
   },
   "devDependencies": {
     "nsp": "^3.1.0",
     "tslint": "^5.9.1",
-    "tslint-config-airbnb": "^5.5.0",
-    "tslint-consistent-codestyle": "^1.11.0",
+    "tslint-config-airbnb": "^5.6.0",
+    "tslint-consistent-codestyle": "^1.11.1",
     "tslint-immutable": "^4.5.1",
     "typescript": "^2.6.2"
   },
