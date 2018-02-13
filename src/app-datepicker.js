@@ -54,7 +54,8 @@ export class AppDatepicker extends LitElement {
           display: block;
 
           width: var(--app-datepicker-width);
-          height: calc(var(--app-datepicker-width) / .6);
+          /** NOTE: Magic number as 16:9 aspect ratio does not look good */
+          height: calc(var(--app-datepicker-width) / .7);
           background-color: #fff;
 
           --app-datepicker-width: 300px;
@@ -63,6 +64,8 @@ export class AppDatepicker extends LitElement {
           --app-datepicker-header-height: 80px;
 
           --app-datepicker-footer-height: 56px;
+
+          border: 1px solid #ddd;
         }
 
         * {
@@ -134,8 +137,6 @@ export class AppDatepicker extends LitElement {
             100% - var(--app-datepicker-header-height) - var(--app-datepicker-footer-height)
           );
           background-color: #fff;
-
-          border: 1px solid #ddd;
         }
 
         .main__selector > * {
