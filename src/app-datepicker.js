@@ -21,11 +21,14 @@ export class AppDatepicker extends LitElement {
 
   static get properties() {
     return {
-      inputDate: Date,
+      min: Date,
+      max: Date,
+      value: Date,
       selectedView: String,
       selectedYear: String,
 
       _selectedDate: Date,
+
       __allAvailableYears: Array,
       __allWeekdays: Array,
       __allDaysInMonth: Array,
@@ -35,19 +38,33 @@ export class AppDatepicker extends LitElement {
   constructor() {
     super();
 
-    this.initElement();
+    this.initProps();
+    this.setAttribute('type', 'date');
   }
 
   render({
-    inputDate,
+    min,
+    max,
+    value,
+    // required,
+    // pattern,
+
     selectedView,
     selectedYear,
 
     _selectedDate,
+
     __allAvailableYears,
     __allWeekdays,
     __allDaysInMonth,
   }) {
+    const renderedCalendar = this.setupCalendar(
+      __allWeekdays,
+      this.computeAllDaysInMonth(_selectedDate),
+      min,
+      max
+    );
+
     return html`
       <style>
         :host {
@@ -203,6 +220,10 @@ export class AppDatepicker extends LitElement {
         .view-calendar__month-selector > .month-selector__next-month {
           right: 8px;
         }
+        .view-calendar__month-selector > .month-selector__prev-month.prev-month--disabled,
+        .view-calendar__month-selector > .month-selector__next-month.next-month--disabled {
+          display: none;
+        }
 
         .view-calendar__full-calendar {
           display: flex;
@@ -248,6 +269,9 @@ export class AppDatepicker extends LitElement {
           width: 100%;
           height: 100%;
           border-radius: 50%;
+        }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled {
+          color: rgba(0, 0, 0, .26);
         }
 
         .datepicker__footer {
@@ -295,24 +319,26 @@ export class AppDatepicker extends LitElement {
                 .computeAllAvailableYears(selectedYear)
                 .map(year =>
                   html`<button class="btn--reset year-list__year"
-                  year="${year.label}">${year.label}</button>`)
+                  year$="${year.label}">${year.label}</button>`)
             }</iron-selector>
           </div>
 
           <div class="selector__view-calendar" view="calendar">
             <div class="view-calendar__month-selector">
-              <paper-icon-button class="month-selector__prev-month"
+              <paper-icon-button class$="month-selector__prev-month${
+                renderedCalendar.hasMinDate ? ' prev-month--disabled' : ''
+              }"
                 icon="datepicker:chevron-left"
                 on-tap="${ev => this.decrementSelectedMonth(ev)}"></paper-icon-button>
               <div>${this.computeSelectedFormattedMonth(_selectedDate)}</div>
-              <paper-icon-button class="month-selector__next-month"
+              <paper-icon-button class$="month-selector__next-month${
+                renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
+              }"
                 icon="datepicker:chevron-right"
                 on-tap="${ev => this.incrementSelectedMonth(ev)}"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__full-calendar">${
-              this.setupCalendar(__allWeekdays, this.computeAllDaysInMonth(_selectedDate))
-            }</div>
+            <div class="view-calendar__full-calendar">${renderedCalendar.content}</div>
           </div>
         </iron-selector>
       </div>
@@ -324,10 +350,16 @@ export class AppDatepicker extends LitElement {
     `;
   }
 
-  initElement() {
-    this.inputDate = this.inputDate == null
+  initProps() {
+    this.min = this.min == null
+      ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
+      : this.min;
+    this.max = this.max == null
+      ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MAX_DATE}-12-31`))
+      : this.max;
+    this.value = this.value == null
       ? AppDatepicker.toUTCDate(new Date())
-      : this.inputDate;
+      : this.value;
     this.selectedView = this.selectedView == null
       ? 'calendar'
       : this.selectedView;
@@ -364,7 +396,7 @@ export class AppDatepicker extends LitElement {
 
   onSelectedYearChanged(ev) {
     if (ev.detail && ev.detail.value) {
-      const selectedYear = ev.detail.value.year;
+      const selectedYear = ev.detail.value.getAttribute('year');
 
       Promise.resolve()
         .then(() => this.centerYearListScroller(selectedYear))
@@ -381,9 +413,9 @@ export class AppDatepicker extends LitElement {
   }
 
   computeAllAvailableYears(selectedYear) {
-    return Array.from(Array(2100 - 1900 + 1))
+    return Array.from(Array(AppDatepicker.MAX_DATE - AppDatepicker.MIN_DATE + 1))
       .map((_, i) => ({
-        label: 1900 + i,
+        label: AppDatepicker.MIN_DATE + i,
       }));
   }
 
@@ -456,7 +488,7 @@ export class AppDatepicker extends LitElement {
 
   centerYearListScroller(selectedYear) {
     // window.requestAnimationFrame(() => {
-      this.selectorViewYear.scrollTo(0, (+selectedYear - 1900 - 3) * 50);
+      this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
     // });
   }
 
@@ -472,7 +504,10 @@ export class AppDatepicker extends LitElement {
           [
             ...(
               firstWeekday > 0 && i < 1
-                ? Array.from(Array(firstWeekday), n => ({ original: '', label: '', value: '' }))
+                ? Array.from(
+                  Array(firstWeekday),
+                  n => ({ original: null, label: null, value: null })
+                )
                 : []
             ),
             ...Array.from(Array(7 - (i < 1 ? firstWeekday : 0)), (n, ni) => {
@@ -480,9 +515,9 @@ export class AppDatepicker extends LitElement {
 
               if (day > totalDays) {
                 return {
-                  original: '',
-                  label: '',
-                  value: '',
+                  original: null,
+                  label: null,
+                  value: null,
                 };
               }
 
@@ -506,19 +541,39 @@ export class AppDatepicker extends LitElement {
     }, []);
   }
 
-  setupCalendar(allWeekdays, allDaysInMonth) {
+  setupCalendar(allWeekdays, allDaysInMonth, min, max) {
+    let hasMinDate = false;
+    let hasMaxDate = false;
     const d = html`<table><tr>${
       allWeekdays.map(weekday => html`<th>${weekday.value}</th>`)
     }</tr>${
       allDaysInMonth
-        .map((day) => {
-          return html`<tr>${
-            day.map(d => html`<td><div class="full-calendar__day" aria-label="${d.label}">${d.value}</div></td>`)
-          }</tr>`;
-        })
+      .map((day) => {
+        const rendered = day.map((d) => {
+          /** NOTE: Disable month selector if needed */
+          const oriTimestamp = +d.original;
+          const minTimestamp = +min;
+          const maxTimestamp = +max;
+
+          hasMinDate = hasMinDate || (d.original == null ? false : oriTimestamp === minTimestamp);
+          hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
+
+          return html`<td><div class$="full-calendar__day${
+            oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp
+              ? ' day--disabled'
+              : ''
+          }" aria-label$="${d.label}">${d.value}</div></td>`;
+        });
+
+        return html`<tr>${rendered}</tr>`;
+      })
     }</table>`;
 
-    return d;
+    return {
+      hasMinDate,
+      hasMaxDate,
+      content: d,
+    };
   }
 
   get selectorViewYear() {
@@ -540,6 +595,14 @@ export class AppDatepicker extends LitElement {
       { ...(opts || {}) }
     )
       .format(AppDatepicker.toUTCDate(date));
+  }
+
+  static get MIN_DATE() {
+    return 1970;
+  }
+
+  static get MAX_DATE() {
+    return 2100;
   }
 }
 
