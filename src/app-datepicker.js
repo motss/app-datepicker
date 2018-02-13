@@ -28,7 +28,7 @@ export class AppDatepicker extends LitElement {
       selectedView: String,
       selectedYear: String,
 
-      _selectedDate: Date,
+      _currentDate: Date,
       _todayDate: Date,
 
       __allAvailableYears: Array,
@@ -54,7 +54,7 @@ export class AppDatepicker extends LitElement {
     selectedView,
     selectedYear,
 
-    _selectedDate,
+    _currentDate,
     _todayDate,
 
     __allAvailableYears,
@@ -63,10 +63,10 @@ export class AppDatepicker extends LitElement {
   }) {
     const renderedCalendar = this.setupCalendar(
       __allWeekdays,
-      this.computeAllDaysInMonth(_selectedDate),
+      this.computeAllDaysInMonth(_currentDate),
       min,
       max,
-      _selectedDate,
+      value,
       _todayDate
     );
 
@@ -313,9 +313,9 @@ export class AppDatepicker extends LitElement {
           on-selected-changed="${(ev) => { this.selectedView = ev.detail.value; }}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
-            view="year">${this.computeSelectedFormattedYear(_selectedDate)}</button>
+            view="year">${this.computeSelectedFormattedYear(_currentDate)}</button>
           <button class="btn--reset selector__calendar"
-            view="calendar">${this.computeSelectedFormattedDate(_selectedDate)}</button>
+            view="calendar">${this.computeSelectedFormattedDate(_currentDate)}</button>
         </iron-selector>
       </div>
 
@@ -344,7 +344,7 @@ export class AppDatepicker extends LitElement {
               }"
                 icon="datepicker:chevron-left"
                 on-tap="${ev => this.decrementSelectedMonth(ev)}"></paper-icon-button>
-              <div>${this.computeSelectedFormattedMonth(_selectedDate)}</div>
+              <div>${this.computeSelectedFormattedMonth(_currentDate)}</div>
               <paper-icon-button class$="month-selector__next-month${
                 renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
               }"
@@ -383,7 +383,7 @@ export class AppDatepicker extends LitElement {
       ? defaultToday.getUTCFullYear()
       : this.selectedYear;
 
-    this._selectedDate = defaultToday;
+    this._currentDate = defaultToday;
     this._todayDate = defaultToday;
 
     this.__allWeekdays = Array.from(Array(7), (_, i) => {
@@ -422,7 +422,7 @@ export class AppDatepicker extends LitElement {
           window.requestAnimationFrame(() => {
             this.selectedView = 'calendar';
             this.selectedYear = selectedYear;
-            this._selectedDate = this.updateSelectedDate(this._selectedDate, {
+            this._currentDate = this.updateCurrentDate(this._currentDate, {
               year: selectedYear,
             });
           });
@@ -437,28 +437,28 @@ export class AppDatepicker extends LitElement {
       }));
   }
 
-  computeSelectedFormattedYear(selectedDate) {
-    return AppDatepicker.formatDateWithIntl(selectedDate, {
+  computeSelectedFormattedYear(currentDate) {
+    return AppDatepicker.formatDateWithIntl(currentDate, {
       year: 'numeric',
     });
   }
 
-  computeSelectedFormattedDate(selectedDate) {
-    return AppDatepicker.formatDateWithIntl(selectedDate, {
+  computeSelectedFormattedDate(currentDate) {
+    return AppDatepicker.formatDateWithIntl(currentDate, {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
     });
   }
 
-  computeSelectedFormattedMonth(selectedDate) {
-    return AppDatepicker.formatDateWithIntl(selectedDate, {
+  computeSelectedFormattedMonth(currentDate) {
+    return AppDatepicker.formatDateWithIntl(currentDate, {
       month: 'long',
       year: 'numeric',
     });
   }
 
-  updateSelectedDate(currentDate, newDateOpts) {
+  updateCurrentDate(currentDate, newDateOpts) {
     const fy = currentDate.getUTCFullYear();
     const m = currentDate.getUTCMonth();
     const d = currentDate.getUTCDate();
@@ -475,7 +475,7 @@ export class AppDatepicker extends LitElement {
   }
 
   decrementSelectedMonth() {
-    const od = AppDatepicker.toUTCDate(this._selectedDate);
+    const od = AppDatepicker.toUTCDate(this._currentDate);
     const nfy = od.getUTCFullYear();
     const nm = od.getUTCMonth();
     const nd = od.getUTCDate();
@@ -484,13 +484,13 @@ export class AppDatepicker extends LitElement {
     const selectedYear = newDate.getUTCFullYear();
 
     this.selectedYear = selectedYear;
-    this._selectedDate = this.updateSelectedDate(newDate, {
+    this._currentDate = this.updateCurrentDate(newDate, {
       year: selectedYear,
     });
   }
 
   incrementSelectedMonth() {
-    const od = AppDatepicker.toUTCDate(this._selectedDate);
+    const od = AppDatepicker.toUTCDate(this._currentDate);
     const nfy = od.getUTCFullYear();
     const nm = od.getUTCMonth();
     const nd = od.getUTCDate();
@@ -499,7 +499,7 @@ export class AppDatepicker extends LitElement {
     const selectedYear = newDate.getUTCFullYear();
 
     this.selectedYear = selectedYear;
-    this._selectedDate = this.updateSelectedDate(newDate, {
+    this._currentDate = this.updateCurrentDate(newDate, {
       year: selectedYear,
     });
   }
@@ -510,9 +510,9 @@ export class AppDatepicker extends LitElement {
     // });
   }
 
-  computeAllDaysInMonth(selectedDate) {
-    const fy = selectedDate.getUTCFullYear();
-    const selectedMonth = selectedDate.getUTCMonth();
+  computeAllDaysInMonth(currentDate) {
+    const fy = currentDate.getUTCFullYear();
+    const selectedMonth = currentDate.getUTCMonth();
     const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
     const firstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay();
 
