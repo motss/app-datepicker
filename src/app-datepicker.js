@@ -24,6 +24,7 @@ export class AppDatepicker extends LitElement {
       min: Date,
       max: Date,
       value: Date,
+
       selectedView: String,
       selectedYear: String,
 
@@ -558,11 +559,13 @@ export class AppDatepicker extends LitElement {
           hasMinDate = hasMinDate || (d.original == null ? false : oriTimestamp === minTimestamp);
           hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
 
-          return html`<td><div class$="full-calendar__day${
-            oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp
-              ? ' day--disabled'
-              : ''
-          }" aria-label$="${d.label}">${d.value}</div></td>`;
+          return d.label == null
+            ? html`<td><div class="full-calendar__day"></div></td>`
+            : html`<td><div class$="full-calendar__day${
+              oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp
+                ? ' day--disabled'
+                : ''
+            }" aria-label$="${d.label}">${d.value}</div></td>`;
         });
 
         return html`<tr>${rendered}</tr>`;
