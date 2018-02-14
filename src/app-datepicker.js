@@ -61,9 +61,27 @@ export class AppDatepicker extends LitElement {
     __allWeekdays,
     __allDaysInMonth,
   }) {
+    console.log('🚧 render', {
+      ...{
+        min,
+        max,
+        value,
+
+        selectedView,
+        selectedYear,
+
+        _currentDate,
+        _todayDate,
+
+        __allAvailableYears,
+        __allWeekdays,
+        __allDaysInMonth,
+      },
+    });
+
     const renderedCalendar = this.setupCalendar(
       __allWeekdays,
-      this.computeAllDaysInMonth(_currentDate),
+      __allDaysInMonth,
       min,
       max,
       value,
@@ -329,11 +347,8 @@ export class AppDatepicker extends LitElement {
               selected="${selectedYear}"
               on-selected-item-changed="${ev => this.onSelectedYearChanged(ev)}"
               attr-for-selected="year">${
-              this
-                .computeAllAvailableYears(selectedYear)
-                .map(year =>
-                  html`<button class="btn--reset year-list__year"
-                  year$="${year.label}">${year.label}</button>`)
+              __allAvailableYears.map(year => html`<button class="btn--reset year-list__year"
+                year$="${year.label}">${year.label}</button>`)
             }</iron-selector>
           </div>
 
@@ -366,6 +381,9 @@ export class AppDatepicker extends LitElement {
 
   initProps() {
     const defaultToday = AppDatepicker.toUTCDate(new Date());
+    const preSelectedYear = this.selectedYear == null
+      ? defaultToday.getUTCFullYear()
+      : this.selectedYear;
 
     this.min = this.min == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
@@ -379,13 +397,13 @@ export class AppDatepicker extends LitElement {
     this.selectedView = this.selectedView == null
       ? 'calendar'
       : this.selectedView;
-    this.selectedYear = this.selectedYear == null
-      ? defaultToday.getUTCFullYear()
-      : this.selectedYear;
+    this.selectedYear = preSelectedYear;
 
     this._currentDate = defaultToday;
     this._todayDate = defaultToday;
 
+    this.__allDaysInMonth = this.computeAllDaysInMonth(defaultToday);
+    this.__allAvailableYears = this.computeAllAvailableYears(preSelectedYear);
     this.__allWeekdays = Array.from(Array(7), (_, i) => {
       const d = new Date(Date.UTC(2017, 0, i + 1));
 
@@ -459,9 +477,12 @@ export class AppDatepicker extends LitElement {
   }
 
   updateCurrentDate(currentDate, newDateOpts) {
-    const fy = currentDate.getUTCFullYear();
-    const m = currentDate.getUTCMonth();
-    const d = currentDate.getUTCDate();
+    const preCurrentDate = currentDate == null
+      ? AppDatepicker.toUTCDate(new Date())
+      : currentDate;
+    const fy = preCurrentDate.getUTCFullYear();
+    const m = preCurrentDate.getUTCMonth();
+    const d = preCurrentDate.getUTCDate();
     const {
       year,
       month,
