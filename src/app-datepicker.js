@@ -23,17 +23,18 @@ export class AppDatepicker extends LitElement {
     return {
       min: Date,
       max: Date,
-      value: Date,
+      value: String,
+      valueAsDate: Date,
+      valueAsNumber: Number,
 
-      selectedView: String,
-      selectedYear: String,
-
+      _selectedDate: Date,
+      _selectedView: String,
+      _selectedYear: String,
       _currentDate: Date,
       _todayDate: Date,
 
       __allAvailableYears: Array,
       __allWeekdays: Array,
-      __allDaysInMonth: Array,
     };
   }
 
@@ -44,47 +45,40 @@ export class AppDatepicker extends LitElement {
     this.setAttribute('type', 'date');
   }
 
+  didRender() {
+    console.log('🚧 didRender', {
+      value: this.value,
+      valueAsDate: this.valueAsDate,
+      valueAsNumber: this.valueAsNumber,
+    });
+
+    // this.valueAsDate = AppDatepicker.toUTCDate(this.value);
+    // this.updateValue(this.value);
+  }
+
   render({
     min,
     max,
-    value,
+
     // required,
     // pattern,
+    // step,
 
-    selectedView,
-    selectedYear,
-
+    _selectedDate,
+    _selectedView,
+    _selectedYear,
     _currentDate,
     _todayDate,
 
     __allAvailableYears,
     __allWeekdays,
-    __allDaysInMonth,
   }) {
-    console.log('🚧 render', {
-      ...{
-        min,
-        max,
-        value,
-
-        selectedView,
-        selectedYear,
-
-        _currentDate,
-        _todayDate,
-
-        __allAvailableYears,
-        __allWeekdays,
-        __allDaysInMonth,
-      },
-    });
-
     const renderedCalendar = this.setupCalendar(
       __allWeekdays,
-      __allDaysInMonth,
+      this.computeAllDaysInMonth(_currentDate),
       min,
       max,
-      value,
+      _selectedDate,
       _todayDate
     );
 
@@ -327,8 +321,8 @@ export class AppDatepicker extends LitElement {
 
       <div class="datepicker__header">
         <iron-selector class="header__selector"
-          selected="${selectedView}"
-          on-selected-changed="${(ev) => { this.selectedView = ev.detail.value; }}"
+          selected="${_selectedView}"
+          on-selected-changed="${(ev) => { this._selectedView = ev.detail.value; }}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
             view="year">${this.computeSelectedFormattedYear(_currentDate)}</button>
@@ -339,12 +333,12 @@ export class AppDatepicker extends LitElement {
 
       <div class="datepicker__main">
         <iron-selector class="main__selector"
-          selected="${selectedView}"
+          selected="${_selectedView}"
           on-selected-item-changed="${ev => this.onSelectedViewChanged(ev)}"
           attr-for-selected="view">
           <div class="selector__view-year" view="year">
             <iron-selector class="view-year__year-list"
-              selected="${selectedYear}"
+              selected="${_selectedYear}"
               on-selected-item-changed="${ev => this.onSelectedYearChanged(ev)}"
               attr-for-selected="year">${
               __allAvailableYears.map(year => html`<button class="btn--reset year-list__year"
@@ -367,23 +361,28 @@ export class AppDatepicker extends LitElement {
                 on-tap="${ev => this.incrementSelectedMonth(ev)}"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__full-calendar">${renderedCalendar.content}</div>
+            <div class="view-calendar__full-calendar"
+              on-tap="${ev => this.updateCurrentDateOnTap(ev)}">${renderedCalendar.content}</div>
           </div>
         </iron-selector>
       </div>
 
       <div class="datepicker__footer">
         <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button dialog-confirm>ok</paper-button>
+        <paper-button dialog-confirm
+          on-tap="${ev => this.updateValueOnTap(ev)}">ok</paper-button>
       </div>
     `;
   }
 
   initProps() {
     const defaultToday = AppDatepicker.toUTCDate(new Date());
-    const preSelectedYear = this.selectedYear == null
+    const preSelectedYear = this._selectedYear == null
       ? defaultToday.getUTCFullYear()
-      : this.selectedYear;
+      : this._selectedYear;
+    const preValue = this.value == null
+      ? defaultToday
+      : this.value;
 
     this.min = this.min == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
@@ -391,18 +390,19 @@ export class AppDatepicker extends LitElement {
     this.max = this.max == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MAX_DATE}-12-31`))
       : this.max;
-    this.value = this.value == null
-      ? defaultToday
-      : this.value;
-    this.selectedView = this.selectedView == null
-      ? 'calendar'
-      : this.selectedView;
-    this.selectedYear = preSelectedYear;
+    this.value = preValue.toJSON().replace(/^(.+)T.+/, '$1');
+    this.valueAsDate = preValue;
+    this.valueAsNumber = +preValue;
 
-    this._currentDate = defaultToday;
+    this._selectedDate = preValue;
+    this._selectedView = this._selectedView == null
+      ? 'calendar'
+      : this._selectedView;
+    this._selectedYear = preSelectedYear;
+
+    this._currentDate = preValue;
     this._todayDate = defaultToday;
 
-    this.__allDaysInMonth = this.computeAllDaysInMonth(defaultToday);
     this.__allAvailableYears = this.computeAllAvailableYears(preSelectedYear);
     this.__allWeekdays = Array.from(Array(7), (_, i) => {
       const d = new Date(Date.UTC(2017, 0, i + 1));
@@ -438,8 +438,8 @@ export class AppDatepicker extends LitElement {
         .then(() => this.centerYearListScroller(selectedYear))
         .then(() => {
           window.requestAnimationFrame(() => {
-            this.selectedView = 'calendar';
-            this.selectedYear = selectedYear;
+            this._selectedView = 'calendar';
+            this._selectedYear = selectedYear;
             this._currentDate = this.updateCurrentDate(this._currentDate, {
               year: selectedYear,
             });
@@ -504,7 +504,7 @@ export class AppDatepicker extends LitElement {
 
     const selectedYear = newDate.getUTCFullYear();
 
-    this.selectedYear = selectedYear;
+    this._selectedYear = selectedYear;
     this._currentDate = this.updateCurrentDate(newDate, {
       year: selectedYear,
     });
@@ -519,7 +519,7 @@ export class AppDatepicker extends LitElement {
 
     const selectedYear = newDate.getUTCFullYear();
 
-    this.selectedYear = selectedYear;
+    this._selectedYear = selectedYear;
     this._currentDate = this.updateCurrentDate(newDate, {
       year: selectedYear,
     });
@@ -624,6 +624,59 @@ export class AppDatepicker extends LitElement {
       content: d,
     };
   }
+
+  updateCurrentDateOnTap(ev) {
+    const elemOnTap = ev.target;
+    const selectedDateElem = this.shadowRoot
+      .querySelector('.view-calendar__full-calendar .full-calendar__day.day--selected');
+
+    if (selectedDateElem && selectedDateElem.classList.contains('day--selected')) {
+      selectedDateElem.classList.remove('day--selected');
+    }
+
+    elemOnTap.classList.add('day--selected');
+
+    const newValue = this.updateCurrentDate(this._currentDate, {
+      day: elemOnTap.textContent,
+    });
+
+    this._selectedDate = newValue;
+    this._currentDate = newValue;
+  }
+
+  updateValue(selectedDate) {
+    const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
+    const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
+
+    const evDetail = {
+      detail: {
+        originalValue: preSelectedDate,
+        value: formattedValue,
+        timezone: 'UTC',
+      },
+    };
+
+    this.value = formattedValue;
+    this.valueAsDate = preSelectedDate;
+    this.valueAsNumber = +preSelectedDate;
+
+    this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
+    this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
+    this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
+  }
+
+  updateValueOnTap(ev) {
+    const elemOnTap = ev.target;
+
+    if (!elemOnTap.hasAttribute('dialog-confirm')) {
+      return;
+    }
+
+    this.updateValue(this._selectedDate);
+  }
+
+  // stepDown() {}
+  // stepUp() {}
 
   get selectorViewYear() {
     return this.shadowRoot.querySelector('.selector__view-year');
