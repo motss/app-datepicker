@@ -32,6 +32,7 @@ export class AppDatepicker extends LitElement {
       _selectedYear: String,
       _currentDate: Date,
       _todayDate: Date,
+      _pattern: String,
 
       __allAvailableYears: Array,
       __allWeekdays: Array,
@@ -45,15 +46,163 @@ export class AppDatepicker extends LitElement {
     this.setAttribute('type', 'date');
   }
 
-  didRender() {
-    console.log('🚧 didRender', {
-      value: this.value,
-      valueAsDate: this.valueAsDate,
-      valueAsNumber: this.valueAsNumber,
-    });
+  _shouldPropertiesChange(props, changedProps) {
+    if (changedProps == null) {
+      return;
+    }
 
-    // this.valueAsDate = AppDatepicker.toUTCDate(this.value);
-    // this.updateValue(this.value);
+    Object.keys(changedProps)
+      .filter(propKey => !/^_+/i.test(propKey))
+      .map((propKey) => {
+        switch (propKey) {
+          case 'min':
+          case 'max':
+          case 'pattern': {
+            break;
+          }
+          case 'value': {
+            const propVal = changedProps[propKey];
+
+            if (typeof propVal === 'string') {
+              if (!propVal.length) {
+                // NOTE: Clear selected date to signify invalid 'value'.
+                this[propKey] = propVal;
+                this.valueAsDate = null;
+                this.valueAsNumber = NaN;
+                this._selectedDate = null;
+                this._currentDate = AppDatepicker.toUTCDate(new Date());
+
+                return;
+              }
+
+              const toValueDate = new Date(propVal);
+
+              if (
+                /^invalid date/i.test(toValueDate) || !/^\d{4}\-\d{2}\-\d{2}/i.test(propVal)
+                  // || !new RegExp(
+                  //   this._pattern.replace(/(y|m|d)/gi, '\\d'),
+                  //   'i'
+                  // ).test(propVal)
+              ) {
+                console.warn(
+                  `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
+                );
+
+                return;
+              }
+
+              this[propKey] = propVal;
+              this.valueAsDate = toValueDate;
+              this.valueAsNumber = +toValueDate;
+              this._selectedDate = toValueDate;
+              this._currentDate = toValueDate;
+
+              break;
+            }
+          }
+          case 'valueAsDate': {
+            const propVal = changedProps[propKey];
+
+            if (propVal === null) {
+              // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+              this[propKey] = null;
+              this.value = '';
+              this.valueAsNumber = NaN;
+              this._selectedDate = null;
+              this._currentDate = AppDatepicker.toUTCDate(new Date());
+
+              return;
+            }
+
+            if (!(propVal instanceof Date)) {
+              this[propKey] = AppDatepicker.toUTCDate(this.value || this.valueAsNumber);
+
+              throw new TypeError(
+                'Failed to set the \'valueAsDate\' property on \'HTMLInputElement\': The provided value is not a Date.'
+              );
+            }
+
+            if (/^invalid date/i.test(new Date(propVal))) {
+              // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+              this[propKey] = null;
+              this.value = '';
+              this.valueAsNumber = NaN;
+              this._selectedDate = null;
+              this._currentDate = AppDatepicker.toUTCDate(new Date());
+
+              console.warn(
+                `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
+              );
+
+              return;
+            }
+
+            this[propKey] = propVal;
+            this.value = propVal.toJSON().replace(/^(.+)T.+/i, '$1');
+            this.valueAsNumber = +propVal;
+            this._selectedDate = propVal;
+            this._currentDate = propVal;
+
+            break;
+          }
+          case 'valueAsNumber': {
+            const propVal = changedProps[propKey];
+
+            if (typeof propVal === 'string') {
+              if (!propVal.length) {
+                const toValueAsNumberDate = AppDatepicker.toUTCDate(new Date('1970-01-01'));
+
+                this[propKey] = +toValueAsNumberDate;
+                this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+                this.valueAsDate = toValueAsNumberDate;
+                this._selectedDate = toValueAsNumberDate;
+                this._currentDate = toValueAsNumberDate;
+
+                return;
+              }
+
+              if (/^invalid date/i.test(new Date(propVal))) {
+                // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+                this[propKey] = NaN;
+                this.value = '';
+                this.valueAsDate = null;
+                this._selectedDate = null;
+                this._currentDate = AppDatepicker.toUTCDate(new Date());
+
+                return;
+              }
+            }
+
+            if (propVal instanceof Date) {
+              if (/^invalid date/i.test(propVal)) {
+                // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+                this[propKey] = NaN;
+                this.value = '';
+                this.valueAsDate = null;
+                this._selectedDate = null;
+                this._currentDate = AppDatepicker.toUTCDate(new Date());
+
+                return;
+              }
+            }
+
+            const toValueAsNumberDate = AppDatepicker.toUTCDate(propVal);
+
+            this[propKey] = +toValueAsNumberDate;
+            this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+            this.valueAsDate = toValueAsNumberDate;
+            this._selectedDate = toValueAsNumberDate;
+            this._currentDate = toValueAsNumberDate;
+
+            break;
+          }
+          default: {
+            throw new Error(`Unknown propKey '${propKey}'`);
+          }
+        }
+      });
+
+    return true;
   }
 
   render({
@@ -61,7 +210,6 @@ export class AppDatepicker extends LitElement {
     max,
 
     // required,
-    // pattern,
     // step,
 
     _selectedDate,
@@ -382,7 +530,7 @@ export class AppDatepicker extends LitElement {
       : this._selectedYear;
     const preValue = this.value == null
       ? defaultToday
-      : this.value;
+      : AppDatepicker.toUTCDate(this.value);
 
     this.min = this.min == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
@@ -402,6 +550,7 @@ export class AppDatepicker extends LitElement {
 
     this._currentDate = preValue;
     this._todayDate = defaultToday;
+    this._pattern = 'yyyy-MM-dd';
 
     this.__allAvailableYears = this.computeAllAvailableYears(preSelectedYear);
     this.__allWeekdays = Array.from(Array(7), (_, i) => {
@@ -663,6 +812,12 @@ export class AppDatepicker extends LitElement {
     this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
     this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
     this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
+
+    return {
+      value: formattedValue,
+      valueAsDate: preSelectedDate,
+      valueAsNumber: +preSelectedDate,
+    };
   }
 
   updateValueOnTap(ev) {
