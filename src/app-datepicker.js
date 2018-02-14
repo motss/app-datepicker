@@ -335,6 +335,14 @@ export class AppDatepicker extends LitElement {
           opacity: 1;
           pointer-events: auto;
         }
+        .main__selector > .selector__view-year > .view-year__year-list,
+        .main__selector > .selector__view-calendar > * {
+          display: none;
+        }
+        .main__selector > .selector__view-year.iron-selected > .view-year__year-list,
+        .main__selector > .selector__view-calendar.iron-selected > * {
+          display: flex;
+        }
 
         .selector__view-year {
           overflow: auto;
@@ -509,7 +517,8 @@ export class AppDatepicker extends LitElement {
                 on-tap="${ev => this.incrementSelectedMonth(ev)}"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__full-calendar"
+            <div class="view-calendar__full-calendar" tabindex="0"
+              on-keyup="${ev => this.updateCurrentDateOnKeyup(ev)}"
               on-tap="${ev => this.updateCurrentDateOnTap(ev)}">${renderedCalendar.content}</div>
           </div>
         </iron-selector>
@@ -825,6 +834,11 @@ export class AppDatepicker extends LitElement {
     }
 
     this.updateValue(this._selectedDate);
+  }
+
+  updateCurrentDateOnKeyup(ev) {
+    // TODO: To add keyboard support to navigate the calendar.
+    console.log('🚧 updateCurrentDateOnKeyup', ev);
   }
 
   // stepDown() {}
