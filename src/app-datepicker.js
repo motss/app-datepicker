@@ -573,8 +573,7 @@ export class AppDatepicker extends LitElement {
       const selectedView = ev.detail.value.getAttribute('view');
 
       if (/^year/i.test(selectedView)) {
-        Promise.resolve()
-          .then(() => this.centerYearListScroller(this.selectedYear));
+        this.centerYearListScroller(this._selectedYear)
       }
     }
   }
@@ -583,17 +582,13 @@ export class AppDatepicker extends LitElement {
     if (ev.detail && ev.detail.value) {
       const selectedYear = ev.detail.value.getAttribute('year');
 
-      Promise.resolve()
-        .then(() => this.centerYearListScroller(selectedYear))
-        .then(() => {
-          window.requestAnimationFrame(() => {
-            this._selectedView = 'calendar';
-            this._selectedYear = selectedYear;
-            this._currentDate = this.updateCurrentDate(this._currentDate, {
-              year: selectedYear,
-            });
-          });
-        });
+      this.centerYearListScroller(selectedYear);
+
+      this._selectedView = 'calendar';
+      this._selectedYear = selectedYear;
+      this._currentDate = this.updateCurrentDate(this._currentDate, {
+        year: selectedYear,
+      });
     }
   }
 
@@ -675,9 +670,11 @@ export class AppDatepicker extends LitElement {
   }
 
   centerYearListScroller(selectedYear) {
-    // window.requestAnimationFrame(() => {
-      this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
-    // });
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
+      });
+    });
   }
 
   computeAllDaysInMonth(currentDate) {
