@@ -28,6 +28,7 @@ export class AppDatepicker extends LitElement {
       valueAsNumber: Number,
 
       firstDayOfWeek: Number,
+      disabledDays: String,
 
       _selectedDate: Date,
       _selectedView: String,
@@ -84,12 +85,6 @@ export class AppDatepicker extends LitElement {
       .filter(propKey => !/^_+/i.test(propKey))
       .map((propKey) => {
         switch (propKey) {
-          case 'min':
-          case 'max':
-          case 'pattern':
-          case 'firstDayOfWeek': {
-            break;
-          }
           case 'value': {
             const propVal = changedProps[propKey];
 
@@ -227,7 +222,7 @@ export class AppDatepicker extends LitElement {
             break;
           }
           default: {
-            console.error(`Unknown propKey '${propKey}'`);
+            return;
           }
         }
       });
@@ -241,7 +236,7 @@ export class AppDatepicker extends LitElement {
 
     // TODO: Yet-to-be-implemented features
     firstDayOfWeek,
-    // disabledDays,
+    disabledDays,
     // disabled,
     // autocomplete,
     // inline,
@@ -263,11 +258,14 @@ export class AppDatepicker extends LitElement {
     __allAvailableYears,
   }) {
     const renderedCalendar = this.setupCalendar({
-      allWeekdays: this.computeAllWeekdays(firstDayOfWeek),
-      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek),
       min,
       max,
       firstDayOfWeek,
+      disabledDays,
+
+      allWeekdays: this.computeAllWeekdays(firstDayOfWeek),
+      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek),
+
       selectedDate: _selectedDate,
       todayDate: _todayDate,
     });
@@ -595,6 +593,9 @@ export class AppDatepicker extends LitElement {
     this.firstDayOfWeek = this.firstDayOfWeek == null
       ? 0
       : +this.firstDayOfWeek;
+    this.disabledDays = this.disabledDays == null
+      ? ''
+      : this.disabledDays;
 
     this._selectedDate = preValue;
     this._selectedView = this._selectedView == null
@@ -742,9 +743,8 @@ export class AppDatepicker extends LitElement {
     const fy = currentDate.getUTCFullYear();
     const selectedMonth = currentDate.getUTCMonth();
     const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
-    const preFirstDayOfWeek = ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek) % 7;
-    const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay() - preFirstDayOfWeek;
-    const firstWeekday = ((preFirstWeekday < 0 ? 7 : 0) + preFirstWeekday) % 7;
+    const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay() - firstDayOfWeek;
+    const firstWeekday = AppDatepicker.normalizeWeekday(preFirstWeekday);
 
     return Array.from(Array(Math.ceil((totalDays + firstWeekday) / 7)))
       .reduce((p, _, i) => {
@@ -789,18 +789,35 @@ export class AppDatepicker extends LitElement {
     min,
     max,
     firstDayOfWeek,
+    disabledDays,
 
     selectedDate,
     todayDate,
   }) {
     let hasMinDate = false;
     let hasMaxDate = false;
+
+    const preDisabledDays = disabledDays
+      .split(/,\s*/i)
+      .reduce((p, n) => {
+        if (typeof n === 'string' && n.length > 0) {
+          /** NOTE: Fallback to 0 if NaN is detected */
+          const toNumberN = +n;
+
+          return p.concat(
+            AppDatepicker.normalizeWeekday(
+              (Number.isNaN(toNumberN) ? 0 : toNumberN) - firstDayOfWeek
+            )
+          );
+        }
+
+        return p;
+      }, []);
     const d = html`<table><tr>${
       allWeekdays.map(weekday => html`<th>${weekday.value}</th>`)
     }</tr>${
-      allDaysInMonth
-      .map((day) => {
-        const rendered = day.map((d) => {
+      allDaysInMonth.map((day) => {
+        const rendered = day.map((d, di) => {
           /** NOTE: Disable month selector if needed */
           const oriTimestamp = +d.original;
           const minTimestamp = +min;
@@ -812,9 +829,10 @@ export class AppDatepicker extends LitElement {
           return d.label == null
             ? html`<td><div class="full-calendar__day"></div></td>`
             : html`<td><div class$="full-calendar__day${
-              oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp
-                ? ' day--disabled'
-                : ''
+              preDisabledDays.some(n => n === di)
+                || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp)
+                  ? ' day--disabled'
+                  : ''
             }${
               +todayDate === oriTimestamp
                 ? ' day--today'
@@ -1018,6 +1036,16 @@ export class AppDatepicker extends LitElement {
       { ...(opts || {}) }
     )
       .format(AppDatepicker.toUTCDate(date));
+  }
+
+  static normalizeWeekday(weekday) {
+    return (
+      (
+        weekday < 0
+          ? 7 * Math.ceil(Math.abs(weekday / 7))
+          : 0
+      ) + weekday
+    ) % 7;
   }
 
   static get MIN_DATE() {
