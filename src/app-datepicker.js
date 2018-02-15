@@ -237,6 +237,18 @@ export class AppDatepicker extends LitElement {
     min,
     max,
 
+    // TODO: Yet-to-be-implemented features
+    // firstDayOfWeek,
+    // disabledDays,
+    // disabled,
+    // autocomplete,
+    // inline,
+    // modal,
+    // startView,
+    // lang,
+    // themes,
+    // showWeekNumber,
+    // weekdayFormat,
     // required,
     // step,
 
@@ -876,9 +888,6 @@ export class AppDatepicker extends LitElement {
   }
 
   updateCurrentDateOnKeyup(ev) {
-    // TODO: To add keyboard support to navigate the calendar.
-    console.log('🚧 updateCurrentDateOnKeyup', ev);
-
     const {
       altKey,
       ctrlKey,
