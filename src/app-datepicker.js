@@ -482,9 +482,16 @@ export class AppDatepicker extends LitElement {
           width: 100%;
           height: 100%;
           border-radius: 50%;
+          cursor: pointer;
+        }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day:empty
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--empty:empty,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--empty {
+          cursor: unset;
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled {
           color: rgba(0, 0, 0, .26);
+          cursor: not-allowed;
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected,
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected {
@@ -827,7 +834,7 @@ export class AppDatepicker extends LitElement {
           hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
 
           return d.label == null
-            ? html`<td><div class="full-calendar__day"></div></td>`
+            ? html`<td><div class="full-calendar__day day--empty"></div></td>`
             : html`<td><div class$="full-calendar__day${
               preDisabledDays.some(n => n === di)
                 || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp)
@@ -857,6 +864,15 @@ export class AppDatepicker extends LitElement {
 
   updateCurrentDateOnTap(ev) {
     const elemOnTap = ev.target;
+
+    /** NOTE: No op for disabled day. */
+    if (
+      elemOnTap.classList.contains('day--disabled')
+        || elemOnTap.classList.contains('day--empty')
+    ) {
+      return;
+    }
+
     const selectedDateElem = this.shadowRoot
       .querySelector('.view-calendar__full-calendar .full-calendar__day.day--selected');
 
