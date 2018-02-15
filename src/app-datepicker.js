@@ -44,6 +44,34 @@ export class AppDatepicker extends LitElement {
 
     this.initProps();
     this.setAttribute('type', 'date');
+    this.setAttribute('tabindex', '-1');
+  }
+
+  async ready() {
+    super.ready();
+
+    this.addEventListener('keyup', (ev) => {
+      if (this.renderComplete == null) {
+        return this.updateCurrentDateOnKeyup(ev);
+      }
+
+      return this.renderComplete
+        .then(() => this.updateCurrentDateOnKeyup(ev));
+    });
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    if (this.hasAttribute('autofocus')) {
+      document.activeElement && document.activeElement.blur();
+
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() =>
+          this.focus()
+        )
+      );
+    }
   }
 
   _shouldPropertiesChange(props, changedProps) {
@@ -508,17 +536,16 @@ export class AppDatepicker extends LitElement {
                 renderedCalendar.hasMinDate ? ' prev-month--disabled' : ''
               }"
                 icon="datepicker:chevron-left"
-                on-tap="${ev => this.decrementSelectedMonth(ev)}"></paper-icon-button>
+                on-tap="${() => this.updateSelectedMonth(-1)}"></paper-icon-button>
               <div>${this.computeSelectedFormattedMonth(_currentDate)}</div>
               <paper-icon-button class$="month-selector__next-month${
                 renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
               }"
                 icon="datepicker:chevron-right"
-                on-tap="${ev => this.incrementSelectedMonth(ev)}"></paper-icon-button>
+                on-tap="${() => this.updateSelectedMonth(1)}"></paper-icon-button>
             </div>
 
-            <div class="view-calendar__full-calendar" tabindex="0"
-              on-keyup="${ev => this.updateCurrentDateOnKeyup(ev)}"
+            <div class="view-calendar__full-calendar"
               on-tap="${ev => this.updateCurrentDateOnTap(ev)}">${renderedCalendar.content}</div>
           </div>
         </iron-selector>
@@ -588,16 +615,13 @@ export class AppDatepicker extends LitElement {
   }
 
   onSelectedYearChanged(ev) {
-    if (ev.detail && ev.detail.value) {
+    if (/^year/i.test(this._selectedView) && ev.detail && ev.detail.value) {
       const selectedYear = ev.detail.value.getAttribute('year');
 
       this.centerYearListScroller(selectedYear);
 
       this._selectedView = 'calendar';
-      this._selectedYear = selectedYear;
-      this._currentDate = this.updateCurrentDate(this._currentDate, {
-        year: selectedYear,
-      });
+      this.updateSelectedFullYear(selectedYear);
     }
   }
 
@@ -648,34 +672,34 @@ export class AppDatepicker extends LitElement {
     return new Date(Date.UTC(nfy, nm, nd));
   }
 
-  decrementSelectedMonth() {
-    const od = AppDatepicker.toUTCDate(this._currentDate);
-    const nfy = od.getUTCFullYear();
-    const nm = od.getUTCMonth();
-    const nd = od.getUTCDate();
-    const newDate = new Date(Date.UTC(nfy, nm - 1, nd));
-
-    const selectedYear = newDate.getUTCFullYear();
+  updateSelectedFullYear(selectedYear, date) {
+    const newDate = this.updateCurrentDate(this._currentDate, {
+      year: selectedYear,
+      day: date == null
+        ? this._currentDate.getUTCDate()
+        : date,
+    });
 
     this._selectedYear = selectedYear;
-    this._currentDate = this.updateCurrentDate(newDate, {
-      year: selectedYear,
-    });
+    this._currentDate = newDate;
+    this._selectedDate = newDate;
   }
 
-  incrementSelectedMonth() {
+  updateSelectedMonth(monthOffset, date) {
     const od = AppDatepicker.toUTCDate(this._currentDate);
     const nfy = od.getUTCFullYear();
     const nm = od.getUTCMonth();
     const nd = od.getUTCDate();
-    const newDate = new Date(Date.UTC(nfy, nm + 1, nd));
+    const newDate = new Date(Date.UTC(nfy, nm + (monthOffset == null ? 0 : monthOffset), nd));
 
-    const selectedYear = newDate.getUTCFullYear();
-
-    this._selectedYear = selectedYear;
-    this._currentDate = this.updateCurrentDate(newDate, {
-      year: selectedYear,
+    const newSelectedYear = newDate.getUTCFullYear();
+    const newSelectedDate = this.updateCurrentDate(newDate, {
+      day: date == null ? 1 : +date,
     });
+
+    this._selectedYear = newSelectedYear;
+    this._currentDate = newSelectedDate;
+    this._selectedDate = newSelectedDate;
   }
 
   centerYearListScroller(selectedYear) {
@@ -876,19 +900,61 @@ export class AppDatepicker extends LitElement {
 
         break;
       }
-      case KEYCODES.SHIFT:
-      case KEYCODES.ALT:
       case KEYCODES.PAGE_DOWN:
-      case KEYCODES.PAGE_UP:
-      case KEYCODES.HOME:
-      case KEYCODES.END:
+      case KEYCODES.PAGE_UP: {
+        const offset = keyCode === KEYCODES.PAGE_UP ? -1 : 1;
+        const currentDate = this._currentDate;
+        const dateFromCurrentDate = currentDate.getUTCDate();
+        const newCurrentDate = altKey
+          ? this.updateCurrentDate(currentDate, {
+            year: currentDate.getUTCFullYear() + offset,
+          })
+          : this.updateCurrentDate(currentDate, {
+            month: currentDate.getUTCMonth() + offset,
+          });
+
+        if (newCurrentDate.getUTCDate() !== dateFromCurrentDate) {
+          /** NOTE:
+           * If the focused date does not exist in new selected month,
+           * focus is placed on the last day of that new month.
+           */
+          return altKey
+            ? this.updateSelectedFullYear(newCurrentDate.getUTCFullYear(), 28)
+            : this.updateSelectedMonth(offset, 0);
+        }
+
+        return altKey
+          ? this.updateSelectedFullYear(newCurrentDate.getUTCFullYear(), dateFromCurrentDate)
+          : this.updateSelectedMonth(offset, dateFromCurrentDate);
+      }
+      case KEYCODES.HOME: {
+        const newDate = this.updateCurrentDate(this._currentDate, {
+          day: 1,
+        });
+
+        this._currentDate = newDate;
+        this._selectedDate = newDate;
+
+        break;
+      }
+      case KEYCODES.END: {
+        const newDate = this.updateCurrentDate(this._currentDate, {
+          month: this._currentDate.getUTCMonth() + 1,
+          day: 0,
+        });
+
+        this._currentDate = newDate;
+        this._selectedDate = newDate;
+
+        break;
+      }
       case KEYCODES.SPACEBAR:
-      case KEYCODES.ENTER:
-      case KEYCODES.TAB: {
-        return;
+      case KEYCODES.ENTER: {
+        return this.updateValue(this._currentDate);
       }
       default: {
-        throw new Error(`Unknown keystroke with key code ${keyCode}`);
+        /** NOTE: no-op */
+        return;
       }
     }
   }
