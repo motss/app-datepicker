@@ -27,6 +27,8 @@ export class AppDatepicker extends LitElement {
       valueAsDate: Date,
       valueAsNumber: Number,
 
+      firstDayOfWeek: Number,
+
       _selectedDate: Date,
       _selectedView: String,
       _selectedYear: String,
@@ -35,7 +37,6 @@ export class AppDatepicker extends LitElement {
       _pattern: String,
 
       __allAvailableYears: Array,
-      __allWeekdays: Array,
     };
   }
 
@@ -85,7 +86,8 @@ export class AppDatepicker extends LitElement {
         switch (propKey) {
           case 'min':
           case 'max':
-          case 'pattern': {
+          case 'pattern':
+          case 'firstDayOfWeek': {
             break;
           }
           case 'value': {
@@ -225,7 +227,7 @@ export class AppDatepicker extends LitElement {
             break;
           }
           default: {
-            throw new Error(`Unknown propKey '${propKey}'`);
+            console.error(`Unknown propKey '${propKey}'`);
           }
         }
       });
@@ -238,7 +240,7 @@ export class AppDatepicker extends LitElement {
     max,
 
     // TODO: Yet-to-be-implemented features
-    // firstDayOfWeek,
+    firstDayOfWeek,
     // disabledDays,
     // disabled,
     // autocomplete,
@@ -259,16 +261,16 @@ export class AppDatepicker extends LitElement {
     _todayDate,
 
     __allAvailableYears,
-    __allWeekdays,
   }) {
-    const renderedCalendar = this.setupCalendar(
-      __allWeekdays,
-      this.computeAllDaysInMonth(_currentDate),
+    const renderedCalendar = this.setupCalendar({
+      allWeekdays: this.computeAllWeekdays(firstDayOfWeek),
+      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek),
       min,
       max,
-      _selectedDate,
-      _todayDate
-    );
+      firstDayOfWeek,
+      selectedDate: _selectedDate,
+      todayDate: _todayDate,
+    });
 
     return html`
       <style>
@@ -590,6 +592,10 @@ export class AppDatepicker extends LitElement {
     this.valueAsDate = preValue;
     this.valueAsNumber = +preValue;
 
+    this.firstDayOfWeek = this.firstDayOfWeek == null
+      ? 0
+      : +this.firstDayOfWeek;
+
     this._selectedDate = preValue;
     this._selectedView = this._selectedView == null
       ? 'calendar'
@@ -601,19 +607,6 @@ export class AppDatepicker extends LitElement {
     this._pattern = 'yyyy-MM-dd';
 
     this.__allAvailableYears = this.computeAllAvailableYears(preSelectedYear);
-    this.__allWeekdays = Array.from(Array(7), (_, i) => {
-      const d = new Date(Date.UTC(2017, 0, i + 1));
-
-      return {
-        original: d,
-        label: AppDatepicker.formatDateWithIntl(d, {
-          weekday: 'long',
-        }),
-        value: AppDatepicker.formatDateWithIntl(d, {
-          weekday: 'narrow',
-        }),
-      };
-    });
   }
 
   onSelectedViewChanged(ev) {
@@ -722,11 +715,36 @@ export class AppDatepicker extends LitElement {
     });
   }
 
-  computeAllDaysInMonth(currentDate) {
+  computeAllWeekdays(firstDayOfWeek) {
+    return Array.from(
+      Array(7),
+      (_, i) => {
+        const d = new Date(Date.UTC(
+          2017,
+          0,
+          i + (((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek) % 7) + 1
+        ));
+
+        return {
+          original: d,
+          label: AppDatepicker.formatDateWithIntl(d, {
+            weekday: 'long',
+          }),
+          value: AppDatepicker.formatDateWithIntl(d, {
+            weekday: 'narrow',
+          }),
+        };
+      }
+    );
+  }
+
+  computeAllDaysInMonth(currentDate, firstDayOfWeek) {
     const fy = currentDate.getUTCFullYear();
     const selectedMonth = currentDate.getUTCMonth();
     const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
-    const firstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay();
+    const preFirstDayOfWeek = ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek) % 7;
+    const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay() - preFirstDayOfWeek;
+    const firstWeekday = ((preFirstWeekday < 0 ? 7 : 0) + preFirstWeekday) % 7;
 
     return Array.from(Array(Math.ceil((totalDays + firstWeekday) / 7)))
       .reduce((p, _, i) => {
@@ -764,7 +782,17 @@ export class AppDatepicker extends LitElement {
     }, []);
   }
 
-  setupCalendar(allWeekdays, allDaysInMonth, min, max, selectedDate, todayDate) {
+  setupCalendar({
+    allWeekdays,
+    allDaysInMonth,
+
+    min,
+    max,
+    firstDayOfWeek,
+
+    selectedDate,
+    todayDate,
+  }) {
     let hasMinDate = false;
     let hasMaxDate = false;
     const d = html`<table><tr>${
