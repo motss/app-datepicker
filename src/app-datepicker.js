@@ -237,7 +237,7 @@ export class AppDatepicker extends LitElement {
 
           width: var(--app-datepicker-width);
           /** NOTE: Magic number as 16:9 aspect ratio does not look good */
-          height: calc(var(--app-datepicker-width) / .7);
+          height: calc(var(--app-datepicker-width) / .66);
           background-color: #fff;
 
           --app-datepicker-width: 300px;
@@ -692,27 +692,20 @@ export class AppDatepicker extends LitElement {
     const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
     const firstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay();
 
-    return Array.from(Array(Math.ceil(totalDays / 7)))
-      .reduce((p, n, i) => {
+    return Array.from(Array(Math.ceil((totalDays + firstWeekday) / 7)))
+      .reduce((p, _, i) => {
         return p.concat([
-          [
-            ...(
-              firstWeekday > 0 && i < 1
-                ? Array.from(
-                  Array(firstWeekday),
-                  n => ({ original: null, label: null, value: null })
-                )
-                : []
-            ),
-            ...Array.from(Array(7 - (i < 1 ? firstWeekday : 0)), (n, ni) => {
-              const day = (i * 7) + ni + 1;
+          Array.from(
+            Array(7),
+            (__, ni) => {
+              if (i < 1 && (firstWeekday > 0 && firstWeekday < 7) && ni < firstWeekday) {
+                return { original: null, label: null, value: null };
+              }
+
+              const day = (i * 7) + ni + 1 - firstWeekday;
 
               if (day > totalDays) {
-                return {
-                  original: null,
-                  label: null,
-                  value: null,
-                };
+                return { original: null, label: null, value: null };
               }
 
               const d = new Date(Date.UTC(fy, selectedMonth, day));
@@ -729,9 +722,9 @@ export class AppDatepicker extends LitElement {
                   day: 'numeric',
                 }),
               };
-            }),
-          ],
-      ]);
+            }
+          ),
+        ]);
     }, []);
   }
 
@@ -836,9 +829,68 @@ export class AppDatepicker extends LitElement {
     this.updateValue(this._selectedDate);
   }
 
+  dateUpdaterOnKeyCode(keyCode) {
+    const KEYCODES = AppDatepicker.KEYCODES;
+
+    switch (keyCode) {
+      case KEYCODES.UP: {
+        return -7;
+      }
+      case KEYCODES.DOWN: {
+        return 7;
+      }
+      case KEYCODES.LEFT: {
+        return -1;
+      }
+      case KEYCODES.RIGHT: {
+        return 1;
+      }
+      default: {
+        return 0;
+      }
+    }
+  }
+
   updateCurrentDateOnKeyup(ev) {
     // TODO: To add keyboard support to navigate the calendar.
     console.log('🚧 updateCurrentDateOnKeyup', ev);
+
+    const {
+      altKey,
+      ctrlKey,
+      keyCode,
+    } = ev;
+    const KEYCODES = AppDatepicker.KEYCODES;
+
+    switch (keyCode) {
+      case KEYCODES.UP:
+      case KEYCODES.DOWN:
+      case KEYCODES.LEFT:
+      case KEYCODES.RIGHT: {
+        const newDate = this.updateCurrentDate(this._currentDate, {
+          day: this._currentDate.getUTCDate() + this.dateUpdaterOnKeyCode(keyCode),
+        });
+
+        this._selectedDate = newDate;
+        this._currentDate = newDate;
+
+        break;
+      }
+      case KEYCODES.SHIFT:
+      case KEYCODES.ALT:
+      case KEYCODES.PAGE_DOWN:
+      case KEYCODES.PAGE_UP:
+      case KEYCODES.HOME:
+      case KEYCODES.END:
+      case KEYCODES.SPACEBAR:
+      case KEYCODES.ENTER:
+      case KEYCODES.TAB: {
+        return;
+      }
+      default: {
+        throw new Error(`Unknown keystroke with key code ${keyCode}`);
+      }
+    }
   }
 
   // stepDown() {}
@@ -871,6 +923,28 @@ export class AppDatepicker extends LitElement {
 
   static get MAX_DATE() {
     return 2100;
+  }
+
+  static get KEYCODES() {
+    return {
+      UP: 38,
+      DOWN: 40,
+      LEFT: 37,
+      RIGHT: 39,
+
+      PAGE_UP: 33,
+      PAGE_DOWN: 34,
+
+      END: 35,
+      HOME: 36,
+
+      ALT: 18,
+      SHIFT: 16,
+
+      ENTER: 13,
+      SPACEBAR: 32,
+      TAB: 9,
+    };
   }
 }
 
