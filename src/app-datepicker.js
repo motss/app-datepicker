@@ -39,8 +39,6 @@ export class AppDatepicker extends LitElement {
       _todayDate: Date,
 
       _pattern: String,
-      _tasksInQueue: Array,
-      _allAvailableYears: Array,
     };
   }
 
@@ -50,15 +48,6 @@ export class AppDatepicker extends LitElement {
     this.initProps();
     this.setAttribute('type', 'date');
     this.setAttribute('tabindex', '-1');
-
-    /** NOTE: Enqueue tasks to be executed lazily */
-    this._tasksInQueue = [
-      () => {
-        this._allAvailableYears = this.computeAllAvailableYears('year', this._selectedYear, this.locale);
-
-        this.centerYearListScroller(this._selectedYear);
-      },
-    ];
   }
 
   async ready() {
@@ -82,21 +71,6 @@ export class AppDatepicker extends LitElement {
         )
       );
     }
-
-    /** NOTE: Lazy-render year list */
-    const tasksInQueue = this._tasksInQueue;
-
-    AppDatepicker.requestIdleCallback(function lazyRender(deadline) {
-      while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && tasksInQueue.length > 0) {
-        const enqueuedTask = tasksInQueue.shift();
-
-        enqueuedTask && enqueuedTask();
-      }
-
-      if (tasksInQueue.length > 0) {
-        AppDatepicker.requestIdleCallback(lazyRender);
-      }
-    }, { timeout: AppDatepicker.IDLE_CALLBACK_TIMEOUT });
   }
 
   _shouldPropertiesChange(props, changedProps) {
@@ -278,23 +252,24 @@ export class AppDatepicker extends LitElement {
     _selectedYear,
     _currentDate,
     _todayDate,
-
-    _allAvailableYears,
   }) {
     const preSelectedView = _selectedView == null ? startView : _selectedView;
     const postSelectedView = preSelectedView == null ? 'calendar' : preSelectedView;
-    const renderedCalendar = this.setupCalendar({
-      min,
-      max,
-      firstDayOfWeek,
-      disabledDays,
+    const isCalendarView = /^calendar/i.test(postSelectedView);
+    const renderedCalendar = isCalendarView
+      ? this.setupCalendar({
+        min,
+        max,
+        firstDayOfWeek,
+        disabledDays,
 
-      allWeekdays: this.computeAllWeekdays(firstDayOfWeek, locale),
-      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek, locale),
+        allWeekdays: this.computeAllWeekdays(firstDayOfWeek, locale),
+        allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek, locale),
 
-      selectedDate: _selectedDate,
-      todayDate: _todayDate,
-    });
+        selectedDate: _selectedDate,
+        todayDate: _todayDate,
+      })
+      : { hasMinDate: null, hasMaxDate: null, content: null };
 
     return html`
       <style>
@@ -572,10 +547,12 @@ export class AppDatepicker extends LitElement {
               selected="${_selectedYear}"
               on-tap="${ev => this.onSelectedYearChangedOnTap(ev)}"
               attr-for-selected="year">${
-                _allAvailableYears
-                  .map(year => html`<button class="btn--reset year-list__year" year$="${
-                    year.originalValue
-                  }" aria-label$="${year.label}">${year.value}</button>`)
+                isCalendarView
+                  ? null
+                  : this.computeAllAvailableYears('year', _selectedYear, locale)
+                      .map(year => html`<button class="btn--reset year-list__year" year$="${
+                        year.originalValue
+                      }" aria-label$="${year.label}">${year.value}</button>`)
             }</iron-selector>
           </div>
 
@@ -647,7 +624,6 @@ export class AppDatepicker extends LitElement {
     this._todayDate = defaultToday;
 
     this._pattern = 'yyyy-MM-dd';
-    this._allAvailableYears = [];
   }
 
   onSelectedViewChanged(ev) {
@@ -1108,25 +1084,6 @@ export class AppDatepicker extends LitElement {
     ) % 7;
   }
 
-  static requestIdleCallback(cb) {
-    if ('requestIdleCallback' in window) {
-      return window.requestIdleCallback(cb);
-    }
-
-    return (() => {
-      let startTime = Date.now();
-
-      return window.setTimeout(() => {
-        cb({
-          didTimeout: false,
-          timeRemaining: () => {
-            return Math.max(0, 50.0 - (Date.now() - startTime));
-          },
-        });
-      }, 1)
-    })(cb);
-  }
-
   static get MIN_DATE() {
     return 1970;
   }
@@ -1155,10 +1112,6 @@ export class AppDatepicker extends LitElement {
       SPACEBAR: 32,
       TAB: 9,
     };
-  }
-
-  static get IDLE_CALLBACK_TIMEOUT() {
-    return 10e3;
   }
 }
 
