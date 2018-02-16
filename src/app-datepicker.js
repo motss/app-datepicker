@@ -31,6 +31,7 @@ export class AppDatepicker extends LitElement {
       disabledDays: String,
       locale: String,
       startView: String,
+      weekdayFormat: String,
 
       _selectedDate: Date,
       _selectedView: String,
@@ -237,13 +238,14 @@ export class AppDatepicker extends LitElement {
     disabledDays,
     locale,
     startView,
+    weekdayFormat,
+
     // disabled,
     // autocomplete,
     // inline,
     // modal,
     // themes,
     // showWeekNumber,
-    // weekdayFormat,
     // required,
     // step,
 
@@ -263,7 +265,7 @@ export class AppDatepicker extends LitElement {
         firstDayOfWeek,
         disabledDays,
 
-        allWeekdays: this.computeAllWeekdays(firstDayOfWeek, locale),
+        allWeekdays: this.computeAllWeekdays(firstDayOfWeek, weekdayFormat, locale),
         allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek, locale),
 
         selectedDate: _selectedDate,
@@ -613,6 +615,7 @@ export class AppDatepicker extends LitElement {
     this.startView = this.startView == null
       ? 'calendar'
       : this.startView;
+    this.weekdayFormat = null;
 
     this._selectedDate = preValue;
     this._selectedView = null;
@@ -744,7 +747,7 @@ export class AppDatepicker extends LitElement {
     );
   }
 
-  computeAllWeekdays(firstDayOfWeek, locale) {
+  computeAllWeekdays(firstDayOfWeek, weekdayFormat, locale) {
     return Array.from(
       Array(7),
       (_, i) => {
@@ -760,7 +763,10 @@ export class AppDatepicker extends LitElement {
             weekday: 'long',
           }, locale),
           value: AppDatepicker.formatDateWithIntl(d, {
-            weekday: 'narrow',
+            /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
+            weekday: /^(short|narrow)/i.test(weekdayFormat)
+              ? weekdayFormat
+              : 'narrow',
           }, locale),
         };
       }
