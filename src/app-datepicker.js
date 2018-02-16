@@ -32,6 +32,7 @@ export class AppDatepicker extends LitElement {
       locale: String,
       startView: String,
       weekdayFormat: String,
+      showWeekNumber: Boolean,
 
       _selectedDate: Date,
       _selectedView: String,
@@ -229,6 +230,28 @@ export class AppDatepicker extends LitElement {
     return true;
   }
 
+  didRender(props, changedProps) {
+    const {
+      firstDayOfWeek,
+      showWeekNumber,
+    } = props;
+    const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
+
+    if (shouldShowWeekNumber) {
+      this.shadowRoot
+        .querySelector('.view-calendar__full-calendar')
+        .classList
+        .add('has-week-number');
+    }
+
+    if (!shouldShowWeekNumber) {
+      this.shadowRoot
+        .querySelector('.view-calendar__full-calendar')
+        .classList
+        .remove('has-week-number');
+    }
+  }
+
   render({
     min,
     max,
@@ -239,13 +262,13 @@ export class AppDatepicker extends LitElement {
     locale,
     startView,
     weekdayFormat,
+    showWeekNumber,
 
     // disabled,
     // autocomplete,
     // inline,
     // modal,
     // themes,
-    // showWeekNumber,
     // required,
     // step,
 
@@ -264,9 +287,20 @@ export class AppDatepicker extends LitElement {
         max,
         firstDayOfWeek,
         disabledDays,
+        showWeekNumber,
 
-        allWeekdays: this.computeAllWeekdays(firstDayOfWeek, weekdayFormat, locale),
-        allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek, locale),
+        allWeekdays: this.computeAllWeekdays(
+          firstDayOfWeek,
+          weekdayFormat,
+          showWeekNumber,
+          locale
+        ),
+        allDaysInMonth: this.computeAllDaysInMonth(
+          _currentDate,
+          firstDayOfWeek,
+          showWeekNumber,
+          locale
+        ),
 
         selectedDate: _selectedDate,
         todayDate: _todayDate,
@@ -466,6 +500,14 @@ export class AppDatepicker extends LitElement {
           width: calc(100% / 7);
           text-align: center;
         }
+        .view-calendar__full-calendar.has-week-number > table tr > th,
+        .view-calendar__full-calendar.has-week-number > table tr > td {
+          width: calc(100% / 8);
+        }
+        .view-calendar__full-calendar.has-week-number > table tr > td:first-of-type {
+          color: var(--app-datepicker-week-number-color, var(--app-datepicker-primary-color));
+          opacity: .7;
+        }
         .view-calendar__full-calendar > table tr > td:after {
           display: block;
           content: '';
@@ -616,6 +658,7 @@ export class AppDatepicker extends LitElement {
       ? 'calendar'
       : this.startView;
     this.weekdayFormat = null;
+    this.showWeekNumber = false;
 
     this._selectedDate = preValue;
     this._selectedView = null;
@@ -719,7 +762,9 @@ export class AppDatepicker extends LitElement {
       .then(() => {
         window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
-            this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
+            this.shadowRoot
+              .querySelector('.selector__view-year')
+              .scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
           });
         });
       });
@@ -747,14 +792,21 @@ export class AppDatepicker extends LitElement {
     );
   }
 
-  computeAllWeekdays(firstDayOfWeek, weekdayFormat, locale) {
+  computeAllWeekdays(firstDayOfWeek, weekdayFormat, showWeekNumber, locale) {
+    const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
+
     return Array.from(
-      Array(7),
+      Array(shouldShowWeekNumber ? 8 : 7),
       (_, i) => {
+        if (shouldShowWeekNumber && i < 1) {
+          return { original: 'Week', label: 'Week', value: 'Week' };
+        }
+
         const d = new Date(Date.UTC(
           2017,
           0,
-          i + (((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek) % 7) + 1
+          i + ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek) % 7
+            + (shouldShowWeekNumber ? 0 : 1)
         ));
 
         return {
@@ -773,24 +825,55 @@ export class AppDatepicker extends LitElement {
     );
   }
 
-  computeAllDaysInMonth(currentDate, firstDayOfWeek, locale) {
+  computeAllDaysInMonth(currentDate, firstDayOfWeek, showWeekNumber, locale) {
     const fy = currentDate.getUTCFullYear();
     const selectedMonth = currentDate.getUTCMonth();
-    const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
-    const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay() - firstDayOfWeek;
+    const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
+    const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
     const firstWeekday = AppDatepicker.normalizeWeekday(preFirstWeekday);
+    const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
+    const totalCol = shouldShowWeekNumber ? 8 : 7;
 
     return Array.from(
-      Array(Math.ceil((totalDays + firstWeekday) / 7)),
+      Array(
+        Math.ceil(
+          (
+            totalDays
+              + firstWeekday
+              + (
+                shouldShowWeekNumber
+                  ? Math.ceil((totalDays + firstWeekday) / 7)
+                  : 0
+              )
+          ) / totalCol
+        )
+      ),
       (_, i) => {
         return Array.from(
-          Array(7),
+          Array(totalCol),
           (__, ni) => {
-            if (i < 1 && (firstWeekday > 0 && firstWeekday < 7) && ni < firstWeekday) {
+            if (shouldShowWeekNumber && ni < 1) {
+              const weekNumber = AppDatepicker.computeWeekNumber(
+                new Date(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday))
+              );
+
+              return {
+                original: weekNumber,
+                label: weekNumber,
+                value: weekNumber,
+                originalValue: weekNumber,
+              };
+            }
+
+            if (
+              i < 1
+                && (firstWeekday > 0 && firstWeekday < 7)
+                && ni < (firstWeekday + (shouldShowWeekNumber ? 1 : 0))
+            ) {
               return { original: null, label: null, value: null };
             }
 
-            const day = (i * 7) + ni + 1 - firstWeekday;
+            const day = (i * 7) + ni + (shouldShowWeekNumber ? 0 : 1) - firstWeekday;
 
             if (day > totalDays) {
               return { original: null, label: null, value: null };
@@ -826,6 +909,7 @@ export class AppDatepicker extends LitElement {
     max,
     firstDayOfWeek,
     disabledDays,
+    showWeekNumber,
 
     selectedDate,
     todayDate,
@@ -843,6 +927,10 @@ export class AppDatepicker extends LitElement {
           return p.concat(
             AppDatepicker.normalizeWeekday(
               (Number.isNaN(toNumberN) ? 0 : toNumberN) - firstDayOfWeek
+            ) + (
+              !(firstDayOfWeek % 7) && showWeekNumber
+                ? 1
+                : 0
             )
           );
         }
@@ -1062,10 +1150,6 @@ export class AppDatepicker extends LitElement {
   // stepDown() {}
   // stepUp() {}
 
-  get selectorViewYear() {
-    return this.shadowRoot.querySelector('.selector__view-year');
-  }
-
   static toUTCDate(date) {
     const toDate = new Date(date);
     const fy = toDate.getUTCFullYear();
@@ -1088,6 +1172,17 @@ export class AppDatepicker extends LitElement {
           : 0
       ) + weekday
     ) % 7;
+  }
+
+  static computeWeekNumber(date) {
+    const preDate = new Date(date);
+    const now = new Date(Date.UTC(
+      preDate.getUTCFullYear(),
+      preDate.getUTCMonth(),
+      preDate.getUTCDate() - preDate.getUTCDay() + 4
+    ));
+
+    return Math.ceil(((now - new Date(Date.UTC(now.getUTCFullYear(), 0, 1))) / 864e5 + 1) / 7);
   }
 
   static get MIN_DATE() {
