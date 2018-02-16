@@ -264,6 +264,7 @@ export class AppDatepicker extends LitElement {
     weekdayFormat,
     showWeekNumber,
 
+    // TODO: Holidays with custom dates?
     // disabled,
     // autocomplete,
     // inline,
