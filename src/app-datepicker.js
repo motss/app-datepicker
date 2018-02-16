@@ -30,6 +30,7 @@ export class AppDatepicker extends LitElement {
       firstDayOfWeek: Number,
       disabledDays: String,
       locale: String,
+      startView: String,
 
       _selectedDate: Date,
       _selectedView: String,
@@ -54,6 +55,8 @@ export class AppDatepicker extends LitElement {
     this._tasksInQueue = [
       () => {
         this._allAvailableYears = this.computeAllAvailableYears('year', this._selectedYear, this.locale);
+
+        this.centerYearListScroller(this._selectedYear);
       },
     ];
   }
@@ -62,11 +65,7 @@ export class AppDatepicker extends LitElement {
     super.ready();
 
     this.addEventListener('keyup', (ev) => {
-      if (this.renderComplete == null) {
-        return this.updateCurrentDateOnKeyup(ev);
-      }
-
-      return this.renderComplete
+      return new Promise(yay => yay(this.renderComplete))
         .then(() => this.updateCurrentDateOnKeyup(ev));
     });
   }
@@ -105,6 +104,7 @@ export class AppDatepicker extends LitElement {
       return;
     }
 
+    /** NOTE: Specific requests for public properties */
     Object.keys(changedProps)
       .filter(propKey => !/^_+/i.test(propKey))
       .map((propKey) => {
@@ -262,11 +262,11 @@ export class AppDatepicker extends LitElement {
     firstDayOfWeek,
     disabledDays,
     locale,
+    startView,
     // disabled,
     // autocomplete,
     // inline,
     // modal,
-    // startView,
     // themes,
     // showWeekNumber,
     // weekdayFormat,
@@ -281,6 +281,8 @@ export class AppDatepicker extends LitElement {
 
     _allAvailableYears,
   }) {
+    const preSelectedView = _selectedView == null ? startView : _selectedView;
+    const postSelectedView = preSelectedView == null ? 'calendar' : preSelectedView;
     const renderedCalendar = this.setupCalendar({
       min,
       max,
@@ -550,8 +552,8 @@ export class AppDatepicker extends LitElement {
 
       <div class="datepicker__header">
         <iron-selector class="header__selector"
-          selected="${_selectedView}"
-          on-selected-changed="${(ev) => { this._selectedView = ev.detail.value; }}"
+          selected="${postSelectedView}"
+          on-tap="${(ev) => { this._selectedView = ev.target.getAttribute('view'); }}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
             view="year">${this.computeSelectedFormattedYear(_currentDate, locale)}</button>
@@ -562,13 +564,13 @@ export class AppDatepicker extends LitElement {
 
       <div class="datepicker__main">
         <iron-selector class="main__selector"
-          selected="${_selectedView}"
-          on-selected-item-changed="${ev => this.onSelectedViewChanged(ev)}"
+          selected="${postSelectedView}"
+          on-selected-changed="${ev => this.onSelectedViewChanged(ev)}"
           attr-for-selected="view">
           <div class="selector__view-year" view="year">
             <iron-selector class="view-year__year-list"
               selected="${_selectedYear}"
-              on-selected-item-changed="${ev => this.onSelectedYearChanged(ev)}"
+              on-tap="${ev => this.onSelectedYearChangedOnTap(ev)}"
               attr-for-selected="year">${
                 _allAvailableYears
                   .map(year => html`<button class="btn--reset year-list__year" year$="${
@@ -631,11 +633,12 @@ export class AppDatepicker extends LitElement {
     this.locale = this.locale == null
       ? window.navigator.language
       : this.locale;
+    this.startView = this.startView == null
+      ? 'calendar'
+      : this.startView;
 
     this._selectedDate = preValue;
-    this._selectedView = this._selectedView == null
-      ? 'calendar'
-      : this._selectedView;
+    this._selectedView = null;
     this._selectedYear = this._selectedYear == null
       ? defaultToday.getUTCFullYear()
       : this._selectedYear;
@@ -648,24 +651,18 @@ export class AppDatepicker extends LitElement {
   }
 
   onSelectedViewChanged(ev) {
-    if (ev.detail && ev.detail.value) {
-      const selectedView = ev.detail.value.getAttribute('view');
-
-      if (/^year/i.test(selectedView)) {
-        this.centerYearListScroller(this._selectedYear)
-      }
+    if (ev.detail && ev.detail.value && /^year/i.test(ev.detail.value)) {
+      this.centerYearListScroller(this._selectedYear);
     }
   }
 
-  onSelectedYearChanged(ev) {
-    if (/^year/i.test(this._selectedView) && ev.detail && ev.detail.value) {
-      const selectedYear = ev.detail.value.getAttribute('year');
-
-      this.centerYearListScroller(selectedYear);
-
-      this._selectedView = 'calendar';
-      this.updateSelectedFullYear(selectedYear);
+  onSelectedYearChangedOnTap(ev) {
+    if (/^calendar/i.test(this._selectedView)) {
+      return;
     }
+
+    this._selectedView = 'calendar';
+    this.updateSelectedFullYear(ev.target.getAttribute('year'));
   }
 
   computeSelectedFormattedYear(currentDate, locale) {
@@ -739,11 +736,14 @@ export class AppDatepicker extends LitElement {
   }
 
   centerYearListScroller(selectedYear) {
-    window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => {
-        this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
+    return new Promise(yay => yay(this.renderComplete))
+      .then(() => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            this.selectorViewYear.scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
+          });
+        });
       });
-    });
   }
 
   computeAllAvailableYears(selectedView, selectedYear, locale) {
