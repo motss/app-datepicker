@@ -29,15 +29,17 @@ export class AppDatepicker extends LitElement {
 
       firstDayOfWeek: Number,
       disabledDays: String,
+      locale: String,
 
       _selectedDate: Date,
       _selectedView: String,
       _selectedYear: String,
       _currentDate: Date,
       _todayDate: Date,
-      _pattern: String,
 
-      __allAvailableYears: Array,
+      _pattern: String,
+      _tasksInQueue: Array,
+      _allAvailableYears: Array,
     };
   }
 
@@ -47,6 +49,13 @@ export class AppDatepicker extends LitElement {
     this.initProps();
     this.setAttribute('type', 'date');
     this.setAttribute('tabindex', '-1');
+
+    /** NOTE: Enqueue tasks to be executed lazily */
+    this._tasksInQueue = [
+      () => {
+        this._allAvailableYears = this.computeAllAvailableYears('year', this._selectedYear, this.locale);
+      },
+    ];
   }
 
   async ready() {
@@ -74,6 +83,21 @@ export class AppDatepicker extends LitElement {
         )
       );
     }
+
+    /** NOTE: Lazy-render year list */
+    const tasksInQueue = this._tasksInQueue;
+
+    AppDatepicker.requestIdleCallback(function lazyRender(deadline) {
+      while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && tasksInQueue.length > 0) {
+        const enqueuedTask = tasksInQueue.shift();
+
+        enqueuedTask && enqueuedTask();
+      }
+
+      if (tasksInQueue.length > 0) {
+        AppDatepicker.requestIdleCallback(lazyRender);
+      }
+    }, { timeout: AppDatepicker.IDLE_CALLBACK_TIMEOUT });
   }
 
   _shouldPropertiesChange(props, changedProps) {
@@ -237,12 +261,12 @@ export class AppDatepicker extends LitElement {
     // TODO: Yet-to-be-implemented features
     firstDayOfWeek,
     disabledDays,
+    locale,
     // disabled,
     // autocomplete,
     // inline,
     // modal,
     // startView,
-    // lang,
     // themes,
     // showWeekNumber,
     // weekdayFormat,
@@ -255,7 +279,7 @@ export class AppDatepicker extends LitElement {
     _currentDate,
     _todayDate,
 
-    __allAvailableYears,
+    _allAvailableYears,
   }) {
     const renderedCalendar = this.setupCalendar({
       min,
@@ -263,8 +287,8 @@ export class AppDatepicker extends LitElement {
       firstDayOfWeek,
       disabledDays,
 
-      allWeekdays: this.computeAllWeekdays(firstDayOfWeek),
-      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek),
+      allWeekdays: this.computeAllWeekdays(firstDayOfWeek, locale),
+      allDaysInMonth: this.computeAllDaysInMonth(_currentDate, firstDayOfWeek, locale),
 
       selectedDate: _selectedDate,
       todayDate: _todayDate,
@@ -494,6 +518,8 @@ export class AppDatepicker extends LitElement {
           cursor: not-allowed;
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--selected,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--disabled.day--selected,
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected {
           background-color: var(--app-datepicker-selected-day-bg, var(--app-datepicker-primary-color));
           color: var(--app-datepicker-selected-day-color, #fff);
@@ -528,9 +554,9 @@ export class AppDatepicker extends LitElement {
           on-selected-changed="${(ev) => { this._selectedView = ev.detail.value; }}"
           attr-for-selected="view">
           <button class="btn--reset selector__year"
-            view="year">${this.computeSelectedFormattedYear(_currentDate)}</button>
+            view="year">${this.computeSelectedFormattedYear(_currentDate, locale)}</button>
           <button class="btn--reset selector__calendar"
-            view="calendar">${this.computeSelectedFormattedDate(_currentDate)}</button>
+            view="calendar">${this.computeSelectedFormattedDate(_currentDate, locale)}</button>
         </iron-selector>
       </div>
 
@@ -544,8 +570,10 @@ export class AppDatepicker extends LitElement {
               selected="${_selectedYear}"
               on-selected-item-changed="${ev => this.onSelectedYearChanged(ev)}"
               attr-for-selected="year">${
-              __allAvailableYears.map(year => html`<button class="btn--reset year-list__year"
-                year$="${year.label}">${year.label}</button>`)
+                _allAvailableYears
+                  .map(year => html`<button class="btn--reset year-list__year" year$="${
+                    year.originalValue
+                  }" aria-label$="${year.label}">${year.value}</button>`)
             }</iron-selector>
           </div>
 
@@ -556,7 +584,7 @@ export class AppDatepicker extends LitElement {
               }"
                 icon="datepicker:chevron-left"
                 on-tap="${() => this.updateSelectedMonth(-1)}"></paper-icon-button>
-              <div>${this.computeSelectedFormattedMonth(_currentDate)}</div>
+              <div>${this.computeSelectedFormattedMonth(_currentDate, locale)}</div>
               <paper-icon-button class$="month-selector__next-month${
                 renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
               }"
@@ -580,9 +608,6 @@ export class AppDatepicker extends LitElement {
 
   initProps() {
     const defaultToday = AppDatepicker.toUTCDate(new Date());
-    const preSelectedYear = this._selectedYear == null
-      ? defaultToday.getUTCFullYear()
-      : this._selectedYear;
     const preValue = this.value == null
       ? defaultToday
       : AppDatepicker.toUTCDate(this.value);
@@ -603,18 +628,23 @@ export class AppDatepicker extends LitElement {
     this.disabledDays = this.disabledDays == null
       ? ''
       : this.disabledDays;
+    this.locale = this.locale == null
+      ? window.navigator.language
+      : this.locale;
 
     this._selectedDate = preValue;
     this._selectedView = this._selectedView == null
       ? 'calendar'
       : this._selectedView;
-    this._selectedYear = preSelectedYear;
+    this._selectedYear = this._selectedYear == null
+      ? defaultToday.getUTCFullYear()
+      : this._selectedYear;
 
     this._currentDate = preValue;
     this._todayDate = defaultToday;
-    this._pattern = 'yyyy-MM-dd';
 
-    this.__allAvailableYears = this.computeAllAvailableYears(preSelectedYear);
+    this._pattern = 'yyyy-MM-dd';
+    this._allAvailableYears = [];
   }
 
   onSelectedViewChanged(ev) {
@@ -638,32 +668,25 @@ export class AppDatepicker extends LitElement {
     }
   }
 
-  computeAllAvailableYears(selectedYear) {
-    return Array.from(Array(AppDatepicker.MAX_DATE - AppDatepicker.MIN_DATE + 1))
-      .map((_, i) => ({
-        label: AppDatepicker.MIN_DATE + i,
-      }));
-  }
-
-  computeSelectedFormattedYear(currentDate) {
+  computeSelectedFormattedYear(currentDate, locale) {
     return AppDatepicker.formatDateWithIntl(currentDate, {
       year: 'numeric',
-    });
+    }, locale);
   }
 
-  computeSelectedFormattedDate(currentDate) {
+  computeSelectedFormattedDate(currentDate, locale) {
     return AppDatepicker.formatDateWithIntl(currentDate, {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
-    });
+    }, locale);
   }
 
-  computeSelectedFormattedMonth(currentDate) {
+  computeSelectedFormattedMonth(currentDate, locale) {
     return AppDatepicker.formatDateWithIntl(currentDate, {
       month: 'long',
       year: 'numeric',
-    });
+    }, locale);
   }
 
   updateCurrentDate(currentDate, newDateOpts) {
@@ -723,7 +746,29 @@ export class AppDatepicker extends LitElement {
     });
   }
 
-  computeAllWeekdays(firstDayOfWeek) {
+  computeAllAvailableYears(selectedView, selectedYear, locale) {
+    if (/^calendar/i.test(selectedView)) {
+      return [];
+    }
+
+    return Array.from(
+      Array(AppDatepicker.MAX_DATE - AppDatepicker.MIN_DATE + 1),
+      (_, i) => {
+        const fy = AppDatepicker.MIN_DATE + i;
+        const od = new Date(Date.UTC(fy, 0, 1));
+        const val = AppDatepicker.formatDateWithIntl(od, { year: 'numeric' }, locale);
+
+        return {
+          original: od,
+          label: val,
+          value: val,
+          originalValue: fy,
+        };
+      }
+    );
+  }
+
+  computeAllWeekdays(firstDayOfWeek, locale) {
     return Array.from(
       Array(7),
       (_, i) => {
@@ -737,56 +782,58 @@ export class AppDatepicker extends LitElement {
           original: d,
           label: AppDatepicker.formatDateWithIntl(d, {
             weekday: 'long',
-          }),
+          }, locale),
           value: AppDatepicker.formatDateWithIntl(d, {
             weekday: 'narrow',
-          }),
+          }, locale),
         };
       }
     );
   }
 
-  computeAllDaysInMonth(currentDate, firstDayOfWeek) {
+  computeAllDaysInMonth(currentDate, firstDayOfWeek, locale) {
     const fy = currentDate.getUTCFullYear();
     const selectedMonth = currentDate.getUTCMonth();
     const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getDate();
     const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getDay() - firstDayOfWeek;
     const firstWeekday = AppDatepicker.normalizeWeekday(preFirstWeekday);
 
-    return Array.from(Array(Math.ceil((totalDays + firstWeekday) / 7)))
-      .reduce((p, _, i) => {
-        return p.concat([
-          Array.from(
-            Array(7),
-            (__, ni) => {
-              if (i < 1 && (firstWeekday > 0 && firstWeekday < 7) && ni < firstWeekday) {
-                return { original: null, label: null, value: null };
-              }
-
-              const day = (i * 7) + ni + 1 - firstWeekday;
-
-              if (day > totalDays) {
-                return { original: null, label: null, value: null };
-              }
-
-              const d = new Date(Date.UTC(fy, selectedMonth, day));
-
-              return {
-                original: d,
-                label: AppDatepicker.formatDateWithIntl(d, {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  weekday: 'short',
-                }),
-                value: AppDatepicker.formatDateWithIntl(d, {
-                  day: 'numeric',
-                }),
-              };
+    return Array.from(
+      Array(Math.ceil((totalDays + firstWeekday) / 7)),
+      (_, i) => {
+        return Array.from(
+          Array(7),
+          (__, ni) => {
+            if (i < 1 && (firstWeekday > 0 && firstWeekday < 7) && ni < firstWeekday) {
+              return { original: null, label: null, value: null };
             }
-          ),
-        ]);
-    }, []);
+
+            const day = (i * 7) + ni + 1 - firstWeekday;
+
+            if (day > totalDays) {
+              return { original: null, label: null, value: null };
+            }
+
+            const d = new Date(Date.UTC(fy, selectedMonth, day));
+
+            return {
+              original: d,
+              label: AppDatepicker.formatDateWithIntl(d, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                weekday: 'short',
+              }, locale),
+              value: AppDatepicker.formatDateWithIntl(d, {
+                day: 'numeric',
+              }, locale),
+              /** NOTE: Always have that day in absolute number */
+              originalValue: d.getUTCDate(),
+            };
+          }
+        );
+      }
+    );
   }
 
   setupCalendar({
@@ -821,7 +868,7 @@ export class AppDatepicker extends LitElement {
         return p;
       }, []);
     const d = html`<table><tr>${
-      allWeekdays.map(weekday => html`<th>${weekday.value}</th>`)
+      allWeekdays.map(weekday => html`<th aria-label$="${weekday.label}">${weekday.value}</th>`)
     }</tr>${
       allDaysInMonth.map((day) => {
         const rendered = day.map((d, di) => {
@@ -845,10 +892,10 @@ export class AppDatepicker extends LitElement {
                 ? ' day--today'
                 : ''
             }${
-              +selectedDate === +oriTimestamp
+              +selectedDate === oriTimestamp
                 ? ' day--selected'
                 : ''
-            }" aria-label$="${d.label}">${d.value}</div></td>`;
+            }" aria-label$="${d.label}" day="${d.originalValue}">${d.value}</div></td>`;
         });
 
         return html`<tr>${rendered}</tr>`;
@@ -883,7 +930,7 @@ export class AppDatepicker extends LitElement {
     elemOnTap.classList.add('day--selected');
 
     const newValue = this.updateCurrentDate(this._currentDate, {
-      day: elemOnTap.textContent,
+      day: elemOnTap.day,
     });
 
     this._selectedDate = newValue;
@@ -1046,11 +1093,8 @@ export class AppDatepicker extends LitElement {
     return new Date(Date.UTC(fy, m, d));
   }
 
-  static formatDateWithIntl(date, opts, lang = 'en-US') {
-    return Intl.DateTimeFormat(
-      lang || 'en-US',
-      { ...(opts || {}) }
-    )
+  static formatDateWithIntl(date, opts, locale) {
+    return Intl.DateTimeFormat(locale, { ...(opts || {}) })
       .format(AppDatepicker.toUTCDate(date));
   }
 
@@ -1062,6 +1106,25 @@ export class AppDatepicker extends LitElement {
           : 0
       ) + weekday
     ) % 7;
+  }
+
+  static requestIdleCallback(cb) {
+    if ('requestIdleCallback' in window) {
+      return window.requestIdleCallback(cb);
+    }
+
+    return (() => {
+      let startTime = Date.now();
+
+      return window.setTimeout(() => {
+        cb({
+          didTimeout: false,
+          timeRemaining: () => {
+            return Math.max(0, 50.0 - (Date.now() - startTime));
+          },
+        });
+      }, 1)
+    })(cb);
   }
 
   static get MIN_DATE() {
@@ -1092,6 +1155,10 @@ export class AppDatepicker extends LitElement {
       SPACEBAR: 32,
       TAB: 9,
     };
+  }
+
+  static get IDLE_CALLBACK_TIMEOUT() {
+    return 10e3;
   }
 }
 

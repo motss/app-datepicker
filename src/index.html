@@ -21,9 +21,8 @@
     <h1>No datepicker</h1>
   </app-datepicker>
 
-
-  <h2>autofocus, firstDayOfWeek=1, disabledDays=2,5</h2>
-  <app-datepicker autofocus firstDayOfWeek="1" disabledDays="2,5">
+  <h2>autofocus, firstDayOfWeek=1, disabledDays=2,5, lang=zh-CN</h2>
+  <app-datepicker autofocus firstDayOfWeek="1" disabledDays="2,5" locale="zh-CN">
     <h1>No datepicker</h1>
   </app-datepicker>
 
@@ -71,23 +70,28 @@
     window.customElements
       .whenDefined('app-datepicker')
       .then(() => {
-        const datepicker = document.querySelector('app-datepicker');
-        console.log('🚧 datepicker', {
-          value: datepicker.value,
-          valueAsDate: datepicker.valueAsDate,
-          valueAsNumber: datepicker.valueAsNumber,
-        });
+        const allDatepickers = document.querySelectorAll('app-datepicker');
 
-        datepicker.addEventListener('value-changed', (ev) => {
-          console.log('🚧 app-datepicker:value', ev);
-        });
-        datepicker.addEventListener('change', (ev) => {
-          console.log('🚧 app-datepicker:change', ev);
-        });
-        datepicker.addEventListener('input', (ev) => {
-          console.log('🚧 app-datepicker:change', ev);
-        });
+        Array.from(
+          allDatepickers,
+          (datepicker) => {
+            console.log('🚧 datepicker', {
+              value: datepicker.value,
+              valueAsDate: datepicker.valueAsDate,
+              valueAsNumber: datepicker.valueAsNumber,
+            });
 
+            datepicker.addEventListener('value-changed', (ev) => {
+              console.log('🚧 app-datepicker:value', ev);
+            });
+            datepicker.addEventListener('change', (ev) => {
+              console.log('🚧 app-datepicker:change', ev);
+            });
+            datepicker.addEventListener('input', (ev) => {
+              console.log('🚧 app-datepicker:change', ev);
+            });
+          }
+        );
       });
   </script>
 </body>

@@ -1,5 +1,3 @@
-{/* <link rel="import" href="../iron-iconset-svg/iron-iconset-svg.html"> */}
-
 import '../node_modules/@polymer/iron-iconset-svg/iron-iconset-svg.js';
 
 const $_documentContainer = document.createElement('div');
