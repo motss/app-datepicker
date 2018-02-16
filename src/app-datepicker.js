@@ -532,7 +532,8 @@ export class AppDatepicker extends LitElement {
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day:empty
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--empty:empty,
-        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--empty {
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--empty,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--weekday {
           cursor: unset;
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled {
@@ -860,7 +861,7 @@ export class AppDatepicker extends LitElement {
 
               return {
                 original: weekNumber,
-                label: weekNumber,
+                label: `Week ${weekNumber}`,
                 value: weekNumber,
                 originalValue: weekNumber,
               };
@@ -918,6 +919,7 @@ export class AppDatepicker extends LitElement {
     let hasMinDate = false;
     let hasMaxDate = false;
 
+    const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
     const preDisabledDays = disabledDays
       .split(/,\s*/i)
       .reduce((p, n) => {
@@ -929,7 +931,7 @@ export class AppDatepicker extends LitElement {
             AppDatepicker.normalizeWeekday(
               (Number.isNaN(toNumberN) ? 0 : toNumberN) - firstDayOfWeek
             ) + (
-              !(firstDayOfWeek % 7) && showWeekNumber
+              shouldShowWeekNumber
                 ? 1
                 : 0
             )
@@ -966,6 +968,10 @@ export class AppDatepicker extends LitElement {
               +selectedDate === oriTimestamp
                 ? ' day--selected'
                 : ''
+            }${
+              shouldShowWeekNumber && di < 1
+                ? ' day--weekday'
+                : ''
             }" aria-label$="${d.label}" day="${d.originalValue}">${d.value}</div></td>`;
         });
 
@@ -987,6 +993,7 @@ export class AppDatepicker extends LitElement {
     if (
       elemOnTap.classList.contains('day--disabled')
         || elemOnTap.classList.contains('day--empty')
+        || elemOnTap.classList.contains('day--weekday')
     ) {
       return;
     }
