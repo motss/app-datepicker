@@ -50,33 +50,34 @@ export class AppDatepicker extends LitElement {
 
     this.initProps();
     this.setAttribute('type', 'date');
-    this.setAttribute('tabindex', '-1');
   }
 
   async ready() {
     super.ready();
 
-    this.addEventListener('keyup', (ev) => {
-      return Promise.resolve(this.renderComplete)
-        .then(() => this.updateCurrentDateOnKeyup(ev));
-    });
+    this.shadowRoot
+      .querySelector('.view-calendar__full-calendar')
+      .addEventListener('keyup', (ev) => {
+        return Promise.resolve(this.renderComplete)
+          .then(() => this.updateCurrentDateOnKeyup(ev));
+      });
   }
 
   connectedCallback() {
     super.connectedCallback();
 
-    if (this.hasAttribute('autofocus')) {
-      document.activeElement && document.activeElement.blur();
+    // if (this.hasAttribute('autofocus')) {
+    //   document.activeElement && document.activeElement.blur();
 
-      return Promise.resolve(this.renderComplete)
-        .then(() => {
-          window.requestAnimationFrame(() =>
-            window.requestAnimationFrame(() =>
-              this.focus()
-            )
-          );
-        });
-    }
+    //   return Promise.resolve(this.renderComplete)
+    //     .then(() => {
+    //       window.requestAnimationFrame(() =>
+    //         window.requestAnimationFrame(() =>
+    //           this.focus()
+    //         )
+    //       );
+    //     });
+    // }
   }
 
   _shouldPropertiesChange(props, changedProps) {
@@ -310,6 +311,8 @@ export class AppDatepicker extends LitElement {
     // themes,
     // required,
     // step,
+    // confirmLabel,
+    // dismissLabel,
 
     _selectedDate,
     _selectedView,
@@ -500,7 +503,7 @@ export class AppDatepicker extends LitElement {
         .view-calendar__month-selector > .month-selector__prev-month,
         .view-calendar__month-selector > .month-selector__next-month {
           position: absolute;
-          top: 0;
+          top: -3px;
           width: 56px;
           height: 56px;
           padding: 16px;
@@ -580,12 +583,25 @@ export class AppDatepicker extends LitElement {
           color: rgba(0, 0, 0, .26);
           cursor: not-allowed;
         }
-        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected,
-        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--selected,
-        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--disabled.day--selected,
-        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected {
-          background-color: var(--app-datepicker-selected-day-bg, var(--app-datepicker-primary-color));
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected > span,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--selected > span,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--disabled.day--selected > span,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected > span {
           color: var(--app-datepicker-selected-day-color, #fff);
+          z-index: 1;
+        }
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--selected:after,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--selected:after,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today.day--disabled.day--selected:after,
+        .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--selected:after {
+          position: absolute;
+          display: block;
+          content: '';
+          width: 40px;
+          height: 40px;
+          background-color: var(--app-datepicker-selected-day-bg, var(--app-datepicker-primary-color));
+          border-radius: 50%;
+          z-index: 0;
         }
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--today,
         .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today {
@@ -664,6 +680,7 @@ export class AppDatepicker extends LitElement {
             </div>
 
             <div class="view-calendar__full-calendar"
+              tabindex="0"
               on-tap="${ev => this.updateCurrentDateOnTap(ev)}">${renderedCalendar.content}</div>
           </div>
         </iron-selector>
@@ -895,7 +912,7 @@ export class AppDatepicker extends LitElement {
       Array(shouldShowWeekNumber ? 8 : 7),
       (_, i) => {
         if (shouldShowWeekNumber && i < 1) {
-          return { original: 'Week', label: 'Week', value: 'Week' };
+          return { original: 'Wk', label: 'Wk', value: 'Wk' };
         }
 
         const d = new Date(Date.UTC(
@@ -1049,7 +1066,7 @@ export class AppDatepicker extends LitElement {
               shouldShowWeekNumber && di < 1
                 ? ' day--weekday'
                 : ''
-            }" aria-label$="${d.label}" day="${d.originalValue}">${d.value}</div></td>`;
+            }" aria-label$="${d.label}" day="${d.originalValue}"><span>${d.value}</span></div></td>`;
         });
 
         return html`<tr>${rendered}</tr>`;
@@ -1064,7 +1081,11 @@ export class AppDatepicker extends LitElement {
   }
 
   updateCurrentDateOnTap(ev) {
-    const elemOnTap = ev.target;
+    const elemOnTap = (function findElemOnTap(tgt) {
+      return tgt.classList.contains('full-calendar__day')
+        ? tgt
+        : findElemOnTap(tgt.parentElement);
+    })(ev.target);
 
     /** NOTE: No op for disabled day. */
     if (
@@ -1190,8 +1211,6 @@ export class AppDatepicker extends LitElement {
           currentDate,
           currentDisabledDays,
           (nDate) => {
-            console.log('# >', nDate, nDate.getUTCDate(), keyCode === KEYCODES.UP ? -1 : 1);
-
             return {
               day: nDate.getUTCDate() + (
                 (keyCode === KEYCODES.UP || keyCode === KEYCODES.DOWN)
