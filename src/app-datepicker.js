@@ -39,6 +39,7 @@ export class AppDatepicker extends LitElement {
       _selectedYear: String,
       _currentDate: Date,
       _todayDate: Date,
+      _currentDisabledDays: Array,
 
       _pattern: String,
     };
@@ -221,6 +222,30 @@ export class AppDatepicker extends LitElement {
 
             break;
           }
+          case 'disabledDays': {
+            const propVal = this[propKey];
+
+            this._currentDisabledDays = typeof propVal !== 'string' || !propVal.length
+              ? []
+              : propVal
+                .split(/,\s*/i)
+                .reduce((p, n) => {
+                  if (typeof n === 'string' && n.length > 0) {
+                    /** NOTE: Fallback to 0 if NaN is detected */
+                    const toNumberN = +n;
+
+                    return p.concat(
+                      AppDatepicker.normalizeWeekday(
+                        (Number.isNaN(toNumberN) ? 0 : toNumberN)
+                      )
+                    );
+                  }
+
+                  return p;
+                }, []);
+
+            break;
+          }
           default: {
             return;
           }
@@ -258,7 +283,7 @@ export class AppDatepicker extends LitElement {
 
     // TODO: Yet-to-be-implemented features
     firstDayOfWeek,
-    disabledDays,
+    // disabledDays,
     locale,
     startView,
     weekdayFormat,
@@ -278,6 +303,7 @@ export class AppDatepicker extends LitElement {
     _selectedYear,
     _currentDate,
     _todayDate,
+    _currentDisabledDays,
   }) {
     const preSelectedView = _selectedView == null ? startView : _selectedView;
     const postSelectedView = preSelectedView == null ? 'calendar' : preSelectedView;
@@ -287,7 +313,7 @@ export class AppDatepicker extends LitElement {
         min,
         max,
         firstDayOfWeek,
-        disabledDays,
+        // disabledDays,
         showWeekNumber,
 
         allWeekdays: this.computeAllWeekdays(
@@ -305,6 +331,7 @@ export class AppDatepicker extends LitElement {
 
         selectedDate: _selectedDate,
         todayDate: _todayDate,
+        currentDisabledDays: _currentDisabledDays,
       })
       : { hasMinDate: null, hasMaxDate: null, content: null };
 
@@ -608,13 +635,21 @@ export class AppDatepicker extends LitElement {
                 renderedCalendar.hasMinDate ? ' prev-month--disabled' : ''
               }"
                 icon="datepicker:chevron-left"
-                on-tap="${() => this.updateSelectedMonth(_currentDate, -1)}"></paper-icon-button>
+                on-tap="${() => this.updateSelectedMonth({
+                  currentDate: _currentDate,
+                  currentDisabledDays: _currentDisabledDays,
+                  monthOffset: -1,
+                })}"></paper-icon-button>
               <div>${this.computeSelectedFormattedMonth(_currentDate, locale)}</div>
               <paper-icon-button class$="month-selector__next-month${
                 renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
               }"
                 icon="datepicker:chevron-right"
-                on-tap="${() => this.updateSelectedMonth(_currentDate, 1)}"></paper-icon-button>
+                on-tap="${() => this.updateSelectedMonth({
+                  currentDate: _currentDate,
+                  currentDisabledDays: _currentDisabledDays,
+                  monthOffset: 1,
+                })}"></paper-icon-button>
             </div>
 
             <div class="view-calendar__full-calendar"
@@ -670,6 +705,7 @@ export class AppDatepicker extends LitElement {
 
     this._currentDate = preValue;
     this._todayDate = defaultToday;
+    this._currentDisabledDays = [];
 
     this._pattern = 'yyyy-MM-dd';
   }
@@ -685,8 +721,16 @@ export class AppDatepicker extends LitElement {
       return;
     }
 
-    this._selectedView = 'calendar';
-    this.updateSelectedFullYear(this._currentDate, ev.target.getAttribute('year'));
+    const newSelectedYear = ev.target.getAttribute('year');
+
+    return new Promise(yay => yay(this.updateSelectedFullYear({
+      currentDate: this._currentDate,
+      currentDisabledDays: this._currentDisabledDays,
+      selectedYear: newSelectedYear,
+      yearOffset: (this._selectedYear - newSelectedYear) < 0 ? -1 : 1,
+    })))
+      .then(() => this.renderComplete)
+      .then(() => { this._selectedView = 'calendar'; });
   }
 
   computeSelectedFormattedYear(currentDate, locale) {
@@ -729,34 +773,27 @@ export class AppDatepicker extends LitElement {
     return new Date(Date.UTC(nfy, nm, nd));
   }
 
-  updateSelectedFullYear(currentDate, selectedYear, day, offset) {
+  updateSelectedFullYear({
+    currentDate,
+    currentDisabledDays,
+    selectedYear,
+    yearOffset,
+
+    day,
+  }) {
     const preNewDate = this.updateCurrentDate(currentDate, {
       year: selectedYear,
       day: day == null
         ? currentDate.getUTCDate()
         : day,
     });
-    const preDisabledDays = this.disabledDays
-      .split(/,\s*/i)
-      .reduce((p, n) => {
-        if (typeof n === 'string' && n.length > 0) {
-          /** NOTE: Fallback to 0 if NaN is detected */
-          const toNumberN = +n;
-
-          return p.concat(
-            AppDatepicker.normalizeWeekday(
-              (Number.isNaN(toNumberN) ? 0 : toNumberN)
-            )
-          );
-        }
-
-        return p;
-      }, []);
-    const newDate = preDisabledDays.some(n => n === preNewDate.getUTCDay())
+    const dayFromPreNewDate = preNewDate.getUTCDay();
+    const newDate = currentDisabledDays.some(n => n === dayFromPreNewDate)
       ? this.selectNextSelectableDate(
         preNewDate,
+        currentDisabledDays,
         (date) => {
-          return { day: date.getUTCDate() + offset };
+          return { day: date.getUTCDate() + (yearOffset == null ? 0 : +yearOffset) };
         }
       )
       : preNewDate;
@@ -766,7 +803,13 @@ export class AppDatepicker extends LitElement {
     this._selectedDate = newDate;
   }
 
-  updateSelectedMonth(currentDate, monthOffset, day) {
+  updateSelectedMonth({
+    currentDate,
+    currentDisabledDays,
+    monthOffset,
+
+    day,
+  }) {
     const od = AppDatepicker.toUTCDate(currentDate);
     const nfy = od.getUTCFullYear();
     const nm = od.getUTCMonth();
@@ -774,25 +817,11 @@ export class AppDatepicker extends LitElement {
     const newDate = new Date(Date.UTC(nfy, nm + (monthOffset == null ? 0 : monthOffset), nd));
 
     const preSelectedDate = this.updateCurrentDate(newDate, { day: day == null ? 1 : +day });
-    const preDisabledDays = this.disabledDays
-      .split(/,\s*/i)
-      .reduce((p, n) => {
-        if (typeof n === 'string' && n.length > 0) {
-          /** NOTE: Fallback to 0 if NaN is detected */
-          const toNumberN = +n;
-
-          return p.concat(
-            AppDatepicker.normalizeWeekday(
-              (Number.isNaN(toNumberN) ? 0 : toNumberN)
-            )
-          );
-        }
-
-        return p;
-      }, []);
-    const newSelectedDate = preDisabledDays.some(n => n === preSelectedDate.getUTCDay())
+    const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
+    const newSelectedDate = currentDisabledDays.some(n => n === dayFromPreSelectedDate)
       ? this.selectNextSelectableDate(
         preSelectedDate,
+        currentDisabledDays,
         (n) => { return { day: n.getUTCDate() - monthOffset }; },
       )
       : preSelectedDate;
@@ -953,36 +982,19 @@ export class AppDatepicker extends LitElement {
     min,
     max,
     firstDayOfWeek,
-    disabledDays,
     showWeekNumber,
 
     selectedDate,
     todayDate,
+    currentDisabledDays,
   }) {
     let hasMinDate = false;
     let hasMaxDate = false;
 
     const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
-    const preDisabledDays = disabledDays
-      .split(/,\s*/i)
-      .reduce((p, n) => {
-        if (typeof n === 'string' && n.length > 0) {
-          /** NOTE: Fallback to 0 if NaN is detected */
-          const toNumberN = +n;
-
-          return p.concat(
-            AppDatepicker.normalizeWeekday(
-              (Number.isNaN(toNumberN) ? 0 : toNumberN) - firstDayOfWeek
-            ) + (
-              shouldShowWeekNumber
-                ? 1
-                : 0
-            )
-          );
-        }
-
-        return p;
-      }, []);
+    const preDisabledDays = Array.isArray(currentDisabledDays) && currentDisabledDays.length > 0
+      ? currentDisabledDays.map(n => shouldShowWeekNumber ? n + 1 : n)
+      : [];
     const d = html`<table><tr>${
       allWeekdays.map(weekday => html`<th aria-label$="${weekday.label}">${weekday.value}</th>`)
     }</tr>${
@@ -1058,31 +1070,15 @@ export class AppDatepicker extends LitElement {
     this._currentDate = newValue;
   }
 
-  updateValue(selectedDate, disabledDays) {
+  updateValue(selectedDate, currentDisabledDays) {
     const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
-    const preDisabledDays = this.disabledDays
-    .split(/,\s*/i)
-    .reduce((p, n) => {
-      if (typeof n === 'string' && n.length > 0) {
-        /** NOTE: Fallback to 0 if NaN is detected */
-        const toNumberN = +n;
+    const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
 
-        return p.concat(
-          AppDatepicker.normalizeWeekday(
-            (Number.isNaN(toNumberN) ? 0 : toNumberN)
-          )
-        );
-      }
-
-      return p;
-    }, []);
-
-    if (preDisabledDays.some(n => n === preSelectedDate.getUTCDay())) {
+    if (currentDisabledDays.some(n => n === dayFromPreSelectedDate)) {
       return;
     }
 
     const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
-
     const evDetail = {
       detail: {
         originalValue: preSelectedDate,
@@ -1113,7 +1109,7 @@ export class AppDatepicker extends LitElement {
       return;
     }
 
-    this.updateValue(this._selectedDate, this.disabledDays);
+    this.updateValue(this._selectedDate, this._currentDisabledDays);
   }
 
   dateUpdaterOnKeyCode(keyCode) {
@@ -1138,29 +1134,12 @@ export class AppDatepicker extends LitElement {
     }
   }
 
-  selectNextSelectableDate(date, cb) {
+  selectNextSelectableDate(date, currentDisabledDays, cb) {
     const newDate = this.updateCurrentDate(date, cb(date));
-    const firstDayOfWeek = this.firstDayOfWeek;
-    const preDisabledDays = this.disabledDays
-      .split(/,\s*/i)
-      .reduce((p, n) => {
-        if (typeof n === 'string' && n.length > 0) {
-          /** NOTE: Fallback to 0 if NaN is detected */
-          const toNumberN = +n;
-
-          return p.concat(
-            AppDatepicker.normalizeWeekday(
-              (Number.isNaN(toNumberN) ? 0 : toNumberN)
-            )
-          );
-        }
-
-        return p;
-      }, []);
     const dayFromDate = newDate.getUTCDay();
 
-    return preDisabledDays.some(n => n === dayFromDate)
-      ? this.selectNextSelectableDate(newDate, cb)
+    return currentDisabledDays.some(n => n === dayFromDate)
+      ? this.selectNextSelectableDate(newDate, currentDisabledDays, cb)
       : newDate;
   }
 
@@ -1171,6 +1150,7 @@ export class AppDatepicker extends LitElement {
       keyCode,
     } = ev;
     const KEYCODES = AppDatepicker.KEYCODES;
+    const currentDisabledDays = this._currentDisabledDays;
 
     switch (keyCode) {
       case KEYCODES.UP:
@@ -1179,6 +1159,7 @@ export class AppDatepicker extends LitElement {
       case KEYCODES.RIGHT: {
         const newDate = this.selectNextSelectableDate(
           this._currentDate,
+          currentDisabledDays,
           (date) => {
             return { day: date.getUTCDate() + this.dateUpdaterOnKeyCode(keyCode) };
           }
@@ -1208,17 +1189,40 @@ export class AppDatepicker extends LitElement {
            * focus is placed on the last day of that new month.
            */
           return altKey
-            ? this.updateSelectedFullYear(currentDate, newCurrentDate.getUTCFullYear(), 28, -offset)
-            : this.updateSelectedMonth(currentDate, offset, 0);
+            ? this.updateSelectedFullYear({
+              currentDate,
+              currentDisabledDays,
+              selectedYear: newCurrentDate.getUTCFullYear(),
+              yearOffset: -offset,
+              day: 28,
+            })
+            : this.updateSelectedMonth({
+              currentDate,
+              currentDisabledDays,
+              monthOffset: offset,
+              day: 0,
+            });
         }
 
         return altKey
-          ? this.updateSelectedFullYear(currentDate, newCurrentDate.getUTCFullYear(), dateFromCurrentDate, -offset)
-          : this.updateSelectedMonth(currentDate, offset, dateFromCurrentDate);
+          ? this.updateSelectedFullYear({
+            currentDate,
+            currentDisabledDays,
+            selectedYear: newCurrentDate.getUTCFullYear(),
+            yearOffset: -offset,
+            day: dateFromCurrentDate,
+          })
+          : this.updateSelectedMonth({
+            currentDate,
+            currentDisabledDays,
+            monthOffset: offset,
+            day: dateFromCurrentDate,
+          });
       }
       case KEYCODES.HOME: {
         const newDate = this.selectNextSelectableDate(
           this.updateCurrentDate(this._currentDate, { day: 1 }),
+          currentDisabledDays,
           (date) => {
             return { day: date.getUTCDate() + this.dateUpdaterOnKeyCode(KEYCODES.RIGHT) };
           }
@@ -1235,6 +1239,7 @@ export class AppDatepicker extends LitElement {
             month: this._currentDate.getUTCMonth() + 1,
             day: 0,
           }),
+          currentDisabledDays,
           (date) => {
             return { day: date.getUTCDate() + this.dateUpdaterOnKeyCode(KEYCODES.LEFT) };
           }
@@ -1247,7 +1252,7 @@ export class AppDatepicker extends LitElement {
       }
       case KEYCODES.SPACEBAR:
       case KEYCODES.ENTER: {
-        return this.updateValue(this._currentDate, this.disabledDays);
+        return this.updateValue(this._currentDate, currentDisabledDays);
       }
       default: {
         /** NOTE: no-op */
