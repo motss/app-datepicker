@@ -13,61 +13,78 @@
   <link rel="modulepreload" href="./app-datepicker-icons.js">
 
   <script type="module" src="./app-datepicker.js"></script>
+  <script type="module" src="./app-datepicker-input.js"></script>
 </head>
 <body>
-  <h1>app-datepicker</h1>
+  <style>
+    app-datepicker-input {
+      border: 1px solid #ddd;
 
-  <h2>autofocus</h2>
-  <!-- <app-datepicker autofocus>
+      --app-datepicker-input-label-display: block;
+    }
+  </style>
+
+  <h1>demo</h1>
+
+  <h2>app-datepicker-input</h2>
+
+  <app-datepicker-input id="ipt-check-in"
+    label="Check-in date"
+    value="2018-02-02"></app-datepicker-input>
+
+  <!-- <h2>app-datepicker</h2> -->
+
+  <!-- <h3>autofocus</h3>
+  <app-datepicker autofocus>
     <h1>No datepicker</h1>
   </app-datepicker> -->
 
-  <h2>autofocus, firstDayOfWeek=0, disabledDays=0,6, weekdayFormat=short</h2>
+  <!-- <h3>autofocus, firstDayOfWeek=0, disabledDays=0,6, weekdayFormat=short</h3>
   <app-datepicker autofocus firstDayOfWeek="0" disabledDays="4,6" weekdayFormat="short" showWeekNumber>
     <h1>No datepicker</h1>
-  </app-datepicker>
+  </app-datepicker> -->
 
-  <!-- <h2>autofocus, firstDayOfWeek=1, disabledDays=2,5, lang=zh-CN, startView=year, weekdayFormat=short</h2>
+  <!-- <h3>autofocus, firstDayOfWeek=1, disabledDays=2,5, lang=zh-CN, startView=year, weekdayFormat=short</h3>
   <app-datepicker autofocus firstDayOfWeek="1" disabledDays="2,5" locale="zh-CN" startView="year" weekdayFormat="short" showWeekNumber>
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=2</h2>
+  <h3>autofocus, firstDayOfWeek=2</h3>
   <app-datepicker autofocus firstDayOfWeek="2">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=3</h2>
+  <h3>autofocus, firstDayOfWeek=3</h3>
   <app-datepicker autofocus firstDayOfWeek="3">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=4</h2>
+  <h3>autofocus, firstDayOfWeek=4</h3>
   <app-datepicker autofocus firstDayOfWeek="4">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=5</h2>
+  <h3>autofocus, firstDayOfWeek=5</h3>
   <app-datepicker autofocus firstDayOfWeek="5">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=6</h2>
+  <h3>autofocus, firstDayOfWeek=6</h3>
   <app-datepicker autofocus firstDayOfWeek="6">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=7</h2>
+  <h3>autofocus, firstDayOfWeek=7</h3>
   <app-datepicker autofocus firstDayOfWeek="7">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=20(6)</h2>
+  <h3>autofocus, firstDayOfWeek=20(6)</h3>
   <app-datepicker autofocus firstDayOfWeek="20">
     <h1>No datepicker</h1>
   </app-datepicker>
 
-  <h2>autofocus, firstDayOfWeek=-20(1)</h2>
+  <h3>autofocus, firstDayOfWeek=-20(1)</h3>
   <app-datepicker autofocus firstDayOfWeek="-20">
     <h1>No datepicker</h1>
   </app-datepicker> -->
