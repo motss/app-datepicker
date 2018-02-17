@@ -60,6 +60,31 @@ class AppDatepickerDialog extends LitElement {
     this.initProps();
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    const findElemOnTap = (tgt) => {
+      return tgt == null || /^app\-datepicker\-dialog/i.test(tgt.tagName)
+        ? tgt
+        : findElemOnTap(tgt.parentElement);
+    };
+
+    /** NOTE: Tap on outside of the dialog will close the dialog */
+    document.body.addEventListener('click', (ev) => {
+      if (/^app\-datepicker\-input/i.test(ev.target.tagName)) {
+        return;
+      }
+
+      if (findElemOnTap(ev.target) == null) {
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this.opened = false;
+          });
+      }
+    });
+
+  }
+
   render({
     min,
     max,
