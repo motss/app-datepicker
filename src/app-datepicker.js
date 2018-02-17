@@ -608,6 +608,7 @@ export class AppDatepicker extends LitElement {
           color: var(--app-datepicker-today-color, var(--app-datepicker-primary-color));
         }
 
+        /*
         .datepicker__footer {
           display: flex;
           flex-direction: row;
@@ -625,6 +626,7 @@ export class AppDatepicker extends LitElement {
 
           --paper-button-ink-color: #848484;
         }
+        */
       </style>
 
       <div class="datepicker__header">
@@ -686,11 +688,11 @@ export class AppDatepicker extends LitElement {
         </iron-selector>
       </div>
 
-      <div class="datepicker__footer">
+      <!-- <div class="datepicker__footer">
         <paper-button dialog-dismiss>cancel</paper-button>
         <paper-button dialog-confirm
           on-tap="${ev => this.updateValueOnTap(ev)}">ok</paper-button>
-      </div>
+      </div> -->
     `;
   }
 
@@ -1116,47 +1118,47 @@ export class AppDatepicker extends LitElement {
       });
   }
 
-  updateValue(selectedDate, currentDisabledDays) {
-    const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
-    const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
+  // updateValue(selectedDate, currentDisabledDays) {
+  //   const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
+  //   const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
 
-    if (currentDisabledDays.some(n => n === dayFromPreSelectedDate)) {
-      return;
-    }
+  //   if (currentDisabledDays.some(n => n === dayFromPreSelectedDate)) {
+  //     return;
+  //   }
 
-    const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
-    const evDetail = {
-      detail: {
-        originalValue: preSelectedDate,
-        value: formattedValue,
-        timezone: 'UTC',
-      },
-    };
+  //   const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
+  //   const evDetail = {
+  //     detail: {
+  //       originalValue: preSelectedDate,
+  //       value: formattedValue,
+  //       timezone: 'UTC',
+  //     },
+  //   };
 
-    this.value = formattedValue;
-    this.valueAsDate = preSelectedDate;
-    this.valueAsNumber = +preSelectedDate;
+  //   this.value = formattedValue;
+  //   this.valueAsDate = preSelectedDate;
+  //   this.valueAsNumber = +preSelectedDate;
 
-    this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
-    this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
-    this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
+  //   this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
+  //   this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
+  //   this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
 
-    return {
-      value: formattedValue,
-      valueAsDate: preSelectedDate,
-      valueAsNumber: +preSelectedDate,
-    };
-  }
+  //   return {
+  //     value: formattedValue,
+  //     valueAsDate: preSelectedDate,
+  //     valueAsNumber: +preSelectedDate,
+  //   };
+  // }
 
-  updateValueOnTap(ev) {
-    const elemOnTap = ev.target;
+  // updateValueOnTap(ev) {
+  //   const elemOnTap = ev.target;
 
-    if (!elemOnTap.hasAttribute('dialog-confirm')) {
-      return;
-    }
+  //   if (!elemOnTap.hasAttribute('dialog-confirm')) {
+  //     return;
+  //   }
 
-    return this.updateValue(this._selectedDate, this._currentDisabledDays);
-  }
+  //   return this.updateValue(this._selectedDate, this._currentDisabledDays);
+  // }
 
   dateUpdaterOnKeyCode(keyCode) {
     const KEYCODES = AppDatepicker.KEYCODES;
