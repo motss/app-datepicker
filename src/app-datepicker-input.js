@@ -128,8 +128,6 @@ class AppDatepickerInput extends LitElement {
   }
 
   openDatepicker(ev) {
-    console.log();
-
     if (this._hasInputTypeDateSupported) {
       return;
     }

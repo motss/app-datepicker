@@ -58,31 +58,29 @@ class AppDatepickerDialog extends LitElement {
     super();
 
     this.initProps();
+
+    /** NOTE: Setup document click handler */
+    this._boundDocumentClickHandler = this.documentClickHandler.bind(this);
   }
 
   connectedCallback() {
     super.connectedCallback();
+  }
 
-    const findElemOnTap = (tgt) => {
-      return tgt == null || /^app\-datepicker\-dialog/i.test(tgt.tagName)
-        ? tgt
-        : findElemOnTap(tgt.parentElement);
-    };
-
-    /** NOTE: Tap on outside of the dialog will close the dialog */
-    document.body.addEventListener('click', (ev) => {
-      if (/^app\-datepicker\-input/i.test(ev.target.tagName)) {
-        return;
+  didRender(props, changedProps) {
+    switch (true) {
+      case ('opened' in props): {
+        /** NOTE: Tap on outside of the dialog will close the dialog */
+        return props.opened
+          ? window.requestAnimationFrame(() => {
+            document.body.addEventListener('click', this._boundDocumentClickHandler)
+          })
+          : document.body.removeEventListener('click', this._boundDocumentClickHandler);
       }
-
-      if (findElemOnTap(ev.target) == null) {
-        return Promise.resolve(this.renderComplete)
-          .then(() => {
-            this.opened = false;
-          });
+      default: {
+        return Promise.resolve(this.renderComplete);
       }
-    });
-
+    }
   }
 
   render({
@@ -153,6 +151,31 @@ class AppDatepickerDialog extends LitElement {
   }
 
   initProps() {
+  }
+
+  documentClickHandler(ev) {
+    const findElemOnTap = (tgt) => {
+      return tgt == null
+        || (/^input/i.test(tgt.tagName) && /^datepicker\_+input/i.test(tgt.id))
+          ? tgt
+          : findElemOnTap(tgt.parentElement);
+    };
+
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        const target = ev.target;
+
+        if (/^input/i.test(target.tagName) && /^datepicker\_\_input/i.test(target.id)) {
+          return;
+        }
+
+        if (findElemOnTap(target) == null) {
+          return Promise.resolve(this.renderComplete)
+            .then(() => {
+              this.opened = false;
+            });
+        }
+      });
   }
 }
 
