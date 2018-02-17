@@ -165,7 +165,10 @@ class AppDatepickerDialog extends LitElement {
       .then(() => {
         const target = ev.target;
 
-        if (/^input/i.test(target.tagName) && /^datepicker\_\_input/i.test(target.id)) {
+        if (
+          (/^input/i.test(target.tagName) && /^datepicker\_\_input/i.test(target.id))
+            || /^app\-datepicker\-dialog/i.test(target.tagName)
+        ) {
           return;
         }
 
