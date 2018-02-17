@@ -57,7 +57,7 @@ export class AppDatepicker extends LitElement {
     super.ready();
 
     this.addEventListener('keyup', (ev) => {
-      return new Promise(yay => yay(this.renderComplete))
+      return Promise.resolve(this.renderComplete)
         .then(() => this.updateCurrentDateOnKeyup(ev));
     });
   }
@@ -68,11 +68,14 @@ export class AppDatepicker extends LitElement {
     if (this.hasAttribute('autofocus')) {
       document.activeElement && document.activeElement.blur();
 
-      window.requestAnimationFrame(() =>
-        window.requestAnimationFrame(() =>
-          this.focus()
-        )
-      );
+      return Promise.resolve(this.renderComplete)
+        .then(() => {
+          window.requestAnimationFrame(() =>
+            window.requestAnimationFrame(() =>
+              this.focus()
+            )
+          );
+        });
     }
   }
 
@@ -91,14 +94,15 @@ export class AppDatepicker extends LitElement {
 
             if (typeof propVal === 'string') {
               if (!propVal.length) {
-                // NOTE: Clear selected date to signify invalid 'value'.
-                this[propKey] = propVal;
-                this.valueAsDate = null;
-                this.valueAsNumber = NaN;
-                this._selectedDate = null;
-                this._currentDate = AppDatepicker.toUTCDate(new Date());
-
-                return;
+                return Promise.resolve(this.renderComplete)
+                  .then(() => {
+                    // NOTE: Clear selected date to signify invalid 'value'.
+                    this[propKey] = propVal;
+                    this.valueAsDate = null;
+                    this.valueAsNumber = NaN;
+                    this._selectedDate = null;
+                    this._currentDate = AppDatepicker.toUTCDate(new Date());
+                  });
               }
 
               const toValueDate = new Date(propVal);
@@ -117,27 +121,29 @@ export class AppDatepicker extends LitElement {
                 return;
               }
 
-              this[propKey] = propVal;
-              this.valueAsDate = toValueDate;
-              this.valueAsNumber = +toValueDate;
-              this._selectedDate = toValueDate;
-              this._currentDate = toValueDate;
-
-              break;
+              return Promise.resolve(this.renderComplete)
+                .then(() => {
+                  this[propKey] = propVal;
+                  this.valueAsDate = toValueDate;
+                  this.valueAsNumber = +toValueDate;
+                  this._selectedDate = toValueDate;
+                  this._currentDate = toValueDate;
+                });
             }
           }
           case 'valueAsDate': {
             const propVal = changedProps[propKey];
 
             if (propVal === null) {
-              // NOTE: Clear selected date to signify invalid 'valueAsDate'.
-              this[propKey] = null;
-              this.value = '';
-              this.valueAsNumber = NaN;
-              this._selectedDate = null;
-              this._currentDate = AppDatepicker.toUTCDate(new Date());
-
-              return;
+              return Promise.resolve(this.renderComplete)
+                .then(() => {
+                  // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+                  this[propKey] = null;
+                  this.value = '';
+                  this.valueAsNumber = NaN;
+                  this._selectedDate = null;
+                  this._currentDate = AppDatepicker.toUTCDate(new Date());
+                });
             }
 
             if (!(propVal instanceof Date)) {
@@ -149,27 +155,29 @@ export class AppDatepicker extends LitElement {
             }
 
             if (/^invalid date/i.test(new Date(propVal))) {
-              // NOTE: Clear selected date to signify invalid 'valueAsDate'.
-              this[propKey] = null;
-              this.value = '';
-              this.valueAsNumber = NaN;
-              this._selectedDate = null;
-              this._currentDate = AppDatepicker.toUTCDate(new Date());
+              return Promise.resolve(this.renderComplete)
+                .then(() => {
+                  // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+                  this[propKey] = null;
+                  this.value = '';
+                  this.valueAsNumber = NaN;
+                  this._selectedDate = null;
+                  this._currentDate = AppDatepicker.toUTCDate(new Date());
 
-              console.warn(
-                `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
-              );
-
-              return;
+                  console.warn(
+                    `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
+                  );
+                });
             }
 
-            this[propKey] = propVal;
-            this.value = propVal.toJSON().replace(/^(.+)T.+/i, '$1');
-            this.valueAsNumber = +propVal;
-            this._selectedDate = propVal;
-            this._currentDate = propVal;
-
-            break;
+            return Promise.resolve(this.renderComplete)
+              .then(() => {
+                this[propKey] = propVal;
+                this.value = propVal.toJSON().replace(/^(.+)T.+/i, '$1');
+                this.valueAsNumber = +propVal;
+                this._selectedDate = propVal;
+                this._currentDate = propVal;
+              });
           }
           case 'valueAsNumber': {
             const propVal = changedProps[propKey];
@@ -178,76 +186,81 @@ export class AppDatepicker extends LitElement {
               if (!propVal.length) {
                 const toValueAsNumberDate = AppDatepicker.toUTCDate(new Date('1970-01-01'));
 
-                this[propKey] = +toValueAsNumberDate;
-                this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
-                this.valueAsDate = toValueAsNumberDate;
-                this._selectedDate = toValueAsNumberDate;
-                this._currentDate = toValueAsNumberDate;
-
-                return;
+                return Promise.resolve(this.renderComplete)
+                  .then(() => {
+                    this[propKey] = +toValueAsNumberDate;
+                    this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+                    this.valueAsDate = toValueAsNumberDate;
+                    this._selectedDate = toValueAsNumberDate;
+                    this._currentDate = toValueAsNumberDate;
+                  });
               }
 
               if (/^invalid date/i.test(new Date(propVal))) {
-                // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
-                this[propKey] = NaN;
-                this.value = '';
-                this.valueAsDate = null;
-                this._selectedDate = null;
-                this._currentDate = AppDatepicker.toUTCDate(new Date());
-
-                return;
+                return Promise.resolve(this.renderComplete)
+                  .then(() => {
+                    // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+                    this[propKey] = NaN;
+                    this.value = '';
+                    this.valueAsDate = null;
+                    this._selectedDate = null;
+                    this._currentDate = AppDatepicker.toUTCDate(new Date());
+                  });
               }
             }
 
             if (propVal instanceof Date) {
               if (/^invalid date/i.test(propVal)) {
-                // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
-                this[propKey] = NaN;
-                this.value = '';
-                this.valueAsDate = null;
-                this._selectedDate = null;
-                this._currentDate = AppDatepicker.toUTCDate(new Date());
-
-                return;
+                return Promise.resolve(this.renderComplete)
+                  .then(() => {
+                    // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+                    this[propKey] = NaN;
+                    this.value = '';
+                    this.valueAsDate = null;
+                    this._selectedDate = null;
+                    this._currentDate = AppDatepicker.toUTCDate(new Date());
+                  });
               }
             }
 
             const toValueAsNumberDate = AppDatepicker.toUTCDate(propVal);
 
-            this[propKey] = +toValueAsNumberDate;
-            this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
-            this.valueAsDate = toValueAsNumberDate;
-            this._selectedDate = toValueAsNumberDate;
-            this._currentDate = toValueAsNumberDate;
-
-            break;
+            return Promise.resolve(this.renderComplete)
+              .then(() => {
+                this[propKey] = +toValueAsNumberDate;
+                this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+                this.valueAsDate = toValueAsNumberDate;
+                this._selectedDate = toValueAsNumberDate;
+                this._currentDate = toValueAsNumberDate;
+              });
           }
           case 'disabledDays': {
             const propVal = this[propKey];
 
-            this._currentDisabledDays = typeof propVal !== 'string' || !propVal.length
-              ? []
-              : propVal
-                .split(/,\s*/i)
-                .reduce((p, n) => {
-                  if (typeof n === 'string' && n.length > 0) {
-                    /** NOTE: Fallback to 0 if NaN is detected */
-                    const toNumberN = +n;
+            return Promise.resolve(this.renderComplete)
+              .then(() => {
+                this._currentDisabledDays = typeof propVal !== 'string' || !propVal.length
+                  ? []
+                  : propVal
+                    .split(/,\s*/i)
+                    .reduce((p, n) => {
+                      if (typeof n === 'string' && n.length > 0) {
+                        /** NOTE: Fallback to 0 if NaN is detected */
+                        const toNumberN = +n;
 
-                    return p.concat(
-                      AppDatepicker.normalizeWeekday(
-                        (Number.isNaN(toNumberN) ? 0 : toNumberN)
-                      )
-                    );
-                  }
+                        return p.concat(
+                          AppDatepicker.normalizeWeekday(
+                            (Number.isNaN(toNumberN) ? 0 : toNumberN)
+                          )
+                        );
+                      }
 
-                  return p;
-                }, []);
-
-            break;
+                      return p;
+                    }, []);
+              });
           }
           default: {
-            return;
+            return Promise.resolve(this.renderComplete);
           }
         }
       });
@@ -635,20 +648,18 @@ export class AppDatepicker extends LitElement {
                 renderedCalendar.hasMinDate ? ' prev-month--disabled' : ''
               }"
                 icon="datepicker:chevron-left"
-                on-tap="${() => this.updateSelectedMonth({
-                  currentDate: _currentDate,
-                  currentDisabledDays: _currentDisabledDays,
-                  monthOffset: -1,
+                on-tap="${() => this.updateCurrentDateOnKeyup({
+                  altKey: false,
+                  keyCode: AppDatepicker.KEYCODES.PAGE_UP,
                 })}"></paper-icon-button>
               <div>${this.computeSelectedFormattedMonth(_currentDate, locale)}</div>
               <paper-icon-button class$="month-selector__next-month${
                 renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
               }"
                 icon="datepicker:chevron-right"
-                on-tap="${() => this.updateSelectedMonth({
-                  currentDate: _currentDate,
-                  currentDisabledDays: _currentDisabledDays,
-                  monthOffset: 1,
+                on-tap="${() => this.updateCurrentDateOnKeyup({
+                  altKey: false,
+                  keyCode: AppDatepicker.KEYCODES.PAGE_DOWN,
                 })}"></paper-icon-button>
             </div>
 
@@ -723,14 +734,18 @@ export class AppDatepicker extends LitElement {
 
     const newSelectedYear = ev.target.getAttribute('year');
 
-    return new Promise(yay => yay(this.updateSelectedFullYear({
-      currentDate: this._currentDate,
-      currentDisabledDays: this._currentDisabledDays,
-      selectedYear: newSelectedYear,
-      yearOffset: (this._selectedYear - newSelectedYear) < 0 ? -1 : 1,
-    })))
-      .then(() => this.renderComplete)
-      .then(() => { this._selectedView = 'calendar'; });
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        this.updateSelectedFullYear({
+          currentDate: this._currentDate,
+          currentDisabledDays: this._currentDisabledDays,
+          selectedYear: newSelectedYear,
+          yearOffset: (this._selectedYear - newSelectedYear) < 0 ? -1 : 1,
+        });
+
+        return this.renderComplete;
+      })
+        .then(() => { this._selectedView = 'calendar'; });
   }
 
   computeSelectedFormattedYear(currentDate, locale) {
@@ -798,9 +813,12 @@ export class AppDatepicker extends LitElement {
       )
       : preNewDate;
 
-    this._selectedYear = preNewDate.getUTCFullYear();
-    this._currentDate = newDate;
-    this._selectedDate = newDate;
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        this._selectedYear = preNewDate.getUTCFullYear();
+        this._currentDate = newDate;
+        this._selectedDate = newDate;
+      });
   }
 
   updateSelectedMonth({
@@ -826,13 +844,17 @@ export class AppDatepicker extends LitElement {
       )
       : preSelectedDate;
 
-    this._selectedYear = newSelectedDate.getUTCFullYear();
-    this._currentDate = newSelectedDate;
-    this._selectedDate = newSelectedDate;
+
+      return Promise.resolve(this.renderComplete)
+        .then(() => {
+          this._selectedYear = newSelectedDate.getUTCFullYear();
+          this._currentDate = newSelectedDate;
+          this._selectedDate = newSelectedDate;
+        });
   }
 
   centerYearListScroller(selectedYear) {
-    return new Promise(yay => yay(this.renderComplete))
+    return Promise.resolve(this.renderComplete)
       .then(() => {
         window.requestAnimationFrame(() => {
           window.requestAnimationFrame(() => {
@@ -1066,8 +1088,11 @@ export class AppDatepicker extends LitElement {
       day: elemOnTap.day,
     });
 
-    this._selectedDate = newValue;
-    this._currentDate = newValue;
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        this._selectedDate = newValue;
+        this._currentDate = newValue;
+      });
   }
 
   updateValue(selectedDate, currentDisabledDays) {
@@ -1109,7 +1134,7 @@ export class AppDatepicker extends LitElement {
       return;
     }
 
-    this.updateValue(this._selectedDate, this._currentDisabledDays);
+    return this.updateValue(this._selectedDate, this._currentDisabledDays);
   }
 
   dateUpdaterOnKeyCode(keyCode) {
@@ -1157,18 +1182,32 @@ export class AppDatepicker extends LitElement {
       case KEYCODES.DOWN:
       case KEYCODES.LEFT:
       case KEYCODES.RIGHT: {
+        const currentDate = this._currentDate;
+        const dayFromCurrentDate = currentDate.getUTCDay();
+
+        /** NOTE: Special handling for KEYCODES.UP or KEYCODES.DOWN on disabled week day */
         const newDate = this.selectNextSelectableDate(
-          this._currentDate,
+          currentDate,
           currentDisabledDays,
-          (date) => {
-            return { day: date.getUTCDate() + this.dateUpdaterOnKeyCode(keyCode) };
+          (nDate) => {
+            console.log('# >', nDate, nDate.getUTCDate(), keyCode === KEYCODES.UP ? -1 : 1);
+
+            return {
+              day: nDate.getUTCDate() + (
+                (keyCode === KEYCODES.UP || keyCode === KEYCODES.DOWN)
+                  && currentDisabledDays.some(n => n === dayFromCurrentDate)
+                    ? (keyCode === KEYCODES.UP ? 1 : -1)
+                    : this.dateUpdaterOnKeyCode(keyCode)
+              ),
+            };
           }
         );
 
-        this._selectedDate = newDate;
-        this._currentDate = newDate;
-
-        break;
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this._selectedDate = newDate;
+            this._currentDate = newDate;
+          });
       }
       case KEYCODES.PAGE_DOWN:
       case KEYCODES.PAGE_UP: {
@@ -1228,16 +1267,17 @@ export class AppDatepicker extends LitElement {
           }
         );
 
-        this._currentDate = newDate;
-        this._selectedDate = newDate;
-
-        break;
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this._currentDate = newDate;
+            this._selectedDate = newDate;
+          });
       }
       case KEYCODES.END: {
         const newDate = this.selectNextSelectableDate(
           this.updateCurrentDate(this._currentDate, {
             month: this._currentDate.getUTCMonth() + 1,
-            day: 0,
+            day: 1, /** NOTE: 'selectNextSelectableDate' will execute this again  */
           }),
           currentDisabledDays,
           (date) => {
@@ -1245,18 +1285,19 @@ export class AppDatepicker extends LitElement {
           }
         );
 
-        this._currentDate = newDate;
-        this._selectedDate = newDate;
-
-        break;
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this._currentDate = newDate;
+            this._selectedDate = newDate;
+          });
       }
       case KEYCODES.SPACEBAR:
       case KEYCODES.ENTER: {
         return this.updateValue(this._currentDate, currentDisabledDays);
       }
       default: {
-        /** NOTE: no-op */
-        return;
+        /** NOTE: no-op (completes the render) */
+        return Promise.resolve(this.renderComplete);
       }
     }
   }
