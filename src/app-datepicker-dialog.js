@@ -28,12 +28,15 @@ class AppDatepickerDialog extends LitElement {
       showWeekNumber: Boolean,
 
       opened: Boolean,
+      dialogType: String,
     };
   }
 
   _shouldPropertiesChange(props, changedProps) {
     switch (true) {
       case ('opened' in props): {
+        console.log('# >', props.dialogType);
+
         if (props.opened) {
           this.classList.add('opened');
 
@@ -68,19 +71,35 @@ class AppDatepickerDialog extends LitElement {
   }
 
   didRender(props, changedProps) {
-    switch (true) {
-      case ('opened' in props): {
-        /** NOTE: Tap on outside of the dialog will close the dialog */
-        return props.opened
-          ? window.requestAnimationFrame(() => {
-            document.body.addEventListener('click', this._boundDocumentClickHandler)
-          })
-          : document.body.removeEventListener('click', this._boundDocumentClickHandler);
-      }
-      default: {
-        return Promise.resolve(this.renderComplete);
-      }
+    const {
+      dialogType,
+      opened,
+    } = props;
+
+    if (dialogType == null || (typeof dialogType === 'string' && !dialogType.length)) {
+      this.dialogScrim && this.dialogScrim.classList.remove('has-scrim');
     }
+
+    if (/^(backdrop|modal)/i.test(dialogType)) {
+      this.dialogScrim && this.dialogScrim.classList.add('has-scrim');
+    }
+
+    if (!opened) {
+      document.body.removeEventListener('click', this._boundDocumentClickHandler);
+    }
+
+    if (opened) {
+      /** NOTE: Skip setting document click handler up if the scrim exists */
+      if (/^(backdrop|modal)/i.test(dialogType)) {
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        document.body.addEventListener('click', this._boundDocumentClickHandler);
+      });
+    }
+
+    return Promise.resolve(this.renderComplete);
   }
 
   render({
@@ -90,26 +109,18 @@ class AppDatepickerDialog extends LitElement {
     valueAsDate,
     valueAsNumber,
 
-    // modal,
+    dialogType,
 
   }) {
     return html`
       <style>
         :host {
-          display: none;
+          display: block;
           box-sizing: border-box;
-
-          width: var(--app-datepicker-dialog-width);
+          pointer-events: none;
 
           --app-datepicker-dialog-footer-height: 59px;
           --app-datepicker-dialog-width: 300px;
-
-          box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
-                      0 9px 46px 8px rgba(0, 0, 0, 0.12),
-                      0 11px 15px -7px rgba(0, 0, 0, 0.4);
-        }
-        :host(.opened) {
-          display: block;
         }
 
         * {
@@ -119,6 +130,22 @@ class AppDatepickerDialog extends LitElement {
         app-datepicker {
           --app-datepicker-width: var(--app-datepicker-dialog-width);
           --app-datepicker-footer-height: var(--app-datepicker-dialog-footer-height);
+        }
+
+        .dialog__datepicker {
+          display: none;
+          position: fixed;
+          top: calc((100% - (var(--app-datepicker-dialog-width) / .66)) / 2);
+          left: calc((100% - var(--app-datepicker-dialog-width)) / 2);
+          width: var(--app-datepicker-dialog-width);
+          z-index: 24;
+          pointer-events: auto;
+          box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+                      0 9px 46px 8px rgba(0, 0, 0, 0.12),
+                      0 11px 15px -7px rgba(0, 0, 0, 0.4);
+        }
+        :host(.opened) > .dialog__datepicker {
+          display: block;
         }
 
         .datepicker__footer {
@@ -138,15 +165,42 @@ class AppDatepickerDialog extends LitElement {
 
           --paper-button-ink-color: #848484;
         }
+
+        .dialog__scrim {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, .55);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 150ms cubic-bezier(0, 0, .4, 1);
+        }
+        :host(.opened) .dialog__scrim.has-scrim {
+          opacity: 1;
+          pointer-events: auto;
+        }
       </style>
 
-      <app-datepicker></app-datepicker>
+      <div class="dialog__datepicker">
+        <app-datepicker></app-datepicker>
 
-      <div class="datepicker__footer">
-        <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button dialog-confirm
-          on-tap="${ev => this.updateValueOnTap(ev)}">ok</paper-button>
+        <div class="datepicker__footer">
+          <paper-button dialog-dismiss
+            on-tap="${ev => this.closeDatepickerOnDismissButtonTap(ev)}">cancel</paper-button>
+          <paper-button dialog-confirm
+            on-tap="${ev => this.updateValueOnTap(ev)}">ok</paper-button>
+        </div>
       </div>
+
+      ${
+        /^(backdrop|modal)/i.test(dialogType)
+          ? html`<div class="dialog__scrim" on-click="${ev => this.closeDatepickerOnScrimTap(ev)}"></div>`
+          : null
+      }
     `;
   }
 
@@ -154,6 +208,8 @@ class AppDatepickerDialog extends LitElement {
   }
 
   documentClickHandler(ev) {
+    console.log('# documentClickHandler', ev.target);
+
     const findElemOnTap = (tgt) => {
       return tgt == null
         || (/^input/i.test(tgt.tagName) && /^datepicker\_+input/i.test(tgt.id))
@@ -179,6 +235,47 @@ class AppDatepickerDialog extends LitElement {
             });
         }
       });
+  }
+
+  closeDatepicker() {
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        this.opened = false;
+      });
+  }
+
+  closeDatepickerOnDismissButtonTap(ev) {
+    return this.closeDatepicker();
+  }
+
+  closeDatepickerOnScrimTap(ev) {
+    /** NOTE: No op when the dialog is a modal one */
+    if (/^modal/i.test(this.dialogType)) {
+      return;
+    }
+
+    return this.closeDatepicker();
+  }
+
+  updateValueOnTap(ev) {
+    const elemOnTap = ev.target;
+
+    if (!elemOnTap.hasAttribute('dialog-confirm')) {
+      return;
+    }
+
+    return Promise.resolve(this.renderComplete)
+      .then(() => {
+        this.shadowRoot
+          .querySelector('app-datepicker')
+          .updateValueOnTap();
+
+        return this.closeDatepicker();
+      });
+  }
+
+  get dialogScrim() {
+    return this.shadowRoot.querySelector('.dialog__scrim');
   }
 }
 

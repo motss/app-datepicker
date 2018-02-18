@@ -49,7 +49,6 @@ export class AppDatepicker extends LitElement {
     super();
 
     this.initProps();
-    this.setAttribute('type', 'date');
   }
 
   async ready() {
@@ -1112,47 +1111,41 @@ export class AppDatepicker extends LitElement {
       });
   }
 
-  // updateValue(selectedDate, currentDisabledDays) {
-  //   const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
-  //   const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
+  updateValue(selectedDate, currentDisabledDays) {
+    const preSelectedDate = AppDatepicker.toUTCDate(selectedDate);
+    const dayFromPreSelectedDate = preSelectedDate.getUTCDay();
 
-  //   if (currentDisabledDays.some(n => n === dayFromPreSelectedDate)) {
-  //     return;
-  //   }
+    if (currentDisabledDays.some(n => n === dayFromPreSelectedDate)) {
+      return;
+    }
 
-  //   const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
-  //   const evDetail = {
-  //     detail: {
-  //       originalValue: preSelectedDate,
-  //       value: formattedValue,
-  //       timezone: 'UTC',
-  //     },
-  //   };
+    const formattedValue = preSelectedDate.toJSON().replace(/^(.+)T.+/, '$1');
+    const evDetail = {
+      detail: {
+        originalValue: preSelectedDate,
+        value: formattedValue,
+        timezone: 'UTC',
+      },
+    };
 
-  //   this.value = formattedValue;
-  //   this.valueAsDate = preSelectedDate;
-  //   this.valueAsNumber = +preSelectedDate;
+    this.value = formattedValue;
+    this.valueAsDate = preSelectedDate;
+    this.valueAsNumber = +preSelectedDate;
 
-  //   this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
-  //   this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
-  //   this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
+    this.dispatchEvent(new CustomEvent('value-changed', { ...evDetail }));
+    this.dispatchEvent(new CustomEvent('change', { ...evDetail }));
+    this.dispatchEvent(new CustomEvent('input', { ...evDetail }));
 
-  //   return {
-  //     value: formattedValue,
-  //     valueAsDate: preSelectedDate,
-  //     valueAsNumber: +preSelectedDate,
-  //   };
-  // }
+    return {
+      value: formattedValue,
+      valueAsDate: preSelectedDate,
+      valueAsNumber: +preSelectedDate,
+    };
+  }
 
-  // updateValueOnTap(ev) {
-  //   const elemOnTap = ev.target;
-
-  //   if (!elemOnTap.hasAttribute('dialog-confirm')) {
-  //     return;
-  //   }
-
-  //   return this.updateValue(this._selectedDate, this._currentDisabledDays);
-  // }
+  updateValueOnTap() {
+    return this.updateValue(this._selectedDate, this._currentDisabledDays);
+  }
 
   dateUpdaterOnKeyCode(keyCode) {
     const KEYCODES = AppDatepicker.KEYCODES;

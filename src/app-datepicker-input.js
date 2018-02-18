@@ -20,7 +20,6 @@ class AppDatepickerInput extends LitElement {
       valueAsDate: Date,
       valueAsNumber: Number,
 
-      label: String,
       firstDayOfWeek: Number,
       disabledDays: String,
       locale: String,
@@ -28,12 +27,33 @@ class AppDatepickerInput extends LitElement {
       weekdayFormat: String,
       showWeekNumber: Boolean,
 
+      label: String,
+      dialogType: String,
+
       // _hasInputTypeDateSupported: Boolean,
       _inputType: String,
     };
   }
 
   _shouldPropertiesChange(props, changedProps) {
+    switch (true) {
+      case ('dialogType' in props): {
+        const propVal = props.dialogType;
+
+        if (/^plain/i.test(propVal)) {
+          return 'plain';
+        }
+
+        /** NOTE: Fallback to 'plain' dialog if invalid dialog type is detected */
+        return /^(backdrop|modal)/i.test(propVal)
+          ? propVal.toLowerCase()
+          : 'plain';
+      }
+      default: {
+        return Promise.resolve(this.renderComplete);
+      }
+    }
+
     return true;
   }
 
@@ -51,6 +71,7 @@ class AppDatepickerInput extends LitElement {
     valueAsNumber,
 
     label,
+    // dialogType,
 
     _inputType,
   }) {
@@ -74,24 +95,6 @@ class AppDatepickerInput extends LitElement {
           color: var(--app-datepicker-input-label-color, inherit);
           font-size: var(--app-datepicker-input-label-font-size, inherit);
         }
-
-        .datepicker__footer {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: flex-end;
-
-          background-color: #fff;
-          width: 100%;
-          height: var(--app-datepicker-footer-height);
-          padding: 0 8px 0 0;
-        }
-        .datepicker__footer > paper-button {
-          color: var(--app-datepicker-primary-color);
-          font-size: 14px;
-
-          --paper-button-ink-color: #848484;
-        }
       </style>
 
       <label for="datepicker__ipt">
@@ -104,13 +107,6 @@ class AppDatepickerInput extends LitElement {
           valueAsNumber="${valueAsNumber}"
           on-click="${ev => this.openDatepicker(ev)}"></input>
       </label>
-      <!-- <app-datepicker></app-datepicker>
-
-      <div class="datepicker__footer">
-        <paper-button dialog-dismiss>cancel</paper-button>
-        <paper-button dialog-confirm
-          on-tap="${ev => this.updateValueOnTap(ev)}">ok</paper-button>
-      </div> -->
     `;
   }
 
@@ -120,6 +116,9 @@ class AppDatepickerInput extends LitElement {
     this.label = this.label == null
       ? ''
       : this.label;
+    this.dialogType = this.dialogType == null
+      ? 'plain'
+      : this.dialogType;
 
     this._hasInputTypeDateSupported = hasInputTypeDateSupported;
     this._inputType = hasInputTypeDateSupported
@@ -138,14 +137,17 @@ class AppDatepickerInput extends LitElement {
       ev.currentTarget,
     );
 
+    const updateAttribute = AppDatepickerInput.updateAttribute;
+
     if (!this._dlg) {
       const dlg = document.createElement('app-datepicker-dialog');
 
-      dlg.setAttribute('min', this.min);
-      dlg.setAttribute('max', this.max);
-      dlg.setAttribute('value', this.value);
-      dlg.setAttribute('valueAsDate', this.valueAsDate);
-      dlg.setAttribute('valueAsNumber', this.valueAsNumber);
+      updateAttribute(dlg, 'min', this.min);
+      updateAttribute(dlg, 'max', this.max);
+      updateAttribute(dlg, 'value', this.value);
+      updateAttribute(dlg, 'valueAsDate', this.valueAsDate);
+      updateAttribute(dlg, 'valueAsNumber', this.valueAsNumber);
+      updateAttribute(dlg, 'dialogType', this.dialogType);
 
       this._dlg = dlg;
 
@@ -156,17 +158,31 @@ class AppDatepickerInput extends LitElement {
       .then(() => {
         const dlg = this._dlg;
 
-        dlg.setAttribute('min', this.min);
-        dlg.setAttribute('max', this.max);
-        dlg.setAttribute('value', this.value);
-        dlg.setAttribute('valueAsDate', this.valueAsDate);
-        dlg.setAttribute('valueAsNumber', this.valueAsNumber);
+        updateAttribute(dlg, 'min', this.min);
+        updateAttribute(dlg, 'max', this.max);
+        updateAttribute(dlg, 'value', this.value);
+        updateAttribute(dlg, 'valueAsDate', this.valueAsDate);
+        updateAttribute(dlg, 'valueAsNumber', this.valueAsNumber);
+        updateAttribute(dlg, 'dialogType', this.dialogType);
 
         return this.renderComplete;
       })
       .then(() => {
         this._dlg.opened = true;
       });
+  }
+
+  static updateAttribute(node, attrName, attrVal) {
+    if (/^(false|null|undefined)/i.test(attrVal)) {
+      return node.removeAttribute(attrName);
+    }
+
+    return node.setAttribute(
+      attrName,
+      typeof attrVal === 'object'
+        ? JSON.stringify(attrVal)
+        : attrVal
+    );
   }
 
   static isInputTypeDateSupported() {
