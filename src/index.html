@@ -135,6 +135,33 @@
           }
         );
       });
+
+    window.customElements
+      .whenDefined('app-datepicker-input')
+      .then(() => {
+        const allDatepickerInputs = document.querySelectorAll('app-datepicker-input');
+
+        Array.from(
+          allDatepickerInputs,
+          (datepickerInput) => {
+            console.log('🚧 datepickerInput', {
+              value: datepickerInput.value,
+              valueAsDate: datepickerInput.valueAsDate,
+              valueAsNumber: datepickerInput.valueAsNumber,
+            });
+
+            datepickerInput.addEventListener('value-changed', (ev) => {
+              console.log('🚧 app-datepicker-input:value', ev);
+            });
+            datepickerInput.addEventListener('change', (ev) => {
+              console.log('🚧 app-datepicker-input:change', ev);
+            });
+            datepickerInput.addEventListener('input', (ev) => {
+              console.log('🚧 app-datepicker-input:change', ev);
+            });
+          }
+        );
+      });
   </script>
 </body>
 </html>

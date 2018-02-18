@@ -85,6 +85,8 @@ export class AppDatepicker extends LitElement {
     }
 
     /** NOTE: Specific requests for public properties */
+    console.log('#', Object.keys(changedProps));
+
     Object.keys(changedProps)
       .filter(propKey => !/^_+/i.test(propKey))
       .map((propKey) => {
@@ -97,7 +99,7 @@ export class AppDatepicker extends LitElement {
                 return Promise.resolve(this.renderComplete)
                   .then(() => {
                     // NOTE: Clear selected date to signify invalid 'value'.
-                    this[propKey] = propVal;
+                    this[propKey] = '';
                     this.valueAsDate = null;
                     this.valueAsNumber = NaN;
                     this._selectedDate = null;
@@ -105,7 +107,7 @@ export class AppDatepicker extends LitElement {
                   });
               }
 
-              const toValueDate = new Date(propVal);
+              const toValueDate = AppDatepicker.toUTCDate(propVal);
 
               if (
                 /^invalid date/i.test(toValueDate) || !/^\d{4}\-\d{2}\-\d{2}/i.test(propVal)
@@ -118,7 +120,14 @@ export class AppDatepicker extends LitElement {
                   `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
                 );
 
-                return;
+                return Promise.resolve(this.renderComplete)
+                  .then(() => {
+                    this[propKey] = '';
+                    this.valueAsDate = null;
+                    this.valueAsNumber = NaN;
+                    this._selectedDate = null;
+                    this._currentDate = AppDatepicker.toUTCDate(new Date());
+                  });
               }
 
               return Promise.resolve(this.renderComplete)
@@ -131,109 +140,109 @@ export class AppDatepicker extends LitElement {
                 });
             }
           }
-          case 'valueAsDate': {
-            const propVal = changedProps[propKey];
+          // case 'valueAsDate': {
+          //   const propVal = changedProps[propKey];
 
-            if (propVal === null) {
-              return Promise.resolve(this.renderComplete)
-                .then(() => {
-                  // NOTE: Clear selected date to signify invalid 'valueAsDate'.
-                  this[propKey] = null;
-                  this.value = '';
-                  this.valueAsNumber = NaN;
-                  this._selectedDate = null;
-                  this._currentDate = AppDatepicker.toUTCDate(new Date());
-                });
-            }
+          //   if (propVal === null) {
+          //     return Promise.resolve(this.renderComplete)
+          //       .then(() => {
+          //         // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+          //         this[propKey] = null;
+          //         this.value = '';
+          //         this.valueAsNumber = NaN;
+          //         this._selectedDate = null;
+          //         this._currentDate = AppDatepicker.toUTCDate(new Date());
+          //       });
+          //   }
 
-            if (!(propVal instanceof Date)) {
-              this[propKey] = AppDatepicker.toUTCDate(this.value || this.valueAsNumber);
+          //   if (!(propVal instanceof Date)) {
+          //     this[propKey] = AppDatepicker.toUTCDate(this.value || this.valueAsNumber);
 
-              throw new TypeError(
-                'Failed to set the \'valueAsDate\' property on \'HTMLInputElement\': The provided value is not a Date.'
-              );
-            }
+          //     throw new TypeError(
+          //       'Failed to set the \'valueAsDate\' property on \'HTMLInputElement\': The provided value is not a Date.'
+          //     );
+          //   }
 
-            if (/^invalid date/i.test(new Date(propVal))) {
-              return Promise.resolve(this.renderComplete)
-                .then(() => {
-                  // NOTE: Clear selected date to signify invalid 'valueAsDate'.
-                  this[propKey] = null;
-                  this.value = '';
-                  this.valueAsNumber = NaN;
-                  this._selectedDate = null;
-                  this._currentDate = AppDatepicker.toUTCDate(new Date());
+          //   if (/^invalid date/i.test(new Date(propVal))) {
+          //     return Promise.resolve(this.renderComplete)
+          //       .then(() => {
+          //         // NOTE: Clear selected date to signify invalid 'valueAsDate'.
+          //         this[propKey] = null;
+          //         this.value = '';
+          //         this.valueAsNumber = NaN;
+          //         this._selectedDate = null;
+          //         this._currentDate = AppDatepicker.toUTCDate(new Date());
 
-                  console.warn(
-                    `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
-                  );
-                });
-            }
+          //         console.warn(
+          //           `The specified value "${propVal}" does not conform to the required format, "${this._pattern}"`
+          //         );
+          //       });
+          //   }
 
-            return Promise.resolve(this.renderComplete)
-              .then(() => {
-                this[propKey] = propVal;
-                this.value = propVal.toJSON().replace(/^(.+)T.+/i, '$1');
-                this.valueAsNumber = +propVal;
-                this._selectedDate = propVal;
-                this._currentDate = propVal;
-              });
-          }
-          case 'valueAsNumber': {
-            const propVal = changedProps[propKey];
+          //   return Promise.resolve(this.renderComplete)
+          //     .then(() => {
+          //       this[propKey] = propVal;
+          //       this.value = propVal.toJSON().replace(/^(.+)T.+/i, '$1');
+          //       this.valueAsNumber = +propVal;
+          //       this._selectedDate = propVal;
+          //       this._currentDate = propVal;
+          //     });
+          // }
+          // case 'valueAsNumber': {
+          //   const propVal = changedProps[propKey];
 
-            if (typeof propVal === 'string') {
-              if (!propVal.length) {
-                const toValueAsNumberDate = AppDatepicker.toUTCDate(new Date('1970-01-01'));
+          //   if (typeof propVal === 'string') {
+          //     if (!propVal.length) {
+          //       const toValueAsNumberDate = AppDatepicker.toUTCDate(new Date('1970-01-01'));
 
-                return Promise.resolve(this.renderComplete)
-                  .then(() => {
-                    this[propKey] = +toValueAsNumberDate;
-                    this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
-                    this.valueAsDate = toValueAsNumberDate;
-                    this._selectedDate = toValueAsNumberDate;
-                    this._currentDate = toValueAsNumberDate;
-                  });
-              }
+          //       return Promise.resolve(this.renderComplete)
+          //         .then(() => {
+          //           this[propKey] = +toValueAsNumberDate;
+          //           this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+          //           this.valueAsDate = toValueAsNumberDate;
+          //           this._selectedDate = toValueAsNumberDate;
+          //           this._currentDate = toValueAsNumberDate;
+          //         });
+          //     }
 
-              if (/^invalid date/i.test(new Date(propVal))) {
-                return Promise.resolve(this.renderComplete)
-                  .then(() => {
-                    // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
-                    this[propKey] = NaN;
-                    this.value = '';
-                    this.valueAsDate = null;
-                    this._selectedDate = null;
-                    this._currentDate = AppDatepicker.toUTCDate(new Date());
-                  });
-              }
-            }
+          //     if (/^invalid date/i.test(new Date(propVal))) {
+          //       return Promise.resolve(this.renderComplete)
+          //         .then(() => {
+          //           // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+          //           this[propKey] = NaN;
+          //           this.value = '';
+          //           this.valueAsDate = null;
+          //           this._selectedDate = null;
+          //           this._currentDate = AppDatepicker.toUTCDate(new Date());
+          //         });
+          //     }
+          //   }
 
-            if (propVal instanceof Date) {
-              if (/^invalid date/i.test(propVal)) {
-                return Promise.resolve(this.renderComplete)
-                  .then(() => {
-                    // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
-                    this[propKey] = NaN;
-                    this.value = '';
-                    this.valueAsDate = null;
-                    this._selectedDate = null;
-                    this._currentDate = AppDatepicker.toUTCDate(new Date());
-                  });
-              }
-            }
+          //   if (propVal instanceof Date) {
+          //     if (/^invalid date/i.test(propVal)) {
+          //       return Promise.resolve(this.renderComplete)
+          //         .then(() => {
+          //           // NOTE: Clear selected date to signify invalid 'valueAsNumber'.
+          //           this[propKey] = NaN;
+          //           this.value = '';
+          //           this.valueAsDate = null;
+          //           this._selectedDate = null;
+          //           this._currentDate = AppDatepicker.toUTCDate(new Date());
+          //         });
+          //     }
+          //   }
 
-            const toValueAsNumberDate = AppDatepicker.toUTCDate(propVal);
+          //   const toValueAsNumberDate = AppDatepicker.toUTCDate(propVal);
 
-            return Promise.resolve(this.renderComplete)
-              .then(() => {
-                this[propKey] = +toValueAsNumberDate;
-                this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
-                this.valueAsDate = toValueAsNumberDate;
-                this._selectedDate = toValueAsNumberDate;
-                this._currentDate = toValueAsNumberDate;
-              });
-          }
+          //   return Promise.resolve(this.renderComplete)
+          //     .then(() => {
+          //       this[propKey] = +toValueAsNumberDate;
+          //       this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
+          //       this.valueAsDate = toValueAsNumberDate;
+          //       this._selectedDate = toValueAsNumberDate;
+          //       this._currentDate = toValueAsNumberDate;
+          //     });
+          // }
           case 'disabledDays': {
             const propVal = this[propKey];
 

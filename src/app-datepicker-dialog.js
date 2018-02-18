@@ -33,6 +33,8 @@ class AppDatepickerDialog extends LitElement {
   }
 
   _shouldPropertiesChange(props, changedProps) {
+    console.log('# AppDatepickerDialog:_shouldPropertiesChange', changedProps);
+
     switch (true) {
       case ('opened' in props): {
         console.log('# >', props.dialogType);
@@ -74,7 +76,9 @@ class AppDatepickerDialog extends LitElement {
     const {
       dialogType,
       opened,
-    } = props;
+    } = changedProps;
+
+    console.log('# didRender', props, changedProps);
 
     if (dialogType == null || (typeof dialogType === 'string' && !dialogType.length)) {
       this.dialogScrim && this.dialogScrim.classList.remove('has-scrim');
@@ -186,7 +190,23 @@ class AppDatepickerDialog extends LitElement {
       </style>
 
       <div class="dialog__datepicker">
-        <app-datepicker></app-datepicker>
+        <app-datepicker
+          value="${value}"
+          on-value-changed="${
+            ev => this.dispatchEvent(new CustomEvent('value-changed', {
+              detail: Object.assign({}, ev.detail),
+            }))
+          }"
+          on-change="${
+            ev => this.dispatchEvent(new CustomEvent('change', {
+              detail: Object.assign({}, ev.detail),
+            }))
+          }"
+          on-input="${
+            ev => this.dispatchEvent(new CustomEvent('input', {
+              detail: Object.assign({}, ev.detail),
+            }))
+          }"></app-datepicker>
 
         <div class="datepicker__footer">
           <paper-button dialog-dismiss
@@ -266,11 +286,27 @@ class AppDatepickerDialog extends LitElement {
 
     return Promise.resolve(this.renderComplete)
       .then(() => {
-        this.shadowRoot
+        const updatedVal = this.shadowRoot
           .querySelector('app-datepicker')
           .updateValueOnTap();
 
-        return this.closeDatepicker();
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            /** NOTE: Update all values */
+            this.value = updatedVal.value;
+            this.valueAsDate = updatedVal.valueAsDate;
+            this.valueAsNumber = updatedVal.valueAsNumber;
+
+            return this.renderComplete;
+          })
+          .then(() => {
+            /** NOTE: Fire an event upwards */
+            this.dispatchEvent(new CustomEvent('value-updated', {
+              detail: Object.assign({}, updatedVal),
+            }));
+
+            return this.closeDatepicker();
+          });
       });
   }
 
