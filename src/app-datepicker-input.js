@@ -37,6 +37,10 @@ class AppDatepickerInput extends LitElement {
   }
 
   _shouldPropertiesChange(props, changedProps) {
+    if (changedProps == null) {
+      return true;
+    }
+
     const {
       dialogType,
       value,
@@ -59,34 +63,33 @@ class AppDatepickerInput extends LitElement {
     }
 
     if ('value' in changedProps) {
-    //   console.log('# _shouldPropertiesChange:value', value);
-
-      if (typeof value === 'string') {
-        const toValueDate = new Date(value);
-
-        if (
-          value.length > 0
-            && !/^invalid date/i.test(toValueDate)
-            && /^\d{4}\-\d{2}\-\d{2}/i.test(value)
-        ) {
-          Promise.resolve(this.renderComplete)
-            .then(() => {
-              this.value = value;
-              this.valueAsDate = toValueDate;
-              this.valueAsNumber = +toValueDate;
-            });
-        }
-      } else {
+      const resetValue = () => {
         console.warn(
           `The specified value "${value}" does not conform to the required format, "${this._pattern}"`
         );
 
-        Promise.resolve(this.renderComplete)
+        return Promise.resolve(this.renderComplete)
           .then(() => {
             this.value = '';
             this.valueAsDate = null;
             this.valueAsNumber = NaN;
           });
+      };
+      const toValueDate = new Date(value);
+
+      if (
+        (typeof value === 'string' && value.length > 0)
+          && !/^invalid date/i.test(toValueDate)
+          && /^\d{4}\-\d{2}\-\d{2}/i.test(value)
+      ) {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            this.value = value;
+            this.valueAsDate = toValueDate;
+            this.valueAsNumber = +toValueDate;
+          });
+      } else {
+        resetValue();
       }
     }
 
@@ -166,17 +169,6 @@ class AppDatepickerInput extends LitElement {
       return;
     }
 
-    // console.log(
-    //   '# openDatepicker',
-    //   ev.target,
-    //   ev.currentTarget,
-    //   {
-    //     value: this.value,
-    //     valueAsDate: this.valueAsDate,
-    //     valueAsNumber: this.valueAsNumber,
-    //   }
-    // );
-
     const updateAttribute = AppDatepickerInput.updateAttribute;
 
     if (!this._dlg) {
@@ -202,7 +194,7 @@ class AppDatepickerInput extends LitElement {
           detail: Object.assign({}, updatedVal),
         };
 
-        console.log('# value-updated', updatedVal);
+        // console.log('# value-updated', updatedVal);
 
         /** NOTE: Update all values */
         // return Promise.resolve(this.renderComplete)

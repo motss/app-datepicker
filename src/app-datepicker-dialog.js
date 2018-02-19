@@ -73,12 +73,14 @@ class AppDatepickerDialog extends LitElement {
   }
 
   didRender(props, changedProps) {
+    if (changedProps == null) {
+      return true;
+    }
+
     const {
       dialogType,
       opened,
     } = changedProps;
-
-    console.log('# didRender', props, changedProps);
 
     if (dialogType == null || (typeof dialogType === 'string' && !dialogType.length)) {
       this.dialogScrim && this.dialogScrim.classList.remove('has-scrim');
@@ -192,6 +194,8 @@ class AppDatepickerDialog extends LitElement {
       <div class="dialog__datepicker">
         <app-datepicker
           value="${value}"
+          valueAsDate="${valueAsDate}"
+          valueAsNumber="${valueAsNumber}"
           on-value-changed="${
             ev => this.dispatchEvent(new CustomEvent('value-changed', {
               detail: Object.assign({}, ev.detail),
