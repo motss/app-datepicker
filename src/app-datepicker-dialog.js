@@ -35,25 +35,14 @@ class AppDatepickerDialog extends LitElement {
   _shouldPropertiesChange(props, changedProps) {
     console.log('# AppDatepickerDialog:_shouldPropertiesChange', changedProps);
 
-    switch (true) {
-      case ('opened' in props): {
-        console.log('# >', props.dialogType);
+    const { opened } = changedProps;
 
-        if (props.opened) {
-          this.classList.add('opened');
+    if ('opened' in changedProps) {
+      opened
+        ? this.classList.add('opened')
+        : this.classList.remove('opened');
 
-          break;
-        }
-
-        this.classList.remove('opened');
-
-        // TODO: Focus trap handler.
-
-        break;
-      }
-      default: {
-        return Promise.resolve(this.renderComplete);
-      }
+      // TODO: To add focus trap handler.
     }
 
     return true;
@@ -66,10 +55,6 @@ class AppDatepickerDialog extends LitElement {
 
     /** NOTE: Setup document click handler */
     this._boundDocumentClickHandler = this.documentClickHandler.bind(this);
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
   }
 
   didRender(props, changedProps) {

@@ -701,6 +701,7 @@ export class AppDatepicker extends LitElement {
     this.max = this.max == null
       ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MAX_DATE}-12-31`))
       : this.max;
+
     this.value = preValue.toJSON().replace(/^(.+)T.+/, '$1');
     this.valueAsDate = preValue;
     this.valueAsNumber = +preValue;

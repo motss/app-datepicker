@@ -33,7 +33,6 @@ class AppDatepickerInput extends LitElement {
       dialogType: String,
 
       // _hasInputTypeDateSupported: Boolean,
-      _inputType: String,
       _pattern: String,
     };
   }
@@ -64,6 +63,7 @@ class AppDatepickerInput extends LitElement {
       }
     }
 
+    /** NOTE: This is critical as undefined valueAsDate, valueAsNumber will cause override */
     if ('value' in changedProps) {
       const resetValue = () => {
         console.warn(
@@ -95,6 +95,10 @@ class AppDatepickerInput extends LitElement {
       }
     }
 
+    // TODO: To support valueAsDate, valueAsNumber
+    // if ('valueAsDate' in changedProps) {}
+    // if ('valueAsNumber' in changedProps) {}
+
     return true;
   }
 
@@ -108,13 +112,19 @@ class AppDatepickerInput extends LitElement {
     min,
     max,
     value,
-    // valueAsDate,
-    // valueAsNumber,
+    valueAsDate,
+    valueAsNumber,
+
+    firstDayOfWeek,
+    disabledDays,
+    locale,
+    startView,
+    weekdayFormat,
+    showWeekNumber,
 
     label,
     // dialogType,
 
-    _inputType,
   }) {
     return html`
       <style>
@@ -142,14 +152,22 @@ class AppDatepickerInput extends LitElement {
         <span class="ipt__label">${label}</span>
         ${
           this._hasInputTypeDateSupported
-            ? html`<input id="datepicker__ipt" type="${_inputType}"
-              min="${min}"
-              max="${max}"
-              value="${value}"></input>`
-            : html`<input id="datepicker__ipt" type="${_inputType}"
+            ? html`<input id="datepicker__ipt" type="date"
               min="${min}"
               max="${max}"
               value="${value}"
+              valueAsDate="${valueAsDate}"
+              valueAsNumber="${valueAsNumber}"></input>`
+            : html`<input id="datepicker__ipt" type="text"
+              min="${min}"
+              max="${max}"
+              value="${value}"
+              firstDayOfWeek="${firstDayOfWeek}"
+              disabledDays="${disabledDays}"
+              locale="${locale}"
+              startView="${startView}"
+              weekdayFormat="${weekdayFormat}"
+              showWeekNumber="${showWeekNumber}"
               on-click="${() => this.openDatepicker()}"
               on-keyup2="${ev => this.stepDatepickerValue(ev)}"
               on-input="${ev => this.updateDatepickerValue(ev)}"></input>`
@@ -174,9 +192,6 @@ class AppDatepickerInput extends LitElement {
       : this.dialogType;
 
     this._hasInputTypeDateSupported = hasInputTypeDateSupported;
-    this._inputType = hasInputTypeDateSupported
-      ? 'date'
-      : 'text';
     this._pattern = 'yyyy-MM-dd';
   }
 
@@ -200,13 +215,17 @@ class AppDatepickerInput extends LitElement {
       dlg.min = this.min;
       dlg.max = this.max;
       dlg.value = this.value;
-
-      dlg.locale = this.locale;
-
-      dlg.dialogType = this.dialogType;
-
       dlg.valueAsDate = this.valueAsDate;
       dlg.valueAsNumber = this.valueAsNumber;
+
+      dlg.firstDayOfWeek = this.firstDayOfWeek;
+      dlg.disabledDays = this.disabledDays;
+      dlg.locale = this.locale;
+      dlg.startView = this.startView;
+      dlg.weekdayFormat = this.weekdayFormat;
+      dlg.showWeekNumber = this.showWeekNumber;
+
+      dlg.dialogType = this.dialogType;
 
       dlg.addEventListener('value-updated', (ev) => {
         const updatedVal = ev.detail;
@@ -250,13 +269,17 @@ class AppDatepickerInput extends LitElement {
         dlg.min = this.min;
         dlg.max = this.max;
         dlg.value = this.value;
-
-        dlg.locale = this.locale;
-
-        dlg.dialogType = this.dialogType;
-
         dlg.valueAsDate = this.valueAsDate;
         dlg.valueAsNumber = this.valueAsNumber;
+
+        dlg.firstDayOfWeek = this.firstDayOfWeek;
+        dlg.disabledDays = this.disabledDays;
+        dlg.locale = this.locale;
+        dlg.startView = this.startView;
+        dlg.weekdayFormat = this.weekdayFormat;
+        dlg.showWeekNumber = this.showWeekNumber;
+
+        dlg.dialogType = this.dialogType;
 
         return this.renderComplete;
       })
@@ -270,23 +293,10 @@ class AppDatepickerInput extends LitElement {
 
     this._debounceUpdateDatepickerValue = Debouncer.debounce(
       this._debounceUpdateDatepickerValue,
-      timeOut.after(1e3),
+      timeOut.after(750),
       () => {
-        console.log(
-          '# updateDatepickerValue',
-          ev.target.value,
-          this.value,
-          latestVal
-        );
-
         const { year, month, day } = AppDatepickerInput.formatToParts(latestVal, this.locale);
         const toValueDate = new Date(Date.UTC(year, month, day));
-
-        console.log(
-          '# >',
-          { year, month, day },
-          toValueDate
-        );
 
         if (/^invalid date/i.test(toValueDate)) {
           return;
@@ -299,8 +309,6 @@ class AppDatepickerInput extends LitElement {
             return this.renderComplete;
           })
           .then(() => {
-            console.log('# >', this.value);
-
             this.openDatepicker();
           });
       }
@@ -344,8 +352,6 @@ class AppDatepickerInput extends LitElement {
   // }
 
   static formatToParts(dateString, locale) {
-    console.log('# formatToParts', dateString, locale);
-
     if (typeof dateString !== 'string' || !dateString.length) {
       throw new TypeError(
         'Date string does not conform to the required format, "yyyy-MM-dd"'
@@ -356,7 +362,7 @@ class AppDatepickerInput extends LitElement {
       .split('-')
       .reduce((p, n, i) => {
         return Object.assign({}, p, {
-          [['year', 'month', 'day'][i]]: n,
+          [['year', 'month', 'day'][i]]: i === 1 ? n - 1 : n,
         });
       }, {});
   }
