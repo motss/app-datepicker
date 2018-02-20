@@ -3,6 +3,8 @@ import {
   html,
   LitElement
 } from '../node_modules/@polymer/lit-element/lit-element.js';
+import { Debouncer } from '../node_modules/@polymer/polymer/lib/utils/debounce.js';
+import { timeOut } from '../node_modules/@polymer/polymer/lib/utils/async.js';
 
 /** Import other modules */
 import './app-datepicker-dialog.js';
@@ -142,13 +144,19 @@ class AppDatepickerInput extends LitElement {
           min="${min}"
           max="${max}"
           value="${value}"
-          on-click="${ev => this.openDatepicker(ev)}"></input>
+          on-click="${() => this.openDatepicker()}"
+          on-keyup2="${ev => this.stepDatepickerValue(ev)}"
+          on-input="${ev => this.updateDatepickerValue(ev)}"></input>
       </label>
     `;
   }
 
   initProps() {
     const hasInputTypeDateSupported = AppDatepickerInput.isInputTypeDateSupported();
+
+    this.locale = this.locale == null
+      ? window.navigator.language
+      : this.locale;
 
     this.label = this.label == null
       ? ''
@@ -164,7 +172,7 @@ class AppDatepickerInput extends LitElement {
     this._pattern = 'yyyy-MM-dd';
   }
 
-  openDatepicker(ev) {
+  openDatepicker() {
     if (this._hasInputTypeDateSupported) {
       return;
     }
@@ -174,19 +182,23 @@ class AppDatepickerInput extends LitElement {
     if (!this._dlg) {
       const dlg = document.createElement('app-datepicker-dialog');
 
-      updateAttribute(dlg, 'min', this.min);
-      updateAttribute(dlg, 'max', this.max);
-      updateAttribute(dlg, 'value', this.value);
-      updateAttribute(dlg, 'dialogType', this.dialogType);
+      // updateAttribute(dlg, 'min', this.min);
+      // updateAttribute(dlg, 'max', this.max);
+      // updateAttribute(dlg, 'value', this.value);
+      // updateAttribute(dlg, 'dialogType', this.dialogType);
       // updateAttribute(dlg, 'valueAsDate', this.valueAsDate);
       // updateAttribute(dlg, 'valueAsNumber', this.valueAsNumber);
 
-      // dlg.min = this.min;
-      // dlg.max = this.max;
-      // dlg.value = this.value;
+      dlg.min = this.min;
+      dlg.max = this.max;
+      dlg.value = this.value;
+
+      dlg.locale = this.locale;
+
+      dlg.dialogType = this.dialogType;
+
       dlg.valueAsDate = this.valueAsDate;
       dlg.valueAsNumber = this.valueAsNumber;
-      // dlg.dialogType = this.dialogType;
 
       dlg.addEventListener('value-updated', (ev) => {
         const updatedVal = ev.detail;
@@ -194,23 +206,21 @@ class AppDatepickerInput extends LitElement {
           detail: Object.assign({}, updatedVal),
         };
 
-        // console.log('# value-updated', updatedVal);
-
         /** NOTE: Update all values */
-        // return Promise.resolve(this.renderComplete)
-        //   .then(() => {
-        //     this.value = updatedVal.value;
-        //     this.valueAsDate = updatedVal.valueAsDate;
-        //     this.valueAsNumber = updatedVal.valueAsNumber;
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this.value = updatedVal.value;
+            this.valueAsDate = updatedVal.valueAsDate;
+            this.valueAsNumber = updatedVal.valueAsNumber;
 
-        //     return this.renderComplete;
-        //   })
-        //   .then(() => {
-        //     /** NOTE: Fire events to notify updated values */
-        //     this.dispatchEvent(new CustomEvent('value-changed', Object.assign({}, evDetail)));
-        //     this.dispatchEvent(new CustomEvent('change', Object.assign({}, evDetail)));
-        //     this.dispatchEvent(new CustomEvent('input', Object.assign({}, evDetail)));
-        //   });
+            return this.renderComplete;
+          })
+          .then(() => {
+            /** NOTE: Fire events to notify updated values */
+            this.dispatchEvent(new CustomEvent('value-changed', Object.assign({}, evDetail)));
+            this.dispatchEvent(new CustomEvent('change', Object.assign({}, evDetail)));
+            this.dispatchEvent(new CustomEvent('input', Object.assign({}, evDetail)));
+          });
       });
 
       this._dlg = dlg;
@@ -222,19 +232,23 @@ class AppDatepickerInput extends LitElement {
       .then(() => {
         const dlg = this._dlg;
 
-        updateAttribute(dlg, 'min', this.min);
-        updateAttribute(dlg, 'max', this.max);
-        updateAttribute(dlg, 'value', this.value);
-        updateAttribute(dlg, 'dialogType', this.dialogType);
+        // updateAttribute(dlg, 'min', this.min);
+        // updateAttribute(dlg, 'max', this.max);
+        // updateAttribute(dlg, 'value', this.value);
+        // updateAttribute(dlg, 'dialogType', this.dialogType);
         // updateAttribute(dlg, 'valueAsDate', this.valueAsDate);
         // updateAttribute(dlg, 'valueAsNumber', this.valueAsNumber);
 
-        // dlg.min = this.min;
-        // dlg.max = this.max;
-        // dlg.value = this.value;
+        dlg.min = this.min;
+        dlg.max = this.max;
+        dlg.value = this.value;
+
+        dlg.locale = this.locale;
+
+        dlg.dialogType = this.dialogType;
+
         dlg.valueAsDate = this.valueAsDate;
         dlg.valueAsNumber = this.valueAsNumber;
-        // dlg.dialogType = this.dialogType;
 
         return this.renderComplete;
       })
@@ -243,17 +257,100 @@ class AppDatepickerInput extends LitElement {
       });
   }
 
-  static updateAttribute(node, attrName, attrVal) {
-    if (/^(false|null|undefined)/i.test(attrVal)) {
-      return node.removeAttribute(attrName);
+  updateDatepickerValue(ev) {
+    const latestVal = ev.target.value;
+
+    this._debounceUpdateDatepickerValue = Debouncer.debounce(
+      this._debounceUpdateDatepickerValue,
+      timeOut.after(1e3),
+      () => {
+        console.log(
+          '# updateDatepickerValue',
+          ev.target.value,
+          this.value,
+          latestVal
+        );
+
+        const { year, month, day } = AppDatepickerInput.formatToParts(latestVal, this.locale);
+        const toValueDate = new Date(Date.UTC(year, month, day));
+
+        console.log(
+          '# >',
+          { year, month, day },
+          toValueDate
+        );
+
+        if (/^invalid date/i.test(toValueDate)) {
+          return;
+        }
+
+        return Promise.resolve(this.renderComplete)
+          .then(() => {
+            this.value = toValueDate.toJSON().replace(/^(.+)T.+/i, '$1');
+
+            return this.renderComplete;
+          })
+          .then(() => {
+            console.log('# >', this.value);
+
+            this.openDatepicker();
+          });
+      }
+    );
+  }
+
+  // stepDatepickerValue(ev) {
+  //   const latestEv = ev;
+  //   const latestVal = ev.target.value;
+
+  //   this._debounceStepDatepickerValue = Debouncer.debounce(
+  //     this._debounceStepDatepickerValue,
+  //     timeOut.after(5e2),
+  //     () => {
+  //       console.log(
+  //         '# stepDatepickerValue',
+  //         latestEv,
+  //         latestVal,
+  //         this.shadowRoot.querySelector('#datepicker__ipt').selectionStart
+  //       );
+
+  //       return Promise.resolve(this.renderComplete)
+  //         .then(() => {
+  //           this.value = '2018-02-03';
+  //         });
+  //     }
+  //   );
+  // }
+
+  // static updateAttribute(node, attrName, attrVal) {
+  //   if (/^(false|null|undefined)/i.test(attrVal)) {
+  //     return node.removeAttribute(attrName);
+  //   }
+
+  //   return node.setAttribute(
+  //     attrName,
+  //     typeof attrVal === 'object'
+  //       ? JSON.stringify(attrVal)
+  //       : attrVal
+  //   );
+  // }
+
+  static formatToParts(dateString, locale) {
+    console.log('# formatToParts', dateString, locale);
+
+    if (typeof dateString !== 'string' || !dateString.length) {
+      throw new TypeError(
+        'Date string does not conform to the required format, "yyyy-MM-dd"'
+      );
     }
 
-    return node.setAttribute(
-      attrName,
-      typeof attrVal === 'object'
-        ? JSON.stringify(attrVal)
-        : attrVal
-    );
+    return dateString
+      .split('-')
+      .reduce((p, n, i) => {
+        return Object.assign({}, p, {
+          [['year', 'month', 'day'][i]]: n,
+        });
+      }, {});
   }
 
   static isInputTypeDateSupported() {
