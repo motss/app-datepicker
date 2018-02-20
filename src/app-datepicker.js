@@ -269,24 +269,27 @@ export class AppDatepicker extends LitElement {
   }
 
   didRender(props, changedProps) {
+    if (changedProps == null) {
+      return;
+    }
+
     const {
       firstDayOfWeek,
       showWeekNumber,
-    } = props;
-    const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
+    } = changedProps;
 
-    if (shouldShowWeekNumber) {
-      this.shadowRoot
-        .querySelector('.view-calendar__full-calendar')
-        .classList
-        .add('has-week-number');
-    }
+    if ('showWeekNumber' in changedProps) {
+      const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
 
-    if (!shouldShowWeekNumber) {
-      this.shadowRoot
-        .querySelector('.view-calendar__full-calendar')
-        .classList
-        .remove('has-week-number');
+      shouldShowWeekNumber
+        ? this.shadowRoot
+            .querySelector('.view-calendar__full-calendar')
+            .classList
+            .add('has-week-number')
+        : this.shadowRoot
+            .querySelector('.view-calendar__full-calendar')
+            .classList
+            .remove('has-week-number');
     }
   }
 

@@ -67,30 +67,32 @@ class AppDatepickerDialog extends LitElement {
       opened,
     } = changedProps;
 
-    if (dialogType == null || (typeof dialogType === 'string' && !dialogType.length)) {
-      this.dialogScrim && this.dialogScrim.classList.remove('has-scrim');
-    }
-
-    if (/^(backdrop|modal)/i.test(dialogType)) {
-      this.dialogScrim && this.dialogScrim.classList.add('has-scrim');
-    }
-
-    if (!opened) {
-      document.body.removeEventListener('click', this._boundDocumentClickHandler);
-    }
-
-    if (opened) {
-      /** NOTE: Skip setting document click handler up if the scrim exists */
-      if (/^(backdrop|modal)/i.test(dialogType)) {
-        return;
+    if ('dialogType' in changedProps) {
+      if (dialogType == null || (typeof dialogType === 'string' && !dialogType.length)) {
+        this.dialogScrim && this.dialogScrim.classList.remove('has-scrim');
       }
 
-      window.requestAnimationFrame(() => {
-        document.body.addEventListener('click', this._boundDocumentClickHandler);
-      });
+      if (/^(backdrop|modal)/i.test(dialogType)) {
+        this.dialogScrim && this.dialogScrim.classList.add('has-scrim');
+      }
     }
 
-    return Promise.resolve(this.renderComplete);
+    if ('opened' in changedProps) {
+      if (!opened) {
+        document.body.removeEventListener('click', this._boundDocumentClickHandler);
+      }
+
+      if (opened) {
+        /** NOTE: Skip setting document click handler up if the scrim exists */
+        if (/^(backdrop|modal)/i.test(dialogType)) {
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          document.body.addEventListener('click', this._boundDocumentClickHandler);
+        });
+      }
+    }
   }
 
   render({
