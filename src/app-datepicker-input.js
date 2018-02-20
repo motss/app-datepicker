@@ -140,13 +140,21 @@ class AppDatepickerInput extends LitElement {
 
       <label for="datepicker__ipt">
         <span class="ipt__label">${label}</span>
-        <input id="datepicker__ipt" type="${_inputType}"
-          min="${min}"
-          max="${max}"
-          value="${value}"
-          on-click="${() => this.openDatepicker()}"
-          on-keyup2="${ev => this.stepDatepickerValue(ev)}"
-          on-input="${ev => this.updateDatepickerValue(ev)}"></input>
+        ${
+          this._hasInputTypeDateSupported
+            ? html`<input id="datepicker__ipt" type="${_inputType}"
+              min="${min}"
+              max="${max}"
+              value="${value}"></input>`
+            : html`<input id="datepicker__ipt" type="${_inputType}"
+              min="${min}"
+              max="${max}"
+              value="${value}"
+              on-click="${() => this.openDatepicker()}"
+              on-keyup2="${ev => this.stepDatepickerValue(ev)}"
+              on-input="${ev => this.updateDatepickerValue(ev)}"></input>`
+        }
+
       </label>
     `;
   }
