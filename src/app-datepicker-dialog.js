@@ -180,6 +180,8 @@ class AppDatepickerDialog extends LitElement {
 
       <div class="dialog__datepicker">
         <app-datepicker
+          min="${min}"
+          max="${max}"
           value="${value}"
           valueAsDate="${valueAsDate}"
           valueAsNumber="${valueAsNumber}"

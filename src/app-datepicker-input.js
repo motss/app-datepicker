@@ -47,6 +47,10 @@ class AppDatepickerInput extends LitElement {
       value,
     } = changedProps;
 
+    if ('min' in changedProps || 'max' in changedProps) {
+      this.updateDatepicker();
+    }
+
     if ('dialogType' in changedProps) {
       if (typeof dialogType === 'string' && /^($|backdrop|modal|plain)/i.test(dialogType)) {
         Promise.resolve(this.renderComplete)
@@ -162,12 +166,6 @@ class AppDatepickerInput extends LitElement {
               min="${min}"
               max="${max}"
               value="${value}"
-              firstDayOfWeek="${firstDayOfWeek}"
-              disabledDays="${disabledDays}"
-              locale="${locale}"
-              startView="${startView}"
-              weekdayFormat="${weekdayFormat}"
-              showWeekNumber="${showWeekNumber}"
               on-click="${() => this.openDatepicker()}"
               on-keyup2="${ev => this.stepDatepickerValue(ev)}"
               on-input="${ev => this.updateDatepickerValue(ev)}"></input>`
@@ -195,11 +193,7 @@ class AppDatepickerInput extends LitElement {
     this._pattern = 'yyyy-MM-dd';
   }
 
-  openDatepicker() {
-    if (this._hasInputTypeDateSupported) {
-      return;
-    }
-
+  updateDatepicker() {
     const updateAttribute = AppDatepickerInput.updateAttribute;
 
     if (!this._dlg) {
@@ -283,6 +277,14 @@ class AppDatepickerInput extends LitElement {
 
         return this.renderComplete;
       })
+  }
+
+  openDatepicker() {
+    if (this._hasInputTypeDateSupported) {
+      return;
+    }
+
+    return this.updateDatepicker()
       .then(() => {
         this._dlg.opened = true;
       });
@@ -309,7 +311,7 @@ class AppDatepickerInput extends LitElement {
             return this.renderComplete;
           })
           .then(() => {
-            this.openDatepicker();
+            this.updateDatepicker();
           });
       }
     );

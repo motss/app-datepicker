@@ -40,6 +40,8 @@ export class AppDatepicker extends LitElement {
       _currentDate: Date,
       _todayDate: Date,
       _currentDisabledDays: Array,
+      _minDate: Date,
+      _maxDate: Date,
 
       _pattern: String,
     };
@@ -84,16 +86,83 @@ export class AppDatepicker extends LitElement {
       return true;
     }
 
+    console.log('# AppDatepicker:_shouldPropertiesChange', changedProps);
+
     /** NOTE: Specific requests for public properties */
     const {
+      min,
+      max,
       value,
       valueAsDate,
       valueAsNumber,
       disabledDays,
     } = changedProps;
 
+    if ('min' in changedProps) {
+      const toMinDate = AppDatepicker.toUTCDate(min);
+
+      if (
+        (typeof min === 'string' && min.length > 0)
+          && /^\d{4}\-\d{2}\-\d{2}/i.test(min)
+          && !/^invalid date/i.test(toMinDate)
+      ) {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            this._minDate = toMinDate;
+            this._currenDate = toMinDate;
+          });
+      } else {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            const newDate = AppDatepicker.toUTCDate(AppDatepicker.MIN_DATE);
+
+            this._minDate = newDate;
+            this._currenDate = newDate;
+          });
+      }
+    }
+
+    if ('max' in changedProps) {
+      const toMaxDate = AppDatepicker.toUTCDate(max);
+
+      if (
+        (typeof max === 'string' && max.length > 0)
+          && /^\d{4}\-\d{2}\-\d{2}/i.test(max)
+          && !/^invalid date/i.test(toMaxDate)
+      ) {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            this._maxDate = toMaxDate;
+            this._currenDate = toMaxDate;
+          });
+      } else {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            const newDate = AppDatepicker.toUTCDate(AppDatepicker.MAX_DATE);
+
+            this._maxDate = newDate;
+            this._currenDate = newDate;
+          });
+      }
+    }
+
     if ('value' in changedProps) {
-      const resetValue = () => {
+      const toValueDate = new Date(value);
+
+      if (
+        (typeof value === 'string' && value.length > 0)
+          && /^\d{4}\-\d{2}\-\d{2}/i.test(value)
+          && !/^invalid date/i.test(toValueDate)
+      ) {
+        Promise.resolve(this.renderComplete)
+          .then(() => {
+            this.value = value;
+            this.valueAsDate = toValueDate;
+            this.valueAsNumber = +toValueDate;
+            this._selectedDate = toValueDate;
+            this._currentDate = this.shiftCurrentDateByMin(this._minDate, toValueDate);
+          });
+      } else {
         console.warn(
           `The specified value "${value}" does not conform to the required format, "${this._pattern}"`
         );
@@ -104,26 +173,11 @@ export class AppDatepicker extends LitElement {
             this.valueAsDate = null;
             this.valueAsNumber = NaN;
             this._selectedDate = null;
-            this._currentDate = AppDatepicker.toUTCDate(new Date());
+            this._currentDate = this.shiftCurrentDateByMin(
+              this._minDate,
+              AppDatepicker.toUTCDate(new Date())
+            );
           });
-      };
-      const toValueDate = new Date(value);
-
-      if (
-        (typeof value === 'string' && value.length > 0)
-          && !/^invalid date/i.test(toValueDate)
-          && /^\d{4}\-\d{2}\-\d{2}/i.test(value)
-      ) {
-        Promise.resolve(this.renderComplete)
-          .then(() => {
-            this.value = value;
-            this.valueAsDate = toValueDate;
-            this.valueAsNumber = +toValueDate;
-            this._selectedDate = toValueDate;
-            this._currentDate = toValueDate;
-          });
-      } else {
-        resetValue();
       }
     }
 
@@ -137,7 +191,10 @@ export class AppDatepicker extends LitElement {
               this.value = '';
               this.valueAsNumber = NaN;
               this._selectedDate = null;
-              this._currentDate = AppDatepicker.toUTCDate(new Date());
+              this._currentDate = this.shiftCurrentDateByMin(
+                this._minDate,
+                AppDatepicker.toUTCDate(new Date())
+              );
             });
 
           break;
@@ -157,7 +214,10 @@ export class AppDatepicker extends LitElement {
               this.value = '';
               this.valueAsNumber = NaN;
               this._selectedDate = null;
-              this._currentDate = AppDatepicker.toUTCDate(new Date());
+              this._currentDate = this.shiftCurrentDateByMin(
+                this._minDate,
+                AppDatepicker.toUTCDate(new Date())
+              );
 
               console.warn(
                 `The specified value "${valueAsDate}" does not conform to the required format, "${this._pattern}"`
@@ -173,7 +233,10 @@ export class AppDatepicker extends LitElement {
               this.value = valueAsDate.toJSON().replace(/^(.+)T.+/i, '$1');
               this.valueAsNumber = +valueAsDate;
               this._selectedDate = valueAsDate;
-              this._currentDate = valueAsDate;
+              this._currentDate = this.shiftCurrentDateByMin(
+                this._minDate,
+                valueAsDate
+              );
             });
         }
       }
@@ -191,7 +254,10 @@ export class AppDatepicker extends LitElement {
                 this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
                 this.valueAsDate = toValueAsNumberDate;
                 this._selectedDate = toValueAsNumberDate;
-                this._currentDate = toValueAsNumberDate;
+                this._currentDate = this.shiftCurrentDateByMin(
+                  this._minDate,
+                  toValueAsNumberDate
+                );
               });
 
             break;
@@ -205,7 +271,10 @@ export class AppDatepicker extends LitElement {
                 this.value = '';
                 this.valueAsDate = null;
                 this._selectedDate = null;
-                this._currentDate = AppDatepicker.toUTCDate(new Date());
+                this._currentDate = this.shiftCurrentDateByMin(
+                  this._minDate,
+                  AppDatepicker.toUTCDate(new Date())
+                );
               });
 
             break;
@@ -220,7 +289,10 @@ export class AppDatepicker extends LitElement {
                 this.value = '';
                 this.valueAsDate = null;
                 this._selectedDate = null;
-                this._currentDate = AppDatepicker.toUTCDate(new Date());
+                this._currentDate = this.shiftCurrentDateByMin(
+                  this._minDate,
+                  AppDatepicker.toUTCDate(new Date())
+                );
               });
 
             break;
@@ -235,7 +307,10 @@ export class AppDatepicker extends LitElement {
               this.value = toValueAsNumberDate.toJSON().replace(/^(.+)T.+/i, '$1');
               this.valueAsDate = toValueAsNumberDate;
               this._selectedDate = toValueAsNumberDate;
-              this._currentDate = toValueAsNumberDate;
+              this._currentDate = this.shiftCurrentDateByMin(
+                this._minDate,
+                toValueAsNumberDate
+              );
             });
         }
       }
@@ -294,8 +369,8 @@ export class AppDatepicker extends LitElement {
   }
 
   render({
-    min,
-    max,
+    // min,
+    // max,
 
     // TODO: Yet-to-be-implemented features
     firstDayOfWeek,
@@ -322,14 +397,16 @@ export class AppDatepicker extends LitElement {
     _currentDate,
     _todayDate,
     _currentDisabledDays,
+    _minDate,
+    _maxDate,
   }) {
     const preSelectedView = _selectedView == null ? startView : _selectedView;
     const postSelectedView = preSelectedView == null ? 'calendar' : preSelectedView;
     const isCalendarView = /^calendar/i.test(postSelectedView);
     const renderedCalendar = isCalendarView
       ? this.setupCalendar({
-        min,
-        max,
+        minDate: _minDate,
+        maxDate: _maxDate,
         firstDayOfWeek,
         // disabledDays,
         showWeekNumber,
@@ -699,10 +776,10 @@ export class AppDatepicker extends LitElement {
       : AppDatepicker.toUTCDate(this.value);
 
     this.min = this.min == null
-      ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MIN_DATE}-01-01`))
+      ? AppDatepicker.toUTCDate(new Date(AppDatepicker.MIN_DATE))
       : this.min;
     this.max = this.max == null
-      ? AppDatepicker.toUTCDate(new Date(`${AppDatepicker.MAX_DATE}-12-31`))
+      ? AppDatepicker.toUTCDate(new Date(AppDatepicker.MAX_DATE))
       : this.max;
 
     this.value = preValue.toJSON().replace(/^(.+)T.+/, '$1');
@@ -733,6 +810,8 @@ export class AppDatepicker extends LitElement {
     this._currentDate = preValue;
     this._todayDate = defaultToday;
     this._currentDisabledDays = [];
+    this._minDate = null;
+    this._maxDate = null;
 
     this._pattern = 'yyyy-MM-dd';
   }
@@ -876,7 +955,7 @@ export class AppDatepicker extends LitElement {
           window.requestAnimationFrame(() => {
             this.shadowRoot
               .querySelector('.selector__view-year')
-              .scrollTo(0, (+selectedYear - AppDatepicker.MIN_DATE - 3) * 50);
+              .scrollTo(0, (+selectedYear - AppDatepicker.MIN_YEAR - 3) * 50);
           });
         });
       });
@@ -888,9 +967,9 @@ export class AppDatepicker extends LitElement {
     }
 
     return Array.from(
-      Array(AppDatepicker.MAX_DATE - AppDatepicker.MIN_DATE + 1),
+      Array(AppDatepicker.MAX_YEAR - AppDatepicker.MIN_YEAR + 1),
       (_, i) => {
-        const fy = AppDatepicker.MIN_DATE + i;
+        const fy = AppDatepicker.MIN_YEAR + i;
         const od = new Date(Date.UTC(fy, 0, 1));
         const val = AppDatepicker.formatDateWithIntl(od, { year: 'numeric' }, locale);
 
@@ -1017,8 +1096,8 @@ export class AppDatepicker extends LitElement {
     allWeekdays,
     allDaysInMonth,
 
-    min,
-    max,
+    minDate,
+    maxDate,
     firstDayOfWeek,
     showWeekNumber,
 
@@ -1040,8 +1119,8 @@ export class AppDatepicker extends LitElement {
         const rendered = day.map((d, di) => {
           /** NOTE: Disable month selector if needed */
           const oriTimestamp = +d.original;
-          const minTimestamp = +min;
-          const maxTimestamp = +max;
+          const minTimestamp = +minDate;
+          const maxTimestamp = +maxDate;
 
           hasMinDate = hasMinDate || (d.original == null ? false : oriTimestamp === minTimestamp);
           hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
@@ -1314,6 +1393,16 @@ export class AppDatepicker extends LitElement {
     }
   }
 
+  shiftCurrentDateByMin(minDate, currentDate) {
+    /** NOTE:
+     * Return 'currentDate' when 'currentDate' is now out of range of allowable date range,
+     * where it is in between 'min' and 'max'.
+     */
+    return currentDate > minDate
+      ? currentDate
+      : minDate;
+  }
+
   // stepDown() {}
   // stepUp() {}
 
@@ -1352,12 +1441,20 @@ export class AppDatepicker extends LitElement {
     return Math.ceil(((now - new Date(Date.UTC(now.getUTCFullYear(), 0, 1))) / 864e5 + 1) / 7);
   }
 
-  static get MIN_DATE() {
+  static get MIN_YEAR() {
     return 1970;
   }
 
-  static get MAX_DATE() {
+  static get MAX_YEAR() {
     return 2100;
+  }
+
+  static get MIN_DATE() {
+    return '1970-01-01';
+  }
+
+  static get MAX_DATE() {
+    return '2100-12-31';
   }
 
   static get KEYCODES() {
