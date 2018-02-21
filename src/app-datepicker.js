@@ -1270,6 +1270,11 @@ export class AppDatepicker extends LitElement {
     const KEYCODES = AppDatepicker.KEYCODES;
     const currentDisabledDays = this._currentDisabledDays;
 
+    console.log(
+      '##',
+      this._currenDate
+    );
+
     switch (keyCode) {
       case KEYCODES.UP:
       case KEYCODES.DOWN:
@@ -1294,6 +1299,11 @@ export class AppDatepicker extends LitElement {
           }
         );
 
+        /** NOTE: No op when the 'currentDate' falls out of allowable date range */
+        if (!(newDate >= this._minDate && newDate <= this._maxDate)) {
+          return;
+        }
+
         return Promise.resolve(this.renderComplete)
           .then(() => {
             this._selectedDate = newDate;
@@ -1312,6 +1322,16 @@ export class AppDatepicker extends LitElement {
           : this.updateCurrentDate(currentDate, {
             month: currentDate.getUTCMonth() + offset,
           });
+
+        console.log(
+          `# updateCurrentDateOnKeyup:${keyCode}`,
+          newCurrentDate >= this._minDate && newCurrentDate <= this._maxDate
+        );
+
+        /** NOTE: No op when the 'currentDate' falls out of allowable date range */
+        if (!(newCurrentDate >= this._minDate && newCurrentDate <= this._maxDate)) {
+          return;
+        }
 
         if (newCurrentDate.getUTCDate() !== dateFromCurrentDate) {
           /** NOTE:
@@ -1358,6 +1378,11 @@ export class AppDatepicker extends LitElement {
           }
         );
 
+        /** NOTE: No op when the 'currentDate' falls out of allowable date range */
+        if (!(newDate >= this._minDate && newDate <= this._maxDate)) {
+          return;
+        }
+
         return Promise.resolve(this.renderComplete)
           .then(() => {
             this._currentDate = newDate;
@@ -1376,6 +1401,11 @@ export class AppDatepicker extends LitElement {
           }
         );
 
+        /** NOTE: No op when the 'currentDate' falls out of allowable date range */
+        if (!(newDate >= this._minDate && newDate <= this._maxDate)) {
+          return;
+        }
+
         return Promise.resolve(this.renderComplete)
           .then(() => {
             this._currentDate = newDate;
@@ -1384,6 +1414,11 @@ export class AppDatepicker extends LitElement {
       }
       case KEYCODES.SPACEBAR:
       case KEYCODES.ENTER: {
+        /** NOTE: No op when the 'currentDate' falls out of allowable date range */
+        if (!(this._currentDate >= this._minDate && this._currentDate <= this._maxDate)) {
+          return;
+        }
+
         return this.updateValue(this._currentDate, currentDisabledDays);
       }
       default: {
@@ -1392,6 +1427,36 @@ export class AppDatepicker extends LitElement {
       }
     }
   }
+
+  // shiftToFirstAllowableDate(keyCode, currentDate, minDate, maxDate) {
+  //   const keyCodes = AppDatepicker.KEYCODES;
+
+  //   switch (keyCode) {
+  //     case keyCodes.LEFT:
+  //     case keyCodes.UP:
+  //     case keyCodes.PAGE_UP:
+  //     case keyCode.HOME: {
+  //       const nfy = maxDate.getUTCFullYear();
+  //       const nm = maxDate.getUTCMonth();
+  //       const nd = maxDate.getUTCDate();
+
+  //       return new Date(Date.UTC(nfy, nm, nd + 1));
+  //     }
+  //     case keyCodes.RIGHT:
+  //     case keyCodes.DOWN:
+  //     case keyCodes.PAGE_DOWN:
+  //     case keyCodes.END: {
+  //       const nfy = minDate.getUTCFullYear();
+  //       const nm = minDate.getUTCMonth();
+  //       const nd = minDate.getUTCDate();
+
+  //       return new Date(Date.UTC(nfy, nm, nd - 1));
+  //     }
+  //     default: {
+  //       return currentDate;
+  //     }
+  //   }
+  // }
 
   shiftCurrentDateByMin(minDate, currentDate) {
     /** NOTE:
