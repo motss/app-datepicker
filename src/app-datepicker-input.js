@@ -48,7 +48,10 @@ class AppDatepickerInput extends LitElement {
     } = changedProps;
 
     if ('min' in changedProps || 'max' in changedProps) {
-      this.updateDatepicker();
+      /** NOTE: Only render/ update datepicker when it's opened */
+      if (this._dlg) {
+        this.updateDatepicker();
+      }
     }
 
     if ('dialogType' in changedProps) {
@@ -194,6 +197,10 @@ class AppDatepickerInput extends LitElement {
   }
 
   updateDatepicker() {
+    if (this._hasInputTypeDateSupported) {
+      return;
+    }
+
     const updateAttribute = AppDatepickerInput.updateAttribute;
 
     if (!this._dlg) {
