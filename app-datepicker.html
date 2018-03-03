@@ -648,8 +648,16 @@ Custom property | Description | Default
     </style>
 
     <div id="dp" class="datepicker">
-      <iron-selector selected="{{_activeView}}" class="selected-fulldate" attr-for-selected="view" on-selected-changed="_onIronSelectorSelectedChanged" fallback-selection="calendar">
-        <div id="showSelectedYear" class="selected-year" tabindex="0" view="year" aria-label="year view">
+      <iron-selector class="selected-fulldate"
+        selected="{{_activeView}}"
+        attr-for-selected="view"
+        on-selected-changed="_onIronSelectorSelectedChanged"
+        fallback-selection="calendar">
+        <div id="showSelectedYear"
+          class="selected-year"
+          tabindex="0"
+          view="year"
+          aria-label="year view">
           [[_showSelectedYear]]
         </div>
         <div class="selected-date" view="calendar" tabindex="0">
@@ -657,18 +665,30 @@ Custom property | Description | Default
         </div>
       </iron-selector>
 
-      <neon-animated-pages class="fullcalendar" selected="[[_activeView]]" attr-for-selected="view" entry-animation="[[pageEntryAnimation]]" exit-animation="[[pageExitAnimation]]" on-neon-animation-finish="_onAnimationFinish">
+      <neon-animated-pages class="fullcalendar"
+        selected="[[_activeView]]"
+        attr-for-selected="view"
+        entry-animation="[[pageEntryAnimation]]"
+        exit-animation="[[pageExitAnimation]]"
+        on-neon-animation-finish="_onAnimationFinish">
         <div class="calendar-view" view="calendar">
           <div class="navigator">
-            <paper-icon-button icon="datepicker:chevron-left" on-tap="_decrementMonth" noink="[[noAnimation]]"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-left"
+              on-tap="_decrementMonth"
+              noink="[[noAnimation]]"></paper-icon-button>
             <div id="navMonthYear" class="nav-month-year">
               [[_activeMonthYear]]
             </div>
-            <paper-icon-button icon="datepicker:chevron-right" on-tap="_incrementMonth" noink="[[noAnimation]]"></paper-icon-button>
+            <paper-icon-button icon="datepicker:chevron-right"
+              on-tap="_incrementMonth"
+              noink="[[noAnimation]]"></paper-icon-button>
           </div>
 
           <div id="daysOfWeek" class="days-of-week">
-            <template is="dom-repeat" items="[[_daysOfWeek]]" index-as="index" strip-whitespace>
+            <template is="dom-repeat"
+              items="[[_daysOfWeek]]"
+              index-as="index"
+              strip-whitespace>
               <div class="each-days-of-week">
                 [[item]]
               </div>
@@ -676,8 +696,15 @@ Custom property | Description | Default
           </div>
 
           <div id="daysOfMonth" class="days-of-month" on-tap="_chooseDaysOfMonth">
-            <template is="dom-repeat" items="[[_daysOfMonth]]" index-as="index" strip-whitespace>
-              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" index="[[index]]" date="[[item.index]]" tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-label$=[[item.index]]>
+            <template is="dom-repeat"
+              items="[[_daysOfMonth]]"
+              index-as="index"
+              strip-whitespace>
+              <div class$="each-days-of-month[[_isToday(item.index, _activeYear, _activeMonth)]][[_isEmptyDate(item.index)]][[_isChosenDaysOfMonth(item.index, _selectedYear, _selectedMonth, _selectedDate)]][[_isDisableDays(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]"
+                index="[[index]]"
+                date="[[item.index]]"
+                tabindex$="[[_shouldTabIndex(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]" aria-disabled$="[[_shouldAriaDisabled(index, firstDayOfWeek, minDate, maxDate, item.index, _shiftedDisableDays.*, disableDates.*)]]"
+                aria-label$=[[item.index]]>
                 [[item.date]]
               </div>
             </template>
@@ -689,10 +716,23 @@ Custom property | Description | Default
           </div>
         </div>
 
-        <template is="dom-if" if="[[_isListRendered]]" restamp="true" strip-whitespace on-dom-change="_onListRendered" strip-whitespace>
-          <iron-list  id="listOfYears" items="[[_listOfYears]]" view="year" on-neon-animation-finish="_onAnimationFinish" selected-item="{{_selectedListItem}}" selection-enabled>
+        <template is="dom-if"
+          if="[[_isListRendered]]"
+          restamp="true"
+          on-dom-change="_onListRendered"
+          strip-whitespace>
+          <iron-list id="listOfYears"
+            items="[[_listOfYears]]"
+            view="year"
+            on-neon-animation-finish="_onAnimationFinish"
+            selection-enabled>
             <template strip-whitespace>
-              <div class$="each-list-of-years[[_isListOfYearsSelected(selected)]]" tabindex$="[[tabIndex]]" aria-label$="[[item.year]]" label$="[[item.year]]" on-tap="_goCalendar" on-keydown="_goCalendar">
+              <div class$="each-list-of-years[[_isListOfYearsSelected(_selectedYear, item.year)]]"
+                tabindex$="[[tabIndex]]"
+                aria-label$="[[item.year]]"
+                label$="[[item.year]]"
+                on-tap="_goCalendar"
+                on-keydown="_goCalendar">
                 [[item.year]]
               </div>
             </template>
@@ -897,7 +937,6 @@ Custom property | Description | Default
             return new Date().getDate();
           },
         },
-        _selectedListItem: Object,
 
         _chosenDaysOfMonth: {
           type: Number,
@@ -935,9 +974,6 @@ Custom property | Description | Default
         '_computeShiftedDisableDays(firstDayOfWeek, disableDays.*)',
       ],
 
-      ready: function () {
-      },
-
       attached: function () {
         if (!this.noAnimation) {
           this.set('animationConfig', {
@@ -973,12 +1009,11 @@ Custom property | Description | Default
           this.set('pageEntryAnimation', 'fade-in-animation');
           this.set('pageExitAnimation', 'fade-out-animation');
         }
-        // setup distributed children.
-        var effectiveChildren = this.getEffectiveChildren();
 
-        // var _paperButtons = Polymer.dom(effectiveChildren[0]).querySelectorAll('paper-button');
-        // workaround to check for effectiveChildren[0] as paper-button outside of
+        // NOTE: workaround to check for effectiveChildren[0] as paper-button outside of
         // this element will be queried as well even though outside of content tag.
+        // Setup distributed children.
+        var effectiveChildren = this.getEffectiveChildren();
         if (effectiveChildren && effectiveChildren.length > 0) {
           for (var i = 0; i < effectiveChildren.length; i++) {
             // addEventListener to paper-button with dialog-confirm.
@@ -999,8 +1034,6 @@ Custom property | Description | Default
 
         this.fire('app-datepicker-attached');
       },
-
-      detached: function () { },
 
       //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
       //  Days   31  28  31  30  31  30  31  31  30  31  30  31
@@ -1264,8 +1297,8 @@ Custom property | Description | Default
       },
 
       // Re-compute class when a year is selected at year page.
-      _isListOfYearsSelected: function (_selected) {
-        return _selected ? ' is-selected' : '';
+      _isListOfYearsSelected: function (selectedYear, year) {
+        return +selectedYear === +year ? ' is-selected' : '';
       },
 
       _computeDaysOfWeek: function (_firstDayOfWeek, _locale) {
