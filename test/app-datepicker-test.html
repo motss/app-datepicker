@@ -149,6 +149,33 @@
           });
         });
 
+        context('year should be disabled depending on minDate and maxDate', function () {
+          it('should disable all years before minDate && after maxDate', function () {
+            var _currentDate = new Date();
+            var minYear =  _currentDate.getFullYear() - 3;
+            var maxYear = _currentDate.getFullYear() + 1;
+            var _minDateString = [ minYear, _currentDate.getMonth(), '3' ].join('/');
+            var _maxDateString = [ maxYear, _currentDate.getMonth(), '3' ].join('/');
+            datepicker.minDate = _minDateString;
+            datepicker.maxDate = _maxDateString;
+
+            Polymer.dom.flush();
+            var yearElements = Polymer.dom(datepicker.root).querySelectorAll('.each-list-of-years');
+
+            for (var i=0; yearElements.length; i++) {
+              var year = parseInt(yearElements[i].getAttribute('label'));
+              
+              console.log(year, yearElements[i])
+              if (year >= minYear && year <= maxYear) {
+                expect(_getDateFromDatepicker[0].classList.contains('is-disabled-year')).to.be.false;
+              }
+              else {
+                expect(_getDateFromDatepicker[0].classList.contains('is-disabled-year')).to.be.true;
+              }
+            }
+          });
+        });
+
         context('test for autoUpdateDate', function () {
           it('should not auto update date by default', function () {
             expect(datepicker.autoUpdateDate).to.be.false;
