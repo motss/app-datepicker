@@ -3,6 +3,7 @@ dist: trusty
 node_js:
   - v8
   - v9
+  - v10
 script:
   - npm run check
 #   - npm run test

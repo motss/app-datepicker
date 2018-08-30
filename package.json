@@ -1,79 +1,55 @@
 {
   "name": "app-datepicker",
-  "version": "0.0.0",
+  "version": "3.0.0-alpha.0",
   "private": true,
-  "description": "Material Design based datepicker element built with Polymer",
+  "description": "Material Design based datepicker element built with Polymer and LitElement",
   "keywords": [
     "app-datepicker",
+    "datepicker",
+    "lit-element",
+    "lit-html",
     "node",
-    "typescript"
+    "polymer",
+    "typescript",
+    "webcomponents"
   ],
   "homepage": "https://github.com/motss/app-datepicker",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:motss/app-datepicker.git"
+  },
   "license": "MIT",
   "author": {
     "name": "Rong Sen Ng",
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
-  "main": "./index.js",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:motss/app-datepicker.git"
-  },
+  "main": "./index",
+  "module": "./index.mjs",
   "scripts": {
-    "build": "npm run ts && cross-env NODE_ENV=production gulp build && npm run cleanup",
-    "build:debug": "npm run ts && gulp build && npm run cleanup",
-    "check": "npm run lint && npm run nsp",
-    "cleanup": "rm -rf gulpfile.js",
-    "gulp": "npm run ts && gulp",
-    "lint": "npm run ts && gulp lint && npm run cleanup",
-    "nsp": "nsp check",
-    "prepublishOnly": "npm run check && npm run build",
-    "ts": "tsc --target esnext --lib dom,dom.iterable,esnext,esnext.asynciterable --module esnext src/app-datepicker.ts"
+    "build": "npm run build:cjs && npm run build:esm && rm -rf dist/ && echo \"> [build] Done!\"",
+    "build:cjs": "npm run lint && rm -rf dist/ && tsc -p tsconfig.json && mv dist/index.js dist/index.d.ts . && echo \"> [cjs] Done!\"",
+    "build:esm": "npm run lint && rm -rf dist/ && tsc -p tsconfig.esm.json && mv dist/index.js ./index.mjs && echo \"> [esm] Done!\"",
+    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
+    "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
+    "prepublishOnly": "npm run lint && npm run build"
   },
   "dependencies": {
-    "@polymer/iron-iconset-svg": "^3.0.0-pre.8",
-    "@polymer/iron-selector": "^3.0.0-pre.8",
-    "@polymer/lit-element": "^0.1.1",
-    "@polymer/paper-button": "^3.0.0-pre.8",
-    "@polymer/paper-icon-button": "^3.0.0-pre.8",
-    "@webcomponents/webcomponentsjs": "^1.1.0"
+    "@polymer/iron-iconset-svg": "^3.0.0-pre.25",
+    "@polymer/iron-selector": "^3.0.0-pre.25",
+    "@polymer/lit-element": "^0.6.0-dev.5",
+    "@polymer/paper-button": "^3.0.0-pre.25",
+    "@polymer/paper-icon-button": "^3.0.0-pre.25"
   },
   "devDependencies": {
-    "nsp": "^3.1.0",
-    "tslint": "^5.9.1",
-    "tslint-config-airbnb": "^5.6.0",
-    "tslint-consistent-codestyle": "^1.11.1",
-    "tslint-immutable": "^4.5.1",
-    "typescript": "^2.6.2"
+    "@messageflow/tslint-config": "^1.1.0",
+    "@webcomponents/webcomponentsjs": "^2.1.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.3"
   },
   "engines": {
     "node": ">= 8.9.0",
     "npm": ">= 5.5.1"
   },
-  "flat": true,
-  "resolutions": {
-    "chalk": "2.3.0",
-    "ansi-styles": "3.2.0",
-    "supports-color": "4.5.0",
-    "lodash": "4.17.4",
-    "string-width": "2.1.1",
-    "is-fullwidth-code-point": "2.0.0",
-    "strip-ansi": "4.0.0",
-    "ansi-regex": "3.0.0",
-    "tsutils": "2.20.0",
-    "esutils": "2.0.2",
-    "@polymer/polymer": "3.0.0-pre.7",
-    "@polymer/iron-flex-layout": "3.0.0-pre.7",
-    "@polymer/paper-behaviors": "3.0.0-pre.7",
-    "@polymer/paper-styles": "3.0.0-pre.7",
-    "@polymer/iron-behaviors": "3.0.0-pre.7",
-    "@polymer/iron-checked-element-behavior": "3.0.0-pre.7",
-    "@polymer/paper-ripple": "3.0.0-pre.7",
-    "@polymer/iron-a11y-keys-behavior": "3.0.0-pre.7",
-    "@polymer/iron-form-element-behavior": "3.0.0-pre.7",
-    "@polymer/iron-validatable-behavior": "3.0.0-pre.7",
-    "@polymer/iron-meta": "3.0.0-pre.7",
-    "@polymer/font-roboto": "3.0.0-pre.7"
-  }
+  "flat": true
 }

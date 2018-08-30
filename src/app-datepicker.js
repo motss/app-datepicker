@@ -5,10 +5,6 @@ import '../node_modules/@polymer/paper-icon-button/paper-icon-button.js';
 import {
   html,
   LitElement,
-
-  classString,
-  renderAttributes,
-  styleString,
 } from '../node_modules/@polymer/lit-element/lit-element.js';
 
 /** Import other modules */
