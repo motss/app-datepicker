@@ -1,8 +1,7 @@
 language: node_js
 sudo: required
 before_script:
-  - npm install -g polymer-cli
-  - polymer install --variants
+  - npm install
 node_js: stable
 addons:
   firefox: latest
@@ -12,5 +11,5 @@ addons:
     packages:
       - google-chrome-stable
 script:
-  - xvfb-run polymer test
+  - xvfb-run polymer test --module-resolution=node --npm
 dist: trusty
