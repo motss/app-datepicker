@@ -1,4 +1,7 @@
-<dom-module id="paper-dialog-theme">
+import '@polymer/polymer/polymer-element.js';
+
+const $_documentContainer = document.createElement('template');
+$_documentContainer.innerHTML = `<dom-module id="shared-styles">
   <template>
     <style>
       :host {
@@ -50,7 +53,6 @@
         @apply(--layout-end-justified);
       }
 
-    </style>
+    </style>`
+document.head.appendChild($_documentContainer.content);
 
-  </template>
-</dom-module>
