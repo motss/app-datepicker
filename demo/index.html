@@ -1,37 +1,47 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <title>app-datepicker Demo</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script>
-      // window.Polymer = { useNativeCSSProperties: !0, dom: 'shadow' };
-    </script>
+<head>
+  <title>app-datepicker Demo</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-    <link rel="import" href="fetch.html">
-    <link rel="import" href="../intl.html">
+  <script src="https://cdn.polyfill.io/v2/polyfill.js?features=fetch,Promise"></script>
 
-    <link rel="import" href="../app-datepicker.html">
-    <link rel="import" href="../app-datepicker-dialog.html">
-    <link rel="import" href="../app-datepicker-icons.html">
-    <link rel="import" href="../animations/datepicker-slide-from-bottom-animation.html">
-    <link rel="import" href="../animations/datepicker-slide-from-top-animation.html">
+  <script src="../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
+  <script src="../node_modules/intl/dist/Intl.complete.js"></script>
 
-    <link rel="import" href="../../iron-selector/iron-selector.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+  <script type="module">
+    import '../app-datepicker.js';
+    import '../app-datepicker-dialog.js';
+    import '../app-datepicker-icons.js';
+    import '../animations/datepicker-slide-from-bottom-animation.js';
+    import '../animations/datepicker-slide-from-top-animation.js';
+    import '@polymer/iron-selector/iron-selector.js';
+    import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+    import '@polymer/iron-demo-helpers/demo-snippet.js';
+    import '@polymer/paper-styles/paper-styles.js';
+    import '@polymer/paper-input/paper-input.js';
+    import '@polymer/paper-button/paper-button.js';
+    import '@polymer/paper-icon-button/paper-icon-button.js';
+    import '@polymer/paper-dialog/paper-dialog.js';
+    import '@polymer/paper-checkbox/paper-checkbox.js';
+    import '@webcomponents/webcomponentsjs/webcomponents-loader.js';
+  </script>
 
-    <link rel="import" href="../../paper-styles/paper-styles.html">
-    <link rel="import" href="../../paper-input/paper-input.html">
-    <link rel="import" href="../../paper-button/paper-button.html">
-    <link rel="import" href="../../paper-icon-button/paper-icon-button.html">
-    <link rel="import" href="../../paper-dialog/paper-dialog.html">
-    <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+  <!-- FIXME(polymer-modulizer):
+        These imperative modules that innerHTML your HTML are
+        a hacky way to be sure that any mixins in included style
+        modules are ready before any elements that reference them are
+        instantiated, otherwise the CSS @apply mixin polyfill won't be
+        able to expand the underlying CSS custom properties.
+        See: https://github.com/Polymer/polymer-modulizer/issues/154
+        -->
+  <script type="module">
+    const $_documentContainer = document.createElement('template');
 
-    <custom-style>
+    $_documentContainer.innerHTML = `<custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
         body {
           font-family: 'Roboto', 'Noto', sans-serif;
@@ -240,10 +250,17 @@
       }
 
       </style>
-    </custom-style>
-  </head>
-  <body>
-    <dom-bind>
+    </custom-style>`;
+
+    document.body.appendChild($_documentContainer.content);
+  </script>
+</head>
+
+<body>
+  <script type="module">
+    const $_documentContainer = document.createElement('template');
+
+    $_documentContainer.innerHTML = `<dom-bind>
       <template is="dom-bind" id="demo">
         <div class="vertical-section-container">
           <div class="vertical-section first-vertical-section">
@@ -276,7 +293,7 @@
             </div>
             <div class="choose-disabled-days">
               <h5>Disable days</h5>
-              <iron-selector multi selected-values="{{disableDays}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged">
+              <iron-selector multi="" selected-values="{{disableDays}}" on-iron-select="onIronItemsChanged" on-iron-deselect="onIronItemsChanged">
                 <div>Sun (0)</div>
                 <div>Mon (1)</div>
                 <div>Tue (2)</div>
@@ -288,15 +305,15 @@
             </div>
             <div class="choose-disabled-dates">
               <h5>Disable dates</h5>
-              <paper-input label="disableDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate on-value-changed="_onDisableDateChanged" error-message="Invalid date input!"></paper-input>
+              <paper-input label="disableDate" char-counter="" maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}\$" auto-validate="" on-value-changed="_onDisableDateChanged" error-message="Invalid date input!"></paper-input>
             </div>
             <div class="choose-min-date">
               <h5>Min date</h5>
-              <paper-input label="minDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{minDate::input}}" error-message="Invalid date input!"></paper-input>
+              <paper-input label="minDate" char-counter="" maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}\$" auto-validate="" value="{{minDate::input}}" error-message="Invalid date input!"></paper-input>
             </div>
             <div class="choose-max-date">
               <h5>Max date</h5>
-              <paper-input label="maxDate" char-counter maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}$" auto-validate value="{{maxDate::input}}" error-message="Invalid date input!"></paper-input>
+              <paper-input label="maxDate" char-counter="" maxlength="10" placeholder="2016/01/01" pattern="^[0-9]{0,4}[^a-zA-Z0-9]{1}[0-9]{0,2}[^a-zA-Z0-9]{1}[0-9]{0,2}\$" auto-validate="" value="{{maxDate::input}}" error-message="Invalid date input!"></paper-input>
             </div>
             <div class="choose-date-format">
               <div class="choose-date-format-year">
@@ -355,235 +372,186 @@
           <div class="vertical-section">
             <h4>Datepicker</h4>
             <div class="datepicker">
-              <app-datepicker id="common"
-              theme="[[theme]]"
-              view="{{view}}"
-              first-day-of-week="[[firstDayOfWeek]]"
-              disable-days="[[disableDays]]"
-              disable-dates="[[disableDates]]"
-              min-date="[[minDate]]"
-              max-date="[[maxDate]]"
-              format="[[format]]"
-              date="{{selectedDate}}"
-              input-date="[[inputDate]]"
-              on-date-changed="_onSelectedDateChanged"
-              show-long-date="[[showLongDate]]"
-              invalid-date="{{_isInvalid}}"
-              locale="[[locale]]"
-              auto-update-date="[[autoUpdateDate]]">
+              <app-datepicker id="common" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" disable-dates="[[disableDates]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{selectedDate}}" input-date="[[inputDate]]" on-date-changed="_onSelectedDateChanged" show-long-date="[[showLongDate]]" invalid-date="{{_isInvalid}}" locale="[[locale]]" auto-update-date="[[autoUpdateDate]]">
               </app-datepicker>
             </div>
             <span class="small-note">Note: By default, tapping a date on a datepicker w/o any button (eg. paper-button at the bottom) won't trigger date change</span>
             <div class="choose-max-date large">
               <h5>Input the date externally</h5>
-              <paper-input id="eInput" type="text" label="date" char-counter maxlength="30" placeholder="2016/01/01" value="{{inputDate::input}}" error-message="Invalid date input!" invalid="[[_isInvalid]]"></paper-input>
-              <paper-button raised on-tap="_updateDatepickerWoButtons">Update datepicker</paper-button>
+              <paper-input id="eInput" type="text" label="date" char-counter="" maxlength="30" placeholder="2016/01/01" value="{{inputDate::input}}" error-message="Invalid date input!" invalid="[[_isInvalid]]"></paper-input>
+              <paper-button raised="" on-tap="_updateDatepickerWoButtons">Update datepicker</paper-button>
             </div>
             <span class="small-note">* Input date does not work for locale other than <b>en-*</b>, it is advisable to pass in date with format <i>yyyy/mm/dd</i></span>
             <h4>Datepicker dialog</h4>
             <div class="datepicker-dialog">
-              <paper-button raised on-tap="_openDialog">Datepicker Dialog</paper-button>
-              <paper-button disabled>[[dynamicDate]]</paper-button>
-              <app-datepicker-dialog id="datepicker"
-              with-backdrop
-              theme="[[theme]]"
-              view="{{view}}"
-              first-day-of-week="[[firstDayOfWeek]]"
-              disable-days="[[disableDays]]"
-              min-date="[[minDate]]"
-              max-date="[[maxDate]]"
-              format="[[format]]"
-              date="{{dynamicDate}}"
-              show-long-date="[[showLongDate]]"
-              entry-animation="datepicker-slide-from-bottom-animation"
-              exit-animation="datepicker-slide-from-top-animation"
-              locale="[[locale]]"></app-datepicker-dialog>
+              <paper-button raised="" on-tap="_openDialog">Datepicker Dialog</paper-button>
+              <paper-button disabled="">[[dynamicDate]]</paper-button>
+              <app-datepicker-dialog id="datepicker" with-backdrop="" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{dynamicDate}}" show-long-date="[[showLongDate]]" entry-animation="datepicker-slide-from-bottom-animation" exit-animation="datepicker-slide-from-top-animation" locale="[[locale]]"></app-datepicker-dialog>
             </div>
             <h4>Datepicker dialog w/o any animation and transition</h4>
             <div class="datepicker-dialog">
-              <paper-button noink raised on-tap="_openStaticDialog">Static datepicker Dialog</paper-button>
-              <paper-button disabled>[[staticDate]]</paper-button>
-              <app-datepicker-dialog id="static"
-              with-backdrop theme="[[theme]]"
-              view="{{view}}"
-              first-day-of-week="[[firstDayOfWeek]]"
-              disable-days="[[disableDays]]"
-              min-date="[[minDate]]"
-              max-date="[[maxDate]]"
-              format="[[format]]"
-              date="{{staticDate}}"
-              show-long-date="[[showLongDate]]"
-              no-animation locale="[[locale]]"></app-datepicker-dialog>
+              <paper-button noink="" raised="" on-tap="_openStaticDialog">Static datepicker Dialog</paper-button>
+              <paper-button disabled="">[[staticDate]]</paper-button>
+              <app-datepicker-dialog id="static" with-backdrop="" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{staticDate}}" show-long-date="[[showLongDate]]" no-animation="" locale="[[locale]]"></app-datepicker-dialog>
             </div>
             <h4>Datepicker dialog that always reset to today's date everytime the datepicker opens</h4>
             <div class="datepicker-dialog">
-              <paper-button noink raised on-tap="_openAlwaysResetDialog">Always reset datepicker Dialog</paper-button>
-              <paper-button disabled>[[alwaysResetDate]]</paper-button>
-              <app-datepicker-dialog id="alwaysReset"
-              with-backdrop
-              theme="[[theme]]"
-              view="{{view}}"
-              first-day-of-week="[[firstDayOfWeek]]"
-              disable-days="[[disableDays]]"
-              min-date="[[minDate]]"
-              max-date="[[maxDate]]"
-              format="[[format]]"
-              date="{{alwaysResetDate}}"
-              input-date="[[alwaysResetInputDate]]"
-              locale="[[locale]]"
-              always-reset-selected-date-on-dialog-close></app-datepicker-dialog>
+              <paper-button noink="" raised="" on-tap="_openAlwaysResetDialog">Always reset datepicker Dialog</paper-button>
+              <paper-button disabled="">[[alwaysResetDate]]</paper-button>
+              <app-datepicker-dialog id="alwaysReset" with-backdrop="" theme="[[theme]]" view="{{view}}" first-day-of-week="[[firstDayOfWeek]]" disable-days="[[disableDays]]" min-date="[[minDate]]" max-date="[[maxDate]]" format="[[format]]" date="{{alwaysResetDate}}" input-date="[[alwaysResetInputDate]]" locale="[[locale]]" always-reset-selected-date-on-dialog-close=""></app-datepicker-dialog>
             </div>
           </div>
         </div>
       </template>
-    </dom-bind>
+    </dom-bind>`;
 
-    <script>
-      function _loadLocales(file) {
-        fetch(file).then(function(res) {
-          return res.json();
-        }).then(function(res) {
-          var _select = document.createElement('select');
-          var hasIntl = typeof window.Intl !== 'undefined';
-          var getLocale = window.Intl.DateTimeFormat().resolvedOptions().locale || 'en-US';
-          getLocale = 'en-US-posix' ? 'en-US' : getLocale;
+    document.body.appendChild($_documentContainer.content);
 
-          for (var i = 0, len = res.length; i < len; i++) {
-            var _opt = document.createElement('option');
-            _opt.setAttribute('value', res[i].code);
+    function _loadLocales(file) {
+      fetch(file).then(function (res) {
+        return res.json();
+      }).then(function (res) {
+        var _select = document.createElement('select');
+        var hasIntl = typeof window.Intl !== 'undefined';
+        var getLocale = window.Intl.DateTimeFormat().resolvedOptions().locale || 'en-US';
+        getLocale = 'en-US-posix' ? 'en-US' : getLocale;
 
-            if (res[i].code === getLocale) {
-              _opt.setAttribute('selected', '');
-            }
+        for (var i = 0, len = res.length; i < len; i++) {
+          var _opt = document.createElement('option');
+          _opt.setAttribute('value', res[i].code);
 
-            _opt.innerHTML = res[i].code + ' - ' + res[i].name;
-            _select.appendChild(_opt);
+          if (res[i].code === getLocale) {
+            _opt.setAttribute('selected', '');
           }
 
-          console.log('local-machine-language - ', getLocale);
+          _opt.innerHTML = res[i].code + ' - ' + res[i].name;
+          _select.appendChild(_opt);
+        }
 
-          var _locale = document.querySelector('.locale') || document.querySelector('template').content.querySelector('.locale');
-          _locale.appendChild(_select);
-        }).catch(function(error) {
-          console.error(error);
-        });
-      }
+        console.log('local-machine-language - ', getLocale);
 
-      if (window.fetch) {
+        var _locale = document.querySelector('.locale') || document.querySelector('template').content.querySelector('.locale');
+        _locale.appendChild(_select);
+      }).catch(function (error) {
+        console.error(error);
+      });
+    }
+
+    if (window.fetch) {
+      _loadLocales('locales.json');
+    } else {
+      document.addEventListener('WebComponentsReady', function () {
         _loadLocales('locales.json');
-      }else {
-        document.addEventListener('WebComponentsReady', function() {
-          _loadLocales('locales.json');
-        });
+      });
+    }
+
+    var _allFirstDayOfWeek = [
+      'Sun (0)', 'Mon (1)', 'Tue (2)', 'Wed (3)', 'Thu (4)', 'Fri (5)', 'Sat (6)'
+    ];
+    var demo = document.querySelector('dom-bind');
+    var _idx = 0;
+    var _years = ['yyyy', 'yy'];
+    var _months = ['mmmm', 'mmm', 'mm', 'm'];
+    var _days = ['do', 'dd', 'd'];
+    var now = new Date();
+    var nowFy = now.getFullYear();
+    var nowM = now.getMonth() + 1;
+    var nowD = now.getDate();
+    demo.dynamicDate = demo.staticDate = demo.alwaysResetDate = nowFy + '/' + ('0' + nowM).slice(-2) + '/' + ('0' + nowD).slice(-2);
+
+    demo.theme = 'light-theme';
+    demo.showLongDate = false;
+    demo.autoUpdateDate = false;
+    demo.yearFormat = 0;
+    demo.monthFormat = 2;
+    demo.dayFormat = 1;
+    // demo.minDate = '2016/01/01';
+    // demo.maxDate = '2017/01/11';
+    demo.disableDays = [0, 6];
+    demo.firstDayOfWeek = _idx;
+    demo._chosenFirstDayOfWeek = _allFirstDayOfWeek[_idx];
+
+    demo.changeFirstDayOfWeek = function (ev) {
+      var _target = ev.target;
+      while (_target && _target.tagName !== 'PAPER-ICON-BUTTON') {
+        _target = _target.parentElement;
       }
+      if (_target && _target.hasAttribute('action')) {
+        var _fakeIconButtonAction = _target.getAttribute('action');
+        if (_fakeIconButtonAction === 'increment') {
+          _idx = ++_idx > 6 ? 0 : _idx;
+        } else {
+          _idx = --_idx < 0 ? 6 : _idx;
+        }
+        demo._chosenFirstDayOfWeek = _allFirstDayOfWeek[_idx];
+        demo.firstDayOfWeek = _idx;
+      }
+    };
 
-      var _allFirstDayOfWeek = [
-        'Sun (0)', 'Mon (1)', 'Tue (2)', 'Wed (3)', 'Thu (4)', 'Fri (5)', 'Sat (6)'
-      ];
-      var demo = document.querySelector('dom-bind');
-      var _idx = 0;
-      var _years = ['yyyy', 'yy'];
-      var _months = ['mmmm', 'mmm', 'mm', 'm'];
-      var _days = ['do', 'dd', 'd'];
+    demo._openDialog = function (ev) {
+      this.$.datepicker.open();
+    };
+    demo._openStaticDialog = function (ev) {
+      this.$.static.open();
+    };
+    demo._openAlwaysResetDialog = function (ev) {
+      alwaysReset.open();
+    };
 
+    demo.onIronItemsChanged = function () {
+      var _format = [_years[demo.yearFormat], _months[demo.monthFormat], _days[demo.dayFormat]].join('/');
+      demo.format = _format;
+    };
+
+    demo._onDisableDateChanged = function (ev) {
+      this.set('disableDates', [ev.detail.value]);
+    };
+
+    demo._onSelectedDateChanged = function (ev) {
+      var _value = ev.detail.value;
+      window.setTimeout(function () {
+        demo.$.eInput.updateValueAndPreserveCaret(_value);
+      }, 1500);
+    };
+
+    demo._onLocaleChange = function (ev) {
+      demo.locale = ev.target.value;
+    };
+
+    demo._updateDatepickerWoButtons = function () {
+      this.$.common.enforceDateChange();
+    };
+
+
+    document.addEventListener('app-datepicker-attached', function (ev) {
+      var _target = ev.target;
+      window.setTimeout(function () {
+        var _tel = _target.getElementsByTagName('*').length;
+        console.log('Total element nodes w/ Lazy-Loading:', _tel);
+      }, 1);
+    });
+
+    window.setTimeout(function () {
       var now = new Date();
-      var nowFy = now.getFullYear();
-      var nowM = now.getMonth() + 1;
-      var nowD = now.getDate();
-      demo.dynamicDate = demo.staticDate = demo.alwaysResetDate = nowFy + '/' + ('0' + nowM).slice(-2) + '/' + ('0' + nowD).slice(-2);
+      var fy = now.getFullYear();
+      var m = now.getMonth() + 1;
+      var d = now.getDate();
 
-      demo.theme = 'light-theme';
-      demo.showLongDate = false;
-      demo.autoUpdateDate = false;
-      demo.yearFormat = 0;
-      demo.monthFormat = 2;
-      demo.dayFormat = 1;
-      // demo.minDate = '2016/01/01';
-      // demo.maxDate = '2017/01/11';
-      demo.disableDays = [0, 6];
-      demo.firstDayOfWeek = _idx;
-      demo._chosenFirstDayOfWeek = _allFirstDayOfWeek[_idx];
+      demo.$.eInput.updateValueAndPreserveCaret(fy + '/' + ('0' + m).slice(-2) + '/' + ('0' + d).slice(-2));
+    }, 100);
+  </script>
 
-      demo.changeFirstDayOfWeek = function(ev) {
-        var _target = ev.target;
-        while (_target && _target.tagName !== 'PAPER-ICON-BUTTON') {
-          _target = _target.parentElement;
-        }
-        if (_target && _target.hasAttribute('action')) {
-          var _fakeIconButtonAction = _target.getAttribute('action');
-          if (_fakeIconButtonAction === 'increment') {
-            _idx = ++_idx > 6 ? 0 : _idx;
-          }else {
-            _idx = --_idx < 0 ? 6 : _idx;
-          }
-          demo._chosenFirstDayOfWeek = _allFirstDayOfWeek[_idx];
-          demo.firstDayOfWeek = _idx;
-        }
-      };
+  <script>
+    (function (i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
-      demo._openDialog = function(ev) {
-        this.$.datepicker.open();
-      };
-      demo._openStaticDialog = function(ev) {
-        this.$.static.open();
-      };
-      demo._openAlwaysResetDialog = function (ev) {
-        alwaysReset.open();
-      };
+    ga('create', 'UA-73795470-2', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
 
-      demo.onIronItemsChanged = function() {
-        var _format = [_years[demo.yearFormat], _months[demo.monthFormat], _days[demo.dayFormat]].join('/');
-        demo.format = _format;
-      };
-
-      demo._onDisableDateChanged = function(ev) {
-        this.set('disableDates', [ev.detail.value]);
-      };
-
-      demo._onSelectedDateChanged = function(ev) {
-        var _value = ev.detail.value;
-        window.setTimeout(function() {
-          demo.$.eInput.updateValueAndPreserveCaret(_value);
-        }, 1500);
-      };
-
-      demo._onLocaleChange = function(ev) {
-        demo.locale = ev.target.value;
-      };
-
-      demo._updateDatepickerWoButtons = function() {
-        this.$.common.enforceDateChange();
-      };
-
-
-      document.addEventListener('app-datepicker-attached', function(ev) {
-        var _target = ev.target;
-        window.setTimeout(function() {
-          var _tel = _target.getElementsByTagName('*').length;
-          console.log('Total element nodes w/ Lazy-Loading:', _tel);
-        }, 1);
-      });
-
-      window.addEventListener('WebComponentsReady', function () {
-        window.setTimeout(function() {
-          var now = new Date();
-          var fy = now.getFullYear();
-          var m = now.getMonth() + 1;
-          var d = now.getDate();
-
-          demo.$.eInput.updateValueAndPreserveCaret(fy + '/' + ('0' + m).slice(-2) + '/' + ('0' + d).slice(-2));
-        }, 100);
-      });
-    </script>
-
-    <script>
-      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-      ga('create', 'UA-73795470-2', 'auto');
-      ga('send', 'pageview');
-    </script>
-  </body>
 </html>

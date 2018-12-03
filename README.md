@@ -1,6 +1,5 @@
 [![GitHub version](https://badge.fury.io/gh/motss%2Fapp-datepicker.svg)](http://badge.fury.io/gh/motss%2Fapp-datepicker)
-[![Bower version](https://badge.fury.io/bo/app-datepicker.svg)](http://badge.fury.io/bo/app-datepicker)
-[![Build Status](https://travis-ci.org/motss/app-datepicker.svg?branch=master)](https://travis-ci.org/motss/app-datepicker)  
+[![Build Status](https://travis-ci.org/motss/app-datepicker.svg?branch=master)](https://travis-ci.org/motss/app-datepicker)
 [![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/motssapp-datepicker)
 [![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/motssapp-datepicker.svg)](https://vaadin.com/directory/component/motssapp-datepicker)
 
@@ -19,6 +18,11 @@ See the [component page](http://motss.github.io/app-datepicker/components/app-da
 
 An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
 
+## Update (v3.0.0) - Breaking changes
+- **Upgraded to Polymer 3 stable.**
+- **Moved to npm.**
+- Recommended to include the Intl polyfill and web-animations-js polyfill at the top document level.
+
 
 ## Update (v2.11.0)
 - **Pleased to announce that `app-datepicker` is now compatible with both Polymer 1.x and Polymer 2.0 stable.**
@@ -26,7 +30,7 @@ An custom Polymer element built from scratch to provide a datepicker based on Go
 - `alwaysResetSelectedDateOnDialogClose` - proposed by [#74](https://github.com/motss/app-datepicker/issues/74) to allow datepicker to reset the selected date to today's date once the datepicker closes and the demo has this included as well.
 - As of `v2.11`, all dates will no longer include users' local system's timezone offset and all will be default to GMT/ UTC timezone. For more info, please see [#89](https://github.com/motss/app-datepicker/pull/89).
 
-Example:
+## Examples:
 
     <app-datepicker></app-datepicker>
     <app-datepicker view="horizontal"></app-datepicker>
@@ -48,10 +52,10 @@ Now with mixins, head over to the [component page](http://motss.github.io/app-da
 
 
 ## Getting Started
-1. Install with bower.
-`bower install --save app-datepicker`
+1. Install with npm.
+`npm install --save app-datepicker`
 
-2. Load the dependencies and the Intl polyfill if needed.
+2. Load the dependencies and the Intl and web-animations-js polyfill if needed.
 
     Load [`Intl Polyfill`](https://github.com/andyearnshaw/Intl.js) for unsupported browsers via feature detection,
 
@@ -63,15 +67,25 @@ Now with mixins, head over to the [component page](http://motss.github.io/app-da
     }
     ```
 
+    Load [`Web Animations JS Polyfill`](https://www.npmjs.com/package/web-animations-js) for unsupported browsers,
+
+    ```html
+    <script src="web-animations.min.js"></script>
+    ```
+
     For `app-datepicker`,
 
     ```html
-    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker.html">
+    <script type="module">
+    import 'path-to-components/app-datepicker/app-datepicker.js';
+    </script>
     ```
     For `app-datepicker-dialog`,
 
     ```html
-    <link rel="import" href="path-to-bower-components/app-datepicker/app-datepicker-dialog.html">
+    <script type="module">
+    import 'path-to-components/app-datepicker/app-datepicker-dialog.js';
+    </script>
     ```
 
 3. Markup with `<app-datepicker></app-datepicker>` or `<app-datepicker-dialog></app-datepicker-dialog>`.
