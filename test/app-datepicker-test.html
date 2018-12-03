@@ -61,10 +61,14 @@
         });
 
         it('should show correct locale based on the system', function () {
-          var _systemLocale = window.navigator.language || 'en-US';
+          var systemLocale = (window.Intl
+            && window.Intl.DateTimeFormat
+            && window.Intl.DateTimeFormat().resolvedOptions
+            && window.Intl.DateTimeFormat().resolvedOptions().locale)
+            || "en-US";
           var datepickerLocale = datepicker.locale === 'en-US-posix' ? 'en-US' : datepicker.locale;
 
-          expect(datepickerLocale).to.be.equal(_systemLocale);
+          expect(datepickerLocale).to.be.equal(systemLocale);
         });
       });
 
@@ -74,7 +78,6 @@
           datepicker.disableDates = ['2016/01/02', '2016/01/03', '2016/01/04'];
 
           flush(() => {
-
             var secondDay = dom(datepicker.root).querySelector('.each-days-of-month[aria-label="2"]');
             var thirdDay = dom(datepicker.root).querySelector('.each-days-of-month[aria-label="3"]');
             var fourthDay = dom(datepicker.root).querySelector('.each-days-of-month[aria-label="4"]');
@@ -194,7 +197,7 @@
         // 'yy' 'm' 'do' - N
         // 'yy' 'm' 'dd' - F*
         // 'yy' 'm' 'd' - F*
-        it('should show correct output date when showLongDate is falsy', function () {
+        it(`should show correct output date when 'showLongDate' is falsy`, function () {
           // var _allPossibilities = [
           //   '2016 January 31st', '2016 January 31', '2016 January 3',
           //   '2016 Jan 31st', '2016 Jan 31', '2016 Jan 3',
@@ -240,7 +243,7 @@
           }
         });
 
-        it('should show correct output date when showLongDate is truthy', function () {
+        it(`should show correct output date when 'showLongDate' is truthy`, function () {
           var _acceptedInputDateStrings = [
             '2016 January 31', '2016 January 3', '2016 Jan 31', '2016 Jan 3', '2015/13/31',
             'Fri, May 25, 2020'
@@ -457,16 +460,25 @@
 
       context('test for absence of window.Intl.DateTimeFormat().resolvedOptions', function () {
         it('should fallback to default locale if window.Intl is undefined', function () {
-          var cachedIntl = window.Intl;
-          // Override Intl on browser.
-          window.Intl = null;
-          let datepickerWithoutIntl = fixture('appDatepicker');
-          var datepickerLocale = datepickerWithoutIntl.locale === 'en-US-posix' ? 'en-US' : datepickerWithoutIntl.locale;
+          try {
+            var cachedIntl = window.Intl;
+            // Override Intl on browser.
+            window.Intl = null;
+            let datepickerWithoutIntl = fixture('appDatepicker');
+            var datepickerLocale = datepickerWithoutIntl.locale === 'en-US-posix' ? 'en-US' : datepickerWithoutIntl.locale;
 
-          expect(datepickerLocale).to.be.equal('en-US');
+            expect(datepickerLocale).to.be.equal('en-US');
 
-          // Restore Intl.
-          window.Intl = cachedIntl;
+            // Restore Intl.
+            window.Intl = cachedIntl;
+          } catch (e) {
+            /** NOTE: Workaround to skip test for Chrome 41 on Linux */
+            if (/^Cannot assign to read only property \'Intl\'/i.test(e.message)) {
+              return;
+            }
+
+            throw e;
+          }
         });
       });
 

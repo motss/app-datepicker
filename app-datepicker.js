@@ -1552,6 +1552,7 @@ class AppDatepicker extends
 
       this._setDate(_longDate);
     } else {
+      alert(this._selectedYear, this._selectedMonth, _selectedDate, this._format);
       _longDate = this._bindSelectedFulldate(this._selectedYear,
         this._selectedMonth, _selectedDate, this._format);
 
