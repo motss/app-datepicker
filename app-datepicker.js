@@ -1053,7 +1053,7 @@ class AppDatepicker extends
       ? new window.Intl.DateTimeFormat(_locale, { timeZone: "UTC", day: "numeric" }).format
       : function dateTimeFormatShim(date) { return date.getDate() };
     for (var i = 0, j = 1 - _start; i < 42; i++ , j++) {
-      var _formatted = _formatter(Date.UTC(_activeYear, _activeMonth, j));
+      var _formatted = _formatter(new Date(Date.UTC(_activeYear, _activeMonth, j)));
       var _dateObj = { date: "", index: "" };
       if (i >= _start & i < _start + _totalDays) {
         /**
@@ -1290,7 +1290,7 @@ class AppDatepicker extends
       var newDate = null;
 
       for (var i = 0; i < 7; i++) {
-        newDate = Date.UTC(_today.getFullYear(), _today.getMonth(), _offsetDate + i);
+        newDate = new Date(Date.UTC(_today.getFullYear(), _today.getMonth(), _offsetDate + i));
         _dow.push(_formatter(newDate));
       }
     }
