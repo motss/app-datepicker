@@ -3,7 +3,14 @@
 [![Published on Vaadin Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/motssapp-datepicker)
 [![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/motssapp-datepicker.svg)](https://vaadin.com/directory/component/motssapp-datepicker)
 
-# app-datepicker (formerly `jv-datepicker`)
+<div align="center" style="text-align: center;">
+  <h1 style="border-bottom: none;">app-datepicker</h1>
+
+  <p>Material Design datepicker built with Polymer 3</p>
+</div>
+
+<hr />
+
 ![img-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/26274668/48b75cce-3d81-11e7-81aa-b79ab9b90d36.png)
 
 <!-- ![light-themed-app-datepicker-landscape](https://cloud.githubusercontent.com/assets/10607759/10119266/ce6d5b0e-64c3-11e5-843d-1310de755315.png)
@@ -12,107 +19,86 @@
 <!-- ![app-datepicker-portrait](https://cloud.githubusercontent.com/assets/10607759/9871234/cacf33c6-5bc4-11e5-833a-96cbd3dbf440.PNG) -->
 <!-- ![dark-themed-app-datepicker](https://cloud.githubusercontent.com/assets/10607759/10106751/1bec71c0-63e9-11e5-93f2-ee197d2ba0f2.png) -->
 
-
-
 See the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more information.
 
-An custom Polymer element built from scratch to provide a datepicker based on Google's Material Design that is more compelling and rich with features.
-
 ## Update (v3.0.0) - Breaking changes
+
 - **Upgraded to Polymer 3 stable.**
-- **Moved to npm.**
+- **Moved to NPM.**
 - Recommended to include the Intl polyfill and web-animations-js polyfill at the top document level.
 
-
-## Update (v2.11.0)
-- **Pleased to announce that `app-datepicker` is now compatible with both Polymer 1.x and Polymer 2.0 stable.**
-- **Now Intl polyfill will not load (previously it does) if the browser does not natively support it and it is recommended for users to load the polyfill at the top-level document by some feature detections.**
-- `alwaysResetSelectedDateOnDialogClose` - proposed by [#74](https://github.com/motss/app-datepicker/issues/74) to allow datepicker to reset the selected date to today's date once the datepicker closes and the demo has this included as well.
-- As of `v2.11`, all dates will no longer include users' local system's timezone offset and all will be default to GMT/ UTC timezone. For more info, please see [#89](https://github.com/motss/app-datepicker/pull/89).
-
-## Examples:
-
-    <app-datepicker></app-datepicker>
-    <app-datepicker view="horizontal"></app-datepicker>
-    <app-datepicker theme="dark-theme"></app-datepicker>
-    <app-datepicker-dialog modal></app-datepicker-dialog>
-    <app-datepicker-dialog with-backdrop></app-datepicker-dialog>
-    <app-datepicker-dialog></app-datepicker-dialog>
+  ```html
+  <app-datepicker></app-datepicker>
+  <app-datepicker view="horizontal"></app-datepicker>
+  <app-datepicker theme="dark-theme"></app-datepicker>
+  <app-datepicker-dialog modal></app-datepicker-dialog>
+  <app-datepicker-dialog with-backdrop></app-datepicker-dialog>
+  <app-datepicker-dialog></app-datepicker-dialog>
+  ```
 
 `app-datepicker` provides a regular datepicker element.
 While `app-datepicker-dialog` has a `app-datepicker` being wrapped inside a dialog.
 
-
 ~~## ( Coming soon!) Generating your own boilerplate code of the compounds~~
 ~~At the end of the demo, there is a section where user can play around with to generate your own boilerplate code with the attributes provided.~~
 
-
 ## Styling
+
 Now with mixins, head over to the [component page](http://motss.github.io/app-datepicker/components/app-datepicker/) for more details.
 
-
 ## Getting Started
+
 1. Install with npm.
-`npm install --save app-datepicker`
 
-2. Load the dependencies and the Intl and web-animations-js polyfill if needed.
+    ```sh
+    $ npm i app-datepicker
+    ```
 
-    Load [`Intl Polyfill`](https://github.com/andyearnshaw/Intl.js) for unsupported browsers via feature detection,
+2. (Optional) Load the dependencies and the [Intl][intl-polyfill-url] and [web-animations-js][web-animations-js-polyfill-url] polyfills on unsupported browsers:
+
+    ```html
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next.min.js"></script>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale"></script>
+    ```
+
+3. Load element in HTML or JS.
+
+    ```html
+    <!-- In HTML, load with script[type=module], either `app-datepicker` -->
+    <script type="module" href="/node_modules/app-datepicker/app-datepicker.js"></script>
+
+    <!-- or, `app-datepicker-dialog` -->
+    <!-- <script type="module" src="/node_modules/app-datepicker/app-datepicker-dialog.js"></script> -->
+    ```
 
     ```js
-    if (window.Intl) {
-      var intlPolyfill = document.createElement('script');
-      intlPolyfill.src = 'path_to_intl_polyfill';
-      document.head.appendChild(intlPolyfill);
-    }
+    // Alternatively, loading element in JavaScript.
+    ...
+    import 'app-datepicker/app-datepicker.js';
+    ...
     ```
-
-    Load [`Web Animations JS Polyfill`](https://www.npmjs.com/package/web-animations-js) for unsupported browsers,
-
-    ```html
-    <script src="web-animations.min.js"></script>
-    ```
-
-    For `app-datepicker`,
-
-    ```html
-    <script type="module">
-    import 'path-to-components/app-datepicker/app-datepicker.js';
-    </script>
-    ```
-    For `app-datepicker-dialog`,
-
-    ```html
-    <script type="module">
-    import 'path-to-components/app-datepicker/app-datepicker-dialog.js';
-    </script>
-    ```
-
-3. Markup with `<app-datepicker></app-datepicker>` or `<app-datepicker-dialog></app-datepicker-dialog>`.
-
-4. Done.
 
 ## Browser Support
 
 ### `app-datepicker` and `app-datepicker-dialog`:
 
 #### Microsoft Windows x64
+
 | ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
 | --- | --- | --- | --- | ---
 | 11 | 12+ | latest | latest | latest
 
-
 #### Linux x64
+
 | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png)
 | --- | --- | ---
 | latest | latest | latest
 
-
 #### Mac OS X
+
 | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
 | --- | --- | --- | ---
 | latest | latest | latest | 7+
-
 
 #### Android 4.4.4 and above
 
@@ -121,6 +107,7 @@ Now with mixins, head over to the [component page](http://motss.github.io/app-da
 | latest | latest | latest | latest
 
 #### iOS 7.1 and above
+
 | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) | ![Safari for iOS](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-ios/safari-ios_48x48.png)
 | --- | --- | --- | ---
 | latest | latest | latest | 7+
@@ -129,15 +116,19 @@ Now with mixins, head over to the [component page](http://motss.github.io/app-da
 
 ECMAScript Internationalization API for `locale`. For more details please visit [Can I use... Intl?](http://caniuse.com/#search=intl):
 
-
 | ![Internet Explorer](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/internet-explorer/internet-explorer_48x48.png) | ![Microsoft Edge](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/edge/edge_48x48.png) | ![Mozilla Firefox](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox/firefox_48x48.png) ![Mozilla Firefox Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/firefox-developer-edition/firefox-developer-edition_48x48.png) | ![Google Chrome](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/chrome/chrome_48x48.png) ![Google Chrome Canary](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/archive/chrome-canary_19-48/chrome-canary_19-48_48x48.png) | ![Opera](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera/opera_48x48.png) ![Opera Developer Edition](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/opera-developer/opera-developer_48x48.png) | ![Safari](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari/safari_48x48.png) ![Safari Technology Preview](https://cdnjs.cloudflare.com/ajax/libs/browser-logos/35.1.0/safari-technology-preview/safari-technology-preview_48x48.png)
 | --- | --- | --- | --- | --- | --- |
 | 11 | 12+ | latest | latest | latest | 10+ **
 
-___** [Intl Polyfill for unsupported browsers](https://github.com/andyearnshaw/Intl.js)___
+___** [Intl Polyfill for unsupported browsers](intl-polyfill-url)___
 
 ## Throughput
+
 [![Throughput Graph](https://graphs.waffle.io/motss/app-datepicker/throughput.svg)](https://waffle.io/motss/app-datepicker/metrics/throughput)
 
 ## License
+
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
+
+[intl-polyfill-url]: https://github.com/andyearnshaw/Intl.js
+[web-animations-js-polyfill-url]: https://www.npmjs.com/package/web-animations-js

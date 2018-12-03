@@ -1,40 +1,52 @@
 {
+  "name": "app-datepicker",
+  "version": "2.12.0",
   "description": "A datepicker element based on Google's Material Design built from scratch with Polymer",
   "keywords": [
-    "web-component",
-    "web-components",
-    "polymer",
-    "seed",
+    "cal",
     "calendar",
     "date",
-    "picker",
-    "cal",
     "date-picker",
     "datepicker",
-    "motss"
+    "picker",
+    "polymer",
+    "web-component",
+    "web-components"
   ],
-  "homepage": "https://github.com/motss/app-datepicker/",
-  "name": "app-datepicker",
-  "version": "3.0.0",
-  "resolutions": {
-    "inherits": "2.0.3",
-    "samsam": "1.1.3",
-    "supports-color": "3.1.2",
-    "type-detect": "1.0.0"
+  "homepage": "https://github.com/motss/app-datepicker",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:motss/app-datepicker.git"
   },
-  "main": "app-datepicker.js",
-  "author": "motss <wes_ngrongsen@hotmail.com>",
   "license": "MIT",
+  "author": {
+    "name": "Rong Sen Ng",
+    "email": "wes.ngrongsen@gmail.com",
+    "url": "https://github.com/motss"
+  },
+  "files": [
+    "animations",
+    "app-datepicker-dialog.js",
+    "app-datepicker-icons.js",
+    "app-datepicker.js",
+    "demo"
+  ],
+  "main": "app-datepicker.js",
+  "scripts": {
+    "document": "polymer analyze > analysis.json",
+    "test": "polymer test --module-resolution=node --npm",
+    "testkeep": "polymer test -p --expanded --module-resolution=node --npm"
+  },
   "dependencies": {
     "@polymer/iron-iconset-svg": "^3.0.1",
     "@polymer/iron-list": "^3.0.1",
     "@polymer/iron-selector": "^3.0.1",
     "@polymer/neon-animation": "^3.0.1",
+    "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-dialog-behavior": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.1",
     "@polymer/polymer": "^3.1.0",
-    "web-animations-js": "^2.3.1",
-    "@polymer/paper-button": "^3.0.1"
+    "web-animations-js": "^2.3.1"
   },
   "devDependencies": {
     "@polymer/iron-component-page": "^4.0.1",
@@ -52,9 +64,11 @@
     "web-animations-js": "^2.3.1",
     "whatwg-fetch": "^3.0.0"
   },
-  "scripts": {
-    "test": "polymer test --module-resolution=node --npm",
-    "testkeep": "polymer test -p --expanded --module-resolution=node --npm",
-    "document": "polymer analyze > analysis.json"
+  "engines": {
+    "node": ">= 10.13.0",
+    "npm": ">= 6.4.1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
