@@ -1140,7 +1140,7 @@ class AppDatepicker extends
         timeZone: "UTC",
         month: "short",
         year: "numeric"
-      }).format(Date.UTC(_activeYear, _activeMonth, 1));
+      }).format(new Date(Date.UTC(_activeYear, _activeMonth, 1)));
       this.set("_activeMonthYear", _amy);
     }
   }
@@ -1158,7 +1158,7 @@ class AppDatepicker extends
         weekday: "short",
         month: "short",
         day: "numeric"
-      }).format(Date.UTC(_selectedYear, _selectedMonth, _selectedDate));
+      }).format(new Date(Date.UTC(_selectedYear, _selectedMonth, _selectedDate)));
       this.set("_shortSelectedDate", _ssd);
 
       // When datepicker has no button for date confirmation,
@@ -1180,7 +1180,7 @@ class AppDatepicker extends
       var _ssy = new window.Intl.DateTimeFormat(_locale, {
         timeZone: "UTC",
         year: "numeric"
-      }).format(Date.UTC(_selectedYear, 0, 1));
+      }).format(new Date(Date.UTC(_selectedYear, 0, 1)));
       this.set("_showSelectedYear", _ssy);
     }
   }
@@ -1521,7 +1521,7 @@ class AppDatepicker extends
     }
 
     var _selectedDate = this._selectedDate;
-    var _longDate = Date.UTC(this._selectedYear, this._selectedMonth, _selectedDate);
+    var _longDate = new Date(Date.UTC(this._selectedYear, this._selectedMonth, _selectedDate));
 
     if (_showLongDate) {
       _locale = _locale || ((window.Intl
