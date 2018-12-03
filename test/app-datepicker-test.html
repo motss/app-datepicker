@@ -93,7 +93,8 @@
             expect(secondDay.getAttribute('aria-disabled')).to.equal('');
             expect(thirdDay.getAttribute('aria-disabled')).to.equal('');
             expect(fourthDay.getAttribute('aria-disabled')).to.equal('');
-            done()
+
+            done();
           });
         });
 
@@ -101,6 +102,7 @@
           datepicker.disableDays = [];
           datepicker.inputDate = '2016/01/01';
           datepicker.disableDates = undefined;
+
           flush(() => {
             datepicker.disableDates = null;
             flush(() => {
@@ -130,6 +132,7 @@
             var _getDateFromDatepicker = dom(datepicker.root).querySelectorAll('.each-days-of-month[aria-label="2"]');
             expect(_getDateFromDatepicker[0].classList.contains('is-disabled-day')).to.be.true;
             expect(datepicker.minDate === _minDateString).to.be.true;
+
             done();
           });
         });
@@ -143,6 +146,7 @@
             var _getDateFromDatepicker = dom(datepicker.root).querySelectorAll('.each-days-of-month[aria-label="21"]');
             expect(_getDateFromDatepicker[0].classList.contains('is-disabled-day')).to.be.true;
             expect(datepicker.maxDate === _maxDateString).to.be.true;
+
             done();
           });
         });
