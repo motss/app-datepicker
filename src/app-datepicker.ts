@@ -1,8 +1,12 @@
-import { customElement, html, LitElement, property } from '@polymer/lit-element'
+import { customElement, html, LitElement, property } from '@polymer/lit-element';
+import { cache } from 'lit-html/directives/cache.js';
+// import { classMap } from 'lit-html/directives/class-map.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 
 import '@polymer/paper-icon-button/paper-icon-button-light';
 
 import './app-datepicker-icons.js';
+import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 
 function getResolvedLocale() {
   return (Intl
@@ -10,6 +14,223 @@ function getResolvedLocale() {
     && Intl.DateTimeFormat().resolvedOptions
     && Intl.DateTimeFormat().resolvedOptions().locale)
     || 'en-US';
+}
+
+function renderHeaderSelectorButton({
+  locale,
+  selectedDate,
+  selectedView,
+}) {
+  const dateDate = new Date(selectedDate);
+  const formattedDate = Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(dateDate);
+
+  return selectedView === 'calendar'
+    ? html`<button class="datepicker-header-btn__selector-year"
+      view="year">${dateDate.getUTCFullYear()}</button>`
+    : html`<button class="datepicker-header-btn__selector-calendar"
+    view="calendar">${formattedDate}</button>`;
+}
+
+function renderDatepickerBody({
+  calendarContent,
+  locale,
+  selectedDate,
+  selectedView,
+}) {
+  if (selectedView === 'calendar') {
+    const formattedDate = Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'long',
+    }).format(new Date(selectedDate));
+
+    return html`
+    <div class="datepicker-body__calendar-view">
+      <div class="calendar-view__month-selector">
+        <div class="month-selector-container">
+          <paper-icon-button-light>
+            <button class="month-selector-button" aria-label="Previous month">${iconChevronLeft}</button>
+          </paper-icon-button-light>
+        </div>
+
+        <div>${formattedDate}</div>
+
+        <div class="month-selector-container">
+          <paper-icon-button-light>
+            <button class="month-selector-button" aria-label="Next month">${iconChevronRight}</button>
+          </paper-icon-button-light>
+        </div>
+      </div>
+
+      <div class="view-calendar__full-calendar"
+        tabindex="0">${calendarContent}</div>
+    </div>
+    `;
+  }
+
+  return html`
+  <div class="datepicker-body__year-view">
+    <div class="year-view-list">
+    ${repeat(
+      Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
+      n => n,
+      (n) => html`<button class="year-view-list-item" .year="${n}">${n}</button>`)}
+    </div>
+  </div>
+  `;
+}
+
+function computeCalendarContent({
+  min,
+  max,
+
+  locale,
+  firstDayOfWeek,
+  showWeekNumber,
+
+  selectedDate,
+  todayDate,
+  disabledDays,
+}) {
+  const dateDate = new Date(selectedDate);
+  const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
+  const allWeekdays = Array.from(
+    Array(shouldShowWeekNumber ? 8 : 7),
+    (_, i) => {
+
+      // if (shouldShowWeekNumber && i < 1) {
+      //   return { fullDate: 'Wk', label: 'Wk', value: 'Wk' };
+      // }
+
+      // const dateOffset = ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek)
+      //   % 7
+      //   + (shouldShowWeekNumber ? 0 : 1);
+
+      // return {
+      //   fullDate: new Date(Date.UTC(2017, 0, i + dateOffset)),
+      //   label: Intl.DateTimeFormat(locale, { weekday: 'long', }).format(dateDate),
+      //   value: Intl.DateTimeFormat(locale, {
+      //     /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
+      //     // weekday: /^(short|narrow)/i.test(weekdayFormat)
+      //     //   ? weekdayFormat
+      //     //   : 'narrow',
+      //     weekday: 'narrow',
+      //   }).format(dateDate),
+      // };
+    });
+  const fy = dateDate.getUTCFullYear();
+  const selectedMonth = dateDate.getUTCMonth();
+  const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
+  const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
+  const firstWeekday = normalizeWeekday(preFirstWeekday);
+  const totalCol = shouldShowWeekNumber ? 8 : 7;
+  const allDaysInMonth = Array.from(
+    Array(Math.ceil((totalDays + firstWeekday + (
+      shouldShowWeekNumber
+        ? Math.ceil((totalDays + firstWeekday) / 7)
+        : 0)) / totalCol)),
+    (_, i) => {
+
+      // return Array.from(
+      //   Array(totalCol),
+      //   (__, ni) => {
+      //     if (shouldShowWeekNumber && ni < 1) {
+      //       const weekNumber = computeWeekNumber(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday));
+
+      //       return {
+      //         fullDate: weekNumber,
+      //         label: `Week ${weekNumber}`,
+      //         value: weekNumber,
+      //         valueInNumber: weekNumber,
+      //       };
+      //     }
+
+      //     if (i < 1
+      //         && (firstWeekday > 0 && firstWeekday < 7)
+      //         && ni < (firstWeekday + (shouldShowWeekNumber ? 1 : 0))) {
+      //       return { fullDate: null, label: null, value: null, valueInNumber: null };
+      //     }
+
+      //     const day = (i * 7) + ni + (shouldShowWeekNumber ? 0 : 1) - firstWeekday;
+
+      //     if (day > totalDays) {
+      //       return { fullDate: null, label: null, value: null, valueInNumber: null };
+      //     }
+
+      //     const fullDate = new Date(Date.UTC(fy, selectedMonth, day));
+
+      //     return {
+      //       fullDate,
+      //       label: Intl.DateTimeFormat(locale, {
+      //         year: 'numeric',
+      //         month: 'short',
+      //         day: 'numeric',
+      //         weekday: 'short',
+      //       }).format(fullDate),
+      //       value: Intl.DateTimeFormat(locale, {
+      //         day: 'numeric',
+      //       }).format(fullDate),
+      //       // /** NOTE: Always have that day in absolute number */
+      //       valueInNumber: fullDate.getUTCDate(),
+      //     };
+      //   }
+      // );
+    }
+  );
+
+  let hasMinDate = false;
+  let hasMaxDate = false;
+
+  // const preDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
+  //   ? disabledDays.map(n => shouldShowWeekNumber ? n + 1 : n)
+  //   : [];
+  // const calendarContent = html`
+  // <table>
+  //   <tr>
+  //   ${allWeekdays.map(weekday => html`<th aria-label$="${weekday.label}">${weekday.value}</th>`)}
+  //   </tr>
+
+  //   ${allDaysInMonth.map((day) => {
+  //     const rendered = day.map((d, di) => {
+  //       /** NOTE: Disable month selector if needed */
+  //       const oriTimestamp = +d.fullDate;
+  //       const minTimestamp = +min;
+  //       const maxTimestamp = +max;
+  //       hasMinDate = hasMinDate || (d.original == null ? false : oriTimestamp === minTimestamp);
+  //       hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
+  //       return d.label == null
+  //         ? html`<td><div class="full-calendar__day day--empty"></div></td>`
+  //         : html`<td><div class$="full-calendar__day${
+  //           preDisabledDays.some(n => n === di)
+  //             || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp)
+  //               ? ' day--disabled'
+  //               : ''
+  //         }${
+  //           +todayDate === oriTimestamp
+  //             ? ' day--today'
+  //             : ''
+  //         }${
+  //           +selectedDate === oriTimestamp
+  //             ? ' day--selected'
+  //             : ''
+  //         }${
+  //           shouldShowWeekNumber && di < 1
+  //             ? ' day--weekday'
+  //             : ''
+  //         }" aria-label$="${d.label}" day="${d.originalValue}"><span>${d.value}</span></div></td>`;
+  //     });
+  //     return html`<tr>${rendered}</tr>`;
+  //   })}
+  // </table>`;
+
+  return {
+    hasMinDate,
+    hasMaxDate,
+    // value: calendarContent,
+  };
 }
 
 @customElement(AppDatepicker.is as any)
@@ -48,9 +269,17 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
+  @property({ type: String })
+  public startView: string;
+
+  @property({ type: String })
+  private _selectedView: string;
+
+  @property({ type: Number })
+  private _selectedDate: number = Date.now();
+
   // valueAsDate: Date,
   // valueAsNumber: Number,
-  // startView: String,
   // weekdayFormat: String,
   // showWeekNumber: Boolean,
 
@@ -282,74 +511,24 @@ export class AppDatepicker extends LitElement {
       .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today {
         color: var(--app-datepicker-today-color, var(--app-datepicker-primary-color));
       }
-      /*
-      .datepicker__footer {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-end;
-        background-color: #fff;
-        width: 100%;
-        height: var(--app-datepicker-footer-height);
-        padding: 0 8px 0 0;
-      }
-      .datepicker__footer > paper-button {
-        color: var(--app-datepicker-primary-color);
-        font-size: 14px;
-        --paper-button-ink-color: #848484;
-      }
-      */
+
     </style>
 
     <div class="datepicker-header">
-      <div class="datepicker-header__selector">
-        <!-- <button class="btn--reset selector__year"
-          view="year">${this.computeSelectedFormattedYear(_currentDate, locale)}</button>
-        <button class="btn--reset selector__calendar"
-          view="calendar">${this.computeSelectedFormattedDate(_currentDate, locale)}</button> -->
-      </div>
+    ${cache(renderHeaderSelectorButton({
+      locale: this.locale,
+      selectedDate: this._selectedDate,
+      selectedView: this._selectedView,
+    }))}
     </div>
 
     <div class="datepicker-body">
-      <div class="datepicker-body__selector">
-        <div class="selector__view-year" view="year">
-          <div class="view-year__year-list">
-          <!-- ${
-              isCalendarView
-                ? null
-                : this.computeAllAvailableYears('year', _selectedYear, locale)
-                    .map(year => html`<button class="btn--reset year-list__year" year$="${
-                      year.originalValue
-                    }" aria-label$="${year.label}">${year.value}</button>`)
-          } -->
-          </div>
-        </div>
-
-        <div class="selector__view-calendar" view="calendar">
-          <div class="view-calendar__month-selector">
-            <!-- <paper-icon-button class$="month-selector__prev-month${
-              renderedCalendar.hasMinDate ? ' prev-month--disabled' : ''
-            }"
-              icon="datepicker:chevron-left"
-              on-tap="${() => this.updateCurrentDateOnKeyup({
-                altKey: false,
-                keyCode: AppDatepicker.KEYCODES.PAGE_UP,
-              })}"></paper-icon-button>
-            <div>${this.computeSelectedFormattedMonth(_currentDate, locale)}</div>
-            <paper-icon-button class$="month-selector__next-month${
-              renderedCalendar.hasMaxDate ? ' next-month--disabled' : ''
-            }"
-              icon="datepicker:chevron-right"
-              on-tap="${() => this.updateCurrentDateOnKeyup({
-                altKey: false,
-                keyCode: AppDatepicker.KEYCODES.PAGE_DOWN,
-              })}"></paper-icon-button> -->
-          </div>
-
-          <div class="view-calendar__full-calendar"
-            tabindex="0">${renderedCalendar.content}</div>
-        </div>
-      </div>
+    ${cache(renderDatepickerBody({
+      calendarContent: computeCalendarContent({ }),
+      locale: this.locale,
+      selectedDate: this._selectedDate,
+      selectedView: this._selectedView,
+    }))}
     </div>
     `;
   }
