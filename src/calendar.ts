@@ -36,15 +36,41 @@ function normalizeWeekday(weekday: number) {
   return (weekdayOffset + weekday) % 7;
 }
 
-function computeWeekNumber(date: Date) {
-  const preDate = new Date(date);
-  const now = new Date(Date.UTC(
-    preDate.getUTCFullYear(),
-    preDate.getUTCMonth(),
-    preDate.getUTCDate() - preDate.getUTCDay() + 4));
+/**
+ * {@link https://bit.ly/2UvEN2y|Compute week number by type}
+ * @param weekNumberType {string}
+ * @param date {Date}
+ * @return {}
+ */
+function computeWeekNumber(weekNumberType: string, date: Date) {
+  const getFixedDate = (weekNumberType, date) => {
+    const dd = new Date(date);
+    const wd = dd.getUTCDay();
+    const fy = dd.getUTCFullYear();
+    const m = dd.getUTCMonth();
+    const d = dd.getUTCDate();
 
-  return Math.ceil(
-    ((+now - Date.UTC(now.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7);
+    switch (weekNumberType) {
+      case 'first-4-day-week':
+        return  new Date(Date.UTC(fy, m, d - wd + 3));
+      case 'first-day-of-year':
+        return new Date(Date.UTC(fy, m, d - wd + 6));
+      case 'first-full-week':
+        return new Date(Date.UTC(fy, m, d - wd));
+      default:
+        return dd;
+    }
+  };
+
+  const fixedNow = getFixedDate(weekNumberType, date);
+  const firstDayOfYear = new Date(Date.UTC(fixedNow.getUTCFullYear(), 0, 1));
+  const wk = Math.ceil(((+fixedNow - +firstDayOfYear) / 864e5 + 1) / 7);
+
+  return {
+    originalDate: date,
+    fixedDate: fixedNow,
+    weekNumber: wk,
+  };
 }
 
 function calendarDays({
@@ -52,6 +78,7 @@ function calendarDays({
   locale,
   selectedDate,
   showWeekNumber,
+  weekNumberType,
 }) {
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
@@ -80,7 +107,8 @@ function calendarDays({
         Array(totalCol),
         (__, ni) => {
           if (shouldShowWeekNumber && ni < 1) {
-            const weekNumber = computeWeekNumber(
+            const { weekNumber } = computeWeekNumber(
+              weekNumberType,
               new Date(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday)));
 
             return {
@@ -129,6 +157,7 @@ function calendar({
   showWeekNumber,
   locale,
   selectedDate,
+  weekNumberType,
 }) {
   const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
 
@@ -143,6 +172,7 @@ function calendar({
       locale,
       selectedDate,
       showWeekNumber,
+      weekNumberType,
     }),
   };
 }
