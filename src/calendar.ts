@@ -85,8 +85,7 @@ function calendarDays({
   const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
   const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
   const firstWeekday = normalizeWeekday(preFirstWeekday);
-  const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
-  const totalCol = shouldShowWeekNumber ? 8 : 7;
+  const totalCol = showWeekNumber ? 8 : 7;
 
   return Array.from(
     Array(
@@ -95,7 +94,7 @@ function calendarDays({
           totalDays
             + firstWeekday
             + (
-              shouldShowWeekNumber
+              showWeekNumber
                 ? Math.ceil((totalDays + firstWeekday) / 7)
                 : 0
             )
@@ -106,13 +105,14 @@ function calendarDays({
       return Array.from(
         Array(totalCol),
         (__, ni) => {
-          if (shouldShowWeekNumber && ni < 1) {
+          if (showWeekNumber && ni < 1) {
             const { weekNumber } = computeWeekNumber(
               weekNumberType,
               new Date(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday)));
 
             return {
               // original: weekNumber,
+              fullDate: null,
               label: `Week ${weekNumber}`,
               value: weekNumber,
               // originalValue: weekNumber,
@@ -122,20 +122,21 @@ function calendarDays({
           if (
             i < 1
               && (firstWeekday > 0 && firstWeekday < 7)
-              && ni < (firstWeekday + (shouldShowWeekNumber ? 1 : 0))
+              && ni < (firstWeekday + (showWeekNumber ? 1 : 0))
           ) {
-            return { label: null, value: null };
+            return { fullDate: null, label: null, value: null };
           }
 
-          const day = (i * 7) + ni + (shouldShowWeekNumber ? 0 : 1) - firstWeekday;
+          const day = (i * 7) + ni + (showWeekNumber ? 0 : 1) - firstWeekday;
 
           if (day > totalDays) {
-            return { label: null, value: null };
+            return { fullDate: null, label: null, value: null };
           }
 
           const d = new Date(Date.UTC(fy, selectedMonth, day));
 
           return {
+            fullDate: d.toJSON(),
             label: Intl.DateTimeFormat(locale, {
               year: 'numeric',
               month: 'short',
@@ -152,20 +153,18 @@ function calendarDays({
   );
 }
 
-function calendar({
+export function calendar({
   firstDayOfWeek,
   showWeekNumber,
   locale,
   selectedDate,
   weekNumberType,
 }) {
-  const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
-
   return {
     weekdays: calendarWeekdays({
       firstDayOfWeek,
       locale,
-      showWeekNumber: shouldShowWeekNumber,
+      showWeekNumber: showWeekNumber,
     }),
     daysInMonth: calendarDays({
       firstDayOfWeek,
@@ -176,4 +175,3 @@ function calendar({
     }),
   };
 }
-

@@ -1,11 +1,12 @@
 import { customElement, html, LitElement, property } from '@polymer/lit-element';
 import { cache } from 'lit-html/directives/cache.js';
-// import { classMap } from 'lit-html/directives/class-map.js';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 
 import '@polymer/paper-icon-button/paper-icon-button-light';
 
 import './app-datepicker-icons.js';
+import { calendar } from './calendar.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 
 function getResolvedLocale() {
@@ -52,7 +53,9 @@ function renderDatepickerBody({
       <div class="calendar-view__month-selector">
         <div class="month-selector-container">
           <paper-icon-button-light>
-            <button class="month-selector-button" aria-label="Previous month">${iconChevronLeft}</button>
+            <button
+              class="month-selector-button"
+              aria-label="Previous month">${iconChevronLeft}</button>
           </paper-icon-button-light>
         </div>
 
@@ -60,13 +63,15 @@ function renderDatepickerBody({
 
         <div class="month-selector-container">
           <paper-icon-button-light>
-            <button class="month-selector-button" aria-label="Next month">${iconChevronRight}</button>
+            <button
+              class="month-selector-button"
+              aria-label="Next month">${iconChevronRight}</button>
           </paper-icon-button-light>
         </div>
       </div>
 
       <div class="view-calendar__full-calendar"
-        tabindex="0">${calendarContent}</div>
+        tabindex="0">${calendarContent.value}</div>
     </div>
     `;
   }
@@ -74,10 +79,10 @@ function renderDatepickerBody({
   return html`
   <div class="datepicker-body__year-view">
     <div class="year-view-list">
-    ${repeat(
+    ${cache(repeat(
       Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
       n => n,
-      (n) => html`<button class="year-view-list-item" .year="${n}">${n}</button>`)}
+      (n) => html`<button class="year-view-list-item" .year="${n}">${n}</button>`))}
     </div>
   </div>
   `;
@@ -90,146 +95,88 @@ function computeCalendarContent({
   locale,
   firstDayOfWeek,
   showWeekNumber,
+  weekNumberType,
 
   selectedDate,
   todayDate,
   disabledDays,
 }) {
-  const dateDate = new Date(selectedDate);
-  const shouldShowWeekNumber = !(firstDayOfWeek % 7) && showWeekNumber;
-  const allWeekdays = Array.from(
-    Array(shouldShowWeekNumber ? 8 : 7),
-    (_, i) => {
-
-      // if (shouldShowWeekNumber && i < 1) {
-      //   return { fullDate: 'Wk', label: 'Wk', value: 'Wk' };
-      // }
-
-      // const dateOffset = ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek)
-      //   % 7
-      //   + (shouldShowWeekNumber ? 0 : 1);
-
-      // return {
-      //   fullDate: new Date(Date.UTC(2017, 0, i + dateOffset)),
-      //   label: Intl.DateTimeFormat(locale, { weekday: 'long', }).format(dateDate),
-      //   value: Intl.DateTimeFormat(locale, {
-      //     /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
-      //     // weekday: /^(short|narrow)/i.test(weekdayFormat)
-      //     //   ? weekdayFormat
-      //     //   : 'narrow',
-      //     weekday: 'narrow',
-      //   }).format(dateDate),
-      // };
-    });
-  const fy = dateDate.getUTCFullYear();
-  const selectedMonth = dateDate.getUTCMonth();
-  const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
-  const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
-  const firstWeekday = normalizeWeekday(preFirstWeekday);
-  const totalCol = shouldShowWeekNumber ? 8 : 7;
-  const allDaysInMonth = Array.from(
-    Array(Math.ceil((totalDays + firstWeekday + (
-      shouldShowWeekNumber
-        ? Math.ceil((totalDays + firstWeekday) / 7)
-        : 0)) / totalCol)),
-    (_, i) => {
-
-      // return Array.from(
-      //   Array(totalCol),
-      //   (__, ni) => {
-      //     if (shouldShowWeekNumber && ni < 1) {
-      //       const weekNumber = computeWeekNumber(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday));
-
-      //       return {
-      //         fullDate: weekNumber,
-      //         label: `Week ${weekNumber}`,
-      //         value: weekNumber,
-      //         valueInNumber: weekNumber,
-      //       };
-      //     }
-
-      //     if (i < 1
-      //         && (firstWeekday > 0 && firstWeekday < 7)
-      //         && ni < (firstWeekday + (shouldShowWeekNumber ? 1 : 0))) {
-      //       return { fullDate: null, label: null, value: null, valueInNumber: null };
-      //     }
-
-      //     const day = (i * 7) + ni + (shouldShowWeekNumber ? 0 : 1) - firstWeekday;
-
-      //     if (day > totalDays) {
-      //       return { fullDate: null, label: null, value: null, valueInNumber: null };
-      //     }
-
-      //     const fullDate = new Date(Date.UTC(fy, selectedMonth, day));
-
-      //     return {
-      //       fullDate,
-      //       label: Intl.DateTimeFormat(locale, {
-      //         year: 'numeric',
-      //         month: 'short',
-      //         day: 'numeric',
-      //         weekday: 'short',
-      //       }).format(fullDate),
-      //       value: Intl.DateTimeFormat(locale, {
-      //         day: 'numeric',
-      //       }).format(fullDate),
-      //       // /** NOTE: Always have that day in absolute number */
-      //       valueInNumber: fullDate.getUTCDate(),
-      //     };
-      //   }
-      // );
-    }
-  );
-
   let hasMinDate = false;
   let hasMaxDate = false;
 
-  // const preDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
-  //   ? disabledDays.map(n => shouldShowWeekNumber ? n + 1 : n)
-  //   : [];
-  // const calendarContent = html`
-  // <table>
-  //   <tr>
-  //   ${allWeekdays.map(weekday => html`<th aria-label$="${weekday.label}">${weekday.value}</th>`)}
-  //   </tr>
+  const fixedDisableDays = Array.isArray(disabledDays) && disabledDays.length > 0
+    ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
+    : [];
+  const {
+    daysInMonth,
+    weekdays,
+  } = calendar({
+    firstDayOfWeek,
+    locale,
+    selectedDate,
+    showWeekNumber,
+    weekNumberType,
+  });
 
-  //   ${allDaysInMonth.map((day) => {
-  //     const rendered = day.map((d, di) => {
-  //       /** NOTE: Disable month selector if needed */
-  //       const oriTimestamp = +d.fullDate;
-  //       const minTimestamp = +min;
-  //       const maxTimestamp = +max;
-  //       hasMinDate = hasMinDate || (d.original == null ? false : oriTimestamp === minTimestamp);
-  //       hasMaxDate = hasMaxDate || (d.original == null ? false : oriTimestamp === maxTimestamp);
-  //       return d.label == null
-  //         ? html`<td><div class="full-calendar__day day--empty"></div></td>`
-  //         : html`<td><div class$="full-calendar__day${
-  //           preDisabledDays.some(n => n === di)
-  //             || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp)
-  //               ? ' day--disabled'
-  //               : ''
-  //         }${
-  //           +todayDate === oriTimestamp
-  //             ? ' day--today'
-  //             : ''
-  //         }${
-  //           +selectedDate === oriTimestamp
-  //             ? ' day--selected'
-  //             : ''
-  //         }${
-  //           shouldShowWeekNumber && di < 1
-  //             ? ' day--weekday'
-  //             : ''
-  //         }" aria-label$="${d.label}" day="${d.originalValue}"><span>${d.value}</span></div></td>`;
-  //     });
-  //     return html`<tr>${rendered}</tr>`;
-  //   })}
-  // </table>`;
+  const calendarContent = html`
+  <table>
+    <tr>
+    ${cache(repeat(
+      weekdays,
+      n => `${n.label}::${n.value}`,
+      n => html`<th aria-label="${n.label}">${n.value}</th>`))}
+    </tr>
+
+    ${cache(repeat(
+      daysInMonth,
+      n => n.toString(),
+      (n) => {
+        const minDate = new Date(min);
+        const maxDate = new Date(max);
+        const rendered = html`${cache(repeat(
+          n,
+          nn => nn.fullDate == null ? performance.now() : nn.fullDate,
+          (nn, nni) => {
+            /** NOTE: Disable month selector if needed */
+            const oriTimestamp = +new Date(nn.fullDate!);
+            const minTimestamp = +minDate;
+            const maxTimestamp = +maxDate;
+            hasMinDate = hasMinDate
+              || (nn.fullDate == null ? false : oriTimestamp === minTimestamp);
+            hasMaxDate = hasMaxDate
+              || (nn.fullDate == null ? false : oriTimestamp === maxTimestamp);
+
+            return nn.label == null
+              ? html`<td>
+                <div class="full-calendar__day day--empty"></div>
+              </td>`
+              : html`
+              <td>
+                <div class="${classMap({
+                  'full-calenday__day': true,
+                  'day--disabled': fixedDisableDays.some(n => n === nni)
+                    || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
+                  'day--today': +todayDate === oriTimestamp,
+                  'day--selected': +selectedDate === oriTimestamp,
+                  'day--weekday': showWeekNumber && nni < 1,
+                })}"
+                aria-label="${nn.label}"
+                full-date="${nn.fullDate}"
+                day="${nn.value}">
+                  <span>${nn.value}</span>
+                </div>
+              </td>`;
+          }))}`;
+
+        return html`<tr>${rendered}</tr>`;
+      }
+    ))}
+  </table>`;
 
   return {
     hasMinDate,
     hasMaxDate,
-    // value: calendarContent,
+    value: calendarContent,
   };
 }
 
@@ -250,6 +197,12 @@ export class AppDatepicker extends LitElement {
 
   @property({ type: Number })
   public firstDayOfWeek: number = 0;
+
+  @property({ type: Boolean })
+  public showWeekNumber: boolean = false;
+
+  @property({ type: String })
+  public weekNumberType: string = 'first-4-day-week';
 
   @property({ type: String })
   public disableDays: string = '0,6';
@@ -284,6 +237,30 @@ export class AppDatepicker extends LitElement {
   // showWeekNumber: Boolean,
 
   protected render() {
+    const locale = this.locale;
+    const disabledDays = this.disableDays;
+    const firstDayOfWeek = this.firstDayOfWeek;
+    const min = this.min;
+    const max= this.max;
+    const showWeekNumber = this.showWeekNumber;
+    const weekNumberType = this.weekNumberType;
+
+    const selectedDate = this._selectedDate;
+    const selectedView = this._selectedView;
+
+    const todayDate = new Date();
+    const calendarContent = computeCalendarContent({
+      disabledDays,
+      firstDayOfWeek,
+      locale,
+      max,
+      min,
+      selectedDate,
+      showWeekNumber,
+      todayDate,
+      weekNumberType,
+    });
+
     return html`
     <style>
       :host {
@@ -515,20 +492,11 @@ export class AppDatepicker extends LitElement {
     </style>
 
     <div class="datepicker-header">
-    ${cache(renderHeaderSelectorButton({
-      locale: this.locale,
-      selectedDate: this._selectedDate,
-      selectedView: this._selectedView,
-    }))}
+    ${cache(renderHeaderSelectorButton({ locale, selectedDate, selectedView }))}
     </div>
 
     <div class="datepicker-body">
-    ${cache(renderDatepickerBody({
-      calendarContent: computeCalendarContent({ }),
-      locale: this.locale,
-      selectedDate: this._selectedDate,
-      selectedView: this._selectedView,
-    }))}
+    ${cache(renderDatepickerBody({ calendarContent, locale, selectedDate, selectedView }))}
     </div>
     `;
   }
