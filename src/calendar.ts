@@ -89,17 +89,18 @@ function calendarDays({
 
   return Array.from(
     Array(
-      Math.ceil(
-        (
-          totalDays
-            + firstWeekday
-            + (
-              showWeekNumber
-                ? Math.ceil((totalDays + firstWeekday) / 7)
-                : 0
-            )
-        ) / totalCol
-      )
+      // Math.ceil(
+      //   (
+      //     totalDays
+      //       + firstWeekday
+      //       + (
+      //         showWeekNumber
+      //           ? Math.ceil((totalDays + firstWeekday) / 7)
+      //           : 0
+      //       )
+      //   ) / totalCol
+      // )
+      6
     ),
     (_, i) => {
       return Array.from(

@@ -1,13 +1,19 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
   <title>app-datepicker</title>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
   <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script>
+  <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
+  <script type="module">
+    import '/dist/app-datepicker.js';
+  </script>
 </head>
 
 <body>
@@ -15,8 +21,39 @@
         match the folder name, add a src="&lt;main-component&gt;.html" attribute,
         where &lt;main-component&gt;.html" is a file that imports all of the
         components you want documented. -->
-  <iron-component-page></iron-component-page>
+  <!-- <iron-component-page></iron-component-page> -->
+  <style>
+    html,
+    body {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+      color: #000;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    h1 {
+      padding: 0 16px;
+    }
+
+    app-datepicker {
+      border: 1px solid #ddd;
+    }
+  </style>
+
+  <h1>app-datepicker</h1>
+  <app-datepicker></app-datepicker>
 </body>
 
 </html>

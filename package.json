@@ -34,6 +34,8 @@
   "main": "app-datepicker.js",
   "scripts": {
     "document": "polymer analyze > analysis.json",
+    "rollup": "rollup --config rollup.config.js",
+    "serve": "prpl-server --port 4343 --root .",
     "test": "polymer test --module-resolution=node --npm",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm"
   },
@@ -47,8 +49,15 @@
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.12",
+    "@webcomponents/webcomponentsjs": "^2.2.1",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "rollup": "^0.67.4",
+    "rollup-plugin-filesize": "^5.0.1",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "rollup-plugin-tslint": "^0.1.38",
+    "rollup-plugin-typescript": "^1.0.0",
     "wct-mocha": "^1.0.0"
   },
   "engines": {

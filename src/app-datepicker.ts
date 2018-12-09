@@ -8,6 +8,7 @@ import '@polymer/paper-icon-button/paper-icon-button-light';
 import './app-datepicker-icons.js';
 import { calendar } from './calendar.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { resetButton } from './common-styles.js';
 
 function getResolvedLocale() {
   return (Intl
@@ -21,6 +22,7 @@ function renderHeaderSelectorButton({
   locale,
   selectedDate,
   selectedView,
+  updateViewFn,
 }) {
   const dateDate = new Date(selectedDate);
   const formattedDate = Intl.DateTimeFormat(locale, {
@@ -28,62 +30,22 @@ function renderHeaderSelectorButton({
     month: 'short',
     day: 'numeric',
   }).format(dateDate);
-
-  return selectedView === 'calendar'
-    ? html`<button class="datepicker-header-btn__selector-year"
-      view="year">${dateDate.getUTCFullYear()}</button>`
-    : html`<button class="datepicker-header-btn__selector-calendar"
-    view="calendar">${formattedDate}</button>`;
-}
-
-function renderDatepickerBody({
-  calendarContent,
-  locale,
-  selectedDate,
-  selectedView,
-}) {
-  if (selectedView === 'calendar') {
-    const formattedDate = Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'long',
-    }).format(new Date(selectedDate));
-
-    return html`
-    <div class="datepicker-body__calendar-view">
-      <div class="calendar-view__month-selector">
-        <div class="month-selector-container">
-          <paper-icon-button-light>
-            <button
-              class="month-selector-button"
-              aria-label="Previous month">${iconChevronLeft}</button>
-          </paper-icon-button-light>
-        </div>
-
-        <div>${formattedDate}</div>
-
-        <div class="month-selector-container">
-          <paper-icon-button-light>
-            <button
-              class="month-selector-button"
-              aria-label="Next month">${iconChevronRight}</button>
-          </paper-icon-button-light>
-        </div>
-      </div>
-
-      <div class="view-calendar__full-calendar"
-        tabindex="0">${calendarContent.value}</div>
-    </div>
-    `;
-  }
+  const isCalendarView = selectedView === 'calendar';
 
   return html`
-  <div class="datepicker-body__year-view">
-    <div class="year-view-list">
-    ${cache(repeat(
-      Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
-      n => n,
-      (n) => html`<button class="year-view-list-item" .year="${n}">${n}</button>`))}
-    </div>
+  <button class="${classMap({
+    'btn__selector-year': true,
+    selected: !isCalendarView,
+  })}"
+    view="year"
+    @click="${() => updateViewFn('year')}">${dateDate.getUTCFullYear()}</button>
+  <div class="datepicker-toolbar">
+    <button class="${classMap({
+      'btn__selector-calendar': true,
+      selected: isCalendarView,
+    })}"
+      view="calendar"
+      @click="${() => updateViewFn('calendar')}">${formattedDate}</button>
   </div>
   `;
 }
@@ -119,8 +81,9 @@ function computeCalendarContent({
   });
 
   const calendarContent = html`
-  <table>
-    <tr>
+  <table class="calendar-table"
+    tabindex="0">
+    <tr class="calendar-weekdays">
     ${cache(repeat(
       weekdays,
       n => `${n.label}::${n.value}`,
@@ -147,13 +110,11 @@ function computeCalendarContent({
               || (nn.fullDate == null ? false : oriTimestamp === maxTimestamp);
 
             return nn.label == null
-              ? html`<td>
-                <div class="full-calendar__day day--empty"></div>
-              </td>`
+              ? html`<td class="full-calendar__day day--empty"></td>`
               : html`
-              <td>
-                <div class="${classMap({
-                  'full-calenday__day': true,
+              <td
+                class="${classMap({
+                  'full-calendar__day': true,
                   'day--disabled': fixedDisableDays.some(n => n === nni)
                     || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
                   'day--today': +todayDate === oriTimestamp,
@@ -163,8 +124,7 @@ function computeCalendarContent({
                 aria-label="${nn.label}"
                 full-date="${nn.fullDate}"
                 day="${nn.value}">
-                  <span>${nn.value}</span>
-                </div>
+                <div class="calendar-day">${nn.value}</div>
               </td>`;
           }))}`;
 
@@ -180,10 +140,67 @@ function computeCalendarContent({
   };
 }
 
+function renderDatepickerBody({
+  calendarContent,
+  locale,
+  selectedDate,
+  selectedView,
+}) {
+  if (selectedView === 'calendar') {
+    const formattedDate = Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'long',
+    }).format(new Date(selectedDate));
+
+    return html`
+    <div class="datepicker-body__calendar-view">
+      <div class="calendar-view__month-selector">
+        <div class="month-selector-container">
+          <paper-icon-button-light>
+            <button
+              class="month-selector-button"
+              aria-label="Previous month">${iconChevronLeft}</button>
+          </paper-icon-button-light>
+        </div>
+
+        <div class="month-selector__selected-month">${formattedDate}</div>
+
+        <div class="month-selector-container">
+          <paper-icon-button-light>
+            <button
+              class="month-selector-button"
+              aria-label="Next month">${iconChevronRight}</button>
+          </paper-icon-button-light>
+        </div>
+      </div>
+
+      <div class="calendar-view__full-calendar">${calendarContent.value}</div>
+    </div>
+    `;
+  }
+
+  return html`
+  <div class="datepicker-body__year-view">
+    <div class="year-view__full-list">
+    ${cache(repeat(
+      Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
+      n => n,
+      (n) => html`<button class="year-view__list-item" .year="${n}">${n}</button>`))}
+    </div>
+  </div>
+  `;
+}
+
 @customElement(AppDatepicker.is as any)
 export class AppDatepicker extends LitElement {
   static get is() {
     return 'app-datepicker';
+  }
+
+  public constructor() {
+    super();
+
+    this._updateView = this._updateView.bind(this);
   }
 
   @property({ type: String })
@@ -226,10 +243,10 @@ export class AppDatepicker extends LitElement {
   public startView: string;
 
   @property({ type: String })
-  private _selectedView: string;
+  private _selectedView: string = 'calendar';
 
-  @property({ type: Number })
-  private _selectedDate: number = Date.now();
+  @property({ type: Date })
+  private _selectedDate: Date = new Date();
 
   // valueAsDate: Date,
   // valueAsNumber: Number,
@@ -262,41 +279,164 @@ export class AppDatepicker extends LitElement {
     });
 
     return html`
+    ${resetButton}
     <style>
       :host {
         display: block;
         width: var(--app-datepicker-width);
         /** NOTE: Magic number as 16:9 aspect ratio does not look good */
-        height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px));
+        /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
         background-color: #fff;
+        border-radius: var(--app-datepicker-border-radius);
+        overflow: hidden;
+
         --app-datepicker-width: 300px;
-        --app-datepicker-primary-color: #4285F4;
+        /* --app-datepicker-primary-color: #4285f4; */
+        --app-datepicker-primary-color: #1a73e8;
+        --app-datepicker-border-radius: 12px;
         --app-datepicker-header-height: 80px;
       }
+
       * {
         box-sizing: border-box;
       }
-      .btn--reset {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        margin: 0;
-        padding: 0;
-        background-color: inherit;
-        color: inherit;
-        font-size: inherit;
-        border: none;
-        box-sizing: border-box;
+
+      .datepicker-header + .datepicker-body {
+        border-top: 1px solid #ddd;
       }
-      .datepicker__header {
-        width: 100%;
-        height: var(--app-datepicker-header-height);
-        background-color: var(--app-datepicker-primary-color);
+
+      .datepicker-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        position: relative;
+        padding: 16px 24px;
+        /* height: var(--app-datepicker-header-height); */
+      }
+
+      .btn__selector-year,
+      .btn__selector-calendar {
+        color: rgba(0, 0, 0, .55);
+      }
+      .btn__selector-year.selected,
+      .btn__selector-calendar.selected {
+        color: currentColor;
+      }
+
+      .btn__selector-year {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .btn__selector-calendar {
+        font-size: 36px;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .datepicker-body {
+        position: relative;
+      }
+
+      .calendar-view__month-selector {
         display: flex;
         flex-direction: row;
         align-items: center;
+
+        padding: 0 8px;
       }
-      .header__selector {
+
+      .month-selector-container > paper-icon-button-light {
+        max-width: 56px;
+        max-height: 56px;
+        height: 56px;
+        width: 56px;
+        color: rgba(0, 0, 0, .25);
+      }
+
+      .month-selector-button {
+        padding: calc((56px - 24px) / 2);
+      }
+
+      .month-selector__selected-month {
+        flex: 1 0 auto;
+
+        max-width: calc(100% - 56px * 2);
+        width: 100%;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .calendar-view__full-calendar {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+        padding: 0 0 16px;
+      }
+
+      .year-view__full-list {
+        max-height: calc(48px * 7);
+        overflow-y: auto;
+      }
+
+      .calendar-weekdays > th {
+        color: rgba(0, 0, 0, .7);
+        font-weight: 500;
+      }
+
+      .calendar-table {
+        max-width: calc(100% - 16px * 2);
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+        outline: none;
+      }
+
+      tr > th,
+      tr > td {
+        position: relative;
+        min-width: calc(100% / 7);
+        min-height: 40px;
+        width: calc(100% / 7);
+        height: 40px;
+        padding: 8px 0;
+      }
+
+      tr > td.full-calendar__day:not(.day--empty)::after {
+        content: '';
+        display: block;
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: 50%;
+        left: 50%;
+        background-color: var(--app-datepicker-primary-color);
+        border-radius: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        will-change: transform;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      tr > td.full-calendar__day > .calendar-day {
+        position: relative;
+        color: #000;
+        z-index: 1;
+      }
+
+      .year-view__list-item {
+        width: 100%;
+        padding: 12px 16px;
+        text-align: center;
+      }
+      .year-view__list-item.selected {
+        color: var(--app-datepicker-primary-color);
+        font-size: 24px;
+        font-weight: 500;
+      }
+
+      /* .header__selector {
         width: 100%;
         padding: 0 14px;
         display: flex;
@@ -326,12 +466,7 @@ export class AppDatepicker extends LitElement {
       .selector__calendar {
         font-size: 28px;
       }
-      .datepicker__main {
-        position: relative;
-        width: 100%;
-        height: calc(100% - var(--app-datepicker-header-height));
-        background-color: #fff;
-      }
+
       .main__selector > * {
         position: absolute;
         top: 0;
@@ -376,7 +511,7 @@ export class AppDatepicker extends LitElement {
       .selector__view-year > .view-year__year-list > .year-list__year:hover {
         cursor: pointer;
       }
-      /** .selector__view-calendar {} */
+      .selector__view-calendar {}
       .view-calendar__month-selector {
         display: flex;
         flex-direction: row;
@@ -487,18 +622,22 @@ export class AppDatepicker extends LitElement {
       .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--disabled.day--today,
       .view-calendar__full-calendar > table tr > td > .full-calendar__day.day--today {
         color: var(--app-datepicker-today-color, var(--app-datepicker-primary-color));
-      }
+      } */
 
     </style>
 
     <div class="datepicker-header">
-    ${cache(renderHeaderSelectorButton({ locale, selectedDate, selectedView }))}
+    ${cache(renderHeaderSelectorButton({ locale, selectedDate, selectedView, updateViewFn: this._updateView }))}
     </div>
 
     <div class="datepicker-body">
     ${cache(renderDatepickerBody({ calendarContent, locale, selectedDate, selectedView }))}
     </div>
     `;
+  }
+
+  private _updateView(view: string) {
+    this._selectedView = view;
   }
 
   // //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
