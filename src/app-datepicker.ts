@@ -10,6 +10,15 @@ import { calendar } from './calendar.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { resetButton } from './common-styles.js';
 
+function getResolvedTodayDate() {
+  const dateDate = new Date();
+  const fy = dateDate.getUTCFullYear();
+  const m = dateDate.getUTCMonth();
+  const d = dateDate.getUTCDate();
+
+  return new Date(Date.UTC(fy, m, d));
+}
+
 function getResolvedLocale() {
   return (Intl
     && Intl.DateTimeFormat
@@ -59,9 +68,12 @@ function computeCalendarContent({
   showWeekNumber,
   weekNumberType,
 
+  focusedDate,
   selectedDate,
   todayDate,
   disabledDays,
+
+  updateFocusedDateFn,
 }) {
   let hasMinDate = false;
   let hasMaxDate = false;
@@ -82,7 +94,8 @@ function computeCalendarContent({
 
   const calendarContent = html`
   <table class="calendar-table"
-    tabindex="0">
+    tabindex="0"
+    @click="${ev => updateFocusedDateFn(ev)}">
     <tr class="calendar-weekdays">
     ${cache(repeat(
       weekdays,
@@ -118,7 +131,7 @@ function computeCalendarContent({
                   'day--disabled': fixedDisableDays.some(n => n === nni)
                     || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
                   'day--today': +todayDate === oriTimestamp,
-                  'day--selected': +selectedDate === oriTimestamp,
+                  'day--focused': +focusedDate === oriTimestamp,
                   'day--weekday': showWeekNumber && nni < 1,
                 })}"
                 aria-label="${nn.label}"
@@ -145,6 +158,8 @@ function renderDatepickerBody({
   locale,
   selectedDate,
   selectedView,
+  updateMonthFn,
+  updateYearFn,
 }) {
   if (selectedView === 'calendar') {
     const formattedDate = Intl.DateTimeFormat(locale, {
@@ -159,7 +174,8 @@ function renderDatepickerBody({
           <paper-icon-button-light>
             <button
               class="month-selector-button"
-              aria-label="Previous month">${iconChevronLeft}</button>
+              aria-label="Previous month"
+              @click="${() => updateMonthFn('previous')}">${iconChevronLeft}</button>
           </paper-icon-button-light>
         </div>
 
@@ -169,7 +185,8 @@ function renderDatepickerBody({
           <paper-icon-button-light>
             <button
               class="month-selector-button"
-              aria-label="Next month">${iconChevronRight}</button>
+              aria-label="Next month"
+              @click="${() => updateMonthFn('next')}">${iconChevronRight}</button>
           </paper-icon-button-light>
         </div>
       </div>
@@ -181,11 +198,18 @@ function renderDatepickerBody({
 
   return html`
   <div class="datepicker-body__year-view">
-    <div class="year-view__full-list">
+    <div
+      class="year-view__full-list"
+      @click="${ev => updateYearFn(ev)}">
     ${cache(repeat(
       Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
       n => n,
-      (n) => html`<button class="year-view__list-item" .year="${n}">${n}</button>`))}
+      (n) => html`<button
+        class="${classMap({
+          'year-view__list-item': true,
+          'year--selected': selectedDate.getUTCFullYear() === n,
+        })}"
+        .year="${n}">${n}</button>`))}
     </div>
   </div>
   `;
@@ -200,7 +224,10 @@ export class AppDatepicker extends LitElement {
   public constructor() {
     super();
 
+    this._updateMonth = this._updateMonth.bind(this);
     this._updateView = this._updateView.bind(this);
+    this._updateYear = this._updateYear.bind(this);
+    this._updateFocusedDate = this._updateFocusedDate.bind(this);
   }
 
   @property({ type: String })
@@ -246,12 +273,25 @@ export class AppDatepicker extends LitElement {
   private _selectedView: string = 'calendar';
 
   @property({ type: Date })
-  private _selectedDate: Date = new Date();
+  private _selectedDate: Date = getResolvedTodayDate();
+
+  @property({ type: Date })
+  private _focusedDate: Date = getResolvedTodayDate();
 
   // valueAsDate: Date,
   // valueAsNumber: Number,
   // weekdayFormat: String,
   // showWeekNumber: Boolean,
+
+  protected updated() {
+    if (this._selectedView === 'year') {
+      this._yearViewFullList.scrollTo({
+        top: (this._selectedDate.getUTCFullYear() - 1900 - 2) * 48,
+        left: 0,
+        behavior: 'instant',
+      });
+    }
+  }
 
   protected render() {
     const locale = this.locale;
@@ -262,10 +302,11 @@ export class AppDatepicker extends LitElement {
     const showWeekNumber = this.showWeekNumber;
     const weekNumberType = this.weekNumberType;
 
+    const focusedDate = this._focusedDate;
     const selectedDate = this._selectedDate;
     const selectedView = this._selectedView;
+    const todayDate = getResolvedTodayDate();
 
-    const todayDate = new Date();
     const calendarContent = computeCalendarContent({
       disabledDays,
       firstDayOfWeek,
@@ -275,7 +316,9 @@ export class AppDatepicker extends LitElement {
       selectedDate,
       showWeekNumber,
       todayDate,
+      focusedDate,
       weekNumberType,
+      updateFocusedDateFn: this._updateFocusedDate,
     });
 
     return html`
@@ -418,11 +461,23 @@ export class AppDatepicker extends LitElement {
         opacity: 0;
         pointer-events: none;
       }
+      tr > td.full-calendar__day.day--focused:not(.day--empty)::after,
+      tr > td.full-calendar__day.day--today.day--focused:not(.day--empty)::after {
+        opacity: 1
+      }
 
       tr > td.full-calendar__day > .calendar-day {
         position: relative;
         color: #000;
+        cursor: pointer;
         z-index: 1;
+      }
+      tr > td.full-calendar__day.day--today > .calendar-day {
+        color: var(--app-datepicker-primary-color);
+      }
+      tr > td.full-calendar__day.day--focused > .calendar-day,
+      tr > td.full-calendar__day.day--today.day--focused > .calendar-day {
+        color: #fff;
       }
 
       .year-view__list-item {
@@ -430,7 +485,7 @@ export class AppDatepicker extends LitElement {
         padding: 12px 16px;
         text-align: center;
       }
-      .year-view__list-item.selected {
+      .year-view__list-item.year--selected {
         color: var(--app-datepicker-primary-color);
         font-size: 24px;
         font-weight: 500;
@@ -631,13 +686,62 @@ export class AppDatepicker extends LitElement {
     </div>
 
     <div class="datepicker-body">
-    ${cache(renderDatepickerBody({ calendarContent, locale, selectedDate, selectedView }))}
+    ${cache(renderDatepickerBody({ calendarContent, locale, selectedDate, selectedView, updateMonthFn: this._updateMonth, updateYearFn: this._updateYear }))}
     </div>
     `;
   }
 
   private _updateView(view: string) {
     this._selectedView = view;
+  }
+
+  private _updateMonth(updateType: string) {
+    const dateDate = new Date(this._selectedDate);
+    const fy = dateDate.getUTCFullYear();
+    const m = dateDate.getUTCMonth();
+    const d = dateDate.getUTCDate();
+    /** NOTE: updateType === 'next' as fallback */
+    const nm = updateType === 'previous' ? -1 : 1;
+
+    this._selectedDate = new Date(Date.UTC(fy, m + nm, d));
+  }
+
+  private _updateYear(ev: Event) {
+    const composedPath = ev.composedPath();
+    const selectedYearEl = composedPath.find(n => (n as HTMLElement).classList.contains('year-view__list-item'));
+
+    if (selectedYearEl == null) return;
+
+    const dateDate = new Date(this._selectedDate);
+    const m = dateDate.getUTCMonth();
+    const d = dateDate.getUTCDate();
+    const selectedYear = Number((selectedYearEl as HTMLButtonElement)!.textContent);
+
+    /**
+     * 2 things to do here:
+     *  - Update `_selectedDate` with selected year
+     *  - Update `_selectedView` to 'calendar'
+     */
+    this._selectedDate = new Date(Date.UTC(selectedYear, m, d));
+    this._selectedView = 'calendar';
+  }
+
+  private _updateFocusedDate(ev: Event) {
+    const composedPath = ev.composedPath();
+    const selectedDayEl = composedPath.find(n => (n as HTMLElement).classList.contains('full-calendar__day'));
+
+    if (selectedDayEl == null) return;
+
+    const dateDate = new Date(this._selectedDate);
+    const fy = dateDate.getUTCFullYear();
+    const m = dateDate.getUTCMonth();
+    const selectedDate = Number((selectedDayEl as HTMLTableDataCellElement).textContent);
+
+    this._focusedDate = new Date(Date.UTC(fy, m, selectedDate));
+  }
+
+  private get _yearViewFullList () {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.year-view__full-list')!;
   }
 
   // //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
