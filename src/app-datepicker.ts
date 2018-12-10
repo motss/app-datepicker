@@ -154,7 +154,7 @@ function computeCalendarContent({
 }
 
 function renderDatepickerBody({
-  calendarContent,
+  calendarContents,
   locale,
   selectedDate,
   selectedView,
@@ -191,7 +191,7 @@ function renderDatepickerBody({
         </div>
       </div>
 
-      <div class="calendar-view__full-calendar">${calendarContent.value}</div>
+      <div class="calendar-view__full-calendar">${cache(repeat(calendarContents, n => n, n => n.value))}</div>
     </div>
     `;
   }
@@ -213,6 +213,19 @@ function renderDatepickerBody({
     </div>
   </div>
   `;
+}
+
+function computeThreeCalendarsInARow(selectedDate: Date) {
+  const dateDate = new Date(selectedDate);
+  const fy = dateDate.getUTCFullYear();
+  const m = dateDate.getUTCMonth();
+  const d = dateDate.getUTCDate();
+
+  return [
+    new Date(fy, m - 1, d),
+    dateDate,
+    new Date(fy, m + 1, d),
+  ];
 }
 
 @customElement(AppDatepicker.is as any)
@@ -303,19 +316,20 @@ export class AppDatepicker extends LitElement {
     const selectedView = this._selectedView;
     const todayDate = getResolvedTodayDate();
 
-    const calendarContent = computeCalendarContent({
+    /** FIXME: Skip rendering tri-calendars when clicking instead of swiping */
+    const calendarContents = computeThreeCalendarsInARow(selectedDate).map(n => computeCalendarContent({
       disabledDays,
       firstDayOfWeek,
       locale,
       max,
       min,
-      selectedDate,
+      selectedDate: n,
       showWeekNumber,
       todayDate,
       focusedDate,
       weekNumberType,
       updateFocusedDateFn: this._updateFocusedDate,
-    });
+    }));
 
     return html`
     ${resetButton}
@@ -411,6 +425,9 @@ export class AppDatepicker extends LitElement {
         flex-direction: row;
         justify-content: center;
 
+        position: relative;
+        width: calc(100% * 3);
+        left: calc(-100%);
         padding: 0 0 16px;
       }
 
@@ -687,7 +704,7 @@ export class AppDatepicker extends LitElement {
     </div>
 
     <div class="datepicker-body">
-    ${cache(renderDatepickerBody({ calendarContent, locale, selectedDate, selectedView, updateMonthFn: this._updateMonth, updateYearFn: this._updateYear }))}
+    ${cache(renderDatepickerBody({ calendarContents, locale, selectedDate, selectedView, updateMonthFn: this._updateMonth, updateYearFn: this._updateYear }))}
     </div>
     `;
   }
