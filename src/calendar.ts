@@ -174,7 +174,7 @@ export function calendar({
 
   const weekdays = calendarWeekdays({
     firstDayOfWeek,
-    showWeekNumber: showWeekNumber,
+    showWeekNumber,
 
     longWeekdayFormatterFn,
     narrowWeekdayFormatterFn,
