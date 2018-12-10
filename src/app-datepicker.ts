@@ -132,7 +132,7 @@ function computeCalendarContent({
                     || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
                   'day--today': +todayDate === oriTimestamp,
                   'day--focused': +focusedDate === oriTimestamp,
-                  'day--weekday': showWeekNumber && nni < 1,
+                  'weekday-label': showWeekNumber && nni < 1,
                 })}"
                 aria-label="${nn.label}"
                 full-date="${nn.fullDate}"
@@ -261,9 +261,6 @@ export class AppDatepicker extends LitElement {
   public orientation: string = 'portrait';
 
   @property({ type: String })
-  public theme: string = 'material';
-
-  @property({ type: String })
   public locale: string = getResolvedLocale();
 
   @property({ type: String })
@@ -281,7 +278,6 @@ export class AppDatepicker extends LitElement {
   // valueAsDate: Date,
   // valueAsNumber: Number,
   // weekdayFormat: String,
-  // showWeekNumber: Boolean,
 
   protected updated() {
     if (this._selectedView === 'year') {
@@ -444,6 +440,7 @@ export class AppDatepicker extends LitElement {
         width: calc(100% / 7);
         height: 40px;
         padding: 8px 0;
+        pointer-events: none;
       }
 
       tr > td.full-calendar__day:not(.day--empty)::after {
@@ -461,6 +458,10 @@ export class AppDatepicker extends LitElement {
         opacity: 0;
         pointer-events: none;
       }
+      tr > td.full-calendar__day:not(.weekday-label):not(.day--empty) {
+        cursor: pointer;
+        pointer-events: auto;
+      }
       tr > td.full-calendar__day.day--focused:not(.day--empty)::after,
       tr > td.full-calendar__day.day--today.day--focused:not(.day--empty)::after {
         opacity: 1
@@ -469,8 +470,8 @@ export class AppDatepicker extends LitElement {
       tr > td.full-calendar__day > .calendar-day {
         position: relative;
         color: #000;
-        cursor: pointer;
         z-index: 1;
+        pointer-events: none;
       }
       tr > td.full-calendar__day.day--today > .calendar-day {
         color: var(--app-datepicker-primary-color);
@@ -708,7 +709,10 @@ export class AppDatepicker extends LitElement {
 
   private _updateYear(ev: Event) {
     const composedPath = ev.composedPath();
-    const selectedYearEl = composedPath.find(n => (n as HTMLElement).classList.contains('year-view__list-item'));
+    const selectedYearEl = composedPath.find(n =>
+      n
+      && (n as HTMLElement).classList
+      && (n as HTMLElement).classList.contains('year-view__list-item'));
 
     if (selectedYearEl == null) return;
 
@@ -728,7 +732,10 @@ export class AppDatepicker extends LitElement {
 
   private _updateFocusedDate(ev: Event) {
     const composedPath = ev.composedPath();
-    const selectedDayEl = composedPath.find(n => (n as HTMLElement).classList.contains('full-calendar__day'));
+    const selectedDayEl = composedPath.find(n =>
+      n
+      && (n as HTMLElement).classList
+      && (n as HTMLElement).classList.contains('full-calendar__day'));
 
     if (selectedDayEl == null) return;
 
