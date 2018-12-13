@@ -2,8 +2,8 @@ function calendarWeekdays({
   firstDayOfWeek,
   showWeekNumber,
 
-  longWeekdayFormatterFn,
-  narrowWeekdayFormatterFn,
+  longWeekdayFormatter,
+  narrowWeekdayFormatter,
 }) {
   return Array.from(
     Array(showWeekNumber ? 8 : 7),
@@ -18,8 +18,8 @@ function calendarWeekdays({
       const dateDate = new Date(Date.UTC(2017, 0, i + dateOffset));
 
       return {
-        label: longWeekdayFormatterFn(dateDate),
-        value: narrowWeekdayFormatterFn(dateDate),
+        label: longWeekdayFormatter(dateDate),
+        value: narrowWeekdayFormatter(dateDate),
       };
     });
 }
@@ -69,14 +69,34 @@ function computeWeekNumber(weekNumberType: string, date: Date) {
   };
 }
 
+
+//  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+//  Days   31  28  31  30  31  30  31  31  30  31  30  31
+//   31?    0       2       4       6   7       9      11
+//   30?                3       5           8      10
+//  Feb?        1
+//  Su Mo Tu We Th Fr Sa    startDay - _firstDayOfWeek
+//                  1  2        5 - 0 < 0 ? 6 : 5 - 0;
+//  Mo Tu We Th Fr Sa Su
+//               1  2  3        5 - 1 < 0 ? 6 : 5 - 1;
+//  Tu We Th Fr Sa Su Mo
+//            1  2  3  4        5 - 2 < 0 ? 6 : 5 - 2;
+//  We Th Fr Sa Su Mo Tu
+//         1  2  3  4  5        5 - 3 < 0 ? 6 : 5 - 3;
+//  Th Fr Sa Su Mo Tu We
+//      1  2  3  4  5  6        5 - 4 < 0 ? 6 : 5 - 4;
+//  Fr Sa Su Mo Tu We Th
+//   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
+//  Sa Su Mo Tu We Th Fr
+//                     1        5 - 6 < 0 ? 6 : 5 - 6;
 function calendarDays({
   firstDayOfWeek,
   selectedDate,
   showWeekNumber,
   weekNumberType,
 
-  fullDateFormatterFn,
-  dayFormatterFn,
+  fullDateFormatter,
+  dayFormatter,
 }) {
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
@@ -136,8 +156,8 @@ function calendarDays({
 
           return {
             fullDate: d.toJSON(),
-            label: fullDateFormatterFn(d),
-            value: Number(dayFormatterFn(d)),
+            label: fullDateFormatter(d),
+            value: Number(dayFormatter(d)),
             /** NOTE: Always have that day in absolute number */
             // originalValue: d.getUTCDate(),
           };
@@ -155,29 +175,42 @@ export function calendar({
   locale,
   selectedDate,
   weekNumberType,
+
+  longWeekdayFormatterFn,
+  narrowWeekdayFormatterFn,
+  dayFormatterFn,
+  fullDateFormatterFn,
 }) {
-  const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long', }).format;
-  const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
-    /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
-    // weekday: /^(short|narrow)/i.test(weekdayFormat)
-    //   ? weekdayFormat
-    //   : 'narrow',
-    weekday: 'narrow',
-  }).format;
-  const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
-  const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    weekday: 'short',
-  }).format;
+  const longWeekdayFormatter = longWeekdayFormatterFn == null
+    ? Intl.DateTimeFormat(locale, { weekday: 'long', }).format
+    : longWeekdayFormatterFn;
+  const narrowWeekdayFormatter = narrowWeekdayFormatterFn == null
+    ? Intl.DateTimeFormat(locale, {
+      /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
+      // weekday: /^(short|narrow)/i.test(weekdayFormat)
+      //   ? weekdayFormat
+      //   : 'narrow',
+      weekday: 'narrow',
+    }).format
+    : narrowWeekdayFormatterFn;
+  const dayFormatter = dayFormatterFn == null
+    ? Intl.DateTimeFormat(locale, { day: 'numeric' }).format
+    : dayFormatterFn;
+  const fullDateFormatter = fullDateFormatterFn == null
+    ? Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short',
+    }).format
+    : fullDateFormatterFn;
 
   const weekdays = calendarWeekdays({
     firstDayOfWeek,
     showWeekNumber,
 
-    longWeekdayFormatterFn,
-    narrowWeekdayFormatterFn,
+    longWeekdayFormatter,
+    narrowWeekdayFormatter,
   });
   const daysInMonth = calendarDays({
     firstDayOfWeek,
@@ -185,8 +218,8 @@ export function calendar({
     showWeekNumber,
     weekNumberType,
 
-    dayFormatterFn,
-    fullDateFormatterFn,
+    dayFormatter,
+    fullDateFormatter,
   });
 
   return { weekdays, daysInMonth };
