@@ -3,7 +3,7 @@ import { customElement, html, LitElement, property } from '@polymer/lit-element'
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-import { addListener } from '@polymer/polymer/lib/utils/gestures';
+import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
 import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
 
 import '@polymer/paper-icon-button/paper-icon-button-light';

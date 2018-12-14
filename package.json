@@ -40,16 +40,16 @@
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm"
   },
   "dependencies": {
-    "@polymer/lit-element": "^0.6.4",
+    "@polymer/lit-element": "^0.6.5",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.1",
     "@polymer/polymer": "^3.1.0",
-    "lit-html": "^0.14.0"
+    "lit-html": "^1.0.0-rc.1"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
-    "@types/node": "^10.12.14",
+    "@types/node": "^10.12.15",
     "@webcomponents/webcomponentsjs": "^2.2.1",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
