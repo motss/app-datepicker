@@ -1,7 +1,10 @@
 import { customElement, html, LitElement, property } from '@polymer/lit-element';
-import { cache } from 'lit-html/directives/cache.js';
+// import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+import { addListener } from '@polymer/polymer/lib/utils/gestures';
+import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
 
 import '@polymer/paper-icon-button/paper-icon-button-light';
 
@@ -29,11 +32,11 @@ function getResolvedLocale() {
 
 function renderHeaderSelectorButton({
   locale,
-  selectedDate,
+  focusedDate,
   selectedView,
   updateViewFn,
 }) {
-  const dateDate = new Date(selectedDate);
+  const dateDate = new Date(focusedDate);
   const formattedDate = Intl.DateTimeFormat(locale, {
     weekday: 'short',
     month: 'short',
@@ -42,17 +45,14 @@ function renderHeaderSelectorButton({
   const isCalendarView = selectedView === 'calendar';
 
   return html`
-  <button class="${classMap({
-    'btn__selector-year': true,
-    selected: !isCalendarView,
-  })}"
+  <button
+    class="${classMap({ 'btn__selector-year': true, selected: !isCalendarView })}"
     view="year"
     @click="${() => updateViewFn('year')}">${dateDate.getUTCFullYear()}</button>
+
   <div class="datepicker-toolbar">
-    <button class="${classMap({
-      'btn__selector-calendar': true,
-      selected: isCalendarView,
-    })}"
+    <button
+      class="${classMap({ 'btn__selector-calendar': true, selected: isCalendarView })}"
       view="calendar"
       @click="${() => updateViewFn('calendar')}">${formattedDate}</button>
   </div>
@@ -73,15 +73,13 @@ function computeCalendarContent({
   todayDate,
   disabledDays,
 
-  updatePointerdownFn,
-  updatePointermoveFn,
-  updatePointerupFn,
   updateFocusedDateFn,
 
   dayFormatterFn,
   fullDateFormatterFn,
   longWeekdayFormatterFn,
   narrowWeekdayFormatterFn,
+  longMonthYearFormatterFn,
 }) {
   let hasMinDate = false;
   let hasMaxDate = false;
@@ -104,64 +102,66 @@ function computeCalendarContent({
     longWeekdayFormatterFn,
     narrowWeekdayFormatterFn,
   });
+  const formattedDate = longMonthYearFormatterFn(selectedDate);
 
   const calendarContent = html`
-  <table class="calendar-table"
-    tabindex="0"
-    @pointerdown="${() => updatePointerdownFn()}"
-    @pointermove="${(ev) => updatePointermoveFn(ev)}"
-    @pointerup="${(ev) => updatePointerupFn(ev)}"
-    @pointerleave="${(ev) => updatePointerupFn(ev)}"
-    @click="${ev => updateFocusedDateFn(ev)}">
-    <tr class="calendar-weekdays">
-    ${cache(repeat(
-      weekdays,
-      n => `${n.label}::${n.value}`,
-      n => html`<th aria-label="${n.label}">${n.value}</th>`))}
-    </tr>
+  <div class="calendar-container">
+    <div class="calendar-label">${formattedDate}</div>
 
-    ${cache(repeat(
-      daysInMonth,
-      n => n.toString(),
-      (n) => {
-        const minDate = new Date(min);
-        const maxDate = new Date(max);
-        const rendered = html`${cache(repeat(
-          n,
-          nn => nn.fullDate == null ? performance.now() : nn.fullDate,
-          (nn, nni) => {
-            /** NOTE: Disable month selector if needed */
-            const oriTimestamp = +new Date(nn.fullDate!);
-            const minTimestamp = +minDate;
-            const maxTimestamp = +maxDate;
-            hasMinDate = hasMinDate
-              || (nn.fullDate == null ? false : oriTimestamp === minTimestamp);
-            hasMaxDate = hasMaxDate
-              || (nn.fullDate == null ? false : oriTimestamp === maxTimestamp);
+    <table class="calendar-table"
+      tabindex="0"
+      @click="${ev => updateFocusedDateFn(ev)}">
+      <tr class="calendar-weekdays">
+      ${(repeat(
+        weekdays,
+        n => `${n.label}::${n.value}`,
+        n => html`<th aria-label="${n.label}">${n.value}</th>`))}
+      </tr>
 
-            return nn.label == null
-              ? html`<td class="full-calendar__day day--empty"></td>`
-              : html`
-              <td
-                class="${classMap({
-                  'full-calendar__day': true,
-                  'day--disabled': fixedDisableDays.some(n => n === nni)
-                    || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
-                  'day--today': +todayDate === oriTimestamp,
-                  'day--focused': +focusedDate === oriTimestamp,
-                  'weekday-label': showWeekNumber && nni < 1,
-                })}"
-                aria-label="${nn.label}"
-                full-date="${nn.fullDate}"
-                day="${nn.value}">
-                <div class="calendar-day">${nn.value}</div>
-              </td>`;
-          }))}`;
+      ${(repeat(
+        daysInMonth,
+        () => Math.random().toString(16).slice(-7),
+        (n) => {
+          const minDate = new Date(min);
+          const maxDate = new Date(max);
+          const rendered = html`${(repeat(
+            n,
+            nn => nn.fullDate == null ? performance.now() : nn.fullDate,
+            (nn, nni) => {
+              /** NOTE: Disable month selector if needed */
+              const oriTimestamp = +new Date(nn.fullDate!);
+              const minTimestamp = +minDate;
+              const maxTimestamp = +maxDate;
+              hasMinDate = hasMinDate
+                || (nn.fullDate == null ? false : oriTimestamp === minTimestamp);
+              hasMaxDate = hasMaxDate
+                || (nn.fullDate == null ? false : oriTimestamp === maxTimestamp);
 
-        return html`<tr>${rendered}</tr>`;
-      }
-    ))}
-  </table>`;
+              return nn.label == null
+                ? html`<td class="full-calendar__day day--empty"></td>`
+                : html`
+                <td
+                  class="${classMap({
+                    'full-calendar__day': true,
+                    'day--disabled': fixedDisableDays.some(n => n === nni)
+                      || (oriTimestamp < minTimestamp || oriTimestamp > maxTimestamp),
+                    'day--today': +todayDate === oriTimestamp,
+                    'day--focused': +focusedDate === oriTimestamp,
+                    'weekday-label': showWeekNumber && nni < 1,
+                  })}"
+                  aria-label="${nn.label}"
+                  full-date="${nn.fullDate}"
+                  day="${nn.value}">
+                  <div class="calendar-day">${nn.value}</div>
+                </td>`;
+            }))}`;
+
+          return html`<tr>${rendered}</tr>`;
+        }
+      ))}
+    </table>
+  </div>
+  `;
 
   return {
     hasMinDate,
@@ -172,18 +172,16 @@ function computeCalendarContent({
 
 function renderDatepickerBody({
   calendarContents,
-  locale,
   selectedDate,
   selectedView,
+
+  updatePointerdownFn,
+  updatePointerupFn,
+
   updateMonthFn,
   updateYearFn,
 }) {
   if (selectedView === 'calendar') {
-    const formattedDate = Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'long',
-    }).format(new Date(selectedDate));
-
     return html`
     <div class="datepicker-body__calendar-view">
       <div class="calendar-view__month-selector">
@@ -196,8 +194,6 @@ function renderDatepickerBody({
           </paper-icon-button-light>
         </div>
 
-        <div class="month-selector__selected-month">${formattedDate}</div>
-
         <div class="month-selector-container">
           <paper-icon-button-light>
             <button
@@ -208,7 +204,9 @@ function renderDatepickerBody({
         </div>
       </div>
 
-      <div class="calendar-view__full-calendar">${cache(repeat(calendarContents, n => n, n => n.value))}</div>
+      <div class="calendar-view__full-calendar"
+        @pointerdown="${ev => updatePointerdownFn(ev)}"
+        @pointerup="${ev => updatePointerupFn(ev)}">${(repeat(calendarContents, n => n, n => n.value))}</div>
     </div>
     `;
   }
@@ -218,7 +216,7 @@ function renderDatepickerBody({
     <div
       class="year-view__full-list"
       @click="${ev => updateYearFn(ev)}">
-    ${cache(repeat(
+    ${(repeat(
       Array.from(Array(2100 - 1900 + 1), (_, i) => 1900 + i),
       n => n,
       (n) => html`<button
@@ -232,23 +230,21 @@ function renderDatepickerBody({
   `;
 }
 
-function computeThreeCalendarsInARow(selectedDate: Date, updateMonthWithClick: boolean) {
+function computeThreeCalendarsInARow(selectedDate: Date) {
   const dateDate = new Date(selectedDate);
   const fy = dateDate.getUTCFullYear();
   const m = dateDate.getUTCMonth();
   const d = dateDate.getUTCDate();
 
-  return Boolean(updateMonthWithClick == null ? false : updateMonthWithClick)
-    ? [null, dateDate, null]
-    : [
-      new Date(fy, m - 1, d),
-      dateDate,
-      new Date(fy, m + 1, d),
-    ];
+  return [
+    new Date(fy, m - 1, d),
+    dateDate,
+    new Date(fy, m + 1, d),
+  ];
 }
 
 @customElement(AppDatepicker.is as any)
-export class AppDatepicker extends LitElement {
+export class AppDatepicker extends GestureEventListeners(LitElement) {
   static get is() {
     return 'app-datepicker';
   }
@@ -263,6 +259,9 @@ export class AppDatepicker extends LitElement {
     this._updatePointerdownFn = this._updatePointerdownFn.bind(this);
     this._updatePointermoveFn = this._updatePointermoveFn.bind(this);
     this._updatePointerupFn = this._updatePointerupFn.bind(this);
+
+    /** NOTE(motss): To force all event listeners for gestures to be passive */
+    setPassiveTouchGestures(true);
   }
 
   @property({ type: String })
@@ -301,6 +300,9 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public startView: string;
 
+  @property({ type: Number })
+  public dragRatio: number = .15;
+
   @property({ type: String })
   private _selectedView: string = 'calendar';
 
@@ -310,11 +312,10 @@ export class AppDatepicker extends LitElement {
   @property({ type: Date })
   private _focusedDate: Date = getResolvedTodayDate();
 
-  private _updateMonthWithClick: boolean = false;
   private _isPointerdown: boolean = false;
-  private _isPointerup: boolean = false;
   private _dx: number = 0;
   private _totalDraggableDistance: number = 0;
+  private _dragAnimationDuration: number = 80;
 
   // valueAsDate: Date,
   // valueAsNumber: Number,
@@ -333,7 +334,6 @@ export class AppDatepicker extends LitElement {
     const selectedDate = this._selectedDate;
     const selectedView = this._selectedView;
     const todayDate = getResolvedTodayDate();
-    const updateMonthWithClick = this._updateMonthWithClick;
 
     /** NOTE(motss): For perf reason, initialize all formatters for calendar rendering */
     const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
@@ -344,9 +344,13 @@ export class AppDatepicker extends LitElement {
     }).format;
     const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long' }).format;
     const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format;
+    const longMonthYearFormatterFn = Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'long',
+    }).format;
 
     /** FIXME: Skip rendering tri-calendars when clicking instead of swiping */
-    const calendarContents = computeThreeCalendarsInARow(selectedDate, updateMonthWithClick).map((n) => {
+    const calendarContents = computeThreeCalendarsInARow(selectedDate).map((n) => {
       if (n == null) return html`<table class="calendar-table" tabindex="-1"></table>`;
 
       return computeCalendarContent({
@@ -362,14 +366,12 @@ export class AppDatepicker extends LitElement {
         weekNumberType,
 
         updateFocusedDateFn: this._updateFocusedDate,
-        updatePointerdownFn: this._updatePointerdownFn,
-        updatePointermoveFn: this._updatePointermoveFn,
-        updatePointerupFn: this._updatePointerupFn,
 
         dayFormatterFn,
         fullDateFormatterFn,
         longWeekdayFormatterFn,
         narrowWeekdayFormatterFn,
+        longMonthYearFormatterFn,
       });
     });
 
@@ -440,9 +442,17 @@ export class AppDatepicker extends LitElement {
         flex-direction: row;
         align-items: center;
 
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
         padding: 0 8px;
+        z-index: 1;
       }
 
+      .month-selector-container + .month-selector-container {
+        margin: 0 0 0 auto;
+      }
       .month-selector-container > paper-icon-button-light {
         max-width: 56px;
         max-height: 56px;
@@ -453,15 +463,6 @@ export class AppDatepicker extends LitElement {
 
       .month-selector-button {
         padding: calc((56px - 24px) / 2);
-      }
-
-      .month-selector__selected-month {
-        flex: 1 0 auto;
-
-        max-width: calc(100% - 56px * 2);
-        width: 100%;
-        font-weight: 500;
-        text-align: center;
       }
 
       .calendar-view__full-calendar {
@@ -485,13 +486,35 @@ export class AppDatepicker extends LitElement {
         font-weight: 500;
       }
 
+      .calendar-container {
+        max-width: calc(100% / 3);
+        width: calc(100% / 3);
+      }
+
+      .calendar-label,
+      .calendar-table {
+        width: calc(100% - 16px * 2);
+      }
+
+      .calendar-label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        max-width: calc(100% - 8px * 2);
+        width: 100%;
+        height: 56px;
+        margin: 0 8px;
+        font-weight: 500;
+        text-align: center;
+      }
+
       .calendar-table {
         -moz-user-select: none;
         -webkit-user-select: none;
         user-select: none;
 
-        max-width: calc((100% / 3) - 16px * 2);
-        width: calc((100% / 3) - 16px * 2);
         margin: 0 16px;
         border-collapse: collapse;
         text-align: center;
@@ -527,6 +550,7 @@ export class AppDatepicker extends LitElement {
       tr > td.full-calendar__day:not(.weekday-label):not(.day--empty) {
         cursor: pointer;
         pointer-events: auto;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
       tr > td.full-calendar__day.day--focused:not(.day--empty)::after,
       tr > td.full-calendar__day.day--today.day--focused:not(.day--empty)::after {
@@ -561,11 +585,21 @@ export class AppDatepicker extends LitElement {
     </style>
 
     <div class="datepicker-header">
-    ${cache(renderHeaderSelectorButton({ locale, selectedDate, selectedView, updateViewFn: this._updateView }))}
+    ${(renderHeaderSelectorButton({ locale, focusedDate, selectedView, updateViewFn: this._updateView }))}
     </div>
 
     <div class="datepicker-body">
-    ${cache(renderDatepickerBody({ calendarContents, locale, selectedDate, selectedView, updateMonthFn: this._updateMonth, updateYearFn: this._updateYear }))}
+    ${(renderDatepickerBody({
+      calendarContents,
+      selectedDate,
+      selectedView,
+
+      updatePointerdownFn: this._updatePointerdownFn,
+      updatePointerupFn: this._updatePointerupFn,
+
+      updateMonthFn: this._updateMonth,
+      updateYearFn: this._updateYear,
+    }))}
     </div>
     `;
   }
@@ -573,28 +607,19 @@ export class AppDatepicker extends LitElement {
   protected firstUpdated() {
     const hostBoundingRect = this.getBoundingClientRect();
     this._totalDraggableDistance = hostBoundingRect.width;
+
+    addListener(this._calendarViewFullCalendar, 'track', this._updatePointermoveFn);
   }
 
   protected updated() {
     if (this._selectedView === 'year') {
-      this._yearViewFullList.scrollTo({
-        top: (this._selectedDate.getUTCFullYear() - 1900 - 2) * 48,
-        left: 0,
-      });
-    }
-
-    this._updateMonthWithClick = false;
-
-    /**
-     * NOTE(motss):
-     * If `table` is less than 3, once current update completes,
-     * re-render again on next frame
-     */
-    if (Array.from(this._calendarViewFullCalendar.querySelectorAll('table')).length < 3) {
-      this.updateComplete.then(() => {
-        const rerenderFn = (window as any).requestIdleCallback || window.requestAnimationFrame;
-        rerenderFn(() => this.requestUpdate());
-      });
+      this.updateComplete
+        .then(() => {
+          return this._yearViewFullList.scrollTo({
+            top: (this._selectedDate.getUTCFullYear() - 1900 - 2) * 48,
+            left: 0,
+          });
+        });
     }
   }
 
@@ -603,15 +628,36 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateMonth(updateType: string) {
+    const calendarViewFullCalendar = this._calendarViewFullCalendar;
     const dateDate = new Date(this._selectedDate);
     const fy = dateDate.getUTCFullYear();
     const m = dateDate.getUTCMonth();
     const d = dateDate.getUTCDate();
     /** NOTE: updateType === 'next' as fallback */
-    const nm = updateType === 'previous' ? -1 : 1;
+    const nm = updateType === 'previous' ? 1 : -1;
 
-    this._updateMonthWithClick = true;
-    this._selectedDate = new Date(Date.UTC(fy, m + nm, d));
+    const dragAnimation = calendarViewFullCalendar.animate([
+      { transform: 'translate3d(0px, 0, 0)' },
+      { transform: `translate3d(${this._totalDraggableDistance * nm}px, 0, 0)` },
+    ], {
+      duration: this._dragAnimationDuration,
+      easing: 'cubic-bezier(0, 0, .4, 1)',
+      fill: 'none',
+    });
+
+    return dragAnimation
+      .finished
+      .then(() => {
+        calendarViewFullCalendar.style.transform = null;
+
+        this._isPointerdown = false;
+        this._dx = 0;
+
+        return this.updateComplete;
+      })
+      .then(() => {
+        this._selectedDate = new Date(Date.UTC(fy, m - nm, d));
+      });
   }
 
   private _updateYear(ev: Event) {
@@ -658,12 +704,14 @@ export class AppDatepicker extends LitElement {
     // console.debug('is-pointer-down', this._dx);
     this._isPointerdown = true;
   }
-  private _updatePointermoveFn(ev: PointerEvent) {
+  private _updatePointermoveFn(ev: CustomEvent) {
+    // console.debug('move', ev);
+
     if (!this._isPointerdown) return;
 
     // const calendarTableToDrag = ev.composedPath().find(n => (n as HTMLElement).classList.contains('calendar-table')) as HTMLTableElement;
     const calendarViewFullCalendar = this._calendarViewFullCalendar;
-    const dx = this._dx + Number(ev.movementX);
+    const dx = Number(ev.detail.dx);
 
     calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
     this._dx = dx;
@@ -675,10 +723,9 @@ export class AppDatepicker extends LitElement {
      *  - `pointerup` or `pointerleave` event has been fired, or
      *  - `pointerdown` has not been fired
      */
-    if (this._isPointerup || !this._isPointerdown) return;
+    if (!this._isPointerdown) return;
 
     // console.debug('is-pointer-up', this._dx, ev.type);
-    this._isPointerup = true;
 
     const calendarViewFullCalendar = this._calendarViewFullCalendar;
     const totalDraggableDistance = this._totalDraggableDistance;
@@ -691,12 +738,12 @@ export class AppDatepicker extends LitElement {
      * If dragged distance < 30% of the calendar ratio,
      * reset calendar position
      */
-    if (absDx < totalDraggableDistance * .3) {
+    if (absDx < totalDraggableDistance * this.dragRatio) {
       const dragAnimation = calendarViewFullCalendar.animate([
         { transform: `translate3d(${dx}px, 0, 0)` },
         { transform: 'translate3d(0px, 0, 0)' },
       ], {
-        duration: 250,
+        duration: this._dragAnimationDuration,
         easing: 'cubic-bezier(0, 0, .4, 1)',
         fill: 'none',
       });
@@ -707,7 +754,6 @@ export class AppDatepicker extends LitElement {
           calendarViewFullCalendar.style.transform = null;
 
           this._isPointerdown = false;
-          this._isPointerup = false;
           this._dx = 0;
         });
     }
@@ -717,7 +763,7 @@ export class AppDatepicker extends LitElement {
       { transform: `translate3d(${dx}px, 0, 0)` },
       { transform: `translate3d(${restDx}px, 0, 0)` },
     ], {
-      duration: 250,
+      duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
       fill: 'none',
     });
@@ -742,7 +788,6 @@ export class AppDatepicker extends LitElement {
       .then(() => {
         calendarViewFullCalendar.style.transform = null;
 
-        this._isPointerup = false;
         this._dx = 0;
       });
   }

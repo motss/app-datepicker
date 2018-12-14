@@ -17,6 +17,7 @@ export const resetButton = html`
       font: inherit;
       text-align: left;
       text-transform: inherit;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
   </style>
 `;
