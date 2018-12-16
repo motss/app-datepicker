@@ -45,7 +45,7 @@ function renderItems() {
       idOffset: i * 10,
       locale: 'en-US',
       selectedDate: n,
-      showWeekNumber: false,
+      showWeekNumber: true,
 
       weekNumberType: null,
       dayFormatterFn: null,

@@ -4,7 +4,6 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { cache } from 'lit-html/directives/cache.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
 import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
-import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event-listeners.js';
 
 import '@polymer/paper-icon-button/paper-icon-button-light';
 
@@ -89,11 +88,16 @@ function renderDatepickerCalendar({
     });
     const tbodyContent = n.daysInMonth.map((o) => {
       const trContent = o.map((q, qi) => {
-        if (q.fullDate == null) {
+        if (q.fullDate == null && q.value == null) {
           hasMinDate = false;
           hasMaxDate = false;
 
           return html`<td class="full-calendar__day day--empty"></td>`;
+        }
+
+        /** NOTE(motss): Could be week number labeling */
+        if (q.fullDate == null && showWeekNumber && qi < 1) {
+          return html`<td class="full-calendar__day weekday-label" aria-label="${q.label}">${q.value}</td>`;
         }
 
         const curTime = +new Date(q.fullDate);
@@ -112,7 +116,6 @@ function renderDatepickerCalendar({
             'day--disabled': isDisabledDay,
             'day--today': +todayDate === curTime,
             'day--focused': +focusedDate === curTime,
-            'weekday-label': showWeekNumber && qi < 1,
           })}"
           aria-label="${q.label}"
           .full-date="${q.fullDate}"
@@ -217,7 +220,7 @@ function computeThreeCalendarsInARow(selectedDate: Date) {
 }
 
 @customElement(AppDatepicker.is)
-export class AppDatepicker extends GestureEventListeners(LitElement) {
+export class AppDatepicker extends LitElement {
   static get is() {
     return 'app-datepicker';
   }
@@ -471,9 +474,10 @@ export class AppDatepicker extends GestureEventListeners(LitElement) {
         overflow-y: auto;
       }
 
-      .calendar-weekdays > th {
+      .calendar-weekdays > th,
+      td.weekday-label {
         color: rgba(0, 0, 0, .55);
-        font-weight: 500;
+        font-weight: 400;
       }
 
       .calendar-container {
@@ -514,9 +518,7 @@ export class AppDatepicker extends GestureEventListeners(LitElement) {
       tr > th,
       tr > td {
         position: relative;
-        min-width: calc(100% / 7);
         min-height: 40px;
-        width: calc(100% / 7);
         height: 40px;
         padding: 8px 0;
         pointer-events: none;

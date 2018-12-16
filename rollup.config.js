@@ -11,6 +11,7 @@ const build = {
   input: [
     'src/app-datepicker.ts',
     'src/test-rerender.ts',
+    'src/calendar-benchmark.ts',
   ],
   output: [{
     // file: 'dist/app-datepicker.js',

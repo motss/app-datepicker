@@ -5,23 +5,18 @@ function calendarWeekdays({
   longWeekdayFormatter,
   narrowWeekdayFormatter,
 }) {
-  return Array.from(
-    Array(showWeekNumber ? 8 : 7),
-    (_, i) => {
-      if (showWeekNumber && i < 1) {
-        return { label: 'Week', value: 'Wk' };
-      }
+  const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
+  const weekdays: unknown[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
+  for (let i = 0, len = 7; i < len; i += 1) {
+    const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
 
-      const dateOffset = ((firstDayOfWeek < 0 ? 7 : 0) + firstDayOfWeek)
-        % 7
-        + (showWeekNumber ? 0 : 1);
-      const dateDate = new Date(Date.UTC(2017, 0, i + dateOffset));
-
-      return {
-        label: longWeekdayFormatter(dateDate),
-        value: narrowWeekdayFormatter(dateDate),
-      };
+    weekdays.push({
+      label: longWeekdayFormatter(dateDate),
+      value: narrowWeekdayFormatter(dateDate),
     });
+  }
+
+  return weekdays;
 }
 
 function normalizeWeekday(weekday: number) {
@@ -32,6 +27,25 @@ function normalizeWeekday(weekday: number) {
   return (weekdayOffset + weekday) % 7;
 }
 
+function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
+  const dd = new Date(date);
+  const wd = dd.getUTCDay();
+  const fy = dd.getUTCFullYear();
+  const m = dd.getUTCMonth();
+  const d = dd.getUTCDate();
+
+  switch (weekNumberType) {
+    case 'first-4-day-week':
+      return  new Date(Date.UTC(fy, m, d - wd + 3));
+    case 'first-day-of-year':
+      return new Date(Date.UTC(fy, m, d - wd + 6));
+    case 'first-full-week':
+      return new Date(Date.UTC(fy, m, d - wd));
+    default:
+      return dd;
+  }
+};
+
 /**
  * {@link https://bit.ly/2UvEN2y|Compute week number by type}
  * @param weekNumberType {string}
@@ -39,26 +53,7 @@ function normalizeWeekday(weekday: number) {
  * @return {}
  */
 function computeWeekNumber(weekNumberType: string, date: Date) {
-  const getFixedDate = (weekNumberType, date) => {
-    const dd = new Date(date);
-    const wd = dd.getUTCDay();
-    const fy = dd.getUTCFullYear();
-    const m = dd.getUTCMonth();
-    const d = dd.getUTCDate();
-
-    switch (weekNumberType) {
-      case 'first-4-day-week':
-        return  new Date(Date.UTC(fy, m, d - wd + 3));
-      case 'first-day-of-year':
-        return new Date(Date.UTC(fy, m, d - wd + 6));
-      case 'first-full-week':
-        return new Date(Date.UTC(fy, m, d - wd));
-      default:
-        return dd;
-    }
-  };
-
-  const fixedNow = getFixedDate(weekNumberType, date);
+  const fixedNow = getFixedDateForWeekNumber(weekNumberType, date);
   const firstDayOfYear = new Date(Date.UTC(fixedNow.getUTCFullYear(), 0, 1));
   const wk = Math.ceil(((+fixedNow - +firstDayOfYear) / 864e5 + 1) / 7);
 
@@ -99,63 +94,61 @@ function calendarDays({
   fullDateFormatter,
   dayFormatter,
 }) {
-  const fy = selectedDate.getUTCFullYear();
+ const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
   const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
   const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
+  const hasValidFirstWeekday = firstWeekday > 0 && firstWeekday < 7;
+  const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
+  const fixedFirstWeekdayForDay = (showWeekNumber ? 0 : 1) - firstWeekday;
+  const fixedTotalDays = firstWeekdayWithWeekNumberOffset + totalDays;
 
-  const calendar = Array.from(
-    Array(6),
-    (_, i) => {
-      return Array.from(
-        Array(totalCol),
-        (__, ni) => {
-          const rowVal = ni + (i * 7);
+  const calendar = Array.from(Array(6), (_, i) => {
+    return Array.from(Array(totalCol), (__, ni) => {
+      const rowVal = ni + (i * 7);
 
-          if (showWeekNumber && ni < 1) {
-            const { weekNumber } = computeWeekNumber(
-              weekNumberType,
-              new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
+      /**
+       * NOTE(motss): Only append week number when `rowVal` is still within the date range of
+       * the current month.
+       */
+      if (rowVal <= fixedTotalDays && showWeekNumber && ni < 1) {
+        const { weekNumber } = computeWeekNumber(
+          weekNumberType,
+          new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
 
-            return {
-              fullDate: null,
-              label: `Week ${weekNumber}`,
-              value: weekNumber,
-              id: weekNumber,
-            };
-          }
+        return {
+          fullDate: null,
+          label: `Week ${weekNumber}`,
+          value: weekNumber,
+          id: weekNumber,
+        };
+      }
 
-          if (
-            i < 1
-              && (firstWeekday > 0 && firstWeekday < 7)
-              && ni < (firstWeekday + (showWeekNumber ? 1 : 0))
-          ) {
-            return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
-          }
+      /** NOTE(motss): Check for all values that is not within the date range of current month. */
+      if ((rowVal > fixedTotalDays)
+        || (i < 1 && hasValidFirstWeekday && ni < firstWeekdayWithWeekNumberOffset)) {
+        return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
+      }
 
-          const day = rowVal + (showWeekNumber ? 0 : 1) - firstWeekday;
+      const day = rowVal + fixedFirstWeekdayForDay;
 
-          if (day > totalDays) {
-            return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
-          }
+      if (day > totalDays) {
+        return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
+      }
 
-          const d = new Date(Date.UTC(fy, selectedMonth, day));
-          const fullDate = d.toJSON();
+      const d = new Date(Date.UTC(fy, selectedMonth, day));
+      const fullDate = d.toJSON();
 
-          return {
-            fullDate,
-            label: fullDateFormatter(d),
-            value: Number(dayFormatter(d)),
-            id: fullDate,
-            /** NOTE: Always have that day in absolute number */
-            // originalValue: d.getUTCDate(),
-          };
-        }
-      );
-    }
-  );
+      return {
+        fullDate,
+        label: fullDateFormatter(d),
+        value: Number(dayFormatter(d)),
+        id: fullDate,
+      };
+    });
+  });
 
   return calendar;
 }
