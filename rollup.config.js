@@ -8,11 +8,18 @@ import typescript from 'rollup-plugin-typescript';
 
 const isProd = 'production' === process.env.NODE_ENV;
 const build = {
-  input: 'src/app-datepicker.ts',
+  input: [
+    'src/app-datepicker.ts',
+    'src/test-rerender.ts',
+  ],
   output: [{
-    file: 'dist/app-datepicker.js',
+    // file: 'dist/app-datepicker.js',
+    dir: 'dist',
     format: 'esm',
   }],
+
+  experimentalCodeSplitting: true,
+
   plugins: [
     resolve(),
     ...(isProd ? [tslint({

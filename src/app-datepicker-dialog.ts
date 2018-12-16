@@ -4,7 +4,7 @@ import '@polymer/paper-button/paper-button.js';
 
 import '../app-datepicker.js';
 
-@customElement(AppDatepickerDialog.is as any)
+@customElement(AppDatepickerDialog.is)
 export class AppDatepickerDialog extends LitElement {
   static get is() {
     return 'app-datepicker-dialog';

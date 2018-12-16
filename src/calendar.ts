@@ -94,6 +94,7 @@ function calendarDays({
   selectedDate,
   showWeekNumber,
   weekNumberType,
+  idOffset,
 
   fullDateFormatter,
   dayFormatter,
@@ -106,35 +107,23 @@ function calendarDays({
   const totalCol = showWeekNumber ? 8 : 7;
 
   const calendar = Array.from(
-    Array(
-      // Math.ceil(
-      //   (
-      //     totalDays
-      //       + firstWeekday
-      //       + (
-      //         showWeekNumber
-      //           ? Math.ceil((totalDays + firstWeekday) / 7)
-      //           : 0
-      //       )
-      //   ) / totalCol
-      // )
-      6
-    ),
+    Array(6),
     (_, i) => {
       return Array.from(
         Array(totalCol),
         (__, ni) => {
+          const rowVal = ni + (i * 7);
+
           if (showWeekNumber && ni < 1) {
             const { weekNumber } = computeWeekNumber(
               weekNumberType,
-              new Date(Date.UTC(fy, selectedMonth, (i * 7) + ni + 1 - firstWeekday)));
+              new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
 
             return {
-              // original: weekNumber,
               fullDate: null,
               label: `Week ${weekNumber}`,
               value: weekNumber,
-              // originalValue: weekNumber,
+              id: weekNumber,
             };
           }
 
@@ -143,21 +132,23 @@ function calendarDays({
               && (firstWeekday > 0 && firstWeekday < 7)
               && ni < (firstWeekday + (showWeekNumber ? 1 : 0))
           ) {
-            return { fullDate: null, label: null, value: null };
+            return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
           }
 
-          const day = (i * 7) + ni + (showWeekNumber ? 0 : 1) - firstWeekday;
+          const day = rowVal + (showWeekNumber ? 0 : 1) - firstWeekday;
 
           if (day > totalDays) {
-            return { fullDate: null, label: null, value: null };
+            return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
           }
 
           const d = new Date(Date.UTC(fy, selectedMonth, day));
+          const fullDate = d.toJSON();
 
           return {
-            fullDate: d.toJSON(),
+            fullDate,
             label: fullDateFormatter(d),
             value: Number(dayFormatter(d)),
+            id: fullDate,
             /** NOTE: Always have that day in absolute number */
             // originalValue: d.getUTCDate(),
           };
@@ -175,6 +166,7 @@ export function calendar({
   locale,
   selectedDate,
   weekNumberType,
+  idOffset,
 
   longWeekdayFormatterFn,
   narrowWeekdayFormatterFn,
@@ -217,6 +209,7 @@ export function calendar({
     selectedDate,
     showWeekNumber,
     weekNumberType,
+    idOffset: idOffset == null ? 0 : idOffset,
 
     dayFormatter,
     fullDateFormatter,
