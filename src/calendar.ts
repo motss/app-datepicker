@@ -1,25 +1,6 @@
-function calendarWeekdays({
-  firstDayOfWeek,
-  showWeekNumber,
-
-  longWeekdayFormatter,
-  narrowWeekdayFormatter,
-}) {
-  const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
-  const weekdays: unknown[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
-  for (let i = 0, len = 7; i < len; i += 1) {
-    const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
-
-    weekdays.push({
-      label: longWeekdayFormatter(dateDate),
-      value: narrowWeekdayFormatter(dateDate),
-    });
-  }
-
-  return weekdays;
-}
-
 function normalizeWeekday(weekday: number) {
+  if (weekday >= 0 && weekday < 7) return weekday;
+
   const weekdayOffset = weekday < 0
     ? 7 * Math.ceil(Math.abs(weekday / 7))
     : 0
@@ -28,11 +9,10 @@ function normalizeWeekday(weekday: number) {
 }
 
 function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
-  const dd = new Date(date);
-  const wd = dd.getUTCDay();
-  const fy = dd.getUTCFullYear();
-  const m = dd.getUTCMonth();
-  const d = dd.getUTCDate();
+  const wd = date.getUTCDay();
+  const fy = date.getUTCFullYear();
+  const m = date.getUTCMonth();
+  const d = date.getUTCDate();
 
   switch (weekNumberType) {
     case 'first-4-day-week':
@@ -42,7 +22,7 @@ function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
     case 'first-full-week':
       return new Date(Date.UTC(fy, m, d - wd));
     default:
-      return dd;
+      return date;
   }
 };
 
@@ -64,6 +44,26 @@ function computeWeekNumber(weekNumberType: string, date: Date) {
   };
 }
 
+export function calendarWeekdays({
+  firstDayOfWeek,
+  showWeekNumber,
+
+  longWeekdayFormatter,
+  narrowWeekdayFormatter,
+}) {
+  const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
+  const weekdays: unknown[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
+  for (let i = 0, len = 7; i < len; i += 1) {
+    const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
+
+    weekdays.push({
+      label: longWeekdayFormatter(dateDate),
+      value: narrowWeekdayFormatter(dateDate),
+    });
+  }
+
+  return weekdays;
+}
 
 //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
 //  Days   31  28  31  30  31  30  31  31  30  31  30  31
@@ -84,7 +84,7 @@ function computeWeekNumber(weekNumberType: string, date: Date) {
 //   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
 //  Sa Su Mo Tu We Th Fr
 //                     1        5 - 6 < 0 ? 6 : 5 - 6;
-function calendarDays({
+export function calendarDays({
   firstDayOfWeek,
   selectedDate,
   showWeekNumber,
@@ -94,61 +94,119 @@ function calendarDays({
   fullDateFormatter,
   dayFormatter,
 }) {
- const fy = selectedDate.getUTCFullYear();
+  debugger;
+  const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
   const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
   const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
-  const hasValidFirstWeekday = firstWeekday > 0 && firstWeekday < 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
-  const fixedFirstWeekdayForDay = (showWeekNumber ? 0 : 1) - firstWeekday;
-  const fixedTotalDays = firstWeekdayWithWeekNumberOffset + totalDays;
+  // const hasValidFirstWeekday = firstWeekday > 0 && firstWeekday < 7;
+  // const fixedFirstWeekdayForDay = (showWeekNumber ? 0 : 1) - firstWeekday;
+  // const fixedTotalDays = firstWeekday + totalDays;
 
-  const calendar = Array.from(Array(6), (_, i) => {
-    return Array.from(Array(totalCol), (__, ni) => {
-      const rowVal = ni + (i * 7);
+  // const calendar = Array.from(Array(6), (_, i) => {
+  //   return Array.from(Array(totalCol), (__, ni) => {
+  //     const rowVal = ni + (i * 7);
 
-      /**
-       * NOTE(motss): Only append week number when `rowVal` is still within the date range of
-       * the current month.
-       */
-      if (rowVal <= fixedTotalDays && showWeekNumber && ni < 1) {
+  //     /**
+  //      * NOTE(motss): Only append week number when `rowVal` is still within the date range of
+  //      * the current month. Since index starts from `0`, `rowVal < fixedTotalDays` checks only
+  //      * values from `0` to `34`, 35 iterations in total.
+  //      */
+  //     if (rowVal < fixedTotalDays && showWeekNumber && ni < 1) {
+  //       const { weekNumber } = computeWeekNumber(
+  //         weekNumberType,
+  //         new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
+  //       const weekLabel = `Week ${weekNumber}`;
+
+  //       return {
+  //         fullDate: null,
+  //         label: weekLabel,
+  //         value: weekNumber,
+  //         id: weekLabel,
+  //       };
+  //     }
+
+  //     if (selectedMonth === 6 && rowVal >= fixedTotalDays) console.debug(rowVal, fixedTotalDays);
+  //     /** NOTE(motss): Check for all values that is not within the date range of current month. */
+  //     if ((rowVal >= fixedTotalDays)
+  //       || (i < 1 && hasValidFirstWeekday && ni < firstWeekdayWithWeekNumberOffset)) {
+  //       return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
+  //     }
+
+  //     const day = rowVal + fixedFirstWeekdayForDay;
+
+  //     if (day > totalDays) {
+  //       return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
+  //     }
+
+  //     const d = new Date(Date.UTC(fy, selectedMonth, day));
+  //     const fullDate = d.toJSON();
+
+  //     return {
+  //       fullDate,
+  //       label: fullDateFormatter(d),
+  //       value: Number(dayFormatter(d)),
+  //       id: fullDate,
+  //     };
+  //   });
+  // });
+
+  const calendar: unknown[][] = [];
+  let calendarRow: unknown[] = [];
+  let day = 1;
+  let calendarFilled = false;
+  for (let row = 0, rowLen = 6; row < rowLen; row += 1) {
+    for (let col = 0, len = totalCol; col < len; col += 1) {
+      const rowVal = col + (row * totalCol);
+
+      if (!calendarFilled && showWeekNumber && col < 1) {
         const { weekNumber } = computeWeekNumber(
           weekNumberType,
-          new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
+          new Date(Date.UTC(fy, selectedMonth, rowVal - firstWeekday)));
+        const weekLabel = `Week ${weekNumber}`;
 
-        return {
+        calendarRow.push({
           fullDate: null,
-          label: `Week ${weekNumber}`,
+          label: weekLabel,
           value: weekNumber,
-          id: weekNumber,
-        };
+          id: weekLabel,
+        });
+        // calendarRow.push(weekNumber);
+        continue;
       }
 
-      /** NOTE(motss): Check for all values that is not within the date range of current month. */
-      if ((rowVal > fixedTotalDays)
-        || (i < 1 && hasValidFirstWeekday && ni < firstWeekdayWithWeekNumberOffset)) {
-        return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
-      }
-
-      const day = rowVal + fixedFirstWeekdayForDay;
-
-      if (day > totalDays) {
-        return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
+      if (calendarFilled || rowVal < firstWeekdayWithWeekNumberOffset) {
+        calendarRow.push({
+          fullDate: null,
+          label: null,
+          value: null,
+          id: (rowVal + idOffset),
+        });
+        // calendarRow.push(null);
+        continue;
       }
 
       const d = new Date(Date.UTC(fy, selectedMonth, day));
       const fullDate = d.toJSON();
 
-      return {
+      calendarRow.push({
         fullDate,
         label: fullDateFormatter(d),
         value: Number(dayFormatter(d)),
         id: fullDate,
-      };
-    });
-  });
+      });
+      // calendarRow.push(day);
+      day += 1;
+
+      if (day > totalDays) calendarFilled = true;
+    }
+
+    calendar.push(calendarRow);
+    calendarRow = [];
+  }
 
   return calendar;
 }

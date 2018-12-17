@@ -8,7 +8,7 @@ import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
 import '@polymer/paper-icon-button/paper-icon-button-light';
 
 import './app-datepicker-icons.js';
-import { calendar } from './calendar.js';
+import { calendarDays, calendarWeekdays } from './calendar.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { resetButton } from './common-styles.js';
 
@@ -64,6 +64,7 @@ function renderDatepickerCalendar({
   updateFocusedDateFn,
   longMonthYearFormatterFn,
 
+  weekdays,
   calendars,
   disabledDays,
   showWeekNumber,
@@ -80,15 +81,15 @@ function renderDatepickerCalendar({
   const fixedDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
     ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
     : [];
-  const calendarsContent = calendars.map((n) => {
+  const weekdaysContent = weekdays.map(o => {
+    return html`<th aria-label="${o.label}">${o.value}</th>`;
+  });
+  const calendarsContent = calendars.map((daysInMonth) => {
     let formattedDate = null;
 
-    const weekdaysContent = n.weekdays.map(o => {
-      return html`<th aria-label="${o.label}">${o.value}</th>`;
-    });
-    const tbodyContent = n.daysInMonth.map((o) => {
-      const trContent = o.map((q, qi) => {
-        if (q.fullDate == null && q.value == null) {
+    const tbodyContent = daysInMonth.map((n) => {
+      const trContent = n.map((o, oi) => {
+        if (o.fullDate == null && o.value == null) {
           hasMinDate = false;
           hasMaxDate = false;
 
@@ -96,14 +97,14 @@ function renderDatepickerCalendar({
         }
 
         /** NOTE(motss): Could be week number labeling */
-        if (q.fullDate == null && showWeekNumber && qi < 1) {
-          return html`<td class="full-calendar__day weekday-label" aria-label="${q.label}">${q.value}</td>`;
+        if (o.fullDate == null && showWeekNumber && oi < 1) {
+          return html`<td class="full-calendar__day weekday-label" aria-label="${o.label}">${o.value}</td>`;
         }
 
-        const curTime = +new Date(q.fullDate);
+        const curTime = +new Date(o.fullDate);
         if (formattedDate == null) formattedDate = longMonthYearFormatterFn(curTime);
 
-        const isDisabledDay = fixedDisabledDays.some(fdd => fdd === qi)
+        const isDisabledDay = fixedDisabledDays.some(fdd => fdd === oi)
           || (curTime < minTime || curTime > maxTime);
 
         hasMinDate = curTime === minTime;
@@ -117,10 +118,10 @@ function renderDatepickerCalendar({
             'day--today': +todayDate === curTime,
             'day--focused': +focusedDate === curTime,
           })}"
-          aria-label="${q.label}"
-          .full-date="${q.fullDate}"
-          .day="${q.value}">
-          <div class="calendar-day">${q.value}</div>
+          aria-label="${o.label}"
+          .full-date="${o.fullDate}"
+          .day="${o.value}">
+          <div class="calendar-day">${o.value}</div>
         </td>
         `;
       });
@@ -200,7 +201,9 @@ function renderDatepickerYearList({
           'year-view__list-item': true,
           'year--selected': selectedDate.getUTCFullYear() === n,
         })}"
-        .year="${n}">${n}</button>`))}
+        .year="${n}">
+        <div>${n}</div>
+      </button>`))}
     </div>
   </div>
   `;
@@ -277,7 +280,7 @@ export class AppDatepicker extends LitElement {
   private _isTrackingStart: boolean = false;
   private _isTrackingMove: boolean = false;
   private _dx: number = 0;
-  private _totalDraggableDistance: number = 0;
+  private _totalDraggableDistance: number;
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
 
@@ -292,7 +295,7 @@ export class AppDatepicker extends LitElement {
     this._updateViewFn = this._updateViewFn.bind(this);
     this._updateYearFn = this._updateYearFn.bind(this);
     this._updateFocusedDateFn = this._updateFocusedDateFn.bind(this);
-    this._trackingStartFn = this._trackingStartFn.bind(this);
+    this._trackingFn = this._trackingFn.bind(this);
     this._trackingMoveFn = this._trackingMoveFn.bind(this);
     this._trackingEndFn = this._trackingEndFn.bind(this);
 
@@ -343,18 +346,22 @@ export class AppDatepicker extends LitElement {
     }).format;
 
     let clt = window.performance.now();
-    const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendar({
+    const weekdays = calendarWeekdays({
       firstDayOfWeek,
-      locale,
+      showWeekNumber,
+
+      longWeekdayFormatter: longWeekdayFormatterFn,
+      narrowWeekdayFormatter: narrowWeekdayFormatterFn,
+    });
+    const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendarDays({
+      firstDayOfWeek,
       selectedDate: n,
       showWeekNumber,
       weekNumberType,
       idOffset: idx * 10,
 
-      dayFormatterFn,
-      fullDateFormatterFn,
-      longWeekdayFormatterFn,
-      narrowWeekdayFormatterFn,
+      dayFormatter: dayFormatterFn,
+      fullDateFormatter: fullDateFormatterFn,
     }));
     clt = window.performance.now() - clt;
     const cltEl = document.body.querySelector('.calendar-render-time');
@@ -402,6 +409,8 @@ export class AppDatepicker extends LitElement {
       .btn__selector-year,
       .btn__selector-calendar {
         color: rgba(0, 0, 0, .55);
+        cursor: pointer;
+        outline: none;
       }
       .btn__selector-year.selected,
       .btn__selector-calendar.selected {
@@ -465,8 +474,9 @@ export class AppDatepicker extends LitElement {
 
         position: relative;
         width: calc(100% * 3);
-        left: calc(-100%);
+        left: calc(100% * -1);
         padding: 0 0 16px;
+        will-change: transform;
       }
 
       .year-view__full-list {
@@ -521,7 +531,6 @@ export class AppDatepicker extends LitElement {
         min-height: 40px;
         height: 40px;
         padding: 8px 0;
-        pointer-events: none;
       }
 
       tr > td.full-calendar__day:not(.day--empty)::after {
@@ -540,7 +549,7 @@ export class AppDatepicker extends LitElement {
         pointer-events: none;
       }
       tr > td.full-calendar__day:not(.day--empty):hover::after {
-        opacity: .7;
+        opacity: .15;
       }
       tr > td.full-calendar__day:not(.weekday-label):not(.day--empty) {
         cursor: pointer;
@@ -567,9 +576,29 @@ export class AppDatepicker extends LitElement {
       }
 
       .year-view__list-item {
+        position: relative;
         width: 100%;
         padding: 12px 16px;
         text-align: center;
+        outline: none;
+      }
+      .year-view__list-item > div {
+        z-index: 1;
+      }
+      .year-view__list-item::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .year-view__list-item:focus::after,
+      .year-view__list-item:hover::after {
+        opacity: .05;
       }
       .year-view__list-item.year--selected {
         color: var(--app-datepicker-primary-color);
@@ -597,6 +626,7 @@ export class AppDatepicker extends LitElement {
         longMonthYearFormatterFn,
 
         calendars,
+        weekdays,
         disabledDays,
         focusedDate,
         max,
@@ -615,12 +645,9 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const hostBoundingRect = this.getBoundingClientRect();
-    this._totalDraggableDistance = hostBoundingRect.width;
+    addListener(this._calendarViewFullCalendar, 'track', this._trackingFn);
 
-    addListener(this._calendarViewFullCalendar, 'down', this._trackingStartFn);
-    addListener(this._calendarViewFullCalendar, 'track', this._trackingMoveFn);
-    addListener(this._calendarViewFullCalendar, 'up', this._trackingEndFn);
+    this._totalDraggableDistance = this.getBoundingClientRect().width;
   }
 
   protected updated() {
@@ -711,24 +738,51 @@ export class AppDatepicker extends LitElement {
     this._focusedDate = new Date(Date.UTC(fy, m, selectedDate));
   }
 
-  private _trackingStartFn() {
-    // console.debug('tracking-start', this._dx);
-    this._isTrackingStart = true;
+  private _trackingFn(ev: CustomEvent) {
+    switch (ev.detail && ev.detail.state) {
+      case 'start': {
+        this._isTrackingStart = true;
+
+        const trackableEl = this._calendarViewFullCalendar;
+        const trackableElWidth = trackableEl.getBoundingClientRect().width;
+        const totalDraggableDistance = trackableElWidth / 3;
+
+        /**
+         * NOTE(motss): Perf tips - By setting fixed width for the following containers,
+         * it drastically minimizes layout and painting during tracking even on slow
+         * devices.
+         *
+         * - `.calendar-view__full-calender`
+         * - `.datepicker-body__calendar-view`
+         */
+        trackableEl.style.touchAction = 'auto';
+        trackableEl.style.width = `${trackableElWidth}px`;
+        trackableEl.style.left = `${totalDraggableDistance * -1}px`;
+        this._datepickerBodyCalendarView.style.minWidth = `${trackableElWidth}px`;
+        this._totalDraggableDistance = totalDraggableDistance;
+        break;
+      }
+      case 'track': {
+        this._trackingMoveFn(ev);
+        break;
+      }
+      case 'end': {
+        this._trackingEndFn(ev);
+        break;
+      }
+    }
   }
   private _trackingMoveFn(ev: CustomEvent) {
-    // console.debug('tracking-move', ev);
     if (!this._isTrackingStart) return;
 
-    this._isTrackingMove = true;
-
-    const calendarViewFullCalendar = this._calendarViewFullCalendar;
     const dx = Number(ev.detail.dx);
 
-    calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
+    this._calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
+    this._isTrackingMove = true;
     this._dx = dx;
   }
   private _trackingEndFn(ev) {
-    console.debug('tracking-end-fn');
+    // console.debug('tracking-end-fn');
     /**
      * NOTE(motss): If tracking starts but does not move,
      * skip execution and reset `isTrackingStart`.
@@ -802,6 +856,10 @@ export class AppDatepicker extends LitElement {
 
   private get _yearViewFullList() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.year-view__full-list')!;
+  }
+
+  private get _datepickerBodyCalendarView() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view')!;
   }
 
   private get _calendarViewFullCalendar() {

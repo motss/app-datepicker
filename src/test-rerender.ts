@@ -31,7 +31,9 @@ function renderItems() {
   const datesArr: Date[] = [];
 
   for (let i = -1; i < 2; i += 1) {
-    const dateDate = new Date();
+    // const dateDate = new Date('2028-03-01');
+    // const dateDate = new Date('2027-12-01');
+    const dateDate = new Date('2027-07-01');
     const fy = dateDate.getUTCFullYear();
     const m = dateDate.getUTCMonth();
     const d = dateDate.getUTCDate();
@@ -40,7 +42,8 @@ function renderItems() {
   }
 
   const calsArr = datesArr.map((n, i) => {
-    return calendar({
+    console.time('cal');
+    const cal = calendar({
       firstDayOfWeek: 0,
       idOffset: i * 10,
       locale: 'en-US',
@@ -53,9 +56,9 @@ function renderItems() {
       longWeekdayFormatterFn: null,
       narrowWeekdayFormatterFn: null,
     });
+    console.timeEnd('cal');
+    return cal;
   });
-
-  console.log(calsArr);
 
   const tablesContent = calsArr.map((n) => {
     const tbl = n.daysInMonth.map((o) => {
