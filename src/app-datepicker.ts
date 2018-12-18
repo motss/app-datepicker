@@ -2,7 +2,6 @@ import { customElement, html, LitElement, property } from '@polymer/lit-element'
 
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { repeat } from 'lit-html/directives/repeat.js';
 
 import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
 import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
@@ -59,10 +58,8 @@ function renderDatepickerYearList({
     <div
       class="year-view__full-list"
       @click="${ev => updateYearFn(ev)}">
-    ${(repeat(
-      yearList,
-      n => n,
-      n => html`<button
+    ${(yearList.map(n =>
+      html`<button
         class="${classMap({
           'year-view__list-item': true,
           'year--selected': selectedDate.getUTCFullYear() === n,
@@ -76,19 +73,55 @@ function renderDatepickerYearList({
 }
 
 function renderDatepickerCalendar({
-  updateMonthFn,
-  updateFocusedDateFn,
-  longMonthYearFormatterFn,
-
-  weekdays,
-  calendars,
   disabledDays,
-  showWeekNumber,
-  min,
-  max,
-  todayDate,
+  firstDayOfWeek,
   focusedDate,
+  locale,
+  max,
+  min,
+  selectedDate,
+  showWeekNumber,
+  todayDate,
+  weekNumberType,
+
+  updateFocusedDateFn,
+  updateMonthFn,
 }) {
+  const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
+  const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format;
+  const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long' }).format;
+  const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format;
+  const longMonthYearFormatterFn = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+  }).format;
+
+  let clt = window.performance.now();
+  const weekdays = calendarWeekdays({
+    firstDayOfWeek,
+    showWeekNumber,
+
+    longWeekdayFormatter: longWeekdayFormatterFn,
+    narrowWeekdayFormatter: narrowWeekdayFormatterFn,
+  });
+  const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendarDays({
+    firstDayOfWeek,
+    showWeekNumber,
+    weekNumberType,
+    selectedDate: n,
+    idOffset: idx * 10,
+
+    dayFormatter: dayFormatterFn,
+    fullDateFormatter: fullDateFormatterFn,
+  }));
+  clt = window.performance.now() - clt;
+  const cltEl = document.body.querySelector('.calendar-render-time');
+  if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
+
   let hasMinDate = false;
   let hasMaxDate = false;
   const minTime = +new Date(min);
@@ -97,14 +130,14 @@ function renderDatepickerCalendar({
   const fixedDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
     ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
     : [];
-  const weekdaysContent = weekdays.map((o) => {
+  const weekdaysContent = weekdays.map((o: any) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
   });
   const calendarsContent = calendars.map((daysInMonth) => {
-    let formattedDate = null;
+    let formattedDate: string | null = null;
 
     const tbodyContent = daysInMonth.map((n) => {
-      const trContent = n.map((o, oi) => {
+      const trContent = n.map((o: any, oi) => {
         if (o.fullDate == null && o.value == null) {
           hasMinDate = false;
           hasMaxDate = false;
@@ -314,40 +347,27 @@ export class AppDatepicker extends LitElement {
     const todayDate = getResolvedTodayDate();
 
     /** NOTE(motss): For perf reason, initialize all formatters for calendar rendering */
-    const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
-    const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    }).format;
-    const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long' }).format;
-    const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format;
-    const longMonthYearFormatterFn = Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'long',
-    }).format;
+    const datepickerBodyContent = selectedView === 'calendar'
+      ? renderDatepickerCalendar({
+        disabledDays,
+        firstDayOfWeek,
+        focusedDate,
+        locale,
+        max,
+        min,
+        selectedDate,
+        showWeekNumber,
+        todayDate,
+        weekNumberType,
+        updateFocusedDateFn: this._updateFocusedDateFn,
+        updateMonthFn: this._updateMonthFn,
+      })
+      : renderDatepickerYearList({
+        selectedDate,
+        yearList,
 
-    let clt = window.performance.now();
-    const weekdays = calendarWeekdays({
-      firstDayOfWeek,
-      showWeekNumber,
-
-      longWeekdayFormatter: longWeekdayFormatterFn,
-      narrowWeekdayFormatter: narrowWeekdayFormatterFn,
-    });
-    const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendarDays({
-      firstDayOfWeek,
-      showWeekNumber,
-      weekNumberType,
-      selectedDate: n,
-      idOffset: idx * 10,
-
-      dayFormatter: dayFormatterFn,
-      fullDateFormatter: fullDateFormatterFn,
-    }));
-    clt = window.performance.now() - clt;
-    const cltEl = document.body.querySelector('.calendar-render-time');
-    if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
+        updateYearFn: this._updateYearFn,
+      });
 
     // tslint:disable:max-line-length
     return html`
@@ -602,27 +622,7 @@ export class AppDatepicker extends LitElement {
     </div>
 
     <div class="datepicker-body">
-    ${cache(selectedView === 'calendar'
-      ? renderDatepickerCalendar({
-        calendars,
-        weekdays,
-        disabledDays,
-        focusedDate,
-        max,
-        min,
-        showWeekNumber,
-        todayDate,
-
-        longMonthYearFormatterFn,
-        updateMonthFn: this._updateMonthFn,
-        updateFocusedDateFn: this._updateFocusedDateFn,
-      })
-      : renderDatepickerYearList({
-        selectedDate,
-        yearList,
-
-        updateYearFn: this._updateYearFn,
-      }))}
+    ${cache(datepickerBodyContent)}
     </div>
     `;
     // tslint:disable:max-line-length
