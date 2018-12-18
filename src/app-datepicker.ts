@@ -10,10 +10,14 @@ import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js'
 import '@polymer/paper-icon-button/paper-icon-button-light.js';
 
 import './app-datepicker-icons.js';
-import { calendarDays, calendarWeekdays } from './calendar.js';
-import { getResolvedLocale, getResolvedTodayDate, computeThreeCalendarsInARow } from './datepicker-helpers.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { calendarDays, calendarWeekdays } from './calendar.js';
 import { resetButton } from './common-styles.js';
+import {
+  computeThreeCalendarsInARow,
+  getResolvedLocale,
+  getResolvedTodayDate,
+} from './datepicker-helpers.js';
 
 function renderHeaderSelectorButton({
   locale,
@@ -58,7 +62,7 @@ function renderDatepickerYearList({
     ${(repeat(
       yearList,
       n => n,
-      (n) => html`<button
+      n => html`<button
         class="${classMap({
           'year-view__list-item': true,
           'year--selected': selectedDate.getUTCFullYear() === n,
@@ -93,7 +97,7 @@ function renderDatepickerCalendar({
   const fixedDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
     ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
     : [];
-  const weekdaysContent = weekdays.map(o => {
+  const weekdaysContent = weekdays.map((o) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
   });
   const calendarsContent = calendars.map((daysInMonth) => {
@@ -110,7 +114,13 @@ function renderDatepickerCalendar({
 
         /** NOTE(motss): Could be week number labeling */
         if (o.fullDate == null && showWeekNumber && oi < 1) {
-          return html`<td class="full-calendar__day weekday-label" aria-label="${o.label}">${o.value}</td>`;
+          return html`
+          <td
+            class="full-calendar__day weekday-label"
+            aria-label="${o.label}">
+          ${o.value}
+          </td>
+          `;
         }
 
         const curTime = +new Date(o.fullDate);
@@ -293,7 +303,7 @@ export class AppDatepicker extends LitElement {
     const disabledDays = this.disabledDays;
     const firstDayOfWeek = this.firstDayOfWeek;
     const min = this.min;
-    const max= this.max;
+    const max = this.max;
     const showWeekNumber = this.showWeekNumber;
     const weekNumberType = this.weekNumberType;
     const yearList = this._yearList;
@@ -327,9 +337,9 @@ export class AppDatepicker extends LitElement {
     });
     const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendarDays({
       firstDayOfWeek,
-      selectedDate: n,
       showWeekNumber,
       weekNumberType,
+      selectedDate: n,
       idOffset: idx * 10,
 
       dayFormatter: dayFormatterFn,
@@ -337,8 +347,9 @@ export class AppDatepicker extends LitElement {
     }));
     clt = window.performance.now() - clt;
     const cltEl = document.body.querySelector('.calendar-render-time');
-    cltEl && (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
+    if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
 
+    // tslint:disable:max-line-length
     return html`
     ${resetButton}
     <style>
@@ -593,10 +604,6 @@ export class AppDatepicker extends LitElement {
     <div class="datepicker-body">
     ${cache(selectedView === 'calendar'
       ? renderDatepickerCalendar({
-        updateMonthFn: this._updateMonthFn,
-        updateFocusedDateFn: this._updateFocusedDateFn,
-        longMonthYearFormatterFn,
-
         calendars,
         weekdays,
         disabledDays,
@@ -605,15 +612,20 @@ export class AppDatepicker extends LitElement {
         min,
         showWeekNumber,
         todayDate,
+
+        longMonthYearFormatterFn,
+        updateMonthFn: this._updateMonthFn,
+        updateFocusedDateFn: this._updateFocusedDateFn,
       })
       : renderDatepickerYearList({
-        updateYearFn: this._updateYearFn,
-
         selectedDate,
         yearList,
+
+        updateYearFn: this._updateYearFn,
       }))}
     </div>
     `;
+    // tslint:disable:max-line-length
   }
 
   protected firstUpdated() {
@@ -774,7 +786,7 @@ export class AppDatepicker extends LitElement {
      * If dragged distance < `dragRatio`, reset calendar position.
      */
     if (absDx < totalDraggableDistance * this.dragRatio) {
-      const dragAnimation = calendarViewFullCalendar.animate([
+      const restoreDragAnimation = calendarViewFullCalendar.animate([
         { transform: `translate3d(${dx}px, 0, 0)` },
         { transform: 'translate3d(0px, 0, 0)' },
       ], {
@@ -783,7 +795,7 @@ export class AppDatepicker extends LitElement {
         fill: 'none',
       });
 
-      return new Promise(yay => (dragAnimation.onfinish = yay))
+      return new Promise(yay => (restoreDragAnimation.onfinish = yay))
         .then(() => {
           calendarViewFullCalendar.style.transform = null;
 

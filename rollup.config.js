@@ -5,6 +5,7 @@ import filesize from 'rollup-plugin-filesize';
 import resolve from 'rollup-plugin-node-resolve';
 import tslint from 'rollup-plugin-tslint';
 import typescript from 'rollup-plugin-typescript';
+import minifyHtmlLiterals from 'rollup-plugin-minify-html-literals';
 
 const isProd = 'production' === process.env.NODE_ENV;
 const build = {
@@ -20,6 +21,11 @@ const build = {
   }],
 
   experimentalCodeSplitting: true,
+  experimentalOptimizeChunks: true,
+  preferConst: true,
+  treeshake: true,
+  // experimentalOptimizeImports: true,
+  // inlineDynamicImports: true,
 
   plugins: [
     resolve(),
@@ -28,7 +34,7 @@ const build = {
       configuration: `tslint${isProd ? '.prod' : ''}.json`,
     })] : []),
     typescript({ tsconfig: './tsconfig.json' }),
-    ...(isProd ? [terser(), filesize({ showBrotliSize: true })] : []),
+    ...(isProd ? [minifyHtmlLiterals(), terser(), filesize({ showBrotliSize: true })] : []),
   ],
 };
 

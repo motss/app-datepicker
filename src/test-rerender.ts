@@ -1,4 +1,4 @@
-import { LitElement, html, customElement, property } from '@polymer/lit-element';
+import { customElement, html, LitElement, property } from '@polymer/lit-element';
 import { classMap } from 'lit-html/directives/class-map';
 import { calendar } from './calendar.js';
 
@@ -6,7 +6,14 @@ function renderItems() {
   // return this.items.map((n, idx) => {
   //   // const content = repeat(n, o => o.id, o => html`<li>${o.value}</li>`);
   //   const content = n.map(o => html`<li>${o.value}</li>`);
-  //   return html`<ul class="${classMap({ clicked: this._clicked })}" .data-ul="${idx}" @click="${() => (this._clicked = !this._clicked)}">${content}</ul>`;
+  //   return html`
+  //   <ul
+  //     class="${classMap({ clicked: this._clicked })}"
+  //     .data-ul="${idx}"
+  //     @click="${() => (this._clicked = !this._clicked)}">
+  //   ${content}
+  //   </ul>
+  //   `;
   // });
 
   // const tbodyContent = this.items.map((n, idx) => {
@@ -25,7 +32,11 @@ function renderItems() {
   //       <div>${o.value}</div>
   //     </td>`)
 
-  //   return html`<tr class="${classMap({ clicked: this._clicked })}" .data-tr="${idx}">${trContent}</tr>`;
+  //   return html`
+  //   <tr
+  //     class="${classMap({ clicked: this._clicked })}"
+  //     .data-tr="${idx}">${trContent}</tr>
+  //   `;
   // });
 
   const datesArr: Date[] = [];
@@ -62,10 +73,13 @@ function renderItems() {
 
   const tablesContent = calsArr.map((n) => {
     const tbl = n.daysInMonth.map((o) => {
-      const content = o.map(p =>
+      const content = o.map((p: any) =>
         html`
         <td
-          class="${classMap({ selected: p.fullDate === this._selected, 'is-empty': p.value == null })}"
+          class="${classMap({
+            selected: p.fullDate === this._selected,
+            'is-empty': p.value == null,
+          })}"
           aria-label="${p.label}"
           .data-td="${p.fullDate}"
           @click="${() => p.value && (this._selected = p.fullDate)}">
@@ -83,7 +97,7 @@ function renderItems() {
   });
 
   return html`<div class="calendars-container">${tablesContent}</div>`;
-  }
+}
 
 @customElement(TestRerender.is)
 export class TestRerender extends LitElement {

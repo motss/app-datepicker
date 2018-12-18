@@ -3,7 +3,7 @@ function normalizeWeekday(weekday: number) {
 
   const weekdayOffset = weekday < 0
     ? 7 * Math.ceil(Math.abs(weekday / 7))
-    : 0
+    : 0;
 
   return (weekdayOffset + weekday) % 7;
 }
@@ -24,7 +24,7 @@ function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
     default:
       return date;
   }
-};
+}
 
 /**
  * {@link https://bit.ly/2UvEN2y|Compute week number by type}
@@ -103,7 +103,7 @@ export function calendarDays({
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
 
-  const calendar: unknown[][] = [];
+  const fullCalendar: unknown[][] = [];
   let calendarRow: unknown[] = [];
   let day = 1;
   let row = 0;
@@ -115,11 +115,11 @@ export function calendarDays({
    * Optimization is totally welcome to make things faster.
    * Also, I'd like to learn a better way. PM me and we can talk about that. 😄
    */
-  for(let i = 0, len = 6 * totalCol + (showWeekNumber ? 6 : 0); i < len; i += 1, col += 1) {
+  for (let i = 0, len = 6 * totalCol + (showWeekNumber ? 6 : 0); i < len; i += 1, col += 1) {
     if (col >= totalCol) {
       col = 0;
       row += 1;
-      calendar.push(calendarRow);
+      fullCalendar.push(calendarRow);
       calendarRow = [];
     }
 
@@ -167,7 +167,7 @@ export function calendarDays({
     if (day > totalDays) calendarFilled = true;
   }
 
-  return calendar;
+  return fullCalendar;
 }
 
 export function calendar({
@@ -215,14 +215,14 @@ export function calendar({
     narrowWeekdayFormatter,
   });
   const daysInMonth = calendarDays({
+    dayFormatter,
+    fullDateFormatter,
+
     firstDayOfWeek,
     selectedDate,
     showWeekNumber,
     weekNumberType,
     idOffset: idOffset == null ? 0 : idOffset,
-
-    dayFormatter,
-    fullDateFormatter,
   });
 
   return { weekdays, daysInMonth };
