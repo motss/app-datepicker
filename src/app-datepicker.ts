@@ -775,10 +775,10 @@ export class AppDatepicker extends LitElement {
   private _trackingMoveFn(ev: CustomEvent) {
     if (!this._isTrackingStart) return;
 
-    const dx = Number(ev.detail.dx);
-
-    this._calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
     this._isTrackingMove = true;
+
+    const dx = Number(ev.detail.dx);
+    this._calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
     this._dx = dx;
   }
   private _trackingEndFn(ev) {
@@ -819,6 +819,7 @@ export class AppDatepicker extends LitElement {
 
           this._dx = 0;
           this._isTrackingStart = false;
+          this._isTrackingMove = false;
         });
     }
 

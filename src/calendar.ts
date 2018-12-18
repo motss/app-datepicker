@@ -94,7 +94,6 @@ export function calendarDays({
   fullDateFormatter,
   dayFormatter,
 }) {
-  debugger;
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
   const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
