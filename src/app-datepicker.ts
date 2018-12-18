@@ -1,33 +1,19 @@
 import { customElement, html, LitElement, property } from '@polymer/lit-element';
+
+import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { cache } from 'lit-html/directives/cache.js';
-import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
 
-import '@polymer/paper-icon-button/paper-icon-button-light';
+import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
+import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
+
+import '@polymer/paper-icon-button/paper-icon-button-light.js';
 
 import './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays } from './calendar.js';
+import { getResolvedLocale, getResolvedTodayDate, computeThreeCalendarsInARow } from './datepicker-helpers.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { resetButton } from './common-styles.js';
-
-function getResolvedTodayDate() {
-  const dateDate = new Date();
-  const fy = dateDate.getUTCFullYear();
-  const m = dateDate.getUTCMonth();
-  const d = dateDate.getUTCDate();
-
-  return new Date(Date.UTC(fy, m, d));
-}
-
-function getResolvedLocale() {
-  return (Intl
-    && Intl.DateTimeFormat
-    && Intl.DateTimeFormat().resolvedOptions
-    && Intl.DateTimeFormat().resolvedOptions().locale)
-    || 'en-US';
-}
 
 function renderHeaderSelectorButton({
   locale,
@@ -36,12 +22,11 @@ function renderHeaderSelectorButton({
   selectedView,
   updateViewFn,
 }) {
-  const dateDate = new Date(focusedDate);
   const formattedDate = Intl.DateTimeFormat(locale, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-  }).format(dateDate);
+  }).format(focusedDate);
   const isCalendarView = selectedView === 'calendar';
 
   return html`
@@ -55,6 +40,33 @@ function renderHeaderSelectorButton({
       class="${classMap({ 'btn__selector-calendar': true, selected: isCalendarView })}"
       view="calendar"
       @click="${() => updateViewFn('calendar')}">${formattedDate}</button>
+  </div>
+  `;
+}
+
+function renderDatepickerYearList({
+  updateYearFn,
+
+  yearList,
+  selectedDate,
+}) {
+  return html`
+  <div class="datepicker-body__year-view">
+    <div
+      class="year-view__full-list"
+      @click="${ev => updateYearFn(ev)}">
+    ${(repeat(
+      yearList,
+      n => n,
+      (n) => html`<button
+        class="${classMap({
+          'year-view__list-item': true,
+          'year--selected': selectedDate.getUTCFullYear() === n,
+        })}"
+        .year="${n}">
+        <div>${n}</div>
+      </button>`))}
+    </div>
   </div>
   `;
 }
@@ -182,46 +194,6 @@ function renderDatepickerCalendar({
   `;
 }
 
-function renderDatepickerYearList({
-  updateYearFn,
-
-  yearList,
-  selectedDate,
-}) {
-  return html`
-  <div class="datepicker-body__year-view">
-    <div
-      class="year-view__full-list"
-      @click="${ev => updateYearFn(ev)}">
-    ${(repeat(
-      yearList,
-      n => n,
-      (n) => html`<button
-        class="${classMap({
-          'year-view__list-item': true,
-          'year--selected': selectedDate.getUTCFullYear() === n,
-        })}"
-        .year="${n}">
-        <div>${n}</div>
-      </button>`))}
-    </div>
-  </div>
-  `;
-}
-
-function computeThreeCalendarsInARow(selectedDate: Date) {
-  const dateDate = new Date(selectedDate);
-  const fy = dateDate.getUTCFullYear();
-  const m = dateDate.getUTCMonth();
-  const d = dateDate.getUTCDate();
-
-  return [
-    new Date(fy, m - 1, d),
-    dateDate,
-    new Date(fy, m + 1, d),
-  ];
-}
-
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
   static get is() {
@@ -326,8 +298,8 @@ export class AppDatepicker extends LitElement {
     const weekNumberType = this.weekNumberType;
     const yearList = this._yearList;
 
-    const focusedDate = this._focusedDate;
-    const selectedDate = this._selectedDate;
+    const focusedDate = new Date(this._focusedDate);
+    const selectedDate = new Date(this._selectedDate);
     const selectedView = this._selectedView;
     const todayDate = getResolvedTodayDate();
 
@@ -668,7 +640,7 @@ export class AppDatepicker extends LitElement {
 
   private _updateMonthFn(updateType: string) {
     const calendarViewFullCalendar = this._calendarViewFullCalendar;
-    const dateDate = new Date(this._selectedDate);
+    const dateDate = this._selectedDate;
     const fy = dateDate.getUTCFullYear();
     const m = dateDate.getUTCMonth();
     const d = dateDate.getUTCDate();
@@ -699,15 +671,14 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateYearFn(ev: Event) {
-    const composedPath = ev.composedPath();
-    const selectedYearEl = composedPath.find(n =>
+    const selectedYearEl = ev.composedPath().find(n =>
       n
       && (n as HTMLElement).classList
       && (n as HTMLElement).classList.contains('year-view__list-item'));
 
     if (selectedYearEl == null) return;
 
-    const dateDate = new Date(this._selectedDate);
+    const dateDate = this._selectedDate;
     const m = dateDate.getUTCMonth();
     const d = dateDate.getUTCDate();
     const selectedYear = Number((selectedYearEl as HTMLButtonElement)!.textContent);
@@ -722,8 +693,7 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateFocusedDateFn(ev: Event) {
-    const composedPath = ev.composedPath();
-    const selectedDayEl = composedPath.find(n =>
+    const selectedDayEl = ev.composedPath().find(n =>
       n
       && (n as HTMLElement).classList
       && (n as HTMLElement).classList.contains('full-calendar__day'));

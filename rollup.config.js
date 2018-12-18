@@ -10,8 +10,8 @@ const isProd = 'production' === process.env.NODE_ENV;
 const build = {
   input: [
     'src/app-datepicker.ts',
-    'src/test-rerender.ts',
-    'src/calendar-benchmark.ts',
+    // 'src/test-rerender.ts',
+    // 'src/calendar-benchmark.ts',
   ],
   output: [{
     // file: 'dist/app-datepicker.js',

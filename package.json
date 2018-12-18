@@ -34,7 +34,7 @@
   "main": "app-datepicker.js",
   "scripts": {
     "document": "polymer analyze > analysis.json",
-    "rollup": "rollup --config rollup.config.js",
+    "rollup": "rm -rf dist/ && rollup --config rollup.config.js",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
     "test": "polymer test --module-resolution=node --npm",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm"

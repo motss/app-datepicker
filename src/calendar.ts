@@ -53,6 +53,7 @@ export function calendarWeekdays({
 }) {
   const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
   const weekdays: unknown[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
+
   for (let i = 0, len = 7; i < len; i += 1) {
     const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
 
@@ -101,110 +102,69 @@ export function calendarDays({
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
-  // const hasValidFirstWeekday = firstWeekday > 0 && firstWeekday < 7;
-  // const fixedFirstWeekdayForDay = (showWeekNumber ? 0 : 1) - firstWeekday;
-  // const fixedTotalDays = firstWeekday + totalDays;
-
-  // const calendar = Array.from(Array(6), (_, i) => {
-  //   return Array.from(Array(totalCol), (__, ni) => {
-  //     const rowVal = ni + (i * 7);
-
-  //     /**
-  //      * NOTE(motss): Only append week number when `rowVal` is still within the date range of
-  //      * the current month. Since index starts from `0`, `rowVal < fixedTotalDays` checks only
-  //      * values from `0` to `34`, 35 iterations in total.
-  //      */
-  //     if (rowVal < fixedTotalDays && showWeekNumber && ni < 1) {
-  //       const { weekNumber } = computeWeekNumber(
-  //         weekNumberType,
-  //         new Date(Date.UTC(fy, selectedMonth, rowVal + 1 - firstWeekday)));
-  //       const weekLabel = `Week ${weekNumber}`;
-
-  //       return {
-  //         fullDate: null,
-  //         label: weekLabel,
-  //         value: weekNumber,
-  //         id: weekLabel,
-  //       };
-  //     }
-
-  //     if (selectedMonth === 6 && rowVal >= fixedTotalDays) console.debug(rowVal, fixedTotalDays);
-  //     /** NOTE(motss): Check for all values that is not within the date range of current month. */
-  //     if ((rowVal >= fixedTotalDays)
-  //       || (i < 1 && hasValidFirstWeekday && ni < firstWeekdayWithWeekNumberOffset)) {
-  //       return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
-  //     }
-
-  //     const day = rowVal + fixedFirstWeekdayForDay;
-
-  //     if (day > totalDays) {
-  //       return { fullDate: null, label: null, value: null, id: (rowVal + idOffset) };
-  //     }
-
-  //     const d = new Date(Date.UTC(fy, selectedMonth, day));
-  //     const fullDate = d.toJSON();
-
-  //     return {
-  //       fullDate,
-  //       label: fullDateFormatter(d),
-  //       value: Number(dayFormatter(d)),
-  //       id: fullDate,
-  //     };
-  //   });
-  // });
 
   const calendar: unknown[][] = [];
   let calendarRow: unknown[] = [];
   let day = 1;
+  let row = 0;
+  let col = 0;
   let calendarFilled = false;
-  for (let row = 0, rowLen = 6; row < rowLen; row += 1) {
-    for (let col = 0, len = totalCol; col < len; col += 1) {
-      const rowVal = col + (row * totalCol);
-
-      if (!calendarFilled && showWeekNumber && col < 1) {
-        const { weekNumber } = computeWeekNumber(
-          weekNumberType,
-          new Date(Date.UTC(fy, selectedMonth, rowVal - firstWeekday)));
-        const weekLabel = `Week ${weekNumber}`;
-
-        calendarRow.push({
-          fullDate: null,
-          label: weekLabel,
-          value: weekNumber,
-          id: weekLabel,
-        });
-        // calendarRow.push(weekNumber);
-        continue;
-      }
-
-      if (calendarFilled || rowVal < firstWeekdayWithWeekNumberOffset) {
-        calendarRow.push({
-          fullDate: null,
-          label: null,
-          value: null,
-          id: (rowVal + idOffset),
-        });
-        // calendarRow.push(null);
-        continue;
-      }
-
-      const d = new Date(Date.UTC(fy, selectedMonth, day));
-      const fullDate = d.toJSON();
-
-      calendarRow.push({
-        fullDate,
-        label: fullDateFormatter(d),
-        value: Number(dayFormatter(d)),
-        id: fullDate,
-      });
-      // calendarRow.push(day);
-      day += 1;
-
-      if (day > totalDays) calendarFilled = true;
+  /**
+   * NOTE(motss): Thinking this is cool to write,
+   * don't blame me for writing this kind of loop.
+   * Optimization is totally welcome to make things faster.
+   * Also, I'd like to learn a better way. PM me and we can talk about that. 😄
+   */
+  for(let i = 0, len = 6 * totalCol + (showWeekNumber ? 6 : 0); i < len; i += 1, col += 1) {
+    if (col >= totalCol) {
+      col = 0;
+      row += 1;
+      calendar.push(calendarRow);
+      calendarRow = [];
     }
 
-    calendar.push(calendarRow);
-    calendarRow = [];
+    const rowVal = col + (row * totalCol);
+
+    if (!calendarFilled && showWeekNumber && col < 1) {
+      const { weekNumber } = computeWeekNumber(
+        weekNumberType,
+        new Date(Date.UTC(fy, selectedMonth, day - (row < 1 ? firstWeekday : 0))));
+      const weekLabel = `Week ${weekNumber}`;
+
+      calendarRow.push({
+        fullDate: null,
+        label: weekLabel,
+        value: weekNumber,
+        id: weekLabel,
+      });
+      // calendarRow.push(weekNumber);
+      continue;
+    }
+
+    if (calendarFilled || rowVal < firstWeekdayWithWeekNumberOffset) {
+      calendarRow.push({
+        fullDate: null,
+        label: null,
+        value: null,
+        id: (day + idOffset),
+      });
+      // calendarRow.push(null);
+      continue;
+    }
+
+    const d = new Date(Date.UTC(fy, selectedMonth, day));
+    const fullDate = d.toJSON();
+
+    calendarRow.push({
+      fullDate,
+      label: fullDateFormatter(d),
+      value: Number(dayFormatter(d)),
+      id: fullDate,
+    });
+    // calendarRow.push(day);
+    day += 1;
+
+    if (day > totalDays) calendarFilled = true;
   }
 
   return calendar;
