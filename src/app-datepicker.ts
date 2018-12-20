@@ -1,12 +1,17 @@
-import { customElement, html, LitElement, property } from '@polymer/lit-element';
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+} from '@polymer/lit-element';
 
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-import { addListener } from '@polymer/polymer/lib/utils/gestures.js';
-import { setPassiveTouchGestures } from '@polymer/polymer/lib/utils/settings.js';
-
 import '@polymer/paper-icon-button/paper-icon-button-light.js';
+
+import PointerTracker from 'pointer-tracker';
 
 import './app-datepicker-icons.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
@@ -23,6 +28,7 @@ function renderHeaderSelectorButton({
   selectedDate,
   focusedDate,
   selectedView,
+
   updateViewFn,
 }) {
   const formattedDate = Intl.DateTimeFormat(locale, {
@@ -291,10 +297,16 @@ export class AppDatepicker extends LitElement {
   @property({ type: Date })
   private _focusedDate: Date;
 
+  @query('.year-view__full-list')
+  private _yearViewFullList: HTMLDivElement;
+
+  @query('.datepicker-body__calendar-view')
+  private _datepickerBodyCalendarView: HTMLDivElement;
+
+  @query('.calendar-view__full-calendar')
+  private _calendarViewFullCalendar: HTMLDivElement;
+
   private _todayDate: Date;
-  private _isTrackingStart: boolean = false;
-  private _isTrackingMove: boolean = false;
-  private _dx: number = 0;
   private _totalDraggableDistance: number;
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
@@ -310,12 +322,9 @@ export class AppDatepicker extends LitElement {
     this._updateViewFn = this._updateViewFn.bind(this);
     this._updateYearFn = this._updateYearFn.bind(this);
     this._updateFocusedDateFn = this._updateFocusedDateFn.bind(this);
-    this._trackingFn = this._trackingFn.bind(this);
+    this._trackingStartFn = this._trackingStartFn.bind(this);
     this._trackingMoveFn = this._trackingMoveFn.bind(this);
     this._trackingEndFn = this._trackingEndFn.bind(this);
-
-    /** NOTE(motss): To force all event listeners for gestures to be passive */
-    setPassiveTouchGestures(true);
 
     const todayDate = getResolvedTodayDate();
     const todayDateFullYear = todayDate.getUTCFullYear();
@@ -629,9 +638,56 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    addListener(this._calendarViewFullCalendar, 'track', this._trackingFn);
+    const dragXMap = new Map();
+    const dragEl = this._calendarViewFullCalendar;
+    const totalDraggableDistance = this.getBoundingClientRect().width;
+    const trackingStartFn = this._trackingStartFn;
+    const trackingMoveFn = this._trackingMoveFn;
+    const trackingEndFn = this._trackingEndFn;
 
-    this._totalDraggableDistance = this.getBoundingClientRect().width;
+    dragEl.ongotpointercapture = () => console.log('got-capture');
+    dragEl.onlostpointercapture = ev => console.log('lost-capture', ev.target);
+
+    // tslint:disable-next-line:no-unused-expression
+    new PointerTracker(dragEl, {
+      start(pointer, ev) {
+        ev.preventDefault();
+
+        // (ev.target as HTMLElement).setPointerCapture(pointer.id);
+
+        console.log('start', pointer.id, pointer.clientX, ev.target);
+        dragXMap.set(pointer.id, pointer.clientX);
+        trackingStartFn();
+
+        return true;
+      },
+      move(_, changedPointers, ev) {
+        console.log(_, changedPointers, ev.target);
+        for (const pointer of changedPointers) {
+          for (const point of pointer.getCoalesced()) {
+            // (ev.target as HTMLElement).setPointerCapture(pointer.id);
+            const moved = point!.clientX;
+            const started = dragXMap.get(point.id);
+            const diff = moved - started;
+            console.log('move', moved, started, diff);
+
+            trackingMoveFn(diff);
+          }
+        }
+      },
+      end(pointer) {
+        const moved = pointer!.clientX;
+        const started = dragXMap.get(pointer.id);
+        const diff = moved - started;
+        console.log('end', moved, started, diff);
+
+        trackingEndFn(diff);
+        dragEl.releasePointerCapture(pointer.id);
+        dragXMap.delete(pointer.id);
+      },
+    });
+
+    this._totalDraggableDistance = totalDraggableDistance;
   }
 
   protected updated() {
@@ -669,6 +725,7 @@ export class AppDatepicker extends LitElement {
     });
 
     return new Promise(yay => (dragAnimation.onfinish = yay))
+      .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
       .then(() => {
         this._selectedDate = new Date(Date.UTC(fy, m - nm, d));
 
@@ -676,9 +733,6 @@ export class AppDatepicker extends LitElement {
       })
       .then(() => {
         calendarViewFullCalendar.style.transform = null;
-
-        this._dx = 0;
-        this._isTrackingStart = false;
       });
   }
 
@@ -720,64 +774,31 @@ export class AppDatepicker extends LitElement {
     this._focusedDate = new Date(Date.UTC(fy, m, selectedDate));
   }
 
-  private _trackingFn(ev: CustomEvent) {
-    switch (ev.detail && ev.detail.state) {
-      case 'start': {
-        this._isTrackingStart = true;
+  private _trackingStartFn() {
+    const trackableEl = this._calendarViewFullCalendar;
+    const trackableElWidth = trackableEl.getBoundingClientRect().width;
+    const totalDraggableDistance = trackableElWidth / 3;
 
-        const trackableEl = this._calendarViewFullCalendar;
-        const trackableElWidth = trackableEl.getBoundingClientRect().width;
-        const totalDraggableDistance = trackableElWidth / 3;
-
-        /**
-         * NOTE(motss): Perf tips - By setting fixed width for the following containers,
-         * it drastically minimizes layout and painting during tracking even on slow
-         * devices.
-         *
-         * - `.calendar-view__full-calender`
-         * - `.datepicker-body__calendar-view`
-         */
-        trackableEl.style.touchAction = 'auto';
-        trackableEl.style.width = `${trackableElWidth}px`;
-        trackableEl.style.left = `${totalDraggableDistance * -1}px`;
-        this._datepickerBodyCalendarView.style.minWidth = `${trackableElWidth}px`;
-        this._totalDraggableDistance = totalDraggableDistance;
-        break;
-      }
-      case 'track': {
-        this._trackingMoveFn(ev);
-        break;
-      }
-      case 'end': {
-        this._trackingEndFn(ev);
-        break;
-      }
-    }
-  }
-  private _trackingMoveFn(ev: CustomEvent) {
-    if (!this._isTrackingStart) return;
-
-    this._isTrackingMove = true;
-
-    const dx = Number(ev.detail.dx);
-    this._calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
-    this._dx = dx;
-  }
-  private _trackingEndFn(ev) {
-    // console.debug('tracking-end-fn');
     /**
-     * NOTE(motss): If tracking starts but does not move,
-     * skip execution and reset `isTrackingStart`.
+     * NOTE(motss): Perf tips - By setting fixed width for the following containers,
+     * it drastically minimizes layout and painting during tracking even on slow
+     * devices.
+     *
+     * - `.calendar-view__full-calender`
+     * - `.datepicker-body__calendar-view`
      */
-    if (!this._isTrackingMove) {
-      this._isTrackingStart = false;
-      return;
-    }
-
-    // console.debug('tracking-env', this._dx, ev.type);
+    trackableEl.style.touchAction = 'auto';
+    trackableEl.style.width = `${trackableElWidth}px`;
+    trackableEl.style.left = `${totalDraggableDistance * -1}px`;
+    this._datepickerBodyCalendarView.style.minWidth = `${trackableElWidth}px`;
+    this._totalDraggableDistance = totalDraggableDistance;
+  }
+  private _trackingMoveFn(dx: number) {
+    this._calendarViewFullCalendar.style.transform = `translate3d(${dx}px, 0, 0)`;
+  }
+  private _trackingEndFn(dx: number) {
     const calendarViewFullCalendar = this._calendarViewFullCalendar;
     const totalDraggableDistance = this._totalDraggableDistance;
-    const dx = this._dx;
     const isPositive = dx > 0;
     const absDx = Math.abs(dx);
 
@@ -796,12 +817,9 @@ export class AppDatepicker extends LitElement {
       });
 
       return new Promise(yay => (restoreDragAnimation.onfinish = yay))
+        .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
         .then(() => {
           calendarViewFullCalendar.style.transform = null;
-
-          this._dx = 0;
-          this._isTrackingStart = false;
-          this._isTrackingMove = false;
         });
     }
 
@@ -817,6 +835,7 @@ export class AppDatepicker extends LitElement {
 
     /** NOTE(motss): Drag to next calendar when drag ratio meets threshold value */
     return new Promise(yay => (dragAnimation.onfinish = yay))
+      .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
       .then(() => {
         const dateDate = new Date(this._selectedDate);
         const fy = dateDate.getUTCFullYear();
@@ -830,23 +849,9 @@ export class AppDatepicker extends LitElement {
       })
       .then(() => {
         calendarViewFullCalendar.style.transform = null;
-
-        this._dx = 0;
-        this._isTrackingStart = false;
-        this._isTrackingMove = false;
       });
   }
 
-  private get _yearViewFullList() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.year-view__full-list')!;
-  }
-
-  private get _datepickerBodyCalendarView() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view')!;
-  }
-
-  private get _calendarViewFullCalendar() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.calendar-view__full-calendar')!;
-  }
-
 }
+
+// TODO: Look into `passive` event listener option in future.
