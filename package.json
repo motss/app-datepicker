@@ -42,9 +42,6 @@
   },
   "dependencies": {
     "@polymer/lit-element": "^0.6.5",
-    "@polymer/paper-button": "^3.0.1",
-    "@polymer/paper-icon-button": "^3.0.1",
-    "@polymer/polymer": "^3.1.0",
     "lit-html": "^1.0.0-rc.1",
     "pointer-tracker": "^2.0.3"
   },

@@ -9,8 +9,6 @@ import {
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-import '@polymer/paper-icon-button/paper-icon-button-light.js';
-
 import PointerTracker from 'pointer-tracker';
 
 import './app-datepicker-icons.js';
@@ -196,7 +194,6 @@ function renderDatepickerCalendar({
 
       <table
         class="calendar-table"
-        tabindex="0"
         @click="${ev => updateFocusedDateFn(ev)}">
         <thead>
           <tr class="calendar-weekdays">${weekdaysContent}</tr>
@@ -215,12 +212,10 @@ function renderDatepickerCalendar({
         ${hasMinDate
           ? null
           : html`
-          <paper-icon-button-light>
             <button
               class="month-selector-button"
               aria-label="Previous month"
               @click="${() => updateMonthFn('previous')}">${iconChevronLeft}</button>
-          </paper-icon-button-light>
           `}
       </div>
 
@@ -228,17 +223,15 @@ function renderDatepickerCalendar({
         ${hasMaxDate
           ? null
           : html`
-          <paper-icon-button-light>
             <button
               class="month-selector-button"
               aria-label="Next month"
               @click="${() => updateMonthFn('next')}">${iconChevronRight}</button>
-          </paper-icon-button-light>
           `}
       </div>
     </div>
 
-    <div class="calendar-view__full-calendar">${calendarsContent}</div>
+    <div class="calendar-view__full-calendar" tabindex="0">${calendarsContent}</div>
   </div>
   `;
 }
@@ -491,6 +484,7 @@ export class AppDatepicker extends LitElement {
         will-change: transform;
         /** NOTE: Required for Pointer Events API to work on touch devices */
         touch-action: none;
+        outline: none;
       }
 
       .year-view__full-list {
@@ -536,7 +530,6 @@ export class AppDatepicker extends LitElement {
         margin: 0 16px;
         border-collapse: collapse;
         text-align: center;
-        outline: none;
       }
 
       tr > th,
