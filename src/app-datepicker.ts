@@ -489,6 +489,8 @@ export class AppDatepicker extends LitElement {
         left: calc(100% * -1);
         padding: 0 0 16px;
         will-change: transform;
+        /** NOTE: Required for Pointer Events API to work on touch devices */
+        touch-action: none;
       }
 
       .year-view__full-list {
@@ -545,7 +547,7 @@ export class AppDatepicker extends LitElement {
         padding: 8px 0;
       }
 
-      tr > td.full-calendar__day:not(.day--empty)::after {
+      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
         content: '';
         display: block;
         position: absolute;
@@ -560,17 +562,17 @@ export class AppDatepicker extends LitElement {
         opacity: 0;
         pointer-events: none;
       }
-      tr > td.full-calendar__day:not(.day--empty):hover::after {
+      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
         opacity: .15;
       }
-      tr > td.full-calendar__day:not(.weekday-label):not(.day--empty) {
+      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
         cursor: pointer;
         pointer-events: auto;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
-      tr > td.full-calendar__day.day--focused:not(.day--empty)::after,
-      tr > td.full-calendar__day.day--today.day--focused:not(.day--empty)::after {
-        opacity: 1
+      tr > td.full-calendar__day.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after,
+      tr > td.full-calendar__day.day--today.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
+        opacity: 1;
       }
 
       tr > td.full-calendar__day > .calendar-day {
@@ -585,6 +587,14 @@ export class AppDatepicker extends LitElement {
       tr > td.full-calendar__day.day--focused > .calendar-day,
       tr > td.full-calendar__day.day--today.day--focused > .calendar-day {
         color: #fff;
+      }
+      tr > td.full-calendar__day.day--empty,
+      tr > td.full-calendar__day.weekday-label,
+      tr > td.full-calendar__day.day--disabled > .calendar-day {
+        pointer-events: none;
+      }
+      tr > td.full-calendar__day.day--disabled > .calendar-day {
+        color: rgba(0, 0, 0, .35);
       }
 
       .year-view__list-item {
@@ -638,52 +648,34 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const dragXMap = new Map();
     const dragEl = this._calendarViewFullCalendar;
     const totalDraggableDistance = this.getBoundingClientRect().width;
     const trackingStartFn = this._trackingStartFn;
     const trackingMoveFn = this._trackingMoveFn;
     const trackingEndFn = this._trackingEndFn;
 
-    dragEl.ongotpointercapture = () => console.log('got-capture');
-    dragEl.onlostpointercapture = ev => console.log('lost-capture', ev.target);
+    let lastDragX = 0;
 
     // tslint:disable-next-line:no-unused-expression
-    new PointerTracker(dragEl, {
-      start(pointer, ev) {
+    const tracker = new PointerTracker(dragEl, {
+      start(_, ev) {
+        if (tracker.currentPointers.length > 0) return false;
+
         ev.preventDefault();
-
-        // (ev.target as HTMLElement).setPointerCapture(pointer.id);
-
-        console.log('start', pointer.id, pointer.clientX, ev.target);
-        dragXMap.set(pointer.id, pointer.clientX);
+        lastDragX = 0;
         trackingStartFn();
 
         return true;
       },
-      move(_, changedPointers, ev) {
-        console.log(_, changedPointers, ev.target);
-        for (const pointer of changedPointers) {
-          for (const point of pointer.getCoalesced()) {
-            // (ev.target as HTMLElement).setPointerCapture(pointer.id);
-            const moved = point!.clientX;
-            const started = dragXMap.get(point.id);
-            const diff = moved - started;
-            console.log('move', moved, started, diff);
+      move([previousPointer]) {
+        const [currentPointer] = tracker.currentPointers;
+        lastDragX += currentPointer.pageX - previousPointer.pageX;
 
-            trackingMoveFn(diff);
-          }
-        }
+        trackingMoveFn(lastDragX);
       },
-      end(pointer) {
-        const moved = pointer!.clientX;
-        const started = dragXMap.get(pointer.id);
-        const diff = moved - started;
-        console.log('end', moved, started, diff);
-
-        trackingEndFn(diff);
-        dragEl.releasePointerCapture(pointer.id);
-        dragXMap.delete(pointer.id);
+      end() {
+        trackingEndFn(lastDragX);
+        lastDragX = 0;
       },
     });
 
@@ -764,7 +756,12 @@ export class AppDatepicker extends LitElement {
       && (n as HTMLElement).classList
       && (n as HTMLElement).classList.contains('full-calendar__day'));
 
-    if (selectedDayEl == null) return;
+    /** NOTE: Required condition check else these will trigger unwanted re-rendering */
+    if (selectedDayEl == null
+      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--empty')
+      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--disabled')
+      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--focused')
+      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('weekday-label')) return;
 
     const dateDate = new Date(this._selectedDate);
     const fy = dateDate.getUTCFullYear();
@@ -782,12 +779,11 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE(motss): Perf tips - By setting fixed width for the following containers,
      * it drastically minimizes layout and painting during tracking even on slow
-     * devices.
+     * devices:-
      *
-     * - `.calendar-view__full-calender`
-     * - `.datepicker-body__calendar-view`
+     *  - `.calendar-view__full-calender`
+     *  - `.datepicker-body__calendar-view`
      */
-    trackableEl.style.touchAction = 'auto';
     trackableEl.style.width = `${trackableElWidth}px`;
     trackableEl.style.left = `${totalDraggableDistance * -1}px`;
     this._datepickerBodyCalendarView.style.minWidth = `${trackableElWidth}px`;
