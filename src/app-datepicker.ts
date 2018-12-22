@@ -21,6 +21,84 @@ import {
   getResolvedTodayDate,
 } from './datepicker-helpers.js';
 
+const KEYCODES_MAP = {
+  // SHIFT: 16,
+  // CTRL: 17,
+  // ALT: 18,
+  TAB: 9,
+  ENTER: 13,
+  SPACE: 32,
+  PAGE_UP: 33,
+  PAGE_DOWN: 34,
+  END: 35,
+  HOME: 36,
+  ARROW_LEFT: 37,
+  ARROW_UP: 38,
+  ARROW_RIGHT: 39,
+  ARROW_DOWN: 40,
+};
+
+function computeNewFocusedDateWithKeyboard({
+  min,
+  max,
+  selectedDate,
+  fy,
+  m,
+  d,
+  isMonthYearUpdate,
+}) {
+  // const fullYearInMinDate = min.getUTCFullYear();
+  // const fullYearInMaxDate = max.getUTCFullYear();
+  // const monthInMinDate = min.getUTCMonth();
+  // const monthInMaxDate = max.getUTCMonth();
+  // const dayInMinDate = min.getUTCDate();
+  // const dayInMaxDate = max.getUTCDate();
+
+  let newFocusedDate = new Date(Date.UTC(fy, m, d));
+  // let fullYearInNewFocusedDate = newFocusedDate.getUTCFullYear();
+  // let monthInNewFocusedDate = newFocusedDate.getUTCMonth();
+  let dayInNewFocusedDate = newFocusedDate.getUTCDate();
+
+  /**
+   * NOTE: Check if new focused date exists in that new month. e.g. Feb 30. This should fallback to
+   * last day of the month (Feb), that is, Feb 28. Then if Feb 28 happens to fall in the disabled
+   * date range, the next step can take care of that.
+   */
+  if (isMonthYearUpdate && d !== dayInNewFocusedDate) {
+    const newAdjustedDate = new Date(Date.UTC(fy, m + 1, 0));
+
+    // monthInNewFocusedDate = newAdjustedDate.getUTCMonth();
+    dayInNewFocusedDate = newAdjustedDate.getUTCDate();
+    newFocusedDate = newAdjustedDate;
+  }
+
+  /**
+   * NOTE: Clipping new focused date to `min` or `max` when it falls into the range of disabled
+   * dates.
+   */
+  const isLessThanMin = +newFocusedDate < +min;
+  const isMoreThanMax = +newFocusedDate > +max;
+  if (isLessThanMin || isMoreThanMax) {
+    /** Set to `min` date */
+    if (isLessThanMin) {
+      return { shouldUpdateDate: false, date: min };
+    }
+
+    /** Set to `max` date */
+    if (isMoreThanMax) {
+      return { shouldUpdateDate: false, date: max };
+    }
+
+    /** FIXME: Then when this happen? */
+    return { shouldUpdateDate: false, date: null };
+  }
+
+  const shouldUpdateDate = newFocusedDate.getUTCMonth() !== selectedDate.getUTCMonth()
+    || newFocusedDate.getUTCFullYear() !== selectedDate.getUTCFullYear();
+
+  return { shouldUpdateDate, date: newFocusedDate }
+}
+
 function renderHeaderSelectorButton({
   locale,
   selectedDate,
@@ -59,9 +137,7 @@ function renderDatepickerYearList({
 }) {
   return html`
   <div class="datepicker-body__year-view">
-    <div
-      class="year-view__full-list"
-      @click="${ev => updateYearFn(ev)}">
+    <div class="year-view__full-list" @click="${ev => updateYearFn(ev)}">
     ${(yearList.map(n =>
       html`<button
         class="${classMap({
@@ -90,6 +166,8 @@ function renderDatepickerCalendar({
 
   updateFocusedDateFn,
   updateMonthFn,
+  updateMonthWithKeydownFn,
+  updateMonthWithKeyupFn,
 }) {
   const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
   const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
@@ -152,11 +230,7 @@ function renderDatepickerCalendar({
         /** NOTE(motss): Could be week number labeling */
         if (o.fullDate == null && showWeekNumber && oi < 1) {
           return html`
-          <td
-            class="full-calendar__day weekday-label"
-            aria-label="${o.label}">
-          ${o.value}
-          </td>
+          <td class="full-calendar__day weekday-label" aria-label="${o.label}">${o.value}</td>
           `;
         }
 
@@ -192,9 +266,7 @@ function renderDatepickerCalendar({
     <div class="calendar-container">
       <div class="calendar-label">${formattedDate}</div>
 
-      <table
-        class="calendar-table"
-        @click="${ev => updateFocusedDateFn(ev)}">
+      <table class="calendar-table" @click="${ev => updateFocusedDateFn(ev)}">
         <thead>
           <tr class="calendar-weekdays">${weekdaysContent}</tr>
         </thead>
@@ -231,7 +303,11 @@ function renderDatepickerCalendar({
       </div>
     </div>
 
-    <div class="calendar-view__full-calendar" tabindex="0">${calendarsContent}</div>
+    <div
+      class="calendar-view__full-calendar"
+      tabindex="0"
+      @keydown="${ev => updateMonthWithKeydownFn(ev)}"
+      @keyup="${ev => updateMonthWithKeyupFn(ev)}">${calendarsContent}</div>
   </div>
   `;
 }
@@ -318,6 +394,8 @@ export class AppDatepicker extends LitElement {
     this._trackingStartFn = this._trackingStartFn.bind(this);
     this._trackingMoveFn = this._trackingMoveFn.bind(this);
     this._trackingEndFn = this._trackingEndFn.bind(this);
+    this._updateMonthWithKeydownFn = this._updateMonthWithKeydownFn.bind(this);
+    this._updateMonthWithKeyupFn = this._updateMonthWithKeyupFn.bind(this);
 
     const todayDate = getResolvedTodayDate();
     const todayDateFullYear = todayDate.getUTCFullYear();
@@ -363,6 +441,8 @@ export class AppDatepicker extends LitElement {
         weekNumberType,
         updateFocusedDateFn: this._updateFocusedDateFn,
         updateMonthFn: this._updateMonthFn,
+        updateMonthWithKeydownFn: this._updateMonthWithKeydownFn,
+        updateMonthWithKeyupFn: this._updateMonthWithKeyupFn,
       })
       : renderDatepickerYearList({
         selectedDate,
@@ -415,7 +495,7 @@ export class AppDatepicker extends LitElement {
       .btn__selector-calendar {
         color: rgba(0, 0, 0, .55);
         cursor: pointer;
-        outline: none;
+        /* outline: none; */
       }
       .btn__selector-year.selected,
       .btn__selector-calendar.selected {
@@ -484,7 +564,7 @@ export class AppDatepicker extends LitElement {
         will-change: transform;
         /** NOTE: Required for Pointer Events API to work on touch devices */
         touch-action: none;
-        outline: none;
+        /* outline: none; */
       }
 
       .year-view__full-list {
@@ -839,6 +919,156 @@ export class AppDatepicker extends LitElement {
       .then(() => {
         calendarViewFullCalendar.style.transform = null;
       });
+  }
+
+  private _updateMonthWithKeydownFn(ev: KeyboardEvent) {
+    const keyCode = ev.keyCode;
+
+    /** NOTE: Skip for TAB key and other non-related keys */
+    if (keyCode === KEYCODES_MAP.TAB
+      || (keyCode !== KEYCODES_MAP.ARROW_DOWN
+      && keyCode !== KEYCODES_MAP.ARROW_LEFT
+      && keyCode !== KEYCODES_MAP.ARROW_RIGHT
+      && keyCode !== KEYCODES_MAP.ARROW_UP
+      && keyCode !== KEYCODES_MAP.END
+      && keyCode !== KEYCODES_MAP.HOME
+      && keyCode !== KEYCODES_MAP.PAGE_DOWN
+      && keyCode !== KEYCODES_MAP.PAGE_UP
+      && keyCode !== KEYCODES_MAP.ENTER
+      && keyCode !== KEYCODES_MAP.SPACE)) return;
+
+    console.log('keydown');
+
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+  }
+
+  // Left Move focus to the previous day. Will move to the last day of the previous month, if the current day is the first day of a month.
+  // Right Move focus to the next day. Will move to the first day of the following month, if the current day is the last day of a month.
+  // Up Move focus to the same day of the previous week. Will wrap to the appropriate day in the previous month.
+  // Down Move focus to the same day of the following week. Will wrap to the appropriate day in the following month.
+  // PgUp Move focus to the same date of the previous month. If that date does not exist, focus is placed on the last day of the month.
+  // PgDn Move focus to the same date of the following month. If that date does not exist, focus is placed on the last day of the month.
+  // Alt+PgUp Move focus to the same date of the previous year. If that date does not exist (e.g leap year), focus is placed on the last day of the month.
+  // Alt+PgDn Move focus to the same date of the following year. If that date does not exist (e.g leap year), focus is placed on the last day of the month.
+  // Home Move to the first day of the month.
+  // End Move to the last day of the month
+  // Tab / Shift+Tab If the datepicker is in modal mode, navigate between calander grid and close/previous/next selection buttons, otherwise move to the field following/preceding the date textbox associated with the datepicker
+  // Enter / Space Fill the date textbox with the selected date then close the datepicker widget.
+  private _updateMonthWithKeyupFn(ev: KeyboardEvent) {
+    const keyCode = ev.keyCode;
+
+    /** NOTE: Skip for TAB key and other non-related keys */
+    if (keyCode === KEYCODES_MAP.TAB
+      || (keyCode !== KEYCODES_MAP.ARROW_DOWN
+      && keyCode !== KEYCODES_MAP.ARROW_LEFT
+      && keyCode !== KEYCODES_MAP.ARROW_RIGHT
+      && keyCode !== KEYCODES_MAP.ARROW_UP
+      && keyCode !== KEYCODES_MAP.END
+      && keyCode !== KEYCODES_MAP.HOME
+      && keyCode !== KEYCODES_MAP.PAGE_DOWN
+      && keyCode !== KEYCODES_MAP.PAGE_UP
+      && keyCode !== KEYCODES_MAP.ENTER
+      && keyCode !== KEYCODES_MAP.SPACE)) return;
+
+    console.log('keyup', keyCode);
+
+    const hasAltKey = ev.altKey;
+    const min = new Date(this.min);
+    const max = new Date(this.max);
+    const selectedDate = this._selectedDate;
+    const focusedDate = this._focusedDate;
+    const fdFy = focusedDate.getUTCFullYear();
+    const fdM = focusedDate.getUTCMonth();
+    const fdD = focusedDate.getUTCDate();
+
+    let fy = fdFy;
+    let m = fdM;
+    let d = fdD;
+    let isMonthYearUpdate = false;
+
+    if (selectedDate.getUTCMonth() !== fdM) {
+      this._focusedDate = new Date(Date.UTC(
+        selectedDate.getUTCFullYear(),
+        selectedDate.getUTCMonth(),
+        1));
+
+      return this.updateComplete;
+    }
+
+    switch (keyCode) {
+      case KEYCODES_MAP.ARROW_UP: {
+        d -= 7;
+        break;
+      }
+      case KEYCODES_MAP.ARROW_RIGHT: {
+        d += 1;
+        break;
+      }
+      case KEYCODES_MAP.ARROW_DOWN: {
+        d += 7;
+        break;
+      }
+      case KEYCODES_MAP.ARROW_LEFT: {
+        d -= 1;
+        break;
+      }
+      case KEYCODES_MAP.HOME: {
+        d = 1;
+        break;
+      }
+      case KEYCODES_MAP.END: {
+        m += 1;
+        d = 0;
+        break;
+      }
+      case KEYCODES_MAP.ENTER: {
+        if (+selectedDate !== +focusedDate) {
+          this._selectedDate = focusedDate;
+        }
+
+        return this.updateComplete;
+      }
+      case KEYCODES_MAP.PAGE_UP: {
+        isMonthYearUpdate = true;
+        hasAltKey ? fy -= 1 : m -= 1;
+        break;
+      }
+      case KEYCODES_MAP.PAGE_DOWN: {
+        isMonthYearUpdate = true;
+        hasAltKey ? fy += 1 : m += 1;
+        break;
+      }
+    }
+
+    /** NOTE: Skip calendar update if new focused date remains unchanged. */
+    if (fy === fdFy && m === fdM && d === fdD) return;
+
+    const { shouldUpdateDate, date } = computeNewFocusedDateWithKeyboard({
+      min,
+      max,
+      selectedDate,
+      fy,
+      m,
+      d,
+      isMonthYearUpdate,
+    });
+
+    /**
+     * NOTE: If `date` returns null or `date` still same as `focusedDate`,
+     * this can skip updating any dates. This could simply mean the new focused date is
+     * within the range of * `min` and `max` dates.
+     */
+    if (date == null || +date === +focusedDate) return;
+
+    /**
+     * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
+     */
+    if (shouldUpdateDate) this._selectedDate = date;
+
+    this._focusedDate = date;
+
+    return this.updateComplete;
   }
 
 }
