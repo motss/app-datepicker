@@ -38,6 +38,10 @@ const KEYCODES_MAP = {
   ARROW_DOWN: 40,
 };
 
+function toFormattedDateString(date: Date) {
+  return date.toJSON().replace(/^(.+)T.+/i, '$1');
+}
+
 function computeNewFocusedDateWithKeyboard({
   min,
   max,
@@ -324,9 +328,6 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public max: string = '2100-12-31T23:59:59.999Z';
 
-  @property({ type: Date })
-  public value: string = 'yyyy-MM-dd';
-
   @property({ type: Number })
   public firstDayOfWeek: number = 0;
 
@@ -380,8 +381,6 @@ export class AppDatepicker extends LitElement {
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
 
-  // valueAsDate: Date,
-  // valueAsNumber: Number,
   // weekdayFormat: String,
 
   public constructor() {
@@ -405,10 +404,11 @@ export class AppDatepicker extends LitElement {
     }
 
     this.min = todayDate.toJSON();
+    this._yearList = yearList;
     this._todayDate = todayDate;
     this._selectedDate = todayDate;
     this._focusedDate = todayDate;
-    this._yearList = yearList;
+    this.value = toFormattedDateString(todayDate);
   }
 
   protected render() {
@@ -1071,6 +1071,31 @@ export class AppDatepicker extends LitElement {
     return this.updateComplete;
   }
 
+  public get value() {
+    return toFormattedDateString(this._focusedDate);
+  }
+  public set value(val: string) {
+    const minDate = new Date(this.min);
+    const maxDate = new Date(this.max);
+    const valDate = new Date(val);
+
+    /** NOTE: Skip updating to new date if date input is invalid */
+    if (val == null || valDate.toJSON() == null) return;
+
+    const fy = valDate.getUTCFullYear();
+    const m = valDate.getUTCMonth();
+    const d = valDate.getUTCDate();
+    const newDate = new Date(Date.UTC(fy, m, d));
+
+    if (+newDate < +minDate || +newDate > +maxDate) return;
+
+    this._focusedDate = newDate;
+    this._selectedDate = newDate;
+    // this.valueAsDate = newDate;
+    // this.valueAsNumber = +newDate;
+  }
+
 }
 
-// TODO: Look into `passive` event listener option in future.
+// TODO: To look into `passive` event listener option in future.
+// TODO: To suppport `valueAsDate` and `valueAsNumber`.
