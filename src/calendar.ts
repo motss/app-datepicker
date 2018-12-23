@@ -115,13 +115,15 @@ export function calendarDays({
    * Optimization is totally welcome to make things faster.
    * Also, I'd like to learn a better way. PM me and we can talk about that. 😄
    */
-  for (let i = 0, len = 6 * totalCol + (showWeekNumber ? 6 : 0); i < len; i += 1, col += 1) {
+  for (let i = 0, len = 6 * totalCol + (showWeekNumber ? 6 : 0); i <= len; i += 1, col += 1) {
     if (col >= totalCol) {
       col = 0;
       row += 1;
       fullCalendar.push(calendarRow);
       calendarRow = [];
     }
+
+    if (i >= len) break;
 
     const rowVal = col + (row * totalCol);
 

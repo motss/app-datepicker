@@ -22,8 +22,8 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const d = dateDate.getUTCDate();
 
   return [
-    new Date(fy, m - 1, d),
+    new Date(Date.UTC(fy, m - 1, d)),
     dateDate,
-    new Date(fy, m + 1, d),
+    new Date(Date.UTC(fy, m + 1, d)),
   ];
 }
