@@ -170,8 +170,7 @@ function renderDatepickerCalendar({
 
   updateFocusedDateFn,
   updateMonthFn,
-  updateMonthWithKeydownFn,
-  updateMonthWithKeyupFn,
+  updateMonthWithKeyboardFn,
 }) {
   const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
   const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
@@ -310,8 +309,7 @@ function renderDatepickerCalendar({
     <div
       class="calendar-view__full-calendar"
       tabindex="0"
-      @keydown="${ev => updateMonthWithKeydownFn(ev)}"
-      @keyup="${ev => updateMonthWithKeyupFn(ev)}">${calendarsContent}</div>
+      @keyup="${ev => updateMonthWithKeyboardFn(ev)}">${calendarsContent}</div>
   </div>
   `;
 }
@@ -384,6 +382,12 @@ export class AppDatepicker extends LitElement {
   @query('.calendar-view__full-calendar')
   private _calendarViewFullCalendar: HTMLDivElement;
 
+  @query('.btn__selector-year')
+  private _buttonSelectorYear: HTMLButtonElement;
+
+  @query('.year-view__list-item')
+  private _yearViewListItem: HTMLButtonElement;
+
   private _todayDate: Date;
   private _totalDraggableDistance: number;
   private _dragAnimationDuration: number = 150;
@@ -402,8 +406,7 @@ export class AppDatepicker extends LitElement {
     this._trackingStartFn = this._trackingStartFn.bind(this);
     this._trackingMoveFn = this._trackingMoveFn.bind(this);
     this._trackingEndFn = this._trackingEndFn.bind(this);
-    this._updateMonthWithKeydownFn = this._updateMonthWithKeydownFn.bind(this);
-    this._updateMonthWithKeyupFn = this._updateMonthWithKeyupFn.bind(this);
+    this._updateMonthWithKeyboardFn = this._updateMonthWithKeyboardFn.bind(this);
 
     const todayDate = getResolvedTodayDate();
     const todayDateFullYear = todayDate.getUTCFullYear();
@@ -450,8 +453,7 @@ export class AppDatepicker extends LitElement {
         weekNumberType,
         updateFocusedDateFn: this._updateFocusedDateFn,
         updateMonthFn: this._updateMonthFn,
-        updateMonthWithKeydownFn: this._updateMonthWithKeydownFn,
-        updateMonthWithKeyupFn: this._updateMonthWithKeyupFn,
+        updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
       })
       : renderDatepickerYearList({
         selectedDate,
@@ -764,6 +766,18 @@ export class AppDatepicker extends LitElement {
     // tslint:disable:max-line-length
   }
 
+  protected firstUpdated() {
+    const firstFocusableElement = this._selectedView === 'calendar'
+      ? this._buttonSelectorYear
+      : this._yearViewListItem;
+
+    this.dispatchEvent(new CustomEvent('datepicker-first-updated', {
+      detail: { firstFocusableElement },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   protected updated() {
     const selectedView = this._selectedView;
 
@@ -973,28 +987,6 @@ export class AppDatepicker extends LitElement {
       });
   }
 
-  private _updateMonthWithKeydownFn(ev: KeyboardEvent) {
-    const keyCode = ev.keyCode;
-
-    /** NOTE: Skip for TAB key and other non-related keys */
-    if (keyCode === KEYCODES_MAP.TAB
-      || (keyCode !== KEYCODES_MAP.ARROW_DOWN
-      && keyCode !== KEYCODES_MAP.ARROW_LEFT
-      && keyCode !== KEYCODES_MAP.ARROW_RIGHT
-      && keyCode !== KEYCODES_MAP.ARROW_UP
-      && keyCode !== KEYCODES_MAP.END
-      && keyCode !== KEYCODES_MAP.HOME
-      && keyCode !== KEYCODES_MAP.PAGE_DOWN
-      && keyCode !== KEYCODES_MAP.PAGE_UP
-      && keyCode !== KEYCODES_MAP.ENTER
-      && keyCode !== KEYCODES_MAP.SPACE)) return;
-
-    console.log('keydown');
-
-    ev.preventDefault();
-    ev.stopImmediatePropagation();
-  }
-
   // Left Move focus to the previous day. Will move to the last day of the previous month, if the current day is the first day of a month.
   // Right Move focus to the next day. Will move to the first day of the following month, if the current day is the last day of a month.
   // Up Move focus to the same day of the previous week. Will wrap to the appropriate day in the previous month.
@@ -1007,7 +999,7 @@ export class AppDatepicker extends LitElement {
   // End Move to the last day of the month
   // Tab / Shift+Tab If the datepicker is in modal mode, navigate between calander grid and close/previous/next selection buttons, otherwise move to the field following/preceding the date textbox associated with the datepicker
   // Enter / Space Fill the date textbox with the selected date then close the datepicker widget.
-  private _updateMonthWithKeyupFn(ev: KeyboardEvent) {
+  private _updateMonthWithKeyboardFn(ev: KeyboardEvent) {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip for TAB key and other non-related keys */
@@ -1123,22 +1115,24 @@ export class AppDatepicker extends LitElement {
     return this.updateComplete;
   }
 
-  private _setStartView(val: string) {
-    if (val !== 'calendar' && val !== 'year') return;
-
-    this._startView = val;
-    this._selectedView = val;
-  }
   // @ts-ignore
   public get startView() {
     return this._startView;
   }
   // @ts-ignore
   public set startView(val: string) {
-    this._setStartView(val);
+    if (val !== 'calendar' && val !== 'year') return;
+
+    this._startView = val;
+    this._selectedView = val;
   }
 
-  public _setValue(val: string) {
+  // @ts-ignore
+  public get value() {
+    return toFormattedDateString(this._focusedDate);
+  }
+  // @ts-ignore
+  public set value(val: string) {
     const minDate = new Date(this.min);
     const maxDate = new Date(this.max);
     const valDate = new Date(val);
@@ -1158,16 +1152,9 @@ export class AppDatepicker extends LitElement {
     // this.valueAsDate = newDate;
     // this.valueAsNumber = +newDate;
   }
-  // @ts-ignore
-  public get value() {
-    return toFormattedDateString(this._focusedDate);
-  }
-  // @ts-ignore
-  public set value(val: string) {
-    this._setValue(val);
-  }
 
 }
 
 // TODO: To look into `passive` event listener option in future.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
+// TODO: To not render out-of-bound calendar.

@@ -18,6 +18,13 @@
 
     // import '/dist/test-rerender.js';
     // import '/dist/calendar-benchmark.js';
+    const datepickerEl = document.body.querySelector('app-datepicker[startview="year"]');
+
+    datepickerEl.addEventListener('datepicker-first-updated', (ev) => {
+      const { firstFocusableElement } = ev.detail;
+
+      console.log(firstFocusableElement);
+    });
   </script>
 </head>
 
