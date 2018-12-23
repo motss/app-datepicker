@@ -186,6 +186,8 @@ function renderDatepickerCalendar({
   }).format;
 
   let clt = window.performance.now();
+  const minTime = +new Date(min);
+  const maxTime = +new Date(max);
   const weekdays = calendarWeekdays({
     firstDayOfWeek,
     showWeekNumber,
@@ -193,24 +195,43 @@ function renderDatepickerCalendar({
     longWeekdayFormatter: longWeekdayFormatterFn,
     narrowWeekdayFormatter: narrowWeekdayFormatterFn,
   });
-  const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => calendarDays({
-    firstDayOfWeek,
-    showWeekNumber,
-    weekNumberType,
-    selectedDate: n,
-    idOffset: idx * 10,
+  const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
+    const nFy = n.getUTCFullYear();
+    const nM = n.getUTCMonth();
+    const firstDayOfMonthTime = +new Date(Date.UTC(nFy, nM, 1));
+    const lastDayOfMonthTime = +new Date(Date.UTC(nFy, nM + 1, 0));
 
-    dayFormatter: dayFormatterFn,
-    fullDateFormatter: fullDateFormatterFn,
-  }));
+    /**
+     * NOTE: Return `null` when one of the followings fulfills:-
+     *
+     *           minTime            maxTime
+     *       |--------|--------o--------|--------|
+     *   last day     |   valid dates   |     first day
+     *
+     *  - last day of the month < `minTime` - entire month should be disabled
+     *  - first day of the month > `maxTime` - entire month should be disabled
+     */
+    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
+      return null;
+    }
+
+    return calendarDays({
+      firstDayOfWeek,
+      showWeekNumber,
+      weekNumberType,
+      selectedDate: n,
+      idOffset: idx * 10,
+
+      dayFormatter: dayFormatterFn,
+      fullDateFormatter: fullDateFormatterFn,
+    });
+  });
   clt = window.performance.now() - clt;
   const cltEl = document.body.querySelector('.calendar-render-time');
   if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
 
   let hasMinDate = false;
   let hasMaxDate = false;
-  const minTime = +new Date(min);
-  const maxTime = +new Date(max);
 
   const fixedDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
     ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
@@ -218,15 +239,20 @@ function renderDatepickerCalendar({
   const weekdaysContent = weekdays.map((o: any) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
   });
-  const calendarsContent = calendars.map((daysInMonth) => {
+  const calendarsContent = calendars.map((daysInMonth, i) => {
+    if (daysInMonth == null) {
+      /** NOTE: If first and last month is of type null, set the corresponding flag. */
+      if (i === 0) hasMinDate = true;
+      if (i === 2) hasMaxDate = true;
+
+      return html`<div class="calendar-container"></div>`;
+    }
+
     let formattedDate: string | null = null;
 
     const tbodyContent = daysInMonth.map((n) => {
       const trContent = n.map((o: any, oi) => {
         if (o.fullDate == null && o.value == null) {
-          hasMinDate = false;
-          hasMaxDate = false;
-
           return html`<td class="full-calendar__day day--empty"></td>`;
         }
 
@@ -242,9 +268,6 @@ function renderDatepickerCalendar({
 
         const isDisabledDay = fixedDisabledDays.some(fdd => fdd === oi)
           || (curTime < minTime || curTime > maxTime);
-
-        hasMinDate = curTime === minTime;
-        hasMaxDate = curTime === maxTime;
 
         return html`
         <td
@@ -307,7 +330,11 @@ function renderDatepickerCalendar({
     </div>
 
     <div
-      class="calendar-view__full-calendar"
+      class="${classMap({
+        'calendar-view__full-calendar': true,
+        'has-min-date': hasMinDate,
+        'has-max-date': hasMaxDate,
+      })}"
       tabindex="0"
       @keyup="${ev => updateMonthWithKeyboardFn(ev)}">${calendarsContent}</div>
   </div>
@@ -799,13 +826,15 @@ export class AppDatepicker extends LitElement {
       const trackingEndFn = this._trackingEndFn;
 
       let lastDragX = 0;
+      let abortDragIfHasMinDate = false;
+      let abortDragIfHasMaxDate = false;
 
       const tracker = new PointerTracker(dragEl, {
         start(_, ev) {
           if (tracker.currentPointers.length > 0) return false;
 
-          ev.preventDefault();
           lastDragX = 0;
+          ev.preventDefault();
           trackingStartFn();
 
           return true;
@@ -814,9 +843,24 @@ export class AppDatepicker extends LitElement {
           const [currentPointer] = tracker.currentPointers;
 
           lastDragX += currentPointer.pageX - previousPointer.pageX;
+          abortDragIfHasMinDate = lastDragX > 0 && dragEl.classList.contains('has-min-date');
+          abortDragIfHasMaxDate = lastDragX < 0 && dragEl.classList.contains('has-max-date');
+
+          if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
+            lastDragX = 0;
+            return;
+          }
+
           trackingMoveFn(lastDragX);
         },
         end() {
+          if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
+            abortDragIfHasMinDate = false;
+            abortDragIfHasMaxDate = false;
+            lastDragX = 0;
+            return;
+          }
+
           trackingEndFn(lastDragX);
           lastDragX = 0;
         },
@@ -1015,8 +1059,6 @@ export class AppDatepicker extends LitElement {
       && keyCode !== KEYCODES_MAP.ENTER
       && keyCode !== KEYCODES_MAP.SPACE)) return;
 
-    console.log('keyup', keyCode);
-
     const hasAltKey = ev.altKey;
     const min = new Date(this.min);
     const max = new Date(this.max);
@@ -1157,4 +1199,3 @@ export class AppDatepicker extends LitElement {
 
 // TODO: To look into `passive` event listener option in future.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
-// TODO: To not render out-of-bound calendar.
