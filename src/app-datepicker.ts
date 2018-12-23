@@ -51,16 +51,7 @@ function computeNewFocusedDateWithKeyboard({
   d,
   isMonthYearUpdate,
 }) {
-  // const fullYearInMinDate = min.getUTCFullYear();
-  // const fullYearInMaxDate = max.getUTCFullYear();
-  // const monthInMinDate = min.getUTCMonth();
-  // const monthInMaxDate = max.getUTCMonth();
-  // const dayInMinDate = min.getUTCDate();
-  // const dayInMaxDate = max.getUTCDate();
-
   let newFocusedDate = new Date(Date.UTC(fy, m, d));
-  // let fullYearInNewFocusedDate = newFocusedDate.getUTCFullYear();
-  // let monthInNewFocusedDate = newFocusedDate.getUTCMonth();
   let dayInNewFocusedDate = newFocusedDate.getUTCDate();
 
   /**
@@ -71,7 +62,6 @@ function computeNewFocusedDateWithKeyboard({
   if (isMonthYearUpdate && d !== dayInNewFocusedDate) {
     const newAdjustedDate = new Date(Date.UTC(fy, m + 1, 0));
 
-    // monthInNewFocusedDate = newAdjustedDate.getUTCMonth();
     dayInNewFocusedDate = newAdjustedDate.getUTCDate();
     newFocusedDate = newAdjustedDate;
   }
@@ -351,7 +341,7 @@ export class AppDatepicker extends LitElement {
   public min: string;
 
   @property({ type: String })
-  public max: string = '2100-12-31T23:59:59.999Z';
+  public max: string = '2100-12-31';
 
   @property({ type: Number })
   public firstDayOfWeek: number = 0;
@@ -1073,7 +1063,18 @@ export class AppDatepicker extends LitElement {
     let d = fdD;
     let isMonthYearUpdate = false;
 
-    if (selectedDate.getUTCMonth() !== fdM) {
+    /**
+     * NOTE: Focus to the 1st day of the current month when:-
+     *
+     *  - `_selectedDate` has a different value of _full year_ than that of `_focusedDate`.
+     *  - `_selectedDate` has a different value of _month_ than that of `_focusedDate`.
+     *
+     * This could simply mean that user changes `_selectedDate` with a new value of `month` or
+     * `year` but `_focusedDate` remains unchanged and it could be an out-of-bound calendar date.
+     * When keyboard event is detected, the 1st day of the current visible/ focusing month should be
+     * focused by updating `_focusedDate` with that value.
+     */
+    if (selectedDate.getUTCMonth() !== fdM || selectedDate.getUTCFullYear() !== fdFy) {
       this._focusedDate = new Date(Date.UTC(
         selectedDate.getUTCFullYear(),
         selectedDate.getUTCMonth(),
