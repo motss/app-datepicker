@@ -8,6 +8,12 @@ import typescript from 'rollup-plugin-typescript';
 import minifyHtmlLiterals from 'rollup-plugin-minify-html-literals';
 
 const isProd = 'production' === process.env.NODE_ENV;
+const terserOpts = {
+  ecma: 8,
+  module: true,
+  safari10: true,
+};
+
 const build = {
   input: [
     'src/app-datepicker.ts',
@@ -34,7 +40,7 @@ const build = {
       configuration: `tslint${isProd ? '.prod' : ''}.json`,
     })] : []),
     typescript({ tsconfig: './tsconfig.json' }),
-    ...(isProd ? [minifyHtmlLiterals(), terser(), filesize({ showBrotliSize: true })] : []),
+    ...(isProd ? [minifyHtmlLiterals(), terser(terserOpts), filesize({ showBrotliSize: true })] : []),
   ],
 };
 

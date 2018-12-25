@@ -9,8 +9,6 @@ import {
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-import PointerTracker from 'pointer-tracker';
-
 import './app-datepicker-icons.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays } from './calendar.js';
@@ -19,6 +17,7 @@ import {
   computeThreeCalendarsInARow,
   getResolvedLocale,
   getResolvedTodayDate,
+  // trackHandler,
 } from './datepicker-helpers.js';
 
 const KEYCODES_MAP = {
@@ -90,7 +89,7 @@ function computeNewFocusedDateWithKeyboard({
   const shouldUpdateDate = newFocusedDate.getUTCMonth() !== selectedDate.getUTCMonth()
     || newFocusedDate.getUTCFullYear() !== selectedDate.getUTCFullYear();
 
-  return { shouldUpdateDate, date: newFocusedDate }
+  return { shouldUpdateDate, date: newFocusedDate };
 }
 
 function renderHeaderSelectorButton({
@@ -410,6 +409,8 @@ export class AppDatepicker extends LitElement {
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
   private _hasCalendarSetup: boolean = false;
+  private _hasNativeElementAnimate: boolean =
+    Element.prototype.animate.toString().includes('[native code]');
 
   // weekdayFormat: String,
 
@@ -585,16 +586,21 @@ export class AppDatepicker extends LitElement {
       .month-selector-container + .month-selector-container {
         margin: 0 0 0 auto;
       }
-      .month-selector-container > paper-icon-button-light {
+      /* .month-selector-container > paper-icon-button-light {
         max-width: 56px;
         max-height: 56px;
         height: 56px;
         width: 56px;
         color: rgba(0, 0, 0, .25);
-      }
+      } */
 
       .month-selector-button {
         padding: calc((56px - 24px) / 2);
+        /**
+         * NOTE: button element contains no text, only SVG.
+         * No extra height will incur with such setting.
+         */
+        line-height: 0;
       }
 
       .calendar-view__full-calendar {
@@ -606,8 +612,13 @@ export class AppDatepicker extends LitElement {
         width: calc(100% * 3);
         padding: 0 0 16px;
         will-change: transform;
-        /** NOTE: Required for Pointer Events API to work on touch devices */
-        touch-action: none;
+        /**
+         * NOTE: Required for Pointer Events API to work on touch devices.
+         * Native \`pan-y\` action will be fired by the browsers since we only care about the
+         * horizontal direction. This is great as vertical scrolling still works even when touch
+         * event happens on a datepicker's calendar.
+         */
+        touch-action: pan-y;
         /* outline: none; */
       }
 
@@ -811,50 +822,59 @@ export class AppDatepicker extends LitElement {
     if (selectedView === 'calendar' && !this._hasCalendarSetup) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
-      const trackingStartFn = this._trackingStartFn;
-      const trackingMoveFn = this._trackingMoveFn;
-      const trackingEndFn = this._trackingEndFn;
+      // let pointerStart = false;
+      // let lastDragX = 0;
+      // let abortDragIfHasMinDate = false;
+      // let abortDragIfHasMaxDate = false;
 
-      let lastDragX = 0;
-      let abortDragIfHasMinDate = false;
-      let abortDragIfHasMaxDate = false;
+      // trackHandler(dragEl, {
+      //   down: (startPointer: any) => {
+      //     if (pointerStart) return true;
 
-      const tracker = new PointerTracker(dragEl, {
-        start(_, ev) {
-          if (tracker.currentPointers.length > 0) return false;
+      //     console.log('pointerdown', startPointer);
 
-          lastDragX = 0;
-          ev.preventDefault();
-          trackingStartFn();
+      //     pointerStart = true;
+      //     this._trackingStartFn();
 
-          return true;
-        },
-        move([previousPointer]) {
-          const [currentPointer] = tracker.currentPointers;
+      //     return pointerStart;
+      //   },
+      //   move: (changedPointer: any, startPointer: any) => {
+      //     if (!pointerStart) return false;
 
-          lastDragX += currentPointer.pageX - previousPointer.pageX;
-          abortDragIfHasMinDate = lastDragX > 0 && dragEl.classList.contains('has-min-date');
-          abortDragIfHasMaxDate = lastDragX < 0 && dragEl.classList.contains('has-max-date');
+      //     lastDragX = changedPointer.pageX - startPointer.pageX;
 
-          if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
-            lastDragX = 0;
-            return;
-          }
+      //     abortDragIfHasMinDate = lastDragX > 0 && dragEl.classList.contains('has-min-date');
+      //     abortDragIfHasMaxDate = lastDragX < 0 && dragEl.classList.contains('has-max-date');
 
-          trackingMoveFn(lastDragX);
-        },
-        end() {
-          if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
-            abortDragIfHasMinDate = false;
-            abortDragIfHasMaxDate = false;
-            lastDragX = 0;
-            return;
-          }
+      //     if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
+      //       lastDragX = 0;
+      //       return false;
+      //     }
 
-          trackingEndFn(lastDragX);
-          lastDragX = 0;
-        },
-      });
+      //     this._trackingMoveFn(lastDragX);
+
+      //     console.log('pointermove');
+
+      //     return true;
+      //   },
+      //   up: (changedPointer: any, startPointer: any) => {
+      //     if (!pointerStart) return;
+
+      //     console.log('pointerup');
+      //     lastDragX = changedPointer.pageX - startPointer.pageX;
+
+      //     if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
+      //       abortDragIfHasMinDate = false;
+      //       abortDragIfHasMaxDate = false;
+      //       lastDragX = 0;
+      //       return;
+      //     }
+
+      //     this._trackingEndFn(lastDragX);
+      //     lastDragX = 0;
+      //     pointerStart = false;
+      //   },
+      // });
 
       dragEl.style.transform = `translate3d(${totalDraggableDistance * -1}px, 0, 0)`;
       this._totalDraggableDistance = totalDraggableDistance;
@@ -883,7 +903,7 @@ export class AppDatepicker extends LitElement {
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
-      fill: 'none',
+      fill: this._hasNativeElementAnimate ? 'none' : 'both',
     });
 
     return new Promise(yay => (dragAnimation.onfinish = yay))
@@ -891,11 +911,11 @@ export class AppDatepicker extends LitElement {
       .then(() => {
         const newM = m + (isPreviousMonth ? -1 : 1);
         this._selectedDate = new Date(Date.UTC(fy, newM, 1));
+
         return this.updateComplete;
       })
       .then(() => {
-        calendarViewFullCalendar.style.transform =
-          `translate3d(${initialX}px, 0, 0)`;
+        calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
       });
   }
 
@@ -982,7 +1002,7 @@ export class AppDatepicker extends LitElement {
       ], {
         duration: this._dragAnimationDuration,
         easing: 'cubic-bezier(0, 0, .4, 1)',
-        fill: 'none',
+        fill: this._hasNativeElementAnimate ? 'none' : 'both',
       });
 
       return new Promise(yay => (restoreDragAnimation.onfinish = yay))
@@ -999,7 +1019,7 @@ export class AppDatepicker extends LitElement {
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
-      fill: 'none',
+      fill: this._hasNativeElementAnimate ? 'none' : 'both',
     });
 
     /** NOTE(motss): Drag to next calendar when drag ratio meets threshold value */
@@ -1200,3 +1220,4 @@ export class AppDatepicker extends LitElement {
 
 // TODO: To look into `passive` event listener option in future.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
+// TODO: To support RTL layout.
