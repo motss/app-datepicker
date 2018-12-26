@@ -17,8 +17,8 @@ import {
   computeThreeCalendarsInARow,
   getResolvedLocale,
   getResolvedTodayDate,
-  // trackHandler,
 } from './datepicker-helpers.js';
+import { Tracker } from './tracker.js';
 
 const KEYCODES_MAP = {
   // SHIFT: 16,
@@ -822,59 +822,44 @@ export class AppDatepicker extends LitElement {
     if (selectedView === 'calendar' && !this._hasCalendarSetup) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
-      // let pointerStart = false;
-      // let lastDragX = 0;
-      // let abortDragIfHasMinDate = false;
-      // let abortDragIfHasMaxDate = false;
+      let started = false;
+      let dx = 0;
+      let abortDragIfHasMinDate = false;
+      let abortDragIfHasMaxDate = false;
 
-      // trackHandler(dragEl, {
-      //   down: (startPointer: any) => {
-      //     if (pointerStart) return true;
+      const handlers = {
+        down: () => {
+          if (started) return;
+          this._trackingStartFn();
+          started = true;
+        },
+        move: (changedPointer, oldPointer) => {
+          if (!started) return;
+          dx += changedPointer.x - oldPointer.x;
+          abortDragIfHasMinDate = dx > 0 && dragEl.classList.contains('has-min-date');
+          abortDragIfHasMaxDate = dx < 0 && dragEl.classList.contains('has-max-date');
 
-      //     console.log('pointerdown', startPointer);
+          if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
 
-      //     pointerStart = true;
-      //     this._trackingStartFn();
+          this._trackingMoveFn(dx);
+        },
+        up: (changedPointer, oldPointer) => {
+          if (!started) return;
+          if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
+            abortDragIfHasMaxDate = false;
+            abortDragIfHasMinDate = false;
+            dx = 0;
+            return;
+          }
 
-      //     return pointerStart;
-      //   },
-      //   move: (changedPointer: any, startPointer: any) => {
-      //     if (!pointerStart) return false;
-
-      //     lastDragX = changedPointer.pageX - startPointer.pageX;
-
-      //     abortDragIfHasMinDate = lastDragX > 0 && dragEl.classList.contains('has-min-date');
-      //     abortDragIfHasMaxDate = lastDragX < 0 && dragEl.classList.contains('has-max-date');
-
-      //     if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
-      //       lastDragX = 0;
-      //       return false;
-      //     }
-
-      //     this._trackingMoveFn(lastDragX);
-
-      //     console.log('pointermove');
-
-      //     return true;
-      //   },
-      //   up: (changedPointer: any, startPointer: any) => {
-      //     if (!pointerStart) return;
-
-      //     console.log('pointerup');
-      //     lastDragX = changedPointer.pageX - startPointer.pageX;
-
-      //     if (abortDragIfHasMinDate || abortDragIfHasMaxDate) {
-      //       abortDragIfHasMinDate = false;
-      //       abortDragIfHasMaxDate = false;
-      //       lastDragX = 0;
-      //       return;
-      //     }
-
-      //     this._trackingEndFn(lastDragX);
-      //     lastDragX = 0;
-      //     pointerStart = false;
-      //   },
-      // });
+          dx += changedPointer.x - oldPointer.x;
+          this._trackingEndFn(dx);
+          dx = 0;
+          started = false;
+        },
+      };
+      // tslint:disable-next-line:no-unused-expression
+      new Tracker(dragEl, handlers);
 
       dragEl.style.transform = `translate3d(${totalDraggableDistance * -1}px, 0, 0)`;
       this._totalDraggableDistance = totalDraggableDistance;
@@ -980,7 +965,10 @@ export class AppDatepicker extends LitElement {
     this._totalDraggableDistance = totalDraggableDistance;
   }
   private _trackingMoveFn(dx: number) {
-    const newX = this._totalDraggableDistance * -1 + dx;
+    const totalDraggableDistance = this._totalDraggableDistance;
+    const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
+    const isPositive = dx > 0;
+    const newX = totalDraggableDistance * -1 + (clamped * (isPositive ? 1 : -1));
     this._calendarViewFullCalendar.style.transform = `translate3d(${newX}px, 0, 0)`;
   }
   private _trackingEndFn(dx: number) {
@@ -988,8 +976,9 @@ export class AppDatepicker extends LitElement {
     const totalDraggableDistance = this._totalDraggableDistance;
     const isPositive = dx > 0;
     const absDx = Math.abs(dx);
+    const clamped = Math.min(totalDraggableDistance, absDx);
     const initialX = totalDraggableDistance * -1;
-    const newX = totalDraggableDistance * -1 + dx;
+    const newX = totalDraggableDistance * -1 + (clamped * (isPositive ? 1 : -1));
 
     /**
      * NOTE(motss):
