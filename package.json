@@ -1,6 +1,6 @@
 {
   "name": "app-datepicker",
-  "version": "3.0.0-alpha.0",
+  "version": "3.0.0",
   "description": "A datepicker element based on Google's Material Design built from scratch with Polymer",
   "keywords": [
     "cal",
