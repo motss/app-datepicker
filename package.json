@@ -59,7 +59,7 @@
     "@polymer/paper-input": "^3.0.1",
     "@webcomponents/webcomponentsjs": "^2.2.1",
     "intl": "^1.2.5",
-    "wct-mocha": "^1.0.0",
+    "wct-browser-legacy": "^1.0.2",
     "web-animations-js": "^2.3.1",
     "whatwg-fetch": "^3.0.0"
   },
