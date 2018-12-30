@@ -7,14 +7,17 @@ import tslint from 'rollup-plugin-tslint';
 import typescript from 'rollup-plugin-typescript';
 import minifyHtmlLiterals from 'rollup-plugin-minify-html-literals';
 
-const isProd = 'production' === process.env.NODE_ENV;
+const isProd = !process.env.ROLLUP_WATCH;
 const terserOpts = {
   ecma: 8,
   module: true,
   safari10: true,
 };
 
+console.info(`Running Rollup in ${isProd ? 'PROD' : 'DEV'} mode...`);
+
 const build = {
+  // external: ['lit-html', '@polymer/lit-element'],
   input: [
     'src/app-datepicker.ts',
     // 'src/test-rerender.ts',
@@ -24,23 +27,25 @@ const build = {
     // file: 'dist/app-datepicker.js',
     dir: 'dist',
     format: 'esm',
+    preferConst: true,
+    esModule: true,
   }],
 
-  experimentalCodeSplitting: true,
   experimentalOptimizeChunks: true,
-  preferConst: true,
   treeshake: true,
-  // experimentalOptimizeImports: true,
+  // preserveModules: true,
   // inlineDynamicImports: true,
 
   plugins: [
     resolve(),
-    ...(isProd ? [tslint({
+    isProd && tslint({
       throwError: true,
       configuration: `tslint${isProd ? '.prod' : ''}.json`,
-    })] : []),
+    }),
     typescript({ tsconfig: './tsconfig.json' }),
-    ...(isProd ? [minifyHtmlLiterals(), terser(terserOpts), filesize({ showBrotliSize: true })] : []),
+    isProd && minifyHtmlLiterals(),
+    isProd && terser(terserOpts),
+    isProd && filesize({ showBrotliSize: true }),
   ],
 };
 

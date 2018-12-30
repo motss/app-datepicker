@@ -33,7 +33,7 @@
   ],
   "main": "app-datepicker.js",
   "scripts": {
-    "build": "rm -rf dist/ && cross-env NODE_ENV=production rollup --config rollup.config.js",
+    "build": "rm -rf dist/ && rollup --config rollup.config.js",
     "document": "polymer analyze > analysis.json",
     "rollup": "rm -rf dist/ && rollup --config rollup.config.js",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
@@ -53,7 +53,7 @@
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
     "mocha": "^5.2.0",
-    "rollup": "^0.68.2",
+    "rollup": "^1.0.0",
     "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-minify-html-literals": "^1.1.2",
     "rollup-plugin-node-resolve": "^4.0.0",

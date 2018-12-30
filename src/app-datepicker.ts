@@ -9,7 +9,6 @@ import {
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-import './app-datepicker-icons.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays } from './calendar.js';
 import { resetButton } from './common-styles.js';
