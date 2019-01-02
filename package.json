@@ -38,9 +38,11 @@
     "rollup": "rm -rf dist/ && rollup --config rollup.config.js",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
     "test": "polymer test --module-resolution=node --npm",
-    "testkeep": "polymer test -p --expanded --module-resolution=node --npm"
+    "testkeep": "polymer test -p --expanded --module-resolution=node --npm",
+    "ts": "tsc --watch"
   },
   "dependencies": {
+    "@material/mwc-button": "^0.3.4",
     "@polymer/lit-element": "^0.6.5",
     "lit-html": "^1.0.0-rc.1"
   },

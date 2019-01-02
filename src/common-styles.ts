@@ -53,3 +53,16 @@ export const resetSvgIcon = html`
   </style>
 `;
 export const absoluteHidden = html`<style>[hidden] { display: none !important; }</style>`;
+export const datepickerVariables = html`
+<style>
+  :host {
+    --app-datepicker-width: 300px;
+    /* --app-datepicker-primary-color: #4285f4; */
+    --app-datepicker-primary-color: #1a73e8;
+    --app-datepicker-border-radius: 12px;
+    --app-datepicker-header-height: 80px;
+
+    --mdc-theme-primary: #1a73e8;
+  }
+</style>
+`;

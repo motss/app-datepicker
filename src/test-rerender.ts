@@ -108,8 +108,8 @@ export class TestRerender extends LitElement {
   @property({ type: Array })
   public items: unknown[] = [];
 
-  @property({ type: String })
-  private _selected: string;
+  // @property({ type: String })
+  // private _selected: string;
 
   public constructor() {
     super();

@@ -11,7 +11,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays } from './calendar.js';
-import { resetButton } from './common-styles.js';
+import { resetButton, datepickerVariables } from './common-styles.js';
 import {
   computeThreeCalendarsInARow,
   getResolvedLocale,
@@ -481,6 +481,7 @@ export class AppDatepicker extends LitElement {
 
     // tslint:disable:max-line-length
     return html`
+    ${datepickerVariables}
     ${resetButton}
     <style>
       :host {
@@ -494,12 +495,6 @@ export class AppDatepicker extends LitElement {
         border-bottom-left-radius: var(--app-datepicker-border-bottom-left-radius, var(--app-datepicker-border-radius));
         border-bottom-right-radius: var(--app-datepicker-border-bottom-right-radius, var(--app-datepicker-border-radius));
         overflow: hidden;
-
-        --app-datepicker-width: 300px;
-        /* --app-datepicker-primary-color: #4285f4; */
-        --app-datepicker-primary-color: #1a73e8;
-        --app-datepicker-border-radius: 12px;
-        --app-datepicker-header-height: 80px;
       }
       :host([landscape]) {
         display: flex;
@@ -600,6 +595,9 @@ export class AppDatepicker extends LitElement {
          * No extra height will incur with such setting.
          */
         line-height: 0;
+      }
+      .month-selector-button:hover {
+        cursor: pointer;
       }
 
       .calendar-view__full-calendar {

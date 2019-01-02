@@ -23,8 +23,7 @@
       "esnext.array",
       "esnext.asynciterable",
       "esnext.intl",
-      "esnext.symbol",
-      "webworker"
+      "esnext.symbol"
     ],
     "moduleResolution": "node",
     "module": "esnext",

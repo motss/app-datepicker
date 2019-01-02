@@ -20,6 +20,7 @@ const build = {
   // external: ['lit-html', '@polymer/lit-element'],
   input: [
     'src/app-datepicker.ts',
+    'src/app-datepicker-dialog.ts',
     // 'src/test-rerender.ts',
     // 'src/calendar-benchmark.ts',
   ],
