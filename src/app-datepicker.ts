@@ -409,7 +409,7 @@ export class AppDatepicker extends LitElement {
   private _yearList: number[];
   private _hasCalendarSetup: boolean = false;
   private _hasNativeElementAnimate: boolean =
-    Element.prototype.animate.toString().includes('[native code]');
+    Element.prototype.animate.toString().indexOf('[native code]') >= 0;
 
   // weekdayFormat: String,
 
@@ -748,6 +748,9 @@ export class AppDatepicker extends LitElement {
         will-change: opacity;
         outline: none;
       }
+      .year-view__list-item:hover {
+        cursor: pointer;
+      }
       .year-view__list-item > div {
         z-index: 1;
       }
@@ -958,7 +961,7 @@ export class AppDatepicker extends LitElement {
      *  - `.datepicker-body__calendar-view`
      */
     trackableEl.style.width = `${trackableElWidth}px`;
-    this._datepickerBodyCalendarView.style.minWidth = `${trackableElWidth}px`;
+    trackableEl.style.minWidth = `${trackableElWidth}px`;
     this._totalDraggableDistance = totalDraggableDistance;
   }
   private _trackingMoveFn(dx: number) {
@@ -995,6 +998,7 @@ export class AppDatepicker extends LitElement {
         .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
         .then(() => {
           calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
+          return this.updateComplete;
         });
     }
 
@@ -1024,6 +1028,7 @@ export class AppDatepicker extends LitElement {
       })
       .then(() => {
         calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
+        return this.updateComplete;
       });
   }
 

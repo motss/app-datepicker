@@ -59,7 +59,7 @@ export const datepickerVariables = html`
     --app-datepicker-width: 300px;
     /* --app-datepicker-primary-color: #4285f4; */
     --app-datepicker-primary-color: #1a73e8;
-    --app-datepicker-border-radius: 12px;
+    --app-datepicker-border-radius: 8px;
     --app-datepicker-header-height: 80px;
 
     --mdc-theme-primary: #1a73e8;

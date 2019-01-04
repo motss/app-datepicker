@@ -22,33 +22,33 @@
      * https://gist.github.com/simevidas/2e721c8e6d67f04b5e1a0083c542a767
      */
     // only polyfill .finished in browsers that already support animate()
-    if (ElementAnimateSupported) {
-      // Chrome does not seem to expose the Animation constructor globally
-      if (!('Animation' in window)) {
-        window.Animation = document.createElement('div').animate([]).constructor;
-      }
-
-      if (window.Animation.prototype.finished == null) {
-        Object.defineProperty(Animation.prototype, 'finished', {
-          get() {
-            if (!this._finished) {
-              this._finished = this.playState === 'finished' ?
-                Promise.resolve() :
-                new Promise((resolve, reject) => {
-                  this.addEventListener('finish', resolve, {once: true});
-                  this.addEventListener('cancel', reject, {once: true});
-                });
-            }
-            return this._finished;
-          }
-        });
-      }
-    } else {
+    if (!ElementAnimateSupported) {
       const wa = document.createElement('script');
-      // wa.src = 'https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next-lite.min.js';
-      wa.src = 'https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next.min.js';
+      wa.src = 'https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next-lite.min.js';
+      wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
       wa.onerror = console.error;
       document.head.appendChild(wa);
+
+      // Chrome does not seem to expose the Animation constructor globally
+      // if (!('Animation' in window)) {
+      //   window.Animation = document.createElement('div').animate([]).constructor;
+      // }
+
+      // if (window.Animation.prototype.finished == null) {
+      //   Object.defineProperty(Animation.prototype, 'finished', {
+      //     get() {
+      //       if (!this._finished) {
+      //         this._finished = this.playState === 'finished' ?
+      //           Promise.resolve() :
+      //           new Promise((resolve, reject) => {
+      //             this.addEventListener('finish', resolve, {once: true});
+      //             this.addEventListener('cancel', reject, {once: true});
+      //           });
+      //       }
+      //       return this._finished;
+      //     }
+      //   });
+      // }
     }
   </script>
   <script type="module">

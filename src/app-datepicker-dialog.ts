@@ -73,32 +73,24 @@ export class AppDatepickerDialog extends LitElement {
     scrim.style.visibility = 'visible';
     contentContainer.style.visibility = 'visible';
 
-    // scrim.style.opacity = '1';
-    // contentContainer.style.opacity = '1';
-
-  //   scrim.style.display = 'block';
-  //   datepicker.style.display = 'block';
-
-    const fadeInAnimations = [scrim, contentContainer].map(n => n.animate([
+    const keyframes: Keyframe[] = [
       { opacity: '0' },
       { opacity: '1' },
-    ] as Keyframe[], {
-      duration: 250,
-      // fill: 'forwards',
-    }).finished);
+    ];
+    const opts: KeyframeAnimationOptions = {
+      duration: 100,
+    };
+    const fadeInAnimation = contentContainer.animate(keyframes, opts);
 
-    Promise.all(fadeInAnimations)
-      .then(() => {
-        console.log('fade-in finished');
-        scrim.style.opacity = '1';
-        contentContainer.style.opacity = '1';
+    new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
+      contentContainer.style.opacity = '1';
 
-        this.dispatchEvent(new CustomEvent(`${AppDatepickerDialog.is}-opened`, {
-          detail: { opened: true },
-          composed: true,
-          bubbles: true,
-        }));
-      });
+      this.dispatchEvent(new CustomEvent(`${AppDatepickerDialog.is}-opened`, {
+        detail: { opened: true },
+        composed: true,
+        bubbles: true,
+      }));
+    });
   }
 
   public close() {
@@ -106,30 +98,27 @@ export class AppDatepickerDialog extends LitElement {
     const scrim = this._scrim;
     const contentContainer = this._contentContainer;
 
-    const fadeOutAnimations = [scrim, contentContainer].map(n => n.animate([
+    scrim.style.visibility = 'hidden';
+
+    const keyframes: Keyframe[] = [
       { opacity: '1' },
       { opacity: '0' },
-    ] as Keyframe[], {
-      duration: 250,
-      // fill: 'forwards',
-    }).finished);
+    ];
+    const opts: KeyframeAnimationOptions = {
+      duration: 100,
+    };
+    const fadeOutAnimation = contentContainer.animate(keyframes, opts);
 
-    Promise.all(fadeOutAnimations)
-      .then((d) => {
-        console.log('fade-out finished', d);
+    new Promise(yay => (fadeOutAnimation.onfinish = yay)).then(() => {
+      contentContainer.style.opacity = '0';
+      contentContainer.style.visibility = 'hidden';
 
-        scrim.style.opacity = '0';
-        contentContainer.style.opacity = '0';
-
-        scrim.style.visibility = 'hidden';
-        contentContainer.style.visibility = 'hidden';
-
-        this.dispatchEvent(new CustomEvent(`${AppDatepickerDialog.is}-closed`, {
-          detail: { opened: false },
-          composed: true,
-          bubbles: true,
-        }));
-      });
+      this.dispatchEvent(new CustomEvent(`${AppDatepickerDialog.is}-closed`, {
+        detail: { opened: false },
+        composed: true,
+        bubbles: true,
+      }));
+    });
   }
 
   protected render() {
@@ -191,7 +180,6 @@ export class AppDatepickerDialog extends LitElement {
         height: 100%;
         background-color: rgba(0, 0, 0, .25);
         visibility: hidden;
-        opacity: 0;
         z-index: 22;
       }
 
@@ -204,10 +192,9 @@ export class AppDatepickerDialog extends LitElement {
         background-color: #fff;
         transform: translate3d(-50%, -50%, 0);
         border-radius: var(--app-datepicker-border-radius);
-        will-change: transform;
+        will-change: transform, opacity;
         overflow: hidden;
         visibility: hidden;
-        /* transition: opacity 350ms; */
         opacity: 0;
         z-index: 23;
       }
