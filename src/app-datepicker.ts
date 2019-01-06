@@ -11,85 +11,18 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays } from './calendar.js';
-import { resetButton, datepickerVariables } from './common-styles.js';
+import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  computeNewFocusedDateWithKeyboard,
   computeThreeCalendarsInARow,
+  dispatchCustomEvent,
+  findShadowTarget,
   getResolvedLocale,
   getResolvedTodayDate,
+  KEYCODES_MAP,
+  toFormattedDateString,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
-
-const KEYCODES_MAP = {
-  // SHIFT: 16,
-  // CTRL: 17,
-  // ALT: 18,
-  TAB: 9,
-  ENTER: 13,
-  SPACE: 32,
-  PAGE_UP: 33,
-  PAGE_DOWN: 34,
-  END: 35,
-  HOME: 36,
-  ARROW_LEFT: 37,
-  ARROW_UP: 38,
-  ARROW_RIGHT: 39,
-  ARROW_DOWN: 40,
-};
-
-function toFormattedDateString(date: Date) {
-  return date.toJSON().replace(/^(.+)T.+/i, '$1');
-}
-
-function computeNewFocusedDateWithKeyboard({
-  min,
-  max,
-  selectedDate,
-  fy,
-  m,
-  d,
-  isMonthYearUpdate,
-}) {
-  let newFocusedDate = new Date(Date.UTC(fy, m, d));
-  let dayInNewFocusedDate = newFocusedDate.getUTCDate();
-
-  /**
-   * NOTE: Check if new focused date exists in that new month. e.g. Feb 30. This should fallback to
-   * last day of the month (Feb), that is, Feb 28. Then if Feb 28 happens to fall in the disabled
-   * date range, the next step can take care of that.
-   */
-  if (isMonthYearUpdate && d !== dayInNewFocusedDate) {
-    const newAdjustedDate = new Date(Date.UTC(fy, m + 1, 0));
-
-    dayInNewFocusedDate = newAdjustedDate.getUTCDate();
-    newFocusedDate = newAdjustedDate;
-  }
-
-  /**
-   * NOTE: Clipping new focused date to `min` or `max` when it falls into the range of disabled
-   * dates.
-   */
-  const isLessThanMin = +newFocusedDate < +min;
-  const isMoreThanMax = +newFocusedDate > +max;
-  if (isLessThanMin || isMoreThanMax) {
-    /** Set to `min` date */
-    if (isLessThanMin) {
-      return { shouldUpdateDate: false, date: min };
-    }
-
-    /** Set to `max` date */
-    if (isMoreThanMax) {
-      return { shouldUpdateDate: false, date: max };
-    }
-
-    /** FIXME: Then when this happen? */
-    return { shouldUpdateDate: false, date: null };
-  }
-
-  const shouldUpdateDate = newFocusedDate.getUTCMonth() !== selectedDate.getUTCMonth()
-    || newFocusedDate.getUTCFullYear() !== selectedDate.getUTCFullYear();
-
-  return { shouldUpdateDate, date: newFocusedDate };
-}
 
 function renderHeaderSelectorButton({
   locale,
@@ -744,9 +677,9 @@ export class AppDatepicker extends LitElement {
         width: 100%;
         padding: 12px 16px;
         text-align: center;
-        /** NOTE: Reduce paint when hovering and scrolling */
-        will-change: opacity;
-        outline: none;
+        /** NOTE: Reduce paint when hovering and scrolling, but this increases memory usage */
+        /* will-change: opacity; */
+        /* outline: none; */
       }
       .year-view__list-item:hover {
         cursor: pointer;
@@ -799,11 +732,7 @@ export class AppDatepicker extends LitElement {
       ? this._buttonSelectorYear
       : this._yearViewListItem;
 
-    this.dispatchEvent(new CustomEvent('datepicker-first-updated', {
-      detail: { firstFocusableElement },
-      bubbles: true,
-      composed: true,
-    }));
+    dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
 
   protected updated() {
@@ -904,11 +833,8 @@ export class AppDatepicker extends LitElement {
       });
   }
 
-  private _updateYearFn(ev: Event) {
-    const selectedYearEl = ev.composedPath().find(n =>
-      n
-      && (n as HTMLElement).classList
-      && (n as HTMLElement).classList.contains('year-view__list-item'));
+  private _updateYearFn(ev: CustomEvent) {
+    const selectedYearEl = findShadowTarget(ev, n => n.classList.contains('year-view__list-item'));
 
     if (selectedYearEl == null) return;
 
@@ -926,11 +852,8 @@ export class AppDatepicker extends LitElement {
     this._selectedView = 'calendar';
   }
 
-  private _updateFocusedDateFn(ev: Event) {
-    const selectedDayEl = ev.composedPath().find(n =>
-      n
-      && (n as HTMLElement).classList
-      && (n as HTMLElement).classList.contains('full-calendar__day'));
+  private _updateFocusedDateFn(ev: CustomEvent) {
+    const selectedDayEl = findShadowTarget(ev, n => n.classList.contains('full-calendar__day'));
 
     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
     if (selectedDayEl == null

@@ -62,6 +62,7 @@
     // const datepickerEl = document.body.querySelector('app-datepicker');
     const datepickerDialogEl = document.body.querySelector('app-datepicker-dialog');
     const buttonEl = document.body.querySelector('mwc-button');
+    const inputEl = document.body.querySelector('input[type="text"]');
 
     // datepickerEl.addEventListener('datepicker-first-updated', (ev) => {
     //   const { firstFocusableElement } = ev.detail;
@@ -75,6 +76,11 @@
     buttonEl.addEventListener('click', () => {
       datepickerDialogEl.open();
     });
+
+    datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
+      inputEl.value = ev.detail.value;
+    });
+
   </script>
 </head>
 
@@ -131,6 +137,12 @@
     <!-- <app-datepicker></app-datepicker> -->
     <!-- <app-datepicker startView="year"></app-datepicker> -->
     <!-- <test-rerender></test-rerender> -->
+
+    <label for="selectedDate">
+      <span id="selectedDate">Selected date</span>
+      <input type="text" disabled>
+    </label>
+
     <mwc-button>Select date</mwc-button>
     <app-datepicker-dialog></app-datepicker-dialog>
   </section>
