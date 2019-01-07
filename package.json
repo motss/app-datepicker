@@ -1,13 +1,15 @@
 {
   "name": "app-datepicker",
   "version": "3.0.0-alpha.0",
-  "description": "A datepicker element based on Google's Material Design built from scratch with Polymer",
+  "description": "A custom datepicker element based on Google's Material Design built from scratch with lit-element",
   "keywords": [
     "cal",
     "calendar",
     "date",
     "date-picker",
     "datepicker",
+    "lit-element",
+    "lit-html",
     "picker",
     "polymer",
     "web-component",
@@ -25,21 +27,19 @@
     "url": "https://github.com/motss"
   },
   "files": [
-    "animations",
-    "app-datepicker-dialog.js",
-    "app-datepicker-icons.js",
-    "app-datepicker.js",
-    "demo"
+    "dist"
   ],
   "main": "app-datepicker.js",
+  "module": "app-datepicker.js",
   "scripts": {
-    "build": "rm -rf dist/ && rollup --config rollup.config.js",
     "document": "polymer analyze > analysis.json",
-    "rollup": "rm -rf dist/ && rollup --config rollup.config.js",
+    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
+    "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
     "test": "polymer test --module-resolution=node --npm",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm",
-    "ts": "tsc --watch"
+    "ts": "rm -rf dist/ && tsc -p tsconfig.json",
+    "watch": "npm run -- --watch"
   },
   "dependencies": {
     "@material/mwc-button": "^0.3.4",
@@ -53,15 +53,9 @@
     "@types/node": "^10.12.18",
     "@webcomponents/webcomponentsjs": "^2.2.1",
     "chai": "^4.2.0",
-    "cross-env": "^5.2.0",
     "mocha": "^5.2.0",
-    "rollup": "^1.0.1",
-    "rollup-plugin-filesize": "^6.0.0",
-    "rollup-plugin-minify-html-literals": "^1.1.2",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-terser": "^4.0.1",
-    "rollup-plugin-tslint": "^0.1.38",
-    "rollup-plugin-typescript": "^1.0.0",
+    "tslint": "^5.12.0",
+    "typescript": "^3.2.2",
     "wct-mocha": "^1.0.0"
   },
   "engines": {

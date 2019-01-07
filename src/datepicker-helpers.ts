@@ -138,8 +138,6 @@ export function setFocusTrap(
 
     if (!isTabKey && !isShiftTabKey) return;
 
-    console.log(ev, firstEl, lastEl);
-
     // const focusedTarget = ev.target as HTMLElement;
     const isFocusingLastEl = findShadowTarget(ev, n => n.isEqualNode(lastEl)) != null;
 
