@@ -1,10 +1,11 @@
 import {
+  css,
   customElement,
   html,
   LitElement,
   property,
   query,
-} from '@polymer/lit-element';
+} from 'lit-element';
 
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -373,50 +374,12 @@ export class AppDatepicker extends LitElement {
     this.value = toFormattedDateString(todayDate);
   }
 
-  protected render() {
-    const locale = this.locale;
-    const disabledDays = this.disabledDays;
-    const firstDayOfWeek = this.firstDayOfWeek;
-    const min = this.min;
-    const max = this.max;
-    const showWeekNumber = this.showWeekNumber;
-    const weekNumberType = this.weekNumberType;
-    const yearList = this._yearList;
-
-    const focusedDate = new Date(this._focusedDate);
-    const selectedDate = new Date(this._selectedDate);
-    const selectedView = this._selectedView;
-    const todayDate = getResolvedTodayDate();
-
-    /** NOTE(motss): For perf reason, initialize all formatters for calendar rendering */
-    const datepickerBodyContent = selectedView === 'calendar'
-      ? renderDatepickerCalendar({
-        disabledDays,
-        firstDayOfWeek,
-        focusedDate,
-        locale,
-        max,
-        min,
-        selectedDate,
-        showWeekNumber,
-        todayDate,
-        weekNumberType,
-        updateFocusedDateFn: this._updateFocusedDateFn,
-        updateMonthFn: this._updateMonthFn,
-        updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
-      })
-      : renderDatepickerYearList({
-        selectedDate,
-        yearList,
-
-        updateYearFn: this._updateYearFn,
-      });
-
+  static get styles() {
     // tslint:disable:max-line-length
-    return html`
-    ${datepickerVariables}
-    ${resetButton}
-    <style>
+    return [
+      datepickerVariables,
+      resetButton,
+      css`
       :host {
         display: block;
         width: var(--app-datepicker-width);
@@ -707,9 +670,52 @@ export class AppDatepicker extends LitElement {
         font-size: 24px;
         font-weight: 500;
       }
+      `,
+    ];
+    // tslint:enable:max-line-length
+  }
 
-    </style>
+  protected render() {
+    const locale = this.locale;
+    const disabledDays = this.disabledDays;
+    const firstDayOfWeek = this.firstDayOfWeek;
+    const min = this.min;
+    const max = this.max;
+    const showWeekNumber = this.showWeekNumber;
+    const weekNumberType = this.weekNumberType;
+    const yearList = this._yearList;
 
+    const focusedDate = new Date(this._focusedDate);
+    const selectedDate = new Date(this._selectedDate);
+    const selectedView = this._selectedView;
+    const todayDate = getResolvedTodayDate();
+
+    /** NOTE(motss): For perf reason, initialize all formatters for calendar rendering */
+    const datepickerBodyContent = selectedView === 'calendar'
+      ? renderDatepickerCalendar({
+        disabledDays,
+        firstDayOfWeek,
+        focusedDate,
+        locale,
+        max,
+        min,
+        selectedDate,
+        showWeekNumber,
+        todayDate,
+        weekNumberType,
+        updateFocusedDateFn: this._updateFocusedDateFn,
+        updateMonthFn: this._updateMonthFn,
+        updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
+      })
+      : renderDatepickerYearList({
+        selectedDate,
+        yearList,
+
+        updateYearFn: this._updateYearFn,
+      });
+
+    // tslint:disable:max-line-length
+    return html`
     <div class="datepicker-header">
     ${(renderHeaderSelectorButton({
       locale,
@@ -724,7 +730,7 @@ export class AppDatepicker extends LitElement {
     ${cache(datepickerBodyContent)}
     </div>
     `;
-    // tslint:disable:max-line-length
+    // tslint:enable:max-line-length
   }
 
   protected firstUpdated() {
@@ -955,17 +961,27 @@ export class AppDatepicker extends LitElement {
       });
   }
 
-  // Left Move focus to the previous day. Will move to the last day of the previous month, if the current day is the first day of a month.
-  // Right Move focus to the next day. Will move to the first day of the following month, if the current day is the last day of a month.
-  // Up Move focus to the same day of the previous week. Will wrap to the appropriate day in the previous month.
-  // Down Move focus to the same day of the following week. Will wrap to the appropriate day in the following month.
-  // PgUp Move focus to the same date of the previous month. If that date does not exist, focus is placed on the last day of the month.
-  // PgDn Move focus to the same date of the following month. If that date does not exist, focus is placed on the last day of the month.
-  // Alt+PgUp Move focus to the same date of the previous year. If that date does not exist (e.g leap year), focus is placed on the last day of the month.
-  // Alt+PgDn Move focus to the same date of the following year. If that date does not exist (e.g leap year), focus is placed on the last day of the month.
+  // Left Move focus to the previous day. Will move to the last day of the previous month,
+  //  if the current day is the first day of a month.
+  // Right Move focus to the next day. Will move to the first day of the following month,
+  //  if the current day is the last day of a month.
+  // Up Move focus to the same day of the previous week.
+  //  Will wrap to the appropriate day in the previous month.
+  // Down Move focus to the same day of the following week.
+  //  Will wrap to the appropriate day in the following month.
+  // PgUp Move focus to the same date of the previous month. If that date does not exist,
+  //  focus is placed on the last day of the month.
+  // PgDn Move focus to the same date of the following month. If that date does not exist,
+  //  focus is placed on the last day of the month.
+  // Alt+PgUp Move focus to the same date of the previous year.
+  //  If that date does not exist (e.g leap year), focus is placed on the last day of the month.
+  // Alt+PgDn Move focus to the same date of the following year.
+  //  If that date does not exist (e.g leap year), focus is placed on the last day of the month.
   // Home Move to the first day of the month.
   // End Move to the last day of the month
-  // Tab / Shift+Tab If the datepicker is in modal mode, navigate between calander grid and close/previous/next selection buttons, otherwise move to the field following/preceding the date textbox associated with the datepicker
+  // Tab / Shift+Tab If the datepicker is in modal mode, navigate between calender grid and
+  //  close/previous/next selection buttons, otherwise move to the field following/preceding the
+  //  date textbox associated with the datepicker
   // Enter / Space Fill the date textbox with the selected date then close the datepicker widget.
   private _updateMonthWithKeyboardFn(ev: KeyboardEvent) {
     const keyCode = ev.keyCode;

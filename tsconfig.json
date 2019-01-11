@@ -2,7 +2,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
-    "allowUnusedLabels": true,
+    "allowUnusedLabels": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
@@ -35,7 +35,7 @@
     "plugins": [
       {
         "name": "typescript-lit-html-plugin",
-        "tags": ["html"]
+        "tags": ["html", "css"]
       }
     ]
   },

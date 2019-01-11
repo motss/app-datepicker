@@ -1,7 +1,7 @@
 import { AppDatepicker } from './app-datepicker.js';
 import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
 
-import { customElement, html, LitElement, property, query } from '@polymer/lit-element';
+import { css, customElement, html, LitElement, property, query } from 'lit-element';
 
 import '@material/mwc-button/mwc-button.js';
 
@@ -162,26 +162,10 @@ export class AppDatepickerDialog extends LitElement {
     dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
   }
 
-  protected render() {
-    const min = this.min;
-    const max = this.max;
-    const firstDayOfWeek = this.firstDayOfWeek;
-    const showWeekNumber = this.showWeekNumber;
-    const weekNumberType = this.weekNumberType;
-    const disabledDays = this.disabledDays;
-    const disabledDates = this.disableDates;
-    const format = this.format;
-    const landscape = this.landscape;
-    const locale = this.locale;
-    const dragRatio = this.dragRatio;
-    const startView = this.startView;
-    const value = this.value;
-    const dismissLabel = this.dismissLabel;
-    const confirmLabel = this.confirmLabel;
-
-    return html`
-    ${datepickerVariables}
-    <style>
+  static get styles() {
+    return [
+      datepickerVariables,
+      css`
       :host {
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -259,8 +243,28 @@ export class AppDatepickerDialog extends LitElement {
       mwc-button + mwc-button {
         margin: 0 0 0 8px;
       }
-    </style>
+      `,
+    ];
+  }
 
+  protected render() {
+    const min = this.min;
+    const max = this.max;
+    const firstDayOfWeek = this.firstDayOfWeek;
+    const showWeekNumber = this.showWeekNumber;
+    const weekNumberType = this.weekNumberType;
+    const disabledDays = this.disabledDays;
+    const disabledDates = this.disableDates;
+    const format = this.format;
+    const landscape = this.landscape;
+    const locale = this.locale;
+    const dragRatio = this.dragRatio;
+    const startView = this.startView;
+    const value = this.value;
+    const dismissLabel = this.dismissLabel;
+    const confirmLabel = this.confirmLabel;
+
+    return html`
     <div class="scrim" @pointerup="${this.close}"></div>
 
     <div class="content-container">
