@@ -302,13 +302,13 @@ export class AppDatepicker extends LitElement {
   @property({ type: Number })
   public dragRatio: number = .15;
 
-  @property({ type: String })
-  // @ts-ignore
-  public startView: string = 'calendar';
+  // @property({ type: String })
+  // // @ts-ignore
+  // public startView: string = 'calendar';
 
-  @property({ type: String })
-  // @ts-ignore
-  public value: string;
+  // @property({ type: String })
+  // // @ts-ignore
+  // public value: string;
 
   @property({ type: String })
   private _startView: string = 'calendar';
