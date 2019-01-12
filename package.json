@@ -29,8 +29,8 @@
   "files": [
     "dist"
   ],
-  "main": "app-datepicker.js",
-  "module": "app-datepicker.js",
+  "main": "dist/app-datepicker.js",
+  "module": "dist/app-datepicker.js",
   "scripts": {
     "document": "polymer analyze > analysis.json",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
