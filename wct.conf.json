@@ -18,6 +18,6 @@
       }
     }
   },
-  "suites": [ "src/test" ],
+  "suites": ["test"],
   "verbose": true
 }

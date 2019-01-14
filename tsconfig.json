@@ -37,6 +37,10 @@
         "name": "typescript-lit-html-plugin",
         "tags": ["html", "css"]
       }
+    ],
+    "types": [
+      "chai",
+      "mocha"
     ]
   },
   "include": ["src/**/*"],
