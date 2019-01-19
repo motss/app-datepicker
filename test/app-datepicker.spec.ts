@@ -20,10 +20,8 @@ describe('app-datepicker', () => {
   });
 
   it('renders initial content', async () => {
-    await element.updateComplete;
-
     const elHTML = stripExpressionDelimiters(element.innerHTML);
-    assert.strictEqual(elHTML, '', 'innerHTML not matched');
+    assert.strictEqual(elHTML, null, 'innerHTML not matched');
   });
 
 });

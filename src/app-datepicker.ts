@@ -716,19 +716,17 @@ export class AppDatepicker extends LitElement {
 
     // tslint:disable:max-line-length
     return html`
-    <div class="datepicker-header">
-    ${(renderHeaderSelectorButton({
-      locale,
-      selectedDate,
-      focusedDate,
-      selectedView,
-      updateViewFn: this._updateViewFn,
-    }))}
-    </div>
+    <div class="datepicker-header">${
+      renderHeaderSelectorButton({
+        locale,
+        selectedDate,
+        focusedDate,
+        selectedView,
+        updateViewFn: this._updateViewFn,
+      })
+    }</div>
 
-    <div class="datepicker-body">
-    ${cache(datepickerBodyContent)}
-    </div>
+    <div class="datepicker-body">${cache(datepickerBodyContent)}</div>
     `;
     // tslint:enable:max-line-length
   }
@@ -745,16 +743,11 @@ export class AppDatepicker extends LitElement {
     const selectedView = this._selectedView;
 
     if (selectedView === 'year') {
-      this.updateComplete
-        .then(() => {
-          return this._yearViewFullList.scrollTo({
-            top: (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48,
-            left: 0,
-          });
-        });
-    }
+      const selectedYearScrollTop =
+        (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
 
-    if (selectedView === 'calendar' && !this._hasCalendarSetup) {
+      this._yearViewFullList.scrollTo({ top: selectedYearScrollTop, left: 0 });
+    } else if (selectedView === 'calendar' && !this._hasCalendarSetup) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
       let started = false;
