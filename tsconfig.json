@@ -35,7 +35,11 @@
     "plugins": [
       {
         "name": "typescript-lit-html-plugin",
-        "tags": ["html", "css"]
+        "tags": [
+          "css",
+          "html",
+          "svg"
+        ]
       }
     ],
     "types": [
@@ -43,10 +47,9 @@
       "mocha"
     ]
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "src/demo*/**/*",
-    "src/test*/**/*"
+  "include": [
+    "src/*",
+    "src/test/**/*",
+    "src/demo/**/*"
   ]
 }

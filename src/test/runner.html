@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>app-datepicker tests</title>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch"></script>
+    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
+
+    <script>
+      if (!(Element.prototype.animate)) {
+        const wa = document.createElement('script');
+        wa.src =
+          'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
+        wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+
+      if (!window.Intl) {
+        const wa = document.createElement('script');
+        wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
+        wa.onload = () => console.info('🌐 Intl.complete loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+    </script>
+  </head>
+
+  <body>
+    <script type="module" src="../../dist/test/app-datepicker.spec.js"></script>
+  </body>
+</html>

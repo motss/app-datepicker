@@ -10,7 +10,7 @@ button {
   display: block;
   margin: 0;
   padding: 0;
-  background: inherit;
+  background: none; /** NOTE: IE11 fix */
   color: inherit;
   border: none;
   font: inherit;
@@ -25,7 +25,7 @@ a {
 
   position: relative;
   display: inline-block;
-  background: inherit;
+  background: initial;
   color: inherit;
   font: inherit;
   text-transform: inherit;
@@ -49,6 +49,8 @@ svg {
 export const absoluteHidden = css`[hidden] { display: none !important; }`;
 export const datepickerVariables = css`
 :host {
+  display: block;
+
   --app-datepicker-width: 300px;
   /* --app-datepicker-primary-color: #4285f4; */
   --app-datepicker-primary-color: #1a73e8;
@@ -56,5 +58,9 @@ export const datepickerVariables = css`
   --app-datepicker-header-height: 80px;
 
   --mdc-theme-primary: #1a73e8;
+}
+
+* {
+  box-sizing: border-box;
 }
 `;

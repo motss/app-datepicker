@@ -21,6 +21,7 @@ import {
   getResolvedLocale,
   getResolvedTodayDate,
   KEYCODES_MAP,
+  targetScrollTo,
   toFormattedDateString,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
@@ -37,6 +38,7 @@ function renderHeaderSelectorButton({
     weekday: 'short',
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
   }).format(focusedDate);
   const isCalendarView = selectedView === 'calendar';
 
@@ -94,17 +96,25 @@ function renderDatepickerCalendar({
   updateMonthFn,
   updateMonthWithKeyboardFn,
 }) {
-  const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
+  const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
   const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: 'UTC',
   }).format;
-  const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long' }).format;
-  const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format;
+  const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    timeZone: 'UTC',
+  }).format;
+  const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
+    weekday: 'narrow',
+    timeZone: 'UTC',
+  }).format;
   const longMonthYearFormatterFn = Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
+    timeZone: 'UTC',
   }).format;
 
   let clt = window.performance.now();
@@ -224,6 +234,21 @@ function renderDatepickerCalendar({
     </div>
     `;
   });
+  /**
+   * FIXME(motss): For unknown reason, this has to be moved out of the `html` tagged literal. On
+   * IE11, this particular element is not parsed by `ShadyCSS` thus losing the original CSS styling
+   * when it first gets rendered. This workaround resolves the issue temporarily but still good to
+   * dig into this further to find out the root cause and report it to the Polymer Team.
+   */
+  const calendarViewFullCalendarContent = html`
+  <div
+    class="${classMap({
+      'calendar-view__full-calendar': true,
+      'has-min-date': hasMinDate,
+      'has-max-date': hasMaxDate,
+    })}"
+    tabindex="0"
+    @keyup="${ev => updateMonthWithKeyboardFn(ev)}">${calendarsContent}</div>`;
 
   return html`
   <div class="datepicker-body__calendar-view">
@@ -251,14 +276,7 @@ function renderDatepickerCalendar({
       </div>
     </div>
 
-    <div
-      class="${classMap({
-        'calendar-view__full-calendar': true,
-        'has-min-date': hasMinDate,
-        'has-max-date': hasMaxDate,
-      })}"
-      tabindex="0"
-      @keyup="${ev => updateMonthWithKeyboardFn(ev)}">${calendarsContent}</div>
+    ${calendarViewFullCalendarContent}
   </div>
   `;
 }
@@ -301,14 +319,6 @@ export class AppDatepicker extends LitElement {
 
   @property({ type: Number })
   public dragRatio: number = .15;
-
-  // @property({ type: String })
-  // // @ts-ignore
-  // public startView: string = 'calendar';
-
-  // @property({ type: String })
-  // // @ts-ignore
-  // public value: string;
 
   @property({ type: String })
   private _startView: string = 'calendar';
@@ -381,7 +391,6 @@ export class AppDatepicker extends LitElement {
       resetButton,
       css`
       :host {
-        display: block;
         width: var(--app-datepicker-width);
         /** NOTE: Magic number as 16:9 aspect ratio does not look good */
         /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
@@ -398,10 +407,6 @@ export class AppDatepicker extends LitElement {
 
         /** <iphone-5-landscape-width> - <standard-side-margin-width> */
         --app-datepicker-width: calc(568px - 16px * 2);
-      }
-
-      * {
-        box-sizing: border-box;
       }
 
       .datepicker-header + .datepicker-body {
@@ -746,7 +751,7 @@ export class AppDatepicker extends LitElement {
       const selectedYearScrollTop =
         (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
 
-      this._yearViewFullList.scrollTo({ top: selectedYearScrollTop, left: 0 });
+      targetScrollTo(this._yearViewFullList, { top: selectedYearScrollTop, left: 0 });
     } else if (selectedView === 'calendar' && !this._hasCalendarSetup) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
@@ -840,7 +845,8 @@ export class AppDatepicker extends LitElement {
     const dateDate = this._selectedDate;
     const m = dateDate.getUTCMonth();
     const d = dateDate.getUTCDate();
-    const selectedYear = Number((selectedYearEl as HTMLButtonElement)!.textContent);
+    /** FIXME(motss): the content might not always be a number for other locale */
+    const selectedYear = +((selectedYearEl as HTMLButtonElement).textContent!);
 
     /**
      * 2 things to do here:
@@ -864,7 +870,8 @@ export class AppDatepicker extends LitElement {
     const dateDate = new Date(this._selectedDate);
     const fy = dateDate.getUTCFullYear();
     const m = dateDate.getUTCMonth();
-    const selectedDate = Number((selectedDayEl as HTMLTableDataCellElement).textContent);
+    /** FIXME(motss): the content might not always be a number for other locale */
+    const selectedDate = +((selectedDayEl as HTMLTableDataCellElement).textContent!);
 
     this._focusedDate = new Date(Date.UTC(fy, m, selectedDate));
   }

@@ -53,11 +53,9 @@ export class AppDatepickerDialog extends LitElement {
   public dragRatio: number = .15;
 
   @property({ type: String })
-  // @ts-ignore
   public startView: string = 'calendar';
 
   @property({ type: String })
-  // @ts-ignore
   public value: string;
 
   @property({ type: String })
@@ -173,7 +171,6 @@ export class AppDatepickerDialog extends LitElement {
         user-select: none;
 
         position: fixed;
-        display: block;
         top: 0;
         left: 0;
         width: 100%;
@@ -186,10 +183,6 @@ export class AppDatepickerDialog extends LitElement {
       :host([opened]) > .content-container {
         visibility: visible;
         opacity: 1;
-      }
-
-      * {
-        box-sizing: border-box;
       }
 
       .scrim,
@@ -240,6 +233,10 @@ export class AppDatepickerDialog extends LitElement {
         color: var(--app-datepicker-primary-color);
       }
 
+      /** NOTE: IE11 fix */
+      mwc-button[dialog-dismiss] {
+        min-width: 10ch;
+      }
       mwc-button + mwc-button {
         margin: 0 0 0 8px;
       }

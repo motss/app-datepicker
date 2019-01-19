@@ -170,3 +170,43 @@ export function setFocusTrap(
 
   return { disconnect: disconnectCallback };
 }
+
+export function targetScrollTo(target: HTMLElement, scrollToOptions: ScrollToOptions) {
+  /**
+   * NOTE: Due to `Element.scrollTo` and `ScrollToOptions` are not widely supported,
+   * this helper can fallback to old school way of updating scrolling position.
+   *
+   * Links below for more browser compat:-
+   *
+   *   1. https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollTo
+   *   2. https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollTo
+   */
+  if (target.scrollTo == null) {
+    const { top, left } = scrollToOptions || {} as ScrollToOptions;
+
+    target.scrollTop = top || 0;
+    target.scrollLeft = left || 0;
+  } else {
+    target.scrollTo(scrollToOptions);
+  }
+}
+
+export function stripLTRMark(s: string) {
+  /**
+   * NOTE: Due to IE11, a LTR mark (`\u200e` or `8206` in hex) will be included even when
+   * `locale=en-US` is used. This helper function strips that away for consistency's sake as
+   * modern browsers do not include that.
+   *
+   *   ```js
+   *   const now = new Date('2018-01-01');
+   *   const a = Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }).format(now);
+   *
+   *   a.split(''); // On IE11, this returns ['', '1'].
+   *   ```
+   */
+  if (typeof s !== 'string' || !s.length) return s;
+
+  const splitted = s.split('');
+
+  return splitted.length > 1 ? s.replace(/\u200e/gi, '') : s;
+}

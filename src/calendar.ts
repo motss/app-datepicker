@@ -1,3 +1,5 @@
+import { stripLTRMark } from './datepicker-helpers';
+
 function normalizeWeekday(weekday: number) {
   if (weekday >= 0 && weekday < 7) return weekday;
 
@@ -160,7 +162,7 @@ export function calendarDays({
     calendarRow.push({
       fullDate,
       label: fullDateFormatter(d),
-      value: Number(dayFormatter(d)),
+      value: stripLTRMark(dayFormatter(d)),
       id: fullDate,
     });
     // calendarRow.push(day);
@@ -186,7 +188,7 @@ export function calendar({
   fullDateFormatterFn,
 }) {
   const longWeekdayFormatter = longWeekdayFormatterFn == null
-    ? Intl.DateTimeFormat(locale, { weekday: 'long', }).format
+    ? Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format
     : longWeekdayFormatterFn;
   const narrowWeekdayFormatter = narrowWeekdayFormatterFn == null
     ? Intl.DateTimeFormat(locale, {
@@ -195,10 +197,11 @@ export function calendar({
       //   ? weekdayFormat
       //   : 'narrow',
       weekday: 'narrow',
+      timeZone: 'UTC',
     }).format
     : narrowWeekdayFormatterFn;
   const dayFormatter = dayFormatterFn == null
-    ? Intl.DateTimeFormat(locale, { day: 'numeric' }).format
+    ? Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format
     : dayFormatterFn;
   const fullDateFormatter = fullDateFormatterFn == null
     ? Intl.DateTimeFormat(locale, {
@@ -206,6 +209,7 @@ export function calendar({
       month: 'short',
       day: 'numeric',
       weekday: 'short',
+      timeZone: 'UTC',
     }).format
     : fullDateFormatterFn;
 

@@ -1,14 +1,20 @@
 import { calendar } from './calendar';
 
 const locale = 'en-US';
-const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric' }).format;
+const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
 const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
   year: 'numeric',
   month: 'short',
   day: 'numeric',
 }).format;
-const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'long' }).format;
-const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, { weekday: 'narrow' }).format;
+const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
+  weekday: 'long',
+  timeZone: 'UTC',
+}).format;
+const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
+  weekday: 'narrow',
+  timeZone: 'UTC',
+}).format;
 const selectedDate = new Date(Date.UTC(2018, 0, 1));
 const benchmarksTime: number[] = [];
 

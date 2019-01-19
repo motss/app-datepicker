@@ -32,3 +32,14 @@ export const getComputedStyleValue = (element: Element, property: string) =>
   (window).ShadyCSS
     ? (window)!.ShadyCSS!.getComputedStyleValue(element, property)
 : window.getComputedStyle(element).getPropertyValue(property);
+
+export const shadowQuery =
+  (target: Element | HTMLElement, selector: string) => target.shadowRoot!.querySelector(selector)!;
+
+export const shadowQueryAll =
+  (target: Element | HTMLElement, selector: string) =>
+    Array.from(target.shadowRoot!.querySelectorAll(selector))!;
+
+export const getShadowInnerHTML =
+  (target: Element | HTMLElement) =>
+    target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
