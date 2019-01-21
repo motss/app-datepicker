@@ -21,12 +21,20 @@ export const KEYCODES_MAP = {
   ARROW_DOWN: 40,
 };
 
-export function getResolvedTodayDate() {
-  const dateDate = new Date();
-  const fy = dateDate.getUTCFullYear();
-  const m = dateDate.getUTCMonth();
-  const d = dateDate.getUTCDate();
+export function getResolvedDate(date?: number | Date | string | undefined): Date {
+  const dateDate = date == null ? new Date() : new Date(date);
+  const fy = dateDate.getFullYear();
+  const m = dateDate.getMonth();
+  const d = dateDate.getDate();
 
+  /**
+   * NOTE: Converts local datetime to UTC by extracting only the values locally using `get*` methods
+   * instead of the `getUTC*` methods.
+   *
+   * FWIW, there could be still cases where `get*` methods returns something different than what is
+   * expected but that is acceptable since we're relying on browser to tell us the local datetime
+   * and we just use those values and treated them as if they were datetime to UTC.
+   */
   return new Date(Date.UTC(fy, m, d));
 }
 

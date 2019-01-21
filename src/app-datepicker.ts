@@ -1,3 +1,15 @@
+type DateTimeFormatter = (date?: number | Date | undefined) => string;
+interface Formatters {
+  dayFormatter: DateTimeFormatter;
+  fullDateFormatter: DateTimeFormatter;
+  longWeekdayFormatter: DateTimeFormatter;
+  narrowWeekdayFormatter: DateTimeFormatter;
+  longMonthYearFormatter: DateTimeFormatter;
+  dateFormatter: DateTimeFormatter;
+
+  locale: string;
+}
+
 import {
   css,
   customElement,
@@ -19,27 +31,62 @@ import {
   dispatchCustomEvent,
   findShadowTarget,
   getResolvedLocale,
-  getResolvedTodayDate,
+  getResolvedDate,
   KEYCODES_MAP,
   targetScrollTo,
   toFormattedDateString,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
+function updateFormatters(locale: string): Formatters {
+  const dayFormatter = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
+  const fullDateFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format;
+  const longWeekdayFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    timeZone: 'UTC',
+  }).format;
+  const narrowWeekdayFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'narrow',
+    timeZone: 'UTC',
+  }).format;
+  const longMonthYearFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format;
+  const dateFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format;
+
+  return {
+    dayFormatter,
+    fullDateFormatter,
+    longMonthYearFormatter,
+    longWeekdayFormatter,
+    narrowWeekdayFormatter,
+    dateFormatter,
+
+    locale,
+  };
+}
+
 function renderHeaderSelectorButton({
-  locale,
   selectedDate,
   focusedDate,
   selectedView,
 
   updateViewFn,
+  dateFormatterFn,
 }) {
-  const formattedDate = Intl.DateTimeFormat(locale, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  }).format(focusedDate);
+  const formattedDate = dateFormatterFn(focusedDate);
   const isCalendarView = selectedView === 'calendar';
 
   return html`
@@ -84,7 +131,6 @@ function renderDatepickerCalendar({
   disabledDays,
   firstDayOfWeek,
   focusedDate,
-  locale,
   max,
   min,
   selectedDate,
@@ -95,28 +141,13 @@ function renderDatepickerCalendar({
   updateFocusedDateFn,
   updateMonthFn,
   updateMonthWithKeyboardFn,
-}) {
-  const dayFormatterFn = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
-  const fullDateFormatterFn = Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  }).format;
-  const longWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
-    weekday: 'long',
-    timeZone: 'UTC',
-  }).format;
-  const narrowWeekdayFormatterFn = Intl.DateTimeFormat(locale, {
-    weekday: 'narrow',
-    timeZone: 'UTC',
-  }).format;
-  const longMonthYearFormatterFn = Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'long',
-    timeZone: 'UTC',
-  }).format;
 
+  dayFormatterFn,
+  fullDateFormatterFn,
+  longWeekdayFormatterFn,
+  narrowWeekdayFormatterFn,
+  longMonthYearFormatterFn,
+}) {
   let clt = window.performance.now();
   const minTime = +new Date(min);
   const maxTime = +new Date(max);
@@ -354,6 +385,7 @@ export class AppDatepicker extends LitElement {
   private _hasCalendarSetup: boolean = false;
   private _hasNativeElementAnimate: boolean =
     Element.prototype.animate.toString().indexOf('[native code]') >= 0;
+  private _formatters: Formatters;
 
   // weekdayFormat: String,
 
@@ -369,19 +401,21 @@ export class AppDatepicker extends LitElement {
     this._trackingEndFn = this._trackingEndFn.bind(this);
     this._updateMonthWithKeyboardFn = this._updateMonthWithKeyboardFn.bind(this);
 
-    const todayDate = getResolvedTodayDate();
+    const todayDate = getResolvedDate();
     const todayDateFullYear = todayDate.getUTCFullYear();
-    const yearList: number[] = [];
-    for (let i = 0, len = 2100 - todayDateFullYear + 1; i < len; i += 1) {
-      yearList.push(todayDateFullYear + i);
-    }
+    const yearList =
+      Array.from(Array(2100 - todayDateFullYear + 1).keys(), n => todayDateFullYear + n);
+    const allFormatters = updateFormatters(this.locale);
+    const formattedTodayDate = toFormattedDateString(todayDate);
 
-    this.min = todayDate.toJSON();
+    this.value = formattedTodayDate
+    this.min = formattedTodayDate;
+
     this._yearList = yearList;
     this._todayDate = todayDate;
     this._selectedDate = todayDate;
     this._focusedDate = todayDate;
-    this.value = toFormattedDateString(todayDate);
+    this._formatters = allFormatters;
   }
 
   static get styles() {
@@ -689,45 +723,63 @@ export class AppDatepicker extends LitElement {
     const showWeekNumber = this.showWeekNumber;
     const weekNumberType = this.weekNumberType;
     const yearList = this._yearList;
+    const formatters = this._formatters;
 
     const focusedDate = new Date(this._focusedDate);
     const selectedDate = new Date(this._selectedDate);
     const selectedView = this._selectedView;
-    const todayDate = getResolvedTodayDate();
+    const todayDate = getResolvedDate();
+    const didLocaleChange = formatters.locale !== locale;
+    const allFormatters = didLocaleChange ? updateFormatters(locale) : formatters;
 
-    /** NOTE(motss): For perf reason, initialize all formatters for calendar rendering */
-    const datepickerBodyContent = selectedView === 'calendar'
-      ? renderDatepickerCalendar({
-        disabledDays,
-        firstDayOfWeek,
-        focusedDate,
-        locale,
-        max,
-        min,
-        selectedDate,
-        showWeekNumber,
-        todayDate,
-        weekNumberType,
-        updateFocusedDateFn: this._updateFocusedDateFn,
-        updateMonthFn: this._updateMonthFn,
-        updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
-      })
-      : renderDatepickerYearList({
-        selectedDate,
-        yearList,
+    /**
+     * NOTE: Update `_formatters` when `locale` changes.
+     */
+    if (didLocaleChange) this._formatters = allFormatters;
 
-        updateYearFn: this._updateYearFn,
-      });
+    /**
+     * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
+     */
+    const datepickerBodyContent =
+      selectedView === 'calendar'
+        ? renderDatepickerCalendar({
+          disabledDays,
+          firstDayOfWeek,
+          focusedDate,
+          max,
+          min,
+          selectedDate,
+          showWeekNumber,
+          todayDate,
+          weekNumberType,
+
+          updateFocusedDateFn: this._updateFocusedDateFn,
+          updateMonthFn: this._updateMonthFn,
+          updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
+
+          dayFormatterFn: allFormatters.dayFormatter,
+          fullDateFormatterFn: allFormatters.fullDateFormatter,
+          longMonthYearFormatterFn: allFormatters.longMonthYearFormatter,
+          longWeekdayFormatterFn: allFormatters.longWeekdayFormatter,
+          narrowWeekdayFormatterFn: allFormatters.narrowWeekdayFormatter,
+        })
+        : renderDatepickerYearList({
+          selectedDate,
+          yearList,
+
+          updateYearFn: this._updateYearFn,
+        });
 
     // tslint:disable:max-line-length
     return html`
     <div class="datepicker-header">${
       renderHeaderSelectorButton({
-        locale,
         selectedDate,
         focusedDate,
         selectedView,
+
         updateViewFn: this._updateViewFn,
+        dateFormatterFn: allFormatters.dateFormatter,
       })
     }</div>
 
@@ -1126,22 +1178,18 @@ export class AppDatepicker extends LitElement {
   }
   // @ts-ignore
   public set value(val: string) {
-    const minDate = new Date(this.min);
-    const maxDate = new Date(this.max);
-    const valDate = new Date(val);
+    /** NOTE: Converts all datetime to UTC */
+    const minDate = getResolvedDate(this.min);
+    const maxDate = getResolvedDate(this.max);
+    const valDate = getResolvedDate(val);
 
     /** NOTE: Skip updating to new date if date input is invalid */
     if (val == null || valDate.toJSON() == null) return;
 
-    const fy = valDate.getUTCFullYear();
-    const m = valDate.getUTCMonth();
-    const d = valDate.getUTCDate();
-    const newDate = new Date(Date.UTC(fy, m, d));
+    if (+valDate < +minDate || +valDate > +maxDate) return;
 
-    if (+newDate < +minDate || +newDate > +maxDate) return;
-
-    this._focusedDate = newDate;
-    this._selectedDate = newDate;
+    this._focusedDate = valDate;
+    this._selectedDate = valDate;
     // this.valueAsDate = newDate;
     // this.valueAsNumber = +newDate;
   }
@@ -1151,3 +1199,4 @@ export class AppDatepicker extends LitElement {
 // TODO: To look into `passive` event listener option in future.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
+// TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.

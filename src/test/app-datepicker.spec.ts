@@ -52,6 +52,7 @@ describe('app-datepicker', () => {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
+        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
       }).format(now);
 
@@ -63,17 +64,20 @@ describe('app-datepicker', () => {
     it(`selects, highlights, and focuses today's date`, () => {
       const dayTodayEl = shadowQuery(el, '.day--today');
       const dayFocusedEL = shadowQuery(el, '.day--focused');
-      const highlightedCalendarDayEl = shadowQuery(el, '.day--today.day--focused > .calendar-day');
+      const highlightedCalendarDayEl =
+        shadowQuery(el, '.day--today.day--focused > .calendar-day');
 
       const now = new Date();
       const formattedDate = Intl.DateTimeFormat('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
+        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
       }).format(now);
       const formattedDay = Intl.DateTimeFormat('en-US', {
         day: 'numeric',
+        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
       }).format(now);
 
