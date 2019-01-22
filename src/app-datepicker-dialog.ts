@@ -233,12 +233,15 @@ export class AppDatepickerDialog extends LitElement {
         color: var(--app-datepicker-primary-color);
       }
 
-      /** NOTE: IE11 fix */
-      mwc-button[dialog-dismiss] {
-        min-width: 10ch;
-      }
       mwc-button + mwc-button {
         margin: 0 0 0 8px;
+      }
+
+      /** NOTE: IE11-only fix */
+      @media screen and (-ms-high-contrast: none) {
+        mwc-button[dialog-dismiss] {
+          min-width: 10ch;
+        }
       }
       `,
     ];

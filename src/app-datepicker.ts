@@ -6,6 +6,7 @@ interface Formatters {
   narrowWeekdayFormatter: DateTimeFormatter;
   longMonthYearFormatter: DateTimeFormatter;
   dateFormatter: DateTimeFormatter;
+  yearFormatter: DateTimeFormatter;
 
   locale: string;
 }
@@ -65,6 +66,10 @@ function updateFormatters(locale: string): Formatters {
     day: 'numeric',
     timeZone: 'UTC',
   }).format;
+  const yearFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format;
 
   return {
     dayFormatter,
@@ -73,6 +78,7 @@ function updateFormatters(locale: string): Formatters {
     longWeekdayFormatter,
     narrowWeekdayFormatter,
     dateFormatter,
+    yearFormatter,
 
     locale,
   };
@@ -93,7 +99,7 @@ function renderHeaderSelectorButton({
   <button
     class="${classMap({ 'btn__selector-year': true, selected: !isCalendarView })}"
     view="year"
-    @click="${() => updateViewFn('year')}">${new Date(selectedDate).getUTCFullYear()}</button>
+    @click="${() => updateViewFn('yearList')}">${new Date(selectedDate).getUTCFullYear()}</button>
 
   <div class="datepicker-toolbar">
     <button
@@ -105,22 +111,23 @@ function renderHeaderSelectorButton({
 }
 
 function renderDatepickerYearList({
-  updateYearFn,
-
   yearList,
   selectedDate,
+
+  updateYearFn,
+  yearFormatterFn,
 }) {
   return html`
-  <div class="datepicker-body__year-view">
-    <div class="year-view__full-list" @click="${ev => updateYearFn(ev)}">
+  <div class="datepicker-body__year-list-view">
+    <div class="year-list-view__full-list" @click="${ev => updateYearFn(ev)}">
     ${(yearList.map(n =>
       html`<button
         class="${classMap({
-          'year-view__list-item': true,
+          'year-list-view__list-item': true,
           'year--selected': selectedDate.getUTCFullYear() === n,
         })}"
         .year="${n}">
-        <div>${n}</div>
+        <div>${yearFormatterFn(new Date(Date.UTC(n, 0, 1)))}</div>
       </button>`))}
     </div>
   </div>
@@ -191,7 +198,7 @@ function renderDatepickerCalendar({
   });
   clt = window.performance.now() - clt;
   const cltEl = document.body.querySelector('.calendar-render-time');
-  if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt.toFixed(3)} ms`);
+  if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`);
 
   let hasMinDate = false;
   let hasMaxDate = false;
@@ -363,7 +370,7 @@ export class AppDatepicker extends LitElement {
   @property({ type: Date })
   private _focusedDate: Date;
 
-  @query('.year-view__full-list')
+  @query('.year-list-view__full-list')
   private _yearViewFullList: HTMLDivElement;
 
   @query('.datepicker-body__calendar-view')
@@ -375,7 +382,7 @@ export class AppDatepicker extends LitElement {
   @query('.btn__selector-year')
   private _buttonSelectorYear: HTMLButtonElement;
 
-  @query('.year-view__list-item')
+  @query('.year-list-view__list-item')
   private _yearViewListItem: HTMLButtonElement;
 
   private _todayDate: Date;
@@ -554,7 +561,7 @@ export class AppDatepicker extends LitElement {
         /* outline: none; */
       }
 
-      .year-view__full-list {
+      .year-list-view__full-list {
         max-height: calc(48px * 7);
         overflow-y: auto;
       }
@@ -674,7 +681,7 @@ export class AppDatepicker extends LitElement {
         color: rgba(0, 0, 0, .35);
       }
 
-      .year-view__list-item {
+      .year-list-view__list-item {
         position: relative;
         width: 100%;
         padding: 12px 16px;
@@ -683,13 +690,13 @@ export class AppDatepicker extends LitElement {
         /* will-change: opacity; */
         /* outline: none; */
       }
-      .year-view__list-item:hover {
+      .year-list-view__list-item:hover {
         cursor: pointer;
       }
-      .year-view__list-item > div {
+      .year-list-view__list-item > div {
         z-index: 1;
       }
-      .year-view__list-item::after {
+      .year-list-view__list-item::after {
         content: '';
         position: absolute;
         top: 0;
@@ -700,11 +707,11 @@ export class AppDatepicker extends LitElement {
         opacity: 0;
         pointer-events: none;
       }
-      .year-view__list-item:focus::after,
-      .year-view__list-item:hover::after {
+      .year-list-view__list-item:focus::after,
+      .year-list-view__list-item:hover::after {
         opacity: .05;
       }
-      .year-view__list-item.year--selected {
+      .year-list-view__list-item.year--selected {
         color: var(--app-datepicker-primary-color);
         font-size: 24px;
         font-weight: 500;
@@ -768,6 +775,7 @@ export class AppDatepicker extends LitElement {
           yearList,
 
           updateYearFn: this._updateYearFn,
+          yearFormatterFn: allFormatters.yearFormatter,
         });
 
     // tslint:disable:max-line-length
@@ -799,7 +807,7 @@ export class AppDatepicker extends LitElement {
   protected updated() {
     const selectedView = this._selectedView;
 
-    if (selectedView === 'year') {
+    if (selectedView === 'yearList') {
       const selectedYearScrollTop =
         (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
 
@@ -890,7 +898,7 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateYearFn(ev: CustomEvent) {
-    const selectedYearEl = findShadowTarget(ev, n => n.classList.contains('year-view__list-item'));
+    const selectedYearEl = findShadowTarget(ev, n => n.classList.contains('year-list-view__list-item'));
 
     if (selectedYearEl == null) return;
 
@@ -1166,7 +1174,7 @@ export class AppDatepicker extends LitElement {
   }
   // @ts-ignore
   public set startView(val: string) {
-    if (val !== 'calendar' && val !== 'year') return;
+    if (val !== 'calendar' && val !== 'yearList') return;
 
     this._startView = val;
     this._selectedView = val;
@@ -1200,3 +1208,4 @@ export class AppDatepicker extends LitElement {
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.
+// TODO: `disabledDays` and `disabledDates` are not supported

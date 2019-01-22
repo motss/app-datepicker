@@ -8,13 +8,16 @@ import {
 import {
   getShadowInnerHTML,
   shadowQuery,
-  stripExpressionDelimiters,
+  shadowQueryAll,
 } from './test-helpers';
 
 const {
   isString,
   isTrue,
   strictEqual,
+  isNotNull,
+  isAtLeast,
+  isAtMost,
 } = chai.assert;
 
 describe('app-datepicker', () => {
@@ -32,11 +35,15 @@ describe('app-datepicker', () => {
       document.body.removeChild(el);
     });
 
-    it('renders initial content', () => {
-      const elHTML = stripExpressionDelimiters(el.shadowRoot!.innerHTML);
+    it('renders initial content (calendar)', () => {
+      const elHTML = getShadowInnerHTML(el);
+      const calendarView = shadowQuery(el, '.datepicker-body__calendar-view');
+      const allCalendarTables = shadowQueryAll(el, '.calendar-table');
 
       isString(elHTML, 'HTML content is not string');
-      isTrue(elHTML.length > 99, 'HTML content is < 15 characters');
+      isNotNull(calendarView, 'Calendar view not found');
+      isAtLeast(allCalendarTables.length, 1, 'Calender tables not found');
+      isAtMost(allCalendarTables.length, 3, 'Calender tables not found');
     });
 
     it(`renders today's formatted date`, () => {
@@ -96,7 +103,59 @@ describe('app-datepicker', () => {
     });
   });
 
-  // describe('initial render (year list view)', () => {});
+  describe('initial render (year list view)', () => {
+    let el: AppDatepicker;
+
+    beforeEach(async () => {
+      el = document.createElement('app-datepicker') as AppDatepicker;
+      el.startView = 'yearList';
+
+      document.body.appendChild(el);
+
+      await el.updateComplete;
+    });
+
+    afterEach(() => {
+      document.body.removeChild(el);
+    });
+
+    it(`renders initial content (year list)`, async () => {
+      const elHTML = getShadowInnerHTML(el);
+      const yearListView = shadowQuery(el, '.datepicker-body__year-list-view');
+      const allYearListViewItems = shadowQueryAll(el, '.year-list-view__list-item');
+
+      isString(elHTML, 'HTML content is not string');
+      isNotNull(yearListView, 'Year list view not found');
+      isAtLeast(allYearListViewItems.length, 1, 'year list items not found');
+    });
+
+    it(`selects, highlights this year`, async () => {
+      const yearSelectedEl = shadowQuery(el, '.year--selected');
+      const yearSelectedDivEl = shadowQuery(el, '.year--selected > div');
+
+      const now = new Date();
+      const fy = now.getFullYear();
+      const formattedYear = Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        timeZone: 'UTC',
+      }).format(Date.UTC(fy, 0, 1));
+
+      isNotNull(yearSelectedEl, `'.year-selected' not found`);
+      isNotNull(yearSelectedDivEl, `'.year--selected > div' not found`);
+      strictEqual(
+        (yearSelectedEl as any).year,
+        fy,
+        `'year' property not matched`
+      );
+      strictEqual(
+        getShadowInnerHTML(yearSelectedDivEl),
+        formattedYear,
+        'Formatted year not matched'
+      );
+    });
+
+  });
+
   // describe('keyboard support', () => {});
   // describe('updates via attributes', () => {});
   // describe('updates via properties', () => {});
