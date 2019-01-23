@@ -264,8 +264,9 @@ export class AppDatepickerDialog extends LitElement {
     const dismissLabel = this.dismissLabel;
     const confirmLabel = this.confirmLabel;
 
+    // <div class="scrim" @pointerup="${this.close}"></div>
     return html`
-    <div class="scrim" @pointerup="${this.close}"></div>
+    <div class="scrim" @click="${this.close}"></div>
 
     <div class="content-container">
       <app-datepicker class="datepicker"

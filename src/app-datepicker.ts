@@ -36,6 +36,7 @@ import {
   KEYCODES_MAP,
   targetScrollTo,
   toFormattedDateString,
+  arrayFilled,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
@@ -119,17 +120,17 @@ function renderDatepickerYearList({
 }) {
   return html`
   <div class="datepicker-body__year-list-view">
-    <div class="year-list-view__full-list" @click="${ev => updateYearFn(ev)}">
-    ${(yearList.map(n =>
-      html`<button
-        class="${classMap({
-          'year-list-view__list-item': true,
-          'year--selected': selectedDate.getUTCFullYear() === n,
-        })}"
-        .year="${n}">
-        <div>${yearFormatterFn(new Date(Date.UTC(n, 0, 1)))}</div>
-      </button>`))}
-    </div>
+    <div class="year-list-view__full-list" @click="${ev => updateYearFn(ev)}">${
+      yearList.map(n =>
+        html`<button
+          class="${classMap({
+            'year-list-view__list-item': true,
+            'year--selected': selectedDate.getUTCFullYear() === n,
+          })}"
+          .year="${n}">
+          <div>${yearFormatterFn(new Date(Date.UTC(n, 0, 1)))}</div>
+        </button>`)
+    }</div>
   </div>
   `;
 }
@@ -395,35 +396,6 @@ export class AppDatepicker extends LitElement {
   private _formatters: Formatters;
 
   // weekdayFormat: String,
-
-  public constructor() {
-    super();
-
-    this._updateMonthFn = this._updateMonthFn.bind(this);
-    this._updateViewFn = this._updateViewFn.bind(this);
-    this._updateYearFn = this._updateYearFn.bind(this);
-    this._updateFocusedDateFn = this._updateFocusedDateFn.bind(this);
-    this._trackingStartFn = this._trackingStartFn.bind(this);
-    this._trackingMoveFn = this._trackingMoveFn.bind(this);
-    this._trackingEndFn = this._trackingEndFn.bind(this);
-    this._updateMonthWithKeyboardFn = this._updateMonthWithKeyboardFn.bind(this);
-
-    const todayDate = getResolvedDate();
-    const todayDateFullYear = todayDate.getUTCFullYear();
-    const yearList =
-      Array.from(Array(2100 - todayDateFullYear + 1).keys(), n => todayDateFullYear + n);
-    const allFormatters = updateFormatters(this.locale);
-    const formattedTodayDate = toFormattedDateString(todayDate);
-
-    this.value = formattedTodayDate
-    this.min = formattedTodayDate;
-
-    this._yearList = yearList;
-    this._todayDate = todayDate;
-    this._selectedDate = todayDate;
-    this._focusedDate = todayDate;
-    this._formatters = allFormatters;
-  }
 
   static get styles() {
     // tslint:disable:max-line-length
@@ -719,6 +691,37 @@ export class AppDatepicker extends LitElement {
       `,
     ];
     // tslint:enable:max-line-length
+  }
+
+  public constructor() {
+    super();
+
+    this._updateMonthFn = this._updateMonthFn.bind(this);
+    this._updateViewFn = this._updateViewFn.bind(this);
+    this._updateYearFn = this._updateYearFn.bind(this);
+    this._updateFocusedDateFn = this._updateFocusedDateFn.bind(this);
+    this._trackingStartFn = this._trackingStartFn.bind(this);
+    this._trackingMoveFn = this._trackingMoveFn.bind(this);
+    this._trackingEndFn = this._trackingEndFn.bind(this);
+    this._updateMonthWithKeyboardFn = this._updateMonthWithKeyboardFn.bind(this);
+
+    const todayDate = getResolvedDate();
+    const todayDateFullYear = todayDate.getUTCFullYear();
+    const yearList =
+      arrayFilled(2100 - todayDateFullYear + 1).map((_, i) => todayDateFullYear + i);
+    // const yearList =
+    //   Array.from(Array(2100 - todayDateFullYear + 1), (_, i) => todayDateFullYear + i);
+    const allFormatters = updateFormatters(this.locale);
+    const formattedTodayDate = toFormattedDateString(todayDate);
+
+    this.value = formattedTodayDate
+    this.min = formattedTodayDate;
+
+    this._yearList = yearList;
+    this._todayDate = todayDate;
+    this._selectedDate = todayDate;
+    this._focusedDate = todayDate;
+    this._formatters = allFormatters;
   }
 
   protected render() {

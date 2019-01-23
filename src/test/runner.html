@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>app-datepicker tests</title>
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script>
+    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
@@ -23,10 +23,20 @@
 
       if (!window.Intl) {
         const wa = document.createElement('script');
-        wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
+        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        // wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
+        wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
         wa.onload = () => console.info('🌐 Intl.complete loaded');
         wa.onerror = console.error;
         document.head.appendChild(wa);
+      }
+
+      if ([].find == null) {
+        Array.prototype.find = function arrayFind(cb) {
+          return Array.isArray(this) && this.length > 0
+            ? this.filter(cb)[0]
+            : null;
+        };
       }
     </script>
   </head>

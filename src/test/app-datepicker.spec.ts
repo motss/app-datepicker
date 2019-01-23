@@ -2,6 +2,7 @@ import { AppDatepicker } from '../app-datepicker.js';
 
 import '../app-datepicker.js';
 import {
+  getResolvedDate,
   stripLTRMark,
   toFormattedDateString,
 } from '../datepicker-helpers.js';
@@ -53,7 +54,7 @@ describe('app-datepicker', () => {
       const selectedFullYear = getShadowInnerHTML(btnSelectorYearEl);
       const selectedFormattedDate = getShadowInnerHTML(btnSelectorCalendarEl);
 
-      const now = new Date();
+      const now = getResolvedDate();
       const fy = now.getUTCFullYear().toString();
       const formattedDate = Intl.DateTimeFormat('en-US', {
         weekday: 'short',
@@ -63,7 +64,10 @@ describe('app-datepicker', () => {
         timeZone: 'UTC',
       }).format(now);
 
-      strictEqual(el.value, toFormattedDateString(now));
+      strictEqual(
+        el.value,
+        toFormattedDateString(now),
+        `Today's formatted date not matched`);
       strictEqual(selectedFullYear, fy, 'Selected full year not matched');
       strictEqual(selectedFormattedDate, formattedDate, 'Selected formatted date not matched');
     });
@@ -74,7 +78,7 @@ describe('app-datepicker', () => {
       const highlightedCalendarDayEl =
         shadowQuery(el, '.day--today.day--focused > .calendar-day');
 
-      const now = new Date();
+      const now = getResolvedDate();
       const formattedDate = Intl.DateTimeFormat('en-US', {
         day: 'numeric',
         month: 'short',
@@ -130,18 +134,18 @@ describe('app-datepicker', () => {
     });
 
     it(`selects, highlights this year`, async () => {
-      const yearSelectedEl = shadowQuery(el, '.year--selected');
-      const yearSelectedDivEl = shadowQuery(el, '.year--selected > div');
+      const yearSelectedEl = shadowQuery(el, '.year-list-view__list-item.year--selected');
+      const yearSelectedDivEl = shadowQuery(el, '.year-list-view__list-item.year--selected > div');
 
-      const now = new Date();
+      const now = getResolvedDate();
       const fy = now.getFullYear();
       const formattedYear = Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         timeZone: 'UTC',
-      }).format(Date.UTC(fy, 0, 1));
+      }).format(now);
 
-      isNotNull(yearSelectedEl, `'.year-selected' not found`);
-      isNotNull(yearSelectedDivEl, `'.year--selected > div' not found`);
+      isNotNull(yearSelectedEl, `Selected year not found`);
+      isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
       strictEqual(
         (yearSelectedEl as any).year,
         fy,

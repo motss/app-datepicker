@@ -218,3 +218,11 @@ export function stripLTRMark(s: string) {
 
   return splitted.length > 1 ? s.replace(/\u200e/gi, '') : s;
 }
+
+export function arrayFilled(size: number) {
+  const filled: number[] = [];
+  for (let i = 0; i < size; i += 1) {
+    filled.push(i);
+  }
+  return filled;
+}
