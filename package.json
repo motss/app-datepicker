@@ -38,8 +38,8 @@
     "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
     "prepublishOnly": "npm run lint && npm run build",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
-    "test": "npm run test:ci -- --skip-selenium-install",
-    "test:ci": "polymer test --npm --module-resolution=node",
+    "test": "polymer test --skip-selenium-install",
+    "test:ci": "polymer test --config-file ./wct.config.ci.json",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm",
     "ts": "rm -rf dist/ && tsc",
     "watch": "npm run ts -- --watch"
