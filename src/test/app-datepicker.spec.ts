@@ -20,6 +20,13 @@ const {
   isAtLeast,
   isAtMost,
 } = chai.assert;
+/**
+ * NOTE: Set a default locale instead of reading default locale locally from the browser for
+ * testings due to the fact that SauceLabs might run certain browsers that returns different locale.
+ * That breaks tests obviously and this is unpredictable unfortunately to see tests broken because
+ * of SauceLabs's configurations.
+ */
+const defaultLocale = 'en-US';
 
 describe('app-datepicker', () => {
   describe('initial render (calendar view)', () => {
@@ -27,6 +34,7 @@ describe('app-datepicker', () => {
 
     beforeEach(async () => {
       el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
       document.body.appendChild(el);
 
       await el.updateComplete;
@@ -34,6 +42,12 @@ describe('app-datepicker', () => {
 
     afterEach(() => {
       document.body.removeChild(el);
+    });
+
+    it('reads locale', () => {
+      const locale = el.locale;
+
+      strictEqual(locale, 'en-US', `Locale not matched`);
     });
 
     it('renders initial content (calendar)', () => {
@@ -112,6 +126,7 @@ describe('app-datepicker', () => {
 
     beforeEach(async () => {
       el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
       el.startView = 'yearList';
 
       document.body.appendChild(el);
@@ -121,6 +136,12 @@ describe('app-datepicker', () => {
 
     afterEach(() => {
       document.body.removeChild(el);
+    });
+
+    it(`reads locale`, async () => {
+      const locale = el.locale;
+
+      strictEqual(locale, 'en-US', `Locale not matched`);
     });
 
     it(`renders initial content (year list)`, async () => {
