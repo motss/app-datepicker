@@ -23,9 +23,36 @@ export const KEYCODES_MAP = {
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);
-  const fy = dateDate.getFullYear();
-  const m = dateDate.getMonth();
-  const d = dateDate.getDate();
+  const isUTCDateFormat =
+    typeof date === 'string' && (
+      /^\d{4}[^\d\w]\d{2}[^\d\w]\d{2}$/i.test(date) ||
+      /^\d{4}[^\d\w]\d{2}[^\d\w]\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i.test(date));
+
+  let fy = dateDate.getFullYear();
+  let m = dateDate.getMonth();
+  let d = dateDate.getDate();
+
+  /**
+   * NOTE: Depends on the input date string, browser will interpret the Date object differently.
+   * For instance, a simple date string `2020-01-03` will default to UTC timezone. In order to get
+   * the correct expected date that is `3`, `.getUTCDate` is required as `.getDate` will return a
+   * date value that is based on the local timezone after the date conversion by the browser. In PST
+   * timezone, that will return `2`.
+   *
+   * ```ts
+   * // In PST (UTC-08:00) timezone, the following code will output:
+   * const dateString = '2020-01-03';
+   * const dateDate = new Date(dateString); // UTC time is '2020-01-03T00:00:00.000+08:00'
+   *
+   * dateDate.getUTCDate(); // 3
+   * dateDate.getDate(); // 2
+   * ```
+   */
+  if (isUTCDateFormat) {
+    fy = dateDate.getUTCFullYear();
+    m = dateDate.getUTCMonth();
+    d = dateDate.getUTCDate();
+  }
 
   /**
    * NOTE: Converts local datetime to UTC by extracting only the values locally using `get*` methods
@@ -60,7 +87,7 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
 }
 
 export function toFormattedDateString(date: Date) {
-  return date.toJSON().replace(/^(.+)T.+/i, '$1');
+  return date instanceof Date ? date.toJSON().replace(/^(.+)T.+/i, '$1') : '';
 }
 
 export function computeNewFocusedDateWithKeyboard({
@@ -155,19 +182,20 @@ export function setFocusTrap(
 
       // focusedTarget.blur();
       firstEl.focus();
-    } else {
-      const isFocusingFirstEl = findShadowTarget(ev, n => n.isEqualNode(firstEl)) != null;
+      return;
+    }
 
-      if (isFocusingFirstEl && isShiftTabKey) {
-        ev.preventDefault();
-        ev.stopImmediatePropagation();
+    const isFocusingFirstEl = findShadowTarget(ev, n => n.isEqualNode(firstEl)) != null;
 
-        // focusedTarget.blur();
-        /**
-         * NOTE: `.focus()` native `<button>` element inside `<MwcButton>`
-         */
-        lastEl.shadowRoot!.querySelector('button')!.focus();
-      }
+    if (isFocusingFirstEl && isShiftTabKey) {
+      ev.preventDefault();
+      ev.stopImmediatePropagation();
+
+      // focusedTarget.blur();
+      /**
+       * NOTE: `.focus()` native `<button>` element inside `<MwcButton>`
+       */
+      lastEl.shadowRoot!.querySelector('button')!.focus();
     }
   };
   const disconnectCallback = () => {
@@ -225,4 +253,8 @@ export function arrayFilled(size: number) {
     filled.push(i);
   }
   return filled;
+}
+
+export function isValidDate(date: string, dateDate: Date) {
+  return !(date == null || !(dateDate instanceof Date) || dateDate.toJSON() == null);
 }

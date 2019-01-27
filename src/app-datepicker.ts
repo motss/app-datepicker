@@ -10,6 +10,14 @@ interface Formatters {
 
   locale: string;
 }
+export const enum START_VIEW {
+  CALENDAR = 'calendar',
+  YEAR_LIST = 'yearList',
+}
+export const enum MONTH_UPDATE_TYPE {
+  PREVIOUS = 'previous',
+  NEXT = 'next',
+}
 
 import {
   css,
@@ -24,19 +32,20 @@ import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
-import { calendarDays, calendarWeekdays } from './calendar.js';
+import { calendarDays, calendarWeekdays, WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  arrayFilled,
   computeNewFocusedDateWithKeyboard,
   computeThreeCalendarsInARow,
   dispatchCustomEvent,
   findShadowTarget,
-  getResolvedLocale,
   getResolvedDate,
+  getResolvedLocale,
   KEYCODES_MAP,
   targetScrollTo,
   toFormattedDateString,
-  arrayFilled,
+  isValidDate,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
@@ -88,25 +97,27 @@ function updateFormatters(locale: string): Formatters {
 function renderHeaderSelectorButton({
   selectedDate,
   focusedDate,
-  selectedView,
+  startView,
 
   updateViewFn,
   dateFormatterFn,
 }) {
   const formattedDate = dateFormatterFn(focusedDate);
-  const isCalendarView = selectedView === 'calendar';
+  const isCalendarView = startView === START_VIEW.CALENDAR;
 
   return html`
   <button
     class="${classMap({ 'btn__selector-year': true, selected: !isCalendarView })}"
-    view="year"
-    @click="${() => updateViewFn('yearList')}">${new Date(selectedDate).getUTCFullYear()}</button>
+    view="${START_VIEW.YEAR_LIST}"
+    @click="${() => updateViewFn(START_VIEW.YEAR_LIST)}">${
+      new Date(selectedDate).getUTCFullYear()
+  }</button>
 
   <div class="datepicker-toolbar">
     <button
       class="${classMap({ 'btn__selector-calendar': true, selected: isCalendarView })}"
-      view="calendar"
-      @click="${() => updateViewFn('calendar')}">${formattedDate}</button>
+      view="${START_VIEW.CALENDAR}"
+      @click="${() => updateViewFn(START_VIEW.CALENDAR)}">${formattedDate}</button>
   </div>
   `;
 }
@@ -157,8 +168,8 @@ function renderDatepickerCalendar({
   longMonthYearFormatterFn,
 }) {
   let clt = window.performance.now();
-  const minTime = +new Date(min);
-  const maxTime = +new Date(max);
+  const minTime = +min;
+  const maxTime = +max;
   const weekdays = calendarWeekdays({
     firstDayOfWeek,
     showWeekNumber,
@@ -289,6 +300,9 @@ function renderDatepickerCalendar({
     tabindex="0"
     @keyup="${ev => updateMonthWithKeyboardFn(ev)}">${calendarsContent}</div>`;
 
+  /**
+   * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
+   */
   return html`
   <div class="datepicker-body__calendar-view">
     <div class="calendar-view__month-selector">
@@ -296,10 +310,10 @@ function renderDatepickerCalendar({
         ${hasMinDate
           ? null
           : html`
-            <button
-              class="month-selector-button"
-              aria-label="Previous month"
-              @click="${() => updateMonthFn('previous')}">${iconChevronLeft}</button>
+          <button
+            class="month-selector-button"
+            aria-label="Previous month"
+            @click="${() => updateMonthFn(MONTH_UPDATE_TYPE.PREVIOUS)}">${iconChevronLeft}</button>
           `}
       </div>
 
@@ -310,7 +324,7 @@ function renderDatepickerCalendar({
             <button
               class="month-selector-button"
               aria-label="Next month"
-              @click="${() => updateMonthFn('next')}">${iconChevronRight}</button>
+              @click="${() => updateMonthFn(MONTH_UPDATE_TYPE.NEXT)}">${iconChevronRight}</button>
           `}
       </div>
     </div>
@@ -326,29 +340,89 @@ export class AppDatepicker extends LitElement {
     return 'app-datepicker';
   }
 
-  @property({ type: String })
-  public min: string;
+  @property({ type: String, reflect: true })
+  public get min() {
+    return toFormattedDateString(this._min);
+  }
+  public set min(val: string) {
+    const valDate = getResolvedDate(val);
 
-  @property({ type: String })
-  public max: string = '2100-12-31';
+    if (isValidDate(val, valDate)) {
+      const oldVal = this._min;
 
-  @property({ type: Number })
+      this._min = valDate;
+      this.requestUpdate('min', oldVal);
+    }
+  }
+
+  @property({ type: String, reflect: true })
+  public get max() {
+    return toFormattedDateString(this._max);
+  }
+  // public max: string = '2100-12-31';
+  public set max(val: string) {
+    const valDate = getResolvedDate(val);
+
+    if (isValidDate(val, valDate)) {
+      const oldVal = this._max;
+
+      this._max = valDate;
+      this.requestUpdate('max', oldVal);
+    }
+  }
+
+  @property({ type: String, reflect: true })
+  public get value() {
+    return toFormattedDateString(this._focusedDate);
+  }
+  public set value(val: string) {
+    /** NOTE: Converts all datetime to UTC */
+    const minDate = getResolvedDate(this._min);
+    const maxDate = getResolvedDate(this.max);
+    const valDate = getResolvedDate(val);
+
+    if (isValidDate(val, valDate)) {
+      if (+valDate < +minDate || +valDate > +maxDate) return;
+
+      const oldVal = this.value;
+      this._focusedDate = valDate;
+      this._selectedDate = valDate;
+      // this.valueAsDate = newDate;
+      // this.valueAsNumber = +newDate;
+
+      this.requestUpdate('value', oldVal);
+    }
+  }
+
+  @property({ type: String, reflect: true })
+  public get startView() {
+    return this._startView;
+  }
+  public set startView(val: string) {
+    /**
+     * NOTE: Defaults to `START_VIEW.CALENDAR` when `val` is falsy.
+     */
+    const defaultVal = !val ? START_VIEW.CALENDAR : val;
+
+    /**
+     * NOTE: No-op when `val` is not falsy and not valid accepted values.
+     */
+    if (defaultVal !== START_VIEW.CALENDAR && defaultVal !== START_VIEW.YEAR_LIST) return;
+
+    const oldVal = this._startView;
+
+    this._startView = defaultVal;
+    this.requestUpdate('startView', oldVal);
+  }
+
+  @property({ type: Number, reflect: true })
   public firstDayOfWeek: number = 0;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public showWeekNumber: boolean = false;
 
-  @property({ type: String })
-  public weekNumberType: string = 'first-4-day-week';
-
-  @property({ type: String })
-  public disabledDays: string = '0,6';
-
-  @property({ type: String })
-  public disableDates: string;
-
-  @property({ type: String })
-  public format: string = 'yyyy-MM-dd';
+  @property({ type: String, reflect: true })
+  public weekNumberType: string = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
 
   @property({ type: Boolean })
   public landscape: boolean = false;
@@ -360,10 +434,13 @@ export class AppDatepicker extends LitElement {
   public dragRatio: number = .15;
 
   @property({ type: String })
-  private _startView: string = 'calendar';
+  public disabledDays: string = '0,6';
 
   @property({ type: String })
-  private _selectedView: string = 'calendar';
+  public disableDates: string;
+
+  // @property({ type: String })
+  // public format: string = 'yyyy-MM-dd';
 
   @property({ type: Date })
   private _selectedDate: Date;
@@ -386,6 +463,9 @@ export class AppDatepicker extends LitElement {
   @query('.year-list-view__list-item')
   private _yearViewListItem: HTMLButtonElement;
 
+  private _min: Date;
+  private _max: Date;
+  private _startView: string;
   private _todayDate: Date;
   private _totalDraggableDistance: number;
   private _dragAnimationDuration: number = 150;
@@ -633,15 +713,15 @@ export class AppDatepicker extends LitElement {
 
       tr > td.full-calendar__day > .calendar-day {
         position: relative;
-        color: #000;
+        color: currentColor;
         z-index: 1;
         pointer-events: none;
       }
-      tr > td.full-calendar__day.day--today > .calendar-day {
+      tr > td.full-calendar__day.day--today {
         color: var(--app-datepicker-primary-color);
       }
-      tr > td.full-calendar__day.day--focused > .calendar-day,
-      tr > td.full-calendar__day.day--today.day--focused > .calendar-day {
+      tr > td.full-calendar__day.day--focused,
+      tr > td.full-calendar__day.day--today.day--focused {
         color: #fff;
       }
       tr > td.full-calendar__day.day--empty,
@@ -649,7 +729,8 @@ export class AppDatepicker extends LitElement {
       tr > td.full-calendar__day.day--disabled > .calendar-day {
         pointer-events: none;
       }
-      tr > td.full-calendar__day.day--disabled > .calendar-day {
+      tr > td.full-calendar__day.day--disabled,
+      tr > td.full-calendar__day.day--today.day--focused.day--disabled {
         color: rgba(0, 0, 0, .35);
       }
 
@@ -714,9 +795,10 @@ export class AppDatepicker extends LitElement {
     const allFormatters = updateFormatters(this.locale);
     const formattedTodayDate = toFormattedDateString(todayDate);
 
-    this.value = formattedTodayDate
     this.min = formattedTodayDate;
+    this.value = formattedTodayDate
 
+    this._startView = START_VIEW.CALENDAR;
     this._yearList = yearList;
     this._todayDate = todayDate;
     this._selectedDate = todayDate;
@@ -728,8 +810,8 @@ export class AppDatepicker extends LitElement {
     const locale = this.locale;
     const disabledDays = this.disabledDays;
     const firstDayOfWeek = this.firstDayOfWeek;
-    const min = this.min;
-    const max = this.max;
+    const min = this._min;
+    const max = this._max;
     const showWeekNumber = this.showWeekNumber;
     const weekNumberType = this.weekNumberType;
     const yearList = this._yearList;
@@ -737,7 +819,7 @@ export class AppDatepicker extends LitElement {
 
     const focusedDate = new Date(this._focusedDate);
     const selectedDate = new Date(this._selectedDate);
-    const selectedView = this._selectedView;
+    const startView = this._startView;
     const todayDate = getResolvedDate();
     const didLocaleChange = formatters.locale !== locale;
     const allFormatters = didLocaleChange ? updateFormatters(locale) : formatters;
@@ -751,7 +833,7 @@ export class AppDatepicker extends LitElement {
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
     const datepickerBodyContent =
-      selectedView === 'calendar'
+      startView === START_VIEW.CALENDAR
         ? renderDatepickerCalendar({
           disabledDays,
           firstDayOfWeek,
@@ -787,7 +869,7 @@ export class AppDatepicker extends LitElement {
       renderHeaderSelectorButton({
         selectedDate,
         focusedDate,
-        selectedView,
+        startView,
 
         updateViewFn: this._updateViewFn,
         dateFormatterFn: allFormatters.dateFormatter,
@@ -800,22 +882,23 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const firstFocusableElement = this._selectedView === 'calendar'
-      ? this._buttonSelectorYear
-      : this._yearViewListItem;
+    const firstFocusableElement =
+      this._startView === START_VIEW.CALENDAR
+        ? this._buttonSelectorYear
+        : this._yearViewListItem;
 
     dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
 
   protected updated() {
-    const selectedView = this._selectedView;
+    const startView = this._startView;
 
-    if (selectedView === 'yearList') {
+    if (startView === START_VIEW.YEAR_LIST) {
       const selectedYearScrollTop =
         (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
 
       targetScrollTo(this._yearViewFullList, { top: selectedYearScrollTop, left: 0 });
-    } else if (selectedView === 'calendar' && !this._hasCalendarSetup) {
+    } else if (startView === START_VIEW.CALENDAR && !this._hasCalendarSetup) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
       let started = false;
@@ -864,7 +947,10 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateViewFn(view: string) {
-    this._selectedView = view;
+    const oldView = this._startView;
+
+    this._startView = view;
+    this.requestUpdate('_startView', oldView);
   }
 
   private _updateMonthFn(updateType: string) {
@@ -873,8 +959,7 @@ export class AppDatepicker extends LitElement {
     const dateDate = this._selectedDate;
     const fy = dateDate.getUTCFullYear();
     const m = dateDate.getUTCMonth();
-    /** NOTE: updateType === 'next' as fallback */
-    const isPreviousMonth = updateType === 'previous';
+    const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
     const initialX = totalDraggableDistance * -1;
     const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
 
@@ -914,10 +999,10 @@ export class AppDatepicker extends LitElement {
     /**
      * 2 things to do here:
      *  - Update `_selectedDate` with selected year
-     *  - Update `_selectedView` to 'calendar'
+     *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
     this._selectedDate = new Date(Date.UTC(selectedYear, m, d));
-    this._selectedView = 'calendar';
+    this._startView = START_VIEW.CALENDAR;
   }
 
   private _updateFocusedDateFn(ev: CustomEvent) {
@@ -1050,21 +1135,21 @@ export class AppDatepicker extends LitElement {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip for TAB key and other non-related keys */
-    if (keyCode === KEYCODES_MAP.TAB
-      || (keyCode !== KEYCODES_MAP.ARROW_DOWN
-      && keyCode !== KEYCODES_MAP.ARROW_LEFT
-      && keyCode !== KEYCODES_MAP.ARROW_RIGHT
-      && keyCode !== KEYCODES_MAP.ARROW_UP
-      && keyCode !== KEYCODES_MAP.END
-      && keyCode !== KEYCODES_MAP.HOME
-      && keyCode !== KEYCODES_MAP.PAGE_DOWN
-      && keyCode !== KEYCODES_MAP.PAGE_UP
-      && keyCode !== KEYCODES_MAP.ENTER
-      && keyCode !== KEYCODES_MAP.SPACE)) return;
+    if (keyCode === KEYCODES_MAP.TAB ||
+      (keyCode !== KEYCODES_MAP.ARROW_DOWN
+        && keyCode !== KEYCODES_MAP.ARROW_LEFT
+        && keyCode !== KEYCODES_MAP.ARROW_RIGHT
+        && keyCode !== KEYCODES_MAP.ARROW_UP
+        && keyCode !== KEYCODES_MAP.END
+        && keyCode !== KEYCODES_MAP.HOME
+        && keyCode !== KEYCODES_MAP.PAGE_DOWN
+        && keyCode !== KEYCODES_MAP.PAGE_UP
+        && keyCode !== KEYCODES_MAP.ENTER
+        && keyCode !== KEYCODES_MAP.SPACE)) return;
 
     const hasAltKey = ev.altKey;
-    const min = new Date(this.min);
-    const max = new Date(this.max);
+    const min = getResolvedDate(this._min);
+    const max = getResolvedDate(this.max);
     const selectedDate = this._selectedDate;
     const focusedDate = this._focusedDate;
     const fdFy = focusedDate.getUTCFullYear();
@@ -1171,40 +1256,6 @@ export class AppDatepicker extends LitElement {
     return this.updateComplete;
   }
 
-  // @ts-ignore
-  public get startView() {
-    return this._startView;
-  }
-  // @ts-ignore
-  public set startView(val: string) {
-    if (val !== 'calendar' && val !== 'yearList') return;
-
-    this._startView = val;
-    this._selectedView = val;
-  }
-
-  // @ts-ignore
-  public get value() {
-    return toFormattedDateString(this._focusedDate);
-  }
-  // @ts-ignore
-  public set value(val: string) {
-    /** NOTE: Converts all datetime to UTC */
-    const minDate = getResolvedDate(this.min);
-    const maxDate = getResolvedDate(this.max);
-    const valDate = getResolvedDate(val);
-
-    /** NOTE: Skip updating to new date if date input is invalid */
-    if (val == null || valDate.toJSON() == null) return;
-
-    if (+valDate < +minDate || +valDate > +maxDate) return;
-
-    this._focusedDate = valDate;
-    this._selectedDate = valDate;
-    // this.valueAsDate = newDate;
-    // this.valueAsNumber = +newDate;
-  }
-
 }
 
 // TODO: To look into `passive` event listener option in future.
@@ -1212,3 +1263,4 @@ export class AppDatepicker extends LitElement {
 // TODO: To support RTL layout.
 // TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.
 // TODO: `disabledDays` and `disabledDates` are not supported
+// FIXME: Updating `min` via attribute or property breaks entire UI

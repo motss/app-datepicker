@@ -40,6 +40,11 @@ export const shadowQueryAll =
   (target: Element | HTMLElement, selector: string) =>
     Array.from(target.shadowRoot!.querySelectorAll(selector))!;
 
-export const getShadowInnerHTML =
+export const getShadowInnerHTML = (target: Element | HTMLElement) => {
+  const root = (target.shadowRoot || target);
+  return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
+};
+
+export const getOuterHTML =
   (target: Element | HTMLElement) =>
-    target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
+    target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);

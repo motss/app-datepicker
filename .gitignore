@@ -1,6 +1,7 @@
 # .gitignore 101 - https://www.quora.com/Does-gitignore-file-only-work-on-current-folder
 
 # dot files
+.*cache
 .build/
 .DS_Store
 .nyc_output

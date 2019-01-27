@@ -32,11 +32,27 @@
       }
 
       if ([].find == null) {
-        Array.prototype.find = function arrayFind(cb) {
-          return Array.isArray(this) && this.length > 0
-            ? this.filter(cb)[0]
-            : null;
-        };
+        Object.defineProperty(Array.prototype, 'find', {
+          value: function arrayFind(cb) {
+            return Array.isArray(this) && this.length > 0
+              ? this.filter(cb)[0]
+              : null;
+          },
+        });
+      }
+
+      if ([].findIndex == null) {
+        Object.defineProperty(Array.prototype, 'findIndex', {
+          value: function arrayFindIndex(cb) {
+            if (Array.isArray(this) && this.length > 0) {
+              for (var i = 0, len = this.length; i < len; i += 1) {
+                if (cb(this[i], i, this)) return i;
+              }
+            }
+
+            return -1;
+          },
+        });
       }
     </script>
   </head>

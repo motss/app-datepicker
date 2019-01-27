@@ -1,3 +1,9 @@
+export const enum WEEK_NUMBER_TYPE {
+  FIRST_4_DAY_WEEK = 'first-4-day-week',
+  FIRST_DAY_OF_YEAR = 'first-day-of-year',
+  FIRST_FULL_WEEK = 'first-full-week',
+}
+
 import { stripLTRMark } from './datepicker-helpers';
 
 function normalizeWeekday(weekday: number) {
@@ -17,11 +23,11 @@ function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
   const d = date.getUTCDate();
 
   switch (weekNumberType) {
-    case 'first-4-day-week':
+    case WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK:
       return  new Date(Date.UTC(fy, m, d - wd + 3));
-    case 'first-day-of-year':
+    case WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR:
       return new Date(Date.UTC(fy, m, d - wd + 6));
-    case 'first-full-week':
+    case WEEK_NUMBER_TYPE.FIRST_FULL_WEEK:
       return new Date(Date.UTC(fy, m, d - wd));
     default:
       return date;

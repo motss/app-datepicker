@@ -61,11 +61,13 @@
     }
 
     if ([].find == null) {
-      Array.prototype.find = function arrayFind(cb) {
-        return Array.isArray(this) && this.length > 0
-          ? this.filter(cb)[0]
-          : null;
-      };
+      Object.defineProperty(Array.prototype, 'find', {
+        value: function arrayFind(cb) {
+          return Array.isArray(this) && this.length > 0
+            ? this.filter(cb)[0]
+            : null;
+        },
+      });
     }
   </script>
   <script type="module">
@@ -95,6 +97,9 @@
     });
 
     datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
+      inputEl.value = ev.detail.value;
+    });
+    datepickerDialogEl.addEventListener('datepicker-dialog-first-updated', (ev) => {
       inputEl.value = ev.detail.value;
     });
 
@@ -159,6 +164,8 @@
       <span id="selectedDate">Selected date</span>
       <input type="text" disabled>
     </label>
+
+    <app-datepicker></app-datepicker>
 
     <mwc-button>Select date</mwc-button>
     <app-datepicker-dialog></app-datepicker-dialog>
