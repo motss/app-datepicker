@@ -429,7 +429,7 @@ export class AppDatepicker extends LitElement {
   @property({ type: String, reflect: true })
   public weekNumberType: string = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
 
   @property({ type: String })
@@ -489,7 +489,8 @@ export class AppDatepicker extends LitElement {
       resetButton,
       css`
       :host {
-        width: var(--app-datepicker-width);
+        min-width: 300px;
+        width: 300px;
         /** NOTE: Magic number as 16:9 aspect ratio does not look good */
         /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
         background-color: #fff;
@@ -501,10 +502,10 @@ export class AppDatepicker extends LitElement {
       }
       :host([landscape]) {
         display: flex;
-        flex-direction: row;
 
         /** <iphone-5-landscape-width> - <standard-side-margin-width> */
-        --app-datepicker-width: calc(568px - 16px * 2);
+        min-width: calc(568px - 16px * 2);
+        width: calc(568px - 16px * 2);
       }
 
       .datepicker-header + .datepicker-body {
@@ -539,6 +540,13 @@ export class AppDatepicker extends LitElement {
         color: currentColor;
       }
 
+      /**
+       * NOTE: IE11-only fix. This prevents formatted focused date from overflowing the container.
+       */
+      .datepicker-toolbar {
+        width: 100%;
+      }
+
       .btn__selector-year {
         font-size: 16px;
         font-weight: 700;
@@ -561,7 +569,6 @@ export class AppDatepicker extends LitElement {
 
       .calendar-view__month-selector {
         display: flex;
-        flex-direction: row;
         align-items: center;
 
         position: absolute;
@@ -601,7 +608,6 @@ export class AppDatepicker extends LitElement {
 
       .calendar-view__full-calendar {
         display: flex;
-        flex-direction: row;
         justify-content: center;
 
         position: relative;
@@ -641,7 +647,6 @@ export class AppDatepicker extends LitElement {
 
       .calendar-label {
         display: flex;
-        flex-direction: row;
         align-items: center;
         justify-content: center;
 
@@ -895,7 +900,7 @@ export class AppDatepicker extends LitElement {
     dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
 
-  protected updated() {
+  protected updated(changed) {
     const startView = this._startView;
 
     if (startView === START_VIEW.YEAR_LIST) {
@@ -903,7 +908,12 @@ export class AppDatepicker extends LitElement {
         (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
 
       targetScrollTo(this._yearViewFullList, { top: selectedYearScrollTop, left: 0 });
-    } else if (startView === START_VIEW.CALENDAR && !this._hasCalendarSetup) {
+      return;
+    }
+
+    const shouldTriggerCalendarLayout = changed.has('landscape') || !this._hasCalendarSetup;
+
+    if (startView === START_VIEW.CALENDAR && shouldTriggerCalendarLayout) {
       const dragEl = this._calendarViewFullCalendar;
       const totalDraggableDistance = this._datepickerBodyCalendarView.getBoundingClientRect().width;
       let started = false;

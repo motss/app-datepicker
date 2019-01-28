@@ -237,7 +237,11 @@ export class AppDatepickerDialog extends LitElement {
         margin: 0 0 0 8px;
       }
 
-      /** NOTE: IE11-only fix */
+      /**
+       * NOTE: IE11-only fix via CSS hack.
+       *
+       * Visit https://bit.ly/2DEUNZu|CSS for more relevant browsers' hacks.
+       */
       @media screen and (-ms-high-contrast: none) {
         mwc-button[dialog-dismiss] {
           min-width: 10ch;

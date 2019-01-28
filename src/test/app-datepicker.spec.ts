@@ -8,6 +8,7 @@ import {
   toFormattedDateString,
 } from '../datepicker-helpers.js';
 import {
+  getComputedStylePropertyValue,
   getShadowInnerHTML,
   shadowQuery,
   shadowQueryAll,
@@ -28,6 +29,12 @@ const {
  * of SauceLabs's configurations.
  */
 const defaultLocale = 'en-US';
+/**
+ * NOTE: This is not a random/ magic date selected for the testing. It's been selected for a reason
+ * which has explained in detail at https://github.com/motss/app-datepicker/issues/128.
+ */
+const date13 = '2020-01-13';
+const date15 = '2020-01-15';
 
 describe('app-datepicker', () => {
   describe('initial render (calendar view)', () => {
@@ -200,8 +207,8 @@ describe('app-datepicker', () => {
     });
 
     it(`renders with correct 'min'`, async () => {
-      const minVal = '2020-01-03';
-      const valueVal = '2020-01-05';
+      const minVal = date13;
+      const valueVal = date15;
 
       el.min = minVal;
       el.value = valueVal;
@@ -210,15 +217,15 @@ describe('app-datepicker', () => {
       const firstSelectableDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day[aria-label="Jan 3, 2020"]');
+          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 13, 2020"]');
       const allDisabledDates =
         shadowQueryAll(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day.day--disabled');
+          '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
       const focusedDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day.day--focused');
+          '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
       const lastDayBeforeMinDate = allDisabledDates[allDisabledDates.length - 1];
 
       isNotNull(firstSelectableDate, 'First selectable date not found');
@@ -230,11 +237,11 @@ describe('app-datepicker', () => {
         'First selectable is disabled day');
       strictEqual(
         lastDayBeforeMinDate.getAttribute('aria-label'),
-        'Jan 2, 2020',
+        'Jan 12, 2020',
         `Last day before 'min' not matched`);
       strictEqual(
         focusedDate.getAttribute('aria-label'),
-        'Jan 5, 2020',
+        'Jan 15, 2020',
         'Focused date not matched');
 
       strictEqual(el.min, minVal, `'min' property not matched`);
@@ -245,8 +252,8 @@ describe('app-datepicker', () => {
     });
 
     it(`renders with correct 'max'`, async () => {
-      const maxVal = '2020-01-05';
-      const valueVal = '2020-01-03';
+      const maxVal = date15;
+      const valueVal = date13;
 
       el.max = maxVal;
       el.value = valueVal;
@@ -255,15 +262,15 @@ describe('app-datepicker', () => {
       const lastSelectableDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day[aria-label="Jan 5, 2020"]');
+          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 15, 2020"]');
       const firstDayAfterMaxDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day.day--disabled');
+          '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
       const focusedDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-child(2) .full-calendar__day.day--focused');
+          '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
 
       isNotNull(lastSelectableDate, 'Last selectable date not found');
       isNotNull(firstDayAfterMaxDate, `Last day before 'min' not found`);
@@ -274,11 +281,11 @@ describe('app-datepicker', () => {
         'Last selectable is disabled day');
       strictEqual(
         firstDayAfterMaxDate.getAttribute('aria-label'),
-        'Jan 6, 2020',
+        'Jan 16, 2020',
         `First day after 'max' not matched`);
       strictEqual(
         focusedDate.getAttribute('aria-label'),
-        'Jan 3, 2020',
+        'Jan 13, 2020',
         'Focused date not matched');
 
       strictEqual(el.max, maxVal, `'max' property not matched`);
@@ -296,10 +303,10 @@ describe('app-datepicker', () => {
         toFormattedDateString(todayDate),
         `'value' does not match with today's date`);
 
-      const val = '2020-01-03';
+      const val = date15;
 
       /** NOTE: To ensure 'min' is lesser than 'val' */
-      el.min = '2020-01-01';
+      el.min = date13;
       el.value = val;
       await el.updateComplete;
 
@@ -328,8 +335,8 @@ describe('app-datepicker', () => {
       strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
 
       /** NOTE: Ensure dates are not disabled during testings */
-      el.min = '2020-01-03';
-      el.value = '2020-01-05';
+      el.min = date13;
+      el.value = date15;
       await el.updateComplete;
 
       const expectedFirstDayInMonthIdx = [
@@ -350,7 +357,7 @@ describe('app-datepicker', () => {
         await el.updateComplete;
 
         const fullCalendarDays =
-          shadowQueryAll(el, '.calendar-container:nth-child(2) .full-calendar__day');
+          shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day');
         const firstDayInMonthIdx =
           fullCalendarDays.findIndex(n => !n.classList.contains('day--empty'));
 
@@ -382,8 +389,8 @@ describe('app-datepicker', () => {
     });
 
     it(`renders with correct 'weekNumberType'`, async () => {
-      el.min = '2020-01-03';
-      el.value = '2020-01-05';
+      el.min = date13;
+      el.value = date15;
       el.showWeekNumber = true;
       await el.updateComplete;
 
@@ -406,7 +413,7 @@ describe('app-datepicker', () => {
         await el.updateComplete;
 
         const firstWeekdayLabel =
-          getShadowInnerHTML(shadowQuery(el, '.calendar-container:nth-child(2) .weekday-label'));
+          getShadowInnerHTML(shadowQuery(el, '.calendar-container:nth-of-type(2) .weekday-label'));
 
         strictEqual(
           el.weekNumberType,
@@ -417,6 +424,23 @@ describe('app-datepicker', () => {
           `${expectedWeekdayLabels[i]}`,
           `First weekday label not matched after updated ('${weekNumberType}')`);
       }
+    });
+
+    it(`renders with correct 'landscape'`, async () => {
+      strictEqual(el.landscape, false, `'landscape' not matched`);
+      strictEqual(
+        getComputedStylePropertyValue(el, 'display'),
+        'block',
+        `Element has no 'display: block'`);
+
+      el.landscape = true;
+      await el.updateComplete;
+
+      isTrue(el.hasAttribute('landscape'), `Element has no 'landscape' attribute`);
+      strictEqual(
+        getComputedStylePropertyValue(el, 'display'),
+        'flex',
+        `Element has no 'display: flex`);
     });
 
   });

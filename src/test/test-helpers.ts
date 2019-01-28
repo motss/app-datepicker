@@ -48,3 +48,7 @@ export const getShadowInnerHTML = (target: Element | HTMLElement) => {
 export const getOuterHTML =
   (target: Element | HTMLElement) =>
     target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
+
+export const getComputedStylePropertyValue =
+  (target: Element | HTMLElement, property: string) =>
+    window.getComputedStyle && window.getComputedStyle(target)[property];
