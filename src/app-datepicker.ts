@@ -103,7 +103,7 @@ function renderHeaderSelectorButton({
   updateViewFn,
   dateFormatterFn,
 }) {
-  const formattedDate = dateFormatterFn(focusedDate);
+  const formattedDate = stripLTRMark(dateFormatterFn(focusedDate));
   const isCalendarView = startView === START_VIEW.CALENDAR;
 
   return html`
