@@ -66,8 +66,9 @@ export function calendarWeekdays({
     const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
 
     weekdays.push({
-      label: longWeekdayFormatter(dateDate),
-      value: narrowWeekdayFormatter(dateDate),
+      /** NOTE: Stripping LTR mark away for x-browser compatibilities and consistency reason */
+      label: stripLTRMark(longWeekdayFormatter(dateDate)),
+      value: stripLTRMark(narrowWeekdayFormatter(dateDate)),
     });
   }
 
@@ -167,7 +168,8 @@ export function calendarDays({
 
     calendarRow.push({
       fullDate,
-      label: fullDateFormatter(d),
+      /** NOTE: Stripping LTR mark away for x-browser compatibilities and consistency reason */
+      label: stripLTRMark(fullDateFormatter(d)),
       value: stripLTRMark(dayFormatter(d)),
       id: fullDate,
     });

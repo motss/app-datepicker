@@ -71,13 +71,13 @@ describe('app-datepicker', () => {
 
       const now = getResolvedDate();
       const fy = now.getUTCFullYear().toString();
-      const formattedDate = Intl.DateTimeFormat('en-US', {
+      const formattedDate = stripLTRMark(Intl.DateTimeFormat('en-US', {
         weekday: 'short',
         day: 'numeric',
         month: 'short',
         /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
-      }).format(now);
+      }).format(now));
 
       strictEqual(
         el.value,
@@ -94,18 +94,18 @@ describe('app-datepicker', () => {
         shadowQuery(el, '.day--today.day--focused > .calendar-day');
 
       const now = getResolvedDate();
-      const formattedDate = Intl.DateTimeFormat('en-US', {
+      const formattedDate = stripLTRMark(Intl.DateTimeFormat('en-US', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
         /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
-      }).format(now);
-      const formattedDay = Intl.DateTimeFormat('en-US', {
+      }).format(now));
+      const formattedDay = stripLTRMark(Intl.DateTimeFormat('en-US', {
         day: 'numeric',
         /** NOTE: Internally, the datepicker defaults to datetime to UTC */
         timeZone: 'UTC',
-      }).format(now);
+      }).format(now));
 
       isTrue(dayTodayEl.isEqualNode(dayFocusedEL), `today's date != focused date`);
       strictEqual(el.value, toFormattedDateString(now));
@@ -161,10 +161,10 @@ describe('app-datepicker', () => {
 
       const now = getResolvedDate();
       const fy = now.getFullYear();
-      const formattedYear = Intl.DateTimeFormat('en-US', {
+      const formattedYear = stripLTRMark(Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         timeZone: 'UTC',
-      }).format(now);
+      }).format(now));
 
       isNotNull(yearSelectedEl, `Selected year not found`);
       isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
@@ -200,33 +200,6 @@ describe('app-datepicker', () => {
     });
 
     it(`renders with correct 'min'`, async () => {
-      el.min = '2020-01-03';
-      el.value = '2020-01-05';
-      await el.updateComplete;
-
-      const firstSelectableDate = shadowQuery(el, '.full-calendar__day[aria-label="Jan 3, 2020"]');
-      const allDisabledDates = shadowQueryAll(el, '.full-calendar__day.day--disabled');
-      const lastDayBeforeMinDate = allDisabledDates[allDisabledDates.length - 1];
-      const focusedDate = shadowQuery(el, '.full-calendar__day.day--focused');
-
-      isNotNull(firstSelectableDate, 'First selectable date not found');
-      isNotNull(lastDayBeforeMinDate, `Last day before 'min' not found`);
-      isNotNull(focusedDate, 'Focused date not found');
-
-      isTrue(
-        !firstSelectableDate.classList.contains('day--disabled'),
-        'First selectable is disabled day');
-      strictEqual(
-        lastDayBeforeMinDate.getAttribute('aria-label'),
-        'Jan 2, 2020',
-        `Last day before 'min' not matched`);
-      strictEqual(
-        focusedDate.getAttribute('aria-label'),
-        'Jan 5, 2020',
-        'Focused date not matched');
-    });
-
-    it(`renders with correct 'min'`, async () => {
       const minVal = '2020-01-03';
       const valueVal = '2020-01-05';
 
@@ -234,10 +207,19 @@ describe('app-datepicker', () => {
       el.value = valueVal;
       await el.updateComplete;
 
-      const firstSelectableDate = shadowQuery(el, '.full-calendar__day[aria-label="Jan 3, 2020"]');
-      const allDisabledDates = shadowQueryAll(el, '.full-calendar__day.day--disabled');
+      const firstSelectableDate =
+        shadowQuery(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day[aria-label="Jan 3, 2020"]');
+      const allDisabledDates =
+        shadowQueryAll(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day.day--disabled');
+      const focusedDate =
+        shadowQuery(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day.day--focused');
       const lastDayBeforeMinDate = allDisabledDates[allDisabledDates.length - 1];
-      const focusedDate = shadowQuery(el, '.full-calendar__day.day--focused');
 
       isNotNull(firstSelectableDate, 'First selectable date not found');
       isNotNull(lastDayBeforeMinDate, `Last day before 'min' not found`);
@@ -270,9 +252,18 @@ describe('app-datepicker', () => {
       el.value = valueVal;
       await el.updateComplete;
 
-      const lastSelectableDate = shadowQuery(el, '.full-calendar__day[aria-label="Jan 5, 2020"]');
-      const firstDayAfterMaxDate = shadowQuery(el, '.full-calendar__day.day--disabled');
-      const focusedDate = shadowQuery(el, '.full-calendar__day.day--focused');
+      const lastSelectableDate =
+        shadowQuery(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day[aria-label="Jan 5, 2020"]');
+      const firstDayAfterMaxDate =
+        shadowQuery(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day.day--disabled');
+      const focusedDate =
+        shadowQuery(
+          el,
+          '.calendar-container:nth-child(2) .full-calendar__day.day--focused');
 
       isNotNull(lastSelectableDate, 'Last selectable date not found');
       isNotNull(firstDayAfterMaxDate, `Last day before 'min' not found`);

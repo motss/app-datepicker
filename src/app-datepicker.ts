@@ -42,10 +42,11 @@ import {
   findShadowTarget,
   getResolvedDate,
   getResolvedLocale,
+  isValidDate,
   KEYCODES_MAP,
   targetScrollTo,
   toFormattedDateString,
-  isValidDate,
+  stripLTRMark,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
@@ -139,7 +140,9 @@ function renderDatepickerYearList({
             'year--selected': selectedDate.getUTCFullYear() === n,
           })}"
           .year="${n}">
-          <div>${yearFormatterFn(new Date(Date.UTC(n, 0, 1)))}</div>
+          <div>${
+            stripLTRMark(yearFormatterFn(new Date(Date.UTC(n, 0, 1))))
+          }</div>
         </button>`)
     }</div>
   </div>
@@ -210,7 +213,9 @@ function renderDatepickerCalendar({
   });
   clt = window.performance.now() - clt;
   const cltEl = document.body.querySelector('.calendar-render-time');
-  if (cltEl) (cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`);
+  if (cltEl) {
+    cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
+  }
 
   let hasMinDate = false;
   let hasMaxDate = false;
@@ -796,7 +801,7 @@ export class AppDatepicker extends LitElement {
     const formattedTodayDate = toFormattedDateString(todayDate);
 
     this.min = formattedTodayDate;
-    this.value = formattedTodayDate
+    this.value = formattedTodayDate;
 
     this._startView = START_VIEW.CALENDAR;
     this._yearList = yearList;
@@ -986,7 +991,8 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateYearFn(ev: CustomEvent) {
-    const selectedYearEl = findShadowTarget(ev, n => n.classList.contains('year-list-view__list-item'));
+    const selectedYearEl =
+      findShadowTarget(ev, n => n.classList.contains('year-list-view__list-item'));
 
     if (selectedYearEl == null) return;
 
