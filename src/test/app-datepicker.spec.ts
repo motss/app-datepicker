@@ -443,6 +443,38 @@ describe('app-datepicker', () => {
         `Element has no 'display: flex`);
     });
 
+    it(`renders with different 'locale'`, async () => {
+      const getBtnSelectorCalendarInnerHTML =
+        () => getShadowInnerHTML(shadowQuery(el, '.btn__selector-calendar'));
+
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      strictEqual(el.locale, defaultLocale, `'locale' not matched`);
+      strictEqual(
+        getBtnSelectorCalendarInnerHTML(),
+        'Wed, Jan 15',
+        `Formatted date in '${defaultLocale}' not matched`);
+
+      const jaJpLocale = 'ja-JP';
+      el.locale = jaJpLocale;
+      await el.updateComplete;
+
+      strictEqual(el.locale, jaJpLocale, `'locale' not matched with '${jaJpLocale}'`);
+      /**
+       * NOTE: In IE11, there is a whitespace in between. This checks for 2 different kinds of
+       * formatting on different browsers.
+       */
+      isTrue(
+        [
+          '水, 1月15日', /** IE11 on Win7 */
+          '1月15日 (水)', /** IE11 on Win10 */
+          '1月15日(水)', /** Other browsers */
+        ].some(n => n === getBtnSelectorCalendarInnerHTML()),
+        `Formatted date in '${jaJpLocale}' not matched`);
+    });
+
   });
 
   // describe('updates via attributes', () => {});

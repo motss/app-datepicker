@@ -4,13 +4,12 @@
 .*cache
 .build/
 .DS_Store
-.nyc_output
 .tmp/
 .vscode
 *.env
 
 # debug
-*-debug.log*
+*.log*
 
 # folders
 coverage*/
