@@ -463,6 +463,8 @@ describe('app-datepicker', () => {
         `Formatted date in '${defaultLocale}' not matched`);
       isTrue(
         [
+          /** Safari 9 with Intl.js polyfill (andyearnshaw/Intl.js#326) */
+          'Sun, Mon, Tue, Wed, Thu, Fri, Sat',
           'Su, Mo, Tu, We, Th, Fr, Sa', /** IE11 */
           'S, M, T, W, T, F, S', /** Other browsers */
         ].some(n => n === getCalendarWeekdaysInnerHTML()),
