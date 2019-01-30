@@ -446,9 +446,14 @@ describe('app-datepicker', () => {
     it(`renders with different 'locale'`, async () => {
       const getBtnSelectorCalendarInnerHTML =
         () => getShadowInnerHTML(shadowQuery(el, '.btn__selector-calendar'));
+      const getCalendarWeekdaysInnerHTML =
+        () => shadowQueryAll(el, '.calendar-container:nth-of-type(2) .calendar-weekdays > th')
+                .map(n => getShadowInnerHTML(n)).join(', ');
 
       el.min = date13;
       el.value = date15;
+      el.showWeekNumber = false;
+      el.firstDayOfWeek = 0;
       await el.updateComplete;
 
       strictEqual(el.locale, defaultLocale, `'locale' not matched`);
@@ -456,6 +461,12 @@ describe('app-datepicker', () => {
         getBtnSelectorCalendarInnerHTML(),
         'Wed, Jan 15',
         `Formatted date in '${defaultLocale}' not matched`);
+      isTrue(
+        [
+          'Su, Mo, Tu, We, Th, Fr, Sa', /** IE11 */
+          'S, M, T, W, T, F, S', /** Other browsers */
+        ].some(n => n === getCalendarWeekdaysInnerHTML()),
+        `Formatted weekdays in '${defaultLocale}' not matched`);
 
       const jaJpLocale = 'ja-JP';
       el.locale = jaJpLocale;
@@ -473,6 +484,10 @@ describe('app-datepicker', () => {
           '1月15日(水)', /** Other browsers */
         ].some(n => n === getBtnSelectorCalendarInnerHTML()),
         `Formatted date in '${jaJpLocale}' not matched`);
+      strictEqual(
+        getCalendarWeekdaysInnerHTML(),
+        '日, 月, 火, 水, 木, 金, 土',
+        `Formatted weekdays in '${jaJpLocale}' not matched`);
     });
 
   });

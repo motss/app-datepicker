@@ -1280,3 +1280,4 @@ export class AppDatepicker extends LitElement {
 // TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.
 // TODO: `disabledDays` and `disabledDates` are not supported
 // FIXME: Updating `min` via attribute or property breaks entire UI
+// TODO: To add support for labels such week number for better i18n
