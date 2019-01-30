@@ -220,9 +220,14 @@ function renderDatepickerCalendar({
   let hasMinDate = false;
   let hasMaxDate = false;
 
-  const fixedDisabledDays = Array.isArray(disabledDays) && disabledDays.length > 0
-    ? disabledDays.map(n => showWeekNumber ? n + 1 : n)
-    : [];
+  const disabledDaysList =
+    typeof disabledDays === 'string' && disabledDays.length > 0
+      ? disabledDays.split(/,\s*/i)
+      : [];
+  const finalDisabledDaysList =
+    Array.isArray(disabledDaysList) && disabledDaysList.length > 0
+      ? disabledDaysList.map(n => (showWeekNumber ? 1 : 0) + +(n))
+      : [];
   const weekdaysContent = weekdays.map((o: any) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
   });
@@ -253,7 +258,7 @@ function renderDatepickerCalendar({
         const curTime = +new Date(o.fullDate);
         if (formattedDate == null) formattedDate = longMonthYearFormatterFn(curTime);
 
-        const isDisabledDay = fixedDisabledDays.some(fdd => fdd === oi)
+        const isDisabledDay = finalDisabledDaysList.some(fdd => fdd === oi)
           || (curTime < minTime || curTime > maxTime);
 
         return html`
@@ -435,14 +440,14 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
-  @property({ type: Number })
-  public dragRatio: number = .15;
-
   @property({ type: String })
   public disabledDays: string = '0,6';
 
   @property({ type: String })
   public disableDates: string;
+
+  @property({ type: Number })
+  public dragRatio: number = .15;
 
   // @property({ type: String })
   // public format: string = 'yyyy-MM-dd';
@@ -1164,8 +1169,8 @@ export class AppDatepicker extends LitElement {
         && keyCode !== KEYCODES_MAP.SPACE)) return;
 
     const hasAltKey = ev.altKey;
-    const min = getResolvedDate(this._min);
-    const max = getResolvedDate(this.max);
+    const min = this._min;
+    const max = this._max;
     const selectedDate = this._selectedDate;
     const focusedDate = this._focusedDate;
     const fdFy = focusedDate.getUTCFullYear();
@@ -1278,6 +1283,8 @@ export class AppDatepicker extends LitElement {
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.
-// TODO: `disabledDays` and `disabledDates` are not supported
+// TODO: `disabledDates` are not supported
 // FIXME: Updating `min` via attribute or property breaks entire UI
 // TODO: To add support for labels such week number for better i18n
+// FIXME: To improve date navigation using keyboard. Disabled date are selectable with Left, Right
+//        arrows.
