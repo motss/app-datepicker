@@ -1,0 +1,20 @@
+{
+  "moduleResolution": "node",
+  "npm": true,
+  "plugins": {
+    "local": {
+      "browsers": [
+        "chrome"
+      ],
+      "browserOptions": {
+        "chrome": [
+          "disable-gpu",
+          "headless",
+          "window-size=1920,1080"
+        ]
+      }
+    }
+  },
+  "suites": ["src/test"],
+  "verbose": true
+}

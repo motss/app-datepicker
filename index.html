@@ -1,21 +1,175 @@
 <!doctype html>
-<html>
-  <head>
-    <title>app-datepicker</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+<html lang="en">
 
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="../iron-component-page/iron-component-page.html">
+<head>
+  <title>app-datepicker</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
-  </head>
-  <body>
-    <!-- Note: if the main element for this repository doesn't
+  <link rel="preconnect" href="https://polyfill.io" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
+  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next-lite.min.js"></script> -->
+  <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
+  <script>
+    // const isES6Supported = () => {
+    //   'use strict';
+    //   try { eval('var foo = (x)=>x+1'); }
+    //   catch (e) { return false; }
+    //   return true;
+    // };
+
+    // if (!isES6Supported()) {
+    //   const wa = document.createElement('script');
+    //   wa.src = 'https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch';
+    //   wa.onload = () => console.info('✅ ES6 polyfill loaded');
+    //   wa.onerror = console.error;
+    //   document.head.appendChild(wa);
+    // }
+
+    // if (!window.HTMLTemplateElement || !window.customElements || !Element.prototype.attachShadow) {
+    //   const wa = document.createElement('script');
+    //   wa.src = '/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js';
+    //   wa.onload = () => console.info('🔥 webcomponents-loader loaded');
+    //   wa.onerror = console.error;
+    //   document.head.appendChild(wa);
+    // }
+
+    if (!(Element.prototype.animate)) {
+      const wa = document.createElement('script');
+      wa.src =
+        'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
+      wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+      wa.onerror = console.error;
+      document.head.appendChild(wa);
+    }
+
+    if (!window.Intl) {
+      const wa = document.createElement('script');
+      /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+      // wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
+      wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+      wa.onload = () => console.info('🌐 Intl.complete loaded');
+      wa.onerror = console.error;
+      document.head.appendChild(wa);
+    }
+
+    if ([].find == null) {
+      Object.defineProperty(Array.prototype, 'find', {
+        value: function arrayFind(cb) {
+          return Array.isArray(this) && this.length > 0
+            ? this.filter(cb)[0]
+            : null;
+        },
+      });
+    }
+  </script>
+  <script type="module">
+    // import '/node_modules/lit-html/lit-html.js';
+    // import '/node_modules/@polymer/lit-element/lit-element.js';
+    import '/dist/app-datepicker.js';
+    import '/dist/app-datepicker-dialog.js';
+
+    // import '/dist/test-rerender.js';
+    // import '/dist/calendar-benchmark.js';
+    // const datepickerEl = document.body.querySelector('app-datepicker');
+    const datepickerDialogEl = document.body.querySelector('app-datepicker-dialog');
+    const buttonEl = document.body.querySelector('mwc-button');
+    const inputEl = document.body.querySelector('input[type="text"]');
+
+    // datepickerEl.addEventListener('datepicker-first-updated', (ev) => {
+    //   const { firstFocusableElement } = ev.detail;
+
+    //   console.log(firstFocusableElement);
+    // });
+
+    const peEl = document.body.querySelector('pre > input[type="checkbox"]');
+    peEl.checked = 'PointerEvent' in window;
+
+    buttonEl.addEventListener('click', () => {
+      datepickerDialogEl.open();
+    });
+
+    datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
+      inputEl.value = ev.detail.value;
+    });
+    datepickerDialogEl.addEventListener('datepicker-dialog-first-updated', (ev) => {
+      inputEl.value = ev.detail.value;
+    });
+
+  </script>
+</head>
+
+<body>
+  <!-- Note: if the main element for this repository doesn't
         match the folder name, add a src="&lt;main-component&gt;.html" attribute,
         where &lt;main-component&gt;.html" is a file that imports all of the
         components you want documented. -->
-    <iron-component-page></iron-component-page>
+  <!-- <iron-component-page></iron-component-page> -->
+  <style>
+    html,
+    body {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background-color: #f1f1f1;
+      color: #000;
+      font-family: 'Google Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  </body>
+    * {
+      box-sizing: border-box;
+    }
+
+    h1 {
+      padding: 0 16px;
+    }
+
+    section {
+      max-width: 600px;
+      width: 100%;
+      margin: 16px auto;
+    }
+
+    app-datepicker {
+      border: 1px solid #ddd;
+    }
+  </style>
+
+  <h1>app-datepicker</h1>
+
+  <section>
+    <div class="calendar-render-time"></div>
+    <pre>PointerEvent: <input type="checkbox" disabled></pre>
+    <!-- <app-datepicker showWeekNumber landscape></app-datepicker> -->
+    <!-- <app-datepicker landscape></app-datepicker> -->
+    <!-- <app-datepicker showWeekNumber></app-datepicker> -->
+    <!-- <app-datepicker></app-datepicker> -->
+    <!-- <app-datepicker startView="year"></app-datepicker> -->
+    <!-- <test-rerender></test-rerender> -->
+
+    <label for="selectedDate">
+      <span id="selectedDate">Selected date</span>
+      <input type="text" disabled>
+    </label>
+
+    <app-datepicker></app-datepicker>
+
+    <mwc-button>Select date</mwc-button>
+    <app-datepicker-dialog></app-datepicker-dialog>
+  </section>
+</body>
+
 </html>
