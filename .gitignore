@@ -1,3 +1,19 @@
-bower_components*
-bower-*.json
+# .gitignore 101 - https://www.quora.com/Does-gitignore-file-only-work-on-current-folder
+
+# dot files
+.*cache
+.build/
 .DS_Store
+.tmp/
+.vscode
+*.env
+
+# debug
+*.log*
+
+# folders
+coverage*/
+dist*/
+node_modules/
+
+# Do not ignore

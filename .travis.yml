@@ -1,16 +1,42 @@
 language: node_js
 sudo: required
-before_script:
-  - npm install -g polymer-cli
-  - polymer install --variants
-node_js: stable
+dist: trusty
+node_js:
+  - '8'
+  - '10'
 addons:
   firefox: latest
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+  chrome: stable
+cache:
+  directories:
+    - node_modules
+before_install:
+  - npm i -g npm@latest polymer-cli@latest
+install:
+  - npm ci --quiet
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - npm run ts
 script:
-  - xvfb-run polymer test
-dist: trusty
+  - npm run test:ci
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+      npm run test:ci --
+        -s 'windows 7/internet explorer@11'
+        -s 'windows 10/microsoftedge@18'
+        -s 'windows 10/microsoftedge@17'
+        -s 'windows 10/microsoftedge@13'
+        -s 'os x 10.11/safari@9'
+        -s 'macos 10.12/safari@10.1'
+        -s 'macos 10.13/safari@11.1'
+        -s 'macos 10.13/safari@12'
+        -s 'Linux/chrome@41'
+        -s 'windows 10/chrome@70'
+        -s 'windows 10/firefox@62'
+        -s 'windows 10/firefox@63';
+    fi
+
+# Should you require setup for TravisCI with Saucelabs?
+# Watch https://www.youtube.com/watch?v=afy_EEq_4Go
+
+# Platform configuration: https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/

@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "@messageflow/tslint-config"
+  ],
+  "rules": {}
+}

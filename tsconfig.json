@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "newLine": "LF",
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "strictBindCallApply": true,
+    "strictNullChecks": true,
+    "traceResolution": false,
+
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext",
+      "esnext.array",
+      "esnext.asynciterable",
+      "esnext.intl",
+      "esnext.symbol"
+    ],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "dist",
+    "plugins": [
+      {
+        "name": "typescript-lit-html-plugin",
+        "tags": [
+          "css",
+          "html",
+          "svg"
+        ]
+      }
+    ],
+    "types": [
+      "chai",
+      "mocha"
+    ]
+  },
+  "include": [
+    "src/*",
+    "src/test/**/*",
+    "src/demo/**/*"
+  ]
+}
