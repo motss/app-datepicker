@@ -34,11 +34,12 @@ export const getComputedStyleValue = (element: Element, property: string) =>
 : window.getComputedStyle(element).getPropertyValue(property);
 
 export const shadowQuery =
-  (target: Element | HTMLElement, selector: string) => target.shadowRoot!.querySelector(selector)!;
+  (target: Element | HTMLElement, selector: string) =>
+    target.shadowRoot!.querySelector<HTMLElement>(selector)!;
 
 export const shadowQueryAll =
   (target: Element | HTMLElement, selector: string) =>
-    Array.from(target.shadowRoot!.querySelectorAll(selector))!;
+    Array.from(target.shadowRoot!.querySelectorAll<HTMLElement>(selector))!;
 
 export const getShadowInnerHTML = (target: Element | HTMLElement) => {
   const root = (target.shadowRoot || target);

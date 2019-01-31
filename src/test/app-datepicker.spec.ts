@@ -226,7 +226,15 @@ describe('app-datepicker', () => {
         shadowQuery(
           el,
           '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
-      const lastDayBeforeMinDate = allDisabledDates[allDisabledDates.length - 1];
+      const lastDayBeforeMinDate = allDisabledDates.reduce((p, n) => {
+        const pDay = +(p as any).day;
+        const nDay = +(n as any).day;
+
+        /**
+         * NOTE: `13` means day of `date13`.
+         */
+        return nDay > pDay && nDay < 13 ? n : p;
+      });
 
       isNotNull(firstSelectableDate, 'First selectable date not found');
       isNotNull(lastDayBeforeMinDate, `Last day before 'min' not found`);
@@ -263,14 +271,23 @@ describe('app-datepicker', () => {
         shadowQuery(
           el,
           '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 15, 2020"]');
-      const firstDayAfterMaxDate =
-        shadowQuery(
+      const allDisabledDates =
+        shadowQueryAll(
           el,
           '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
       const focusedDate =
         shadowQuery(
           el,
           '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      const firstDayAfterMaxDate = allDisabledDates.reduceRight((p, n) => {
+        const pDay = +(p as any).day;
+        const nDay = +(n as any).day;
+
+        /**
+         * NOTE: `15` means day of `date15`.
+         */
+        return nDay < pDay && nDay > 15 ? n : p;
+      });
 
       isNotNull(lastSelectableDate, 'Last selectable date not found');
       isNotNull(firstDayAfterMaxDate, `Last day before 'min' not found`);

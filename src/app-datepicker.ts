@@ -270,7 +270,7 @@ function renderDatepickerCalendar({
             'day--focused': +focusedDate === curTime,
           })}"
           aria-label="${o.label}"
-          .full-date="${o.fullDate}"
+          .fullDate="${o.fullDate}"
           .day="${o.value}">
           <div class="calendar-day">${o.value}</div>
         </td>
