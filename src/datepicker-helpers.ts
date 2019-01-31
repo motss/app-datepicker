@@ -87,7 +87,7 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
 }
 
 export function toFormattedDateString(date: Date) {
-  if (date instanceof Date) {
+  if (date instanceof Date && !isNaN(+date)) {
     const dateString = date.toJSON();
     return dateString == null ? '' : dateString.replace(/^(.+)T.+/i, '$1');
   }
@@ -261,5 +261,5 @@ export function arrayFilled(size: number) {
 }
 
 export function isValidDate(date: string, dateDate: Date) {
-  return !(date == null || !(dateDate instanceof Date) || dateDate.toJSON() == null);
+  return !(date == null || !(dateDate instanceof Date) || isNaN(+dateDate));
 }
