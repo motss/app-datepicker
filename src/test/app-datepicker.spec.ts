@@ -35,6 +35,7 @@ const defaultLocale = 'en-US';
  */
 const date13 = '2020-01-13';
 const date15 = '2020-01-15';
+const date17 = '2020-01-17';
 
 describe('app-datepicker', () => {
   describe('initial render (calendar view)', () => {
@@ -207,8 +208,8 @@ describe('app-datepicker', () => {
     });
 
     it(`renders with correct 'min'`, async () => {
-      const minVal = date13;
-      const valueVal = date15;
+      const minVal = date15;
+      const valueVal = date17;
 
       el.min = minVal;
       el.value = valueVal;
@@ -217,7 +218,7 @@ describe('app-datepicker', () => {
       const firstSelectableDate =
         shadowQuery(
           el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 13, 2020"]');
+          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 15, 2020"]');
       const allDisabledDates =
         shadowQueryAll(
           el,
@@ -231,9 +232,9 @@ describe('app-datepicker', () => {
         const nDay = +(n as any).day;
 
         /**
-         * NOTE: `13` means day of `date13`.
+         * NOTE: `15` means day of `date15`.
          */
-        return nDay > pDay && nDay < 13 ? n : p;
+        return nDay > pDay && nDay < 15 ? n : p;
       });
 
       isNotNull(firstSelectableDate, 'First selectable date not found');
@@ -245,18 +246,36 @@ describe('app-datepicker', () => {
         'First selectable is disabled day');
       strictEqual(
         lastDayBeforeMinDate.getAttribute('aria-label'),
-        'Jan 12, 2020',
+        'Jan 14, 2020',
         `Last day before 'min' not matched`);
       strictEqual(
         focusedDate.getAttribute('aria-label'),
-        'Jan 15, 2020',
+        'Jan 17, 2020',
         'Focused date not matched');
 
       strictEqual(el.min, minVal, `'min' property not matched`);
       strictEqual(el.value, valueVal, `'value' property not matched`);
-
       strictEqual(el.getAttribute('min'), minVal, `'min' attribute not matched`);
-      strictEqual(el.getAttribute('value'), valueVal, `'value' attribute not matched`);
+
+      el.value = date13;
+      await el.updateComplete;
+
+      isTrue(
+        !focusedDate.classList.contains('day--focused'),
+        `Focused date not matched ('value' < 'min')`);
+      strictEqual(el.value, date13, `New 'value' not matched ('value' < 'min')`);
+
+      el.min = ''; /** Any falsy value, but here only tests empty string */
+      await el.updateComplete;
+
+      const newFocusedDateWithoutMin =
+        shadowQuery(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
+      strictEqual(el.min, '', `New 'min' not matched`);
+      strictEqual(
+        newFocusedDateWithoutMin.getAttribute('aria-label'),
+        'Jan 13, 2020',
+        `New focused date not matched with no 'min'`);
     });
 
     it(`renders with correct 'max'`, async () => {
@@ -307,9 +326,28 @@ describe('app-datepicker', () => {
 
       strictEqual(el.max, maxVal, `'max' property not matched`);
       strictEqual(el.value, valueVal, `'value' property not matched`);
-
       strictEqual(el.getAttribute('max'), maxVal, `'max' attribute not matched`);
-      strictEqual(el.getAttribute('value'), valueVal, `'value' attribute not matched`);
+
+      el.value = date17;
+      await el.updateComplete;
+
+      isTrue(
+        !focusedDate.classList.contains('day--focused'),
+        `Focused date not matched ('value' > 'max')`);
+      strictEqual(el.value, date17, `New 'value' not matched ('value' > 'max')`);
+
+      el.max = ''; /** Any falsy value, but here only tests empty string */
+      await el.updateComplete;
+
+      const newFocusedDateWithoutMax =
+        shadowQuery(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+
+      isNotNull(newFocusedDateWithoutMax, `New focused date not found`);
+      strictEqual(el.max, '', `New 'max' not matched`);
+      strictEqual(
+        newFocusedDateWithoutMax.getAttribute('aria-label'),
+        'Jan 17, 2020',
+        `New focused date not matched with no 'max'`);
     });
 
     it(`renders with correct 'value'`, async () => {

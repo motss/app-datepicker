@@ -267,7 +267,7 @@ function renderDatepickerCalendar({
             'full-calendar__day': true,
             'day--disabled': isDisabledDay,
             'day--today': +todayDate === curTime,
-            'day--focused': +focusedDate === curTime,
+            'day--focused': !isDisabledDay && +focusedDate === curTime,
           })}"
           aria-label="${o.label}"
           .fullDate="${o.fullDate}"
@@ -356,13 +356,10 @@ export class AppDatepicker extends LitElement {
   }
   public set min(val: string) {
     const valDate = getResolvedDate(val);
+    const oldVal = this._min;
 
-    if (isValidDate(val, valDate)) {
-      const oldVal = this._min;
-
-      this._min = valDate;
-      this.requestUpdate('min', oldVal);
-    }
+    this._min = isValidDate(val, valDate) ? valDate : new Date('');
+    this.requestUpdate('min', oldVal);
   }
 
   @property({ type: String, reflect: true })
@@ -372,29 +369,21 @@ export class AppDatepicker extends LitElement {
   // public max: string = '2100-12-31';
   public set max(val: string) {
     const valDate = getResolvedDate(val);
+    const oldVal = this._max;
 
-    if (isValidDate(val, valDate)) {
-      const oldVal = this._max;
-
-      this._max = valDate;
-      this.requestUpdate('max', oldVal);
-    }
+    this._max = isValidDate(val, valDate) ? valDate : new Date('');
+    this.requestUpdate('max', oldVal);
   }
 
-  @property({ type: String, reflect: true })
+  @property({ type: String })
   public get value() {
     return toFormattedDateString(this._focusedDate);
   }
   public set value(val: string) {
-    /** NOTE: Converts all datetime to UTC */
-    const minDate = getResolvedDate(this._min);
-    const maxDate = getResolvedDate(this.max);
+    const oldVal = this.value;
     const valDate = getResolvedDate(val);
 
     if (isValidDate(val, valDate)) {
-      if (+valDate < +minDate || +valDate > +maxDate) return;
-
-      const oldVal = this.value;
       this._focusedDate = valDate;
       this._selectedDate = valDate;
       // this.valueAsDate = newDate;
@@ -832,8 +821,8 @@ export class AppDatepicker extends LitElement {
     const yearList = this._yearList;
     const formatters = this._formatters;
 
-    const focusedDate = new Date(this._focusedDate);
-    const selectedDate = new Date(this._selectedDate);
+    const focusedDate = this._focusedDate;
+    const selectedDate = this._selectedDate;
     const startView = this._startView;
     const todayDate = getResolvedDate();
     const didLocaleChange = formatters.locale !== locale;

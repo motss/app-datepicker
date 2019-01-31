@@ -87,7 +87,12 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
 }
 
 export function toFormattedDateString(date: Date) {
-  return date instanceof Date ? date.toJSON().replace(/^(.+)T.+/i, '$1') : '';
+  if (date instanceof Date) {
+    const dateString = date.toJSON();
+    return dateString == null ? '' : dateString.replace(/^(.+)T.+/i, '$1');
+  }
+
+  return '';
 }
 
 export function computeNewFocusedDateWithKeyboard({
