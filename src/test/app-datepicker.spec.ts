@@ -547,6 +547,61 @@ describe('app-datepicker', () => {
         `Formatted weekdays in '${jaJpLocale}' not matched`);
     });
 
+    it(`renders with different 'disabledDays'`, async () => {
+      const getAllDisabledDays = () =>
+        shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled')
+          .map(n => n.getAttribute('aria-label')!);
+
+      el.value = date13;
+      await el.updateComplete;
+
+      const allDisabledDays = getAllDisabledDays();
+      isTrue(
+        [
+          ['Jan 4, 2020', 'Jan 04, 2020'],
+          ['Jan 5, 2020', 'Jan 05, 2020'],
+          ['Jan 11, 2020'],
+          ['Jan 12, 2020'],
+          ['Jan 18, 2020'],
+          ['Jan 19, 2020'],
+          ['Jan 25, 2020'],
+          ['Jan 26, 2020'],
+        ].every((n, i) => n.some(o => o === allDisabledDays[i])),
+        `All disabled days not matched`);
+
+      /**
+       * NOTE: Simply testing here instead of a full suite tests on a comprehensive combination of
+       * disabled days.
+       */
+      el.disabledDays = '1,3,5';
+      await el.updateComplete;
+
+      const allNewDisabledDays = getAllDisabledDays();
+      isTrue(
+        [
+          ['Jan 1, 2020', 'Jan 01, 2020'],
+          ['Jan 3, 2020', 'Jan 03, 2020'],
+          ['Jan 6, 2020', 'Jan 06, 2020'],
+          ['Jan 8, 2020', 'Jan 08, 2020'],
+          ['Jan 10, 2020'],
+          ['Jan 13, 2020'],
+          ['Jan 15, 2020'],
+          ['Jan 17, 2020'],
+          ['Jan 20, 2020'],
+          ['Jan 22, 2020'],
+          ['Jan 24, 2020'],
+          ['Jan 27, 2020'],
+          ['Jan 29, 2020'],
+          ['Jan 31, 2020'],
+        ].every((n, i) => n.some(o => o === allNewDisabledDays[i])),
+        `All new disabled days not matched (disabledDays=1,3,5)`);
+
+      el.disabledDays = '';
+      await el.updateComplete;
+
+      isTrue(getAllDisabledDays().length === 0, `Disabled days not matched`);
+    });
+
   });
 
   // describe('updates via attributes', () => {});

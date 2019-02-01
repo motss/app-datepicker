@@ -44,9 +44,9 @@ import {
   getResolvedLocale,
   isValidDate,
   KEYCODES_MAP,
+  stripLTRMark,
   targetScrollTo,
   toFormattedDateString,
-  stripLTRMark,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
