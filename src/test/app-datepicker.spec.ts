@@ -95,9 +95,15 @@ describe('app-datepicker', () => {
       strictEqual(selectedFormattedDate, formattedDate, 'Selected formatted date not matched');
     });
 
-    it(`selects, highlights, and focuses today's date`, () => {
+    it(`selects, highlights, and focuses today's date`, async () => {
+      /**
+       * NOTE: Resetting disabled days to eliminate the factor that will affect this testing.
+       */
+      el.disabledDays = '';
+      await el.updateComplete;
+
       const dayTodayEl = shadowQuery(el, '.day--today');
-      const dayFocusedEL = shadowQuery(el, '.day--focused');
+      const dayFocusedEl = shadowQuery(el, '.day--focused');
       const highlightedCalendarDayEl =
         shadowQuery(el, '.day--today.day--focused > .calendar-day');
 
@@ -115,7 +121,7 @@ describe('app-datepicker', () => {
         timeZone: 'UTC',
       }).format(now));
 
-      isTrue(dayTodayEl.isEqualNode(dayFocusedEL), `today's date != focused date`);
+      isTrue(dayTodayEl.isEqualNode(dayFocusedEl), `today's date != focused date`);
       strictEqual(el.value, toFormattedDateString(now));
       strictEqual(
         dayTodayEl.getAttribute('aria-label'),
@@ -556,6 +562,7 @@ describe('app-datepicker', () => {
       await el.updateComplete;
 
       const allDisabledDays = getAllDisabledDays();
+
       isTrue(
         [
           ['Jan 4, 2020', 'Jan 04, 2020'],
@@ -570,13 +577,15 @@ describe('app-datepicker', () => {
         `All disabled days not matched`);
 
       /**
-       * NOTE: Simply testing here instead of a full suite tests on a comprehensive combination of
+       * NOTE: Simple testing here instead of a full suite tests with a comprehensive combination of
        * disabled days.
        */
       el.disabledDays = '1,3,5';
       await el.updateComplete;
 
       const allNewDisabledDays = getAllDisabledDays();
+
+      strictEqual(el.disabledDays, '1,3,5', `'disabledDays' not matched`);
       isTrue(
         [
           ['Jan 1, 2020', 'Jan 01, 2020'],
@@ -599,7 +608,53 @@ describe('app-datepicker', () => {
       el.disabledDays = '';
       await el.updateComplete;
 
-      isTrue(getAllDisabledDays().length === 0, `Disabled days not matched`);
+      strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
+      isTrue(
+        getAllDisabledDays().length === 0,
+        `All disabled days not reset`);
+    });
+
+    it(`renders with different 'disabledDates'`, async () => {
+      const getAllDisabledDays = () =>
+        shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled')
+          .map(n => n.getAttribute('aria-label')!);
+
+      /**
+       * NOTE: It is to ensure not other disabled days on the calendar of the datepicker.
+       */
+      el.value = date13;
+      el.disabledDays = '';
+      await el.updateComplete;
+
+      strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
+      isTrue(getAllDisabledDays().length === 0, `Disabled days not reset`);
+
+      /**
+       * NOTE: Simple testing here instead of a full suite tests with a comprehensive combination of
+       * disabled dates.
+       */
+      el.disabledDates = '2020-01-06, 2020-01-16, 2020-01-23';
+      await el.updateComplete;
+
+      const allNewDisabledDays = getAllDisabledDays();
+
+      strictEqual(
+        el.disabledDates,
+        '2020-01-06, 2020-01-16, 2020-01-23',
+        `New 'disabledDays' not matched`);
+      isTrue(
+        [
+          ['Jan 6, 2020', 'Jan 06, 2020'],
+          ['Jan 16, 2020'],
+          ['Jan 23, 2020'],
+        ].every((n, i) => n.some(o => o === allNewDisabledDays[i])),
+        `New disabled dates not matched`);
+
+      el.disabledDates = '';
+      await el.updateComplete;
+
+      strictEqual(el.disabledDates, '', `'disabledDates' not reset`);
+      isTrue(getAllDisabledDays().length === 0, `All disabled dates not reset`);
     });
 
   });

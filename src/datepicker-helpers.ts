@@ -2,6 +2,7 @@ export interface FocusTrap {
   disconnect: () => void;
 }
 type AnyEventType = CustomEvent | KeyboardEvent | MouseEvent | PointerEvent;
+type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
 export const KEYCODES_MAP = {
   // CTRL: 17,
@@ -262,4 +263,21 @@ export function arrayFilled(size: number) {
 
 export function isValidDate(date: string, dateDate: Date) {
   return !(date == null || !(dateDate instanceof Date) || isNaN(+dateDate));
+}
+
+export function splitString(dateString: string): string[];
+export function splitString(
+  dateString: string,
+  cb: SplitStringCb): number[];
+export function splitString(
+  dateString: string,
+  cb?: SplitStringCb
+): any[] {
+  const dateList = typeof dateString === 'string' && dateString.length > 0
+    ? dateString.split(/,\s*/i)
+    : [];
+
+  if (!dateList.length) return [] as any;
+
+  return typeof cb === 'function' ? dateList.map(cb) : dateList;
 }

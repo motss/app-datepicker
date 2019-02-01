@@ -47,6 +47,7 @@ import {
   stripLTRMark,
   targetScrollTo,
   toFormattedDateString,
+  splitString,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
@@ -151,6 +152,7 @@ function renderDatepickerYearList({
 
 function renderDatepickerCalendar({
   disabledDays,
+  disabledDates,
   firstDayOfWeek,
   focusedDate,
   max,
@@ -220,14 +222,9 @@ function renderDatepickerCalendar({
   let hasMinDate = false;
   let hasMaxDate = false;
 
-  const disabledDaysList =
-    typeof disabledDays === 'string' && disabledDays.length > 0
-      ? disabledDays.split(/,\s*/i)
-      : [];
-  const finalDisabledDaysList =
-    Array.isArray(disabledDaysList) && disabledDaysList.length > 0
-      ? disabledDaysList.map(n => (showWeekNumber ? 1 : 0) + +(n))
-      : [];
+  const disabledDaysList = splitString(disabledDays, n => (showWeekNumber ? 1 : 0) + +(n));
+  const disabledDatesList = splitString(disabledDates, n => +getResolvedDate(n));
+
   const weekdaysContent = weekdays.map((o: any) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
   });
@@ -258,8 +255,10 @@ function renderDatepickerCalendar({
         const curTime = +new Date(o.fullDate);
         if (formattedDate == null) formattedDate = longMonthYearFormatterFn(curTime);
 
-        const isDisabledDay = finalDisabledDaysList.some(fdd => fdd === oi)
-          || (curTime < minTime || curTime > maxTime);
+        const isDisabledDay =
+          disabledDaysList.some(nddl => nddl === oi) ||
+          disabledDatesList.some(nddl2 => nddl2 === curTime) ||
+          (curTime < minTime || curTime > maxTime);
 
         return html`
         <td
@@ -433,7 +432,7 @@ export class AppDatepicker extends LitElement {
   public disabledDays: string = '0,6';
 
   @property({ type: String })
-  public disableDates: string;
+  public disabledDates: string;
 
   @property({ type: Number })
   public dragRatio: number = .15;
@@ -476,307 +475,304 @@ export class AppDatepicker extends LitElement {
 
   // weekdayFormat: String,
 
-  static get styles() {
-    // tslint:disable:max-line-length
-    return [
-      datepickerVariables,
-      resetButton,
-      css`
-      :host {
-        min-width: 300px;
-        width: 300px;
-        /** NOTE: Magic number as 16:9 aspect ratio does not look good */
-        /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
-        background-color: #fff;
-        border-top-left-radius: var(--app-datepicker-border-top-left-radius, var(--app-datepicker-border-radius));
-        border-top-right-radius: var(--app-datepicker-border-top-right-radius, var(--app-datepicker-border-radius));
-        border-bottom-left-radius: var(--app-datepicker-border-bottom-left-radius, var(--app-datepicker-border-radius));
-        border-bottom-right-radius: var(--app-datepicker-border-bottom-right-radius, var(--app-datepicker-border-radius));
-        overflow: hidden;
-      }
-      :host([landscape]) {
-        display: flex;
+  static styles = [
+  // tslint:disable:max-line-length
+    datepickerVariables,
+    resetButton,
+    css`
+    :host {
+      min-width: 300px;
+      width: 300px;
+      /** NOTE: Magic number as 16:9 aspect ratio does not look good */
+      /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
+      background-color: #fff;
+      border-top-left-radius: var(--app-datepicker-border-top-left-radius, var(--app-datepicker-border-radius));
+      border-top-right-radius: var(--app-datepicker-border-top-right-radius, var(--app-datepicker-border-radius));
+      border-bottom-left-radius: var(--app-datepicker-border-bottom-left-radius, var(--app-datepicker-border-radius));
+      border-bottom-right-radius: var(--app-datepicker-border-bottom-right-radius, var(--app-datepicker-border-radius));
+      overflow: hidden;
+    }
+    :host([landscape]) {
+      display: flex;
 
-        /** <iphone-5-landscape-width> - <standard-side-margin-width> */
-        min-width: calc(568px - 16px * 2);
-        width: calc(568px - 16px * 2);
-      }
+      /** <iphone-5-landscape-width> - <standard-side-margin-width> */
+      min-width: calc(568px - 16px * 2);
+      width: calc(568px - 16px * 2);
+    }
 
-      .datepicker-header + .datepicker-body {
-        border-top: 1px solid #ddd;
-      }
-      :host([landscape]) > .datepicker-header + .datepicker-body {
-        border-top: none;
-        border-left: 1px solid #ddd;
-      }
+    .datepicker-header + .datepicker-body {
+      border-top: 1px solid #ddd;
+    }
+    :host([landscape]) > .datepicker-header + .datepicker-body {
+      border-top: none;
+      border-left: 1px solid #ddd;
+    }
 
-      .datepicker-header {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+    .datepicker-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
 
-        position: relative;
-        padding: 16px 24px;
-      }
-      :host([landscape]) > .datepicker-header {
-        /** :this.<one-liner-month-day-width> + :this.<side-padding-width> */
-        min-width: calc(14ch + 24px * 2);
-      }
+      position: relative;
+      padding: 16px 24px;
+    }
+    :host([landscape]) > .datepicker-header {
+      /** :this.<one-liner-month-day-width> + :this.<side-padding-width> */
+      min-width: calc(14ch + 24px * 2);
+    }
 
-      .btn__selector-year,
-      .btn__selector-calendar {
-        color: rgba(0, 0, 0, .55);
-        cursor: pointer;
-        /* outline: none; */
-      }
-      .btn__selector-year.selected,
-      .btn__selector-calendar.selected {
-        color: currentColor;
-      }
+    .btn__selector-year,
+    .btn__selector-calendar {
+      color: rgba(0, 0, 0, .55);
+      cursor: pointer;
+      /* outline: none; */
+    }
+    .btn__selector-year.selected,
+    .btn__selector-calendar.selected {
+      color: currentColor;
+    }
 
+    /**
+      * NOTE: IE11-only fix. This prevents formatted focused date from overflowing the container.
+      */
+    .datepicker-toolbar {
+      width: 100%;
+    }
+
+    .btn__selector-year {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .btn__selector-calendar {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .datepicker-body {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .datepicker-body__calendar-view {
+      min-height: 56px;
+    }
+
+    .calendar-view__month-selector {
+      display: flex;
+      align-items: center;
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 0 8px;
+      z-index: 1;
+    }
+
+    .month-selector-container {
+      max-height: 56px;
+      height: 100%;
+    }
+    .month-selector-container + .month-selector-container {
+      margin: 0 0 0 auto;
+    }
+    /* .month-selector-container > paper-icon-button-light {
+      max-width: 56px;
+      max-height: 56px;
+      height: 56px;
+      width: 56px;
+      color: rgba(0, 0, 0, .25);
+    } */
+
+    .month-selector-button {
+      padding: calc((56px - 24px) / 2);
       /**
-       * NOTE: IE11-only fix. This prevents formatted focused date from overflowing the container.
-       */
-      .datepicker-toolbar {
-        width: 100%;
-      }
+        * NOTE: button element contains no text, only SVG.
+        * No extra height will incur with such setting.
+        */
+      line-height: 0;
+    }
+    .month-selector-button:hover {
+      cursor: pointer;
+    }
 
-      .btn__selector-year {
-        font-size: 16px;
-        font-weight: 700;
-      }
-      .btn__selector-calendar {
-        font-size: 36px;
-        font-weight: 700;
-        line-height: 1;
-      }
+    .calendar-view__full-calendar {
+      display: flex;
+      justify-content: center;
 
-      .datepicker-body {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-      }
-
-      .datepicker-body__calendar-view {
-        min-height: 56px;
-      }
-
-      .calendar-view__month-selector {
-        display: flex;
-        align-items: center;
-
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        padding: 0 8px;
-        z-index: 1;
-      }
-
-      .month-selector-container {
-        max-height: 56px;
-        height: 100%;
-      }
-      .month-selector-container + .month-selector-container {
-        margin: 0 0 0 auto;
-      }
-      /* .month-selector-container > paper-icon-button-light {
-        max-width: 56px;
-        max-height: 56px;
-        height: 56px;
-        width: 56px;
-        color: rgba(0, 0, 0, .25);
-      } */
-
-      .month-selector-button {
-        padding: calc((56px - 24px) / 2);
-        /**
-         * NOTE: button element contains no text, only SVG.
-         * No extra height will incur with such setting.
-         */
-        line-height: 0;
-      }
-      .month-selector-button:hover {
-        cursor: pointer;
-      }
-
-      .calendar-view__full-calendar {
-        display: flex;
-        justify-content: center;
-
-        position: relative;
-        width: calc(100% * 3);
-        padding: 0 0 16px;
-        will-change: transform;
-        /**
-         * NOTE: Required for Pointer Events API to work on touch devices.
-         * Native \`pan-y\` action will be fired by the browsers since we only care about the
-         * horizontal direction. This is great as vertical scrolling still works even when touch
-         * event happens on a datepicker's calendar.
-         */
-        touch-action: pan-y;
-        /* outline: none; */
-      }
-
-      .year-list-view__full-list {
-        max-height: calc(48px * 7);
-        overflow-y: auto;
-      }
-
-      .calendar-weekdays > th,
-      td.weekday-label {
-        color: rgba(0, 0, 0, .55);
-        font-weight: 400;
-      }
-
-      .calendar-container {
-        max-width: calc(100% / 3);
-        width: calc(100% / 3);
-      }
-
-      .calendar-label,
-      .calendar-table {
-        width: calc(100% - 16px * 2);
-      }
-
-      .calendar-label {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        max-width: calc(100% - 8px * 2);
-        width: 100%;
-        height: 56px;
-        margin: 0 8px;
-        font-weight: 500;
-        text-align: center;
-      }
-
-      .calendar-table {
-        -moz-user-select: none;
-        -webkit-user-select: none;
-        user-select: none;
-
-        margin: 0 16px;
-        border-collapse: collapse;
-        text-align: center;
-      }
-
-      tr > th,
-      tr > td {
-        position: relative;
-        min-height: 40px;
-        height: 40px;
-        padding: 8px 0;
-      }
-
+      position: relative;
+      width: calc(100% * 3);
+      padding: 0 0 16px;
+      will-change: transform;
       /**
-       * NOTE: Interesting fact! That is ::after will trigger paint when dragging. This will trigger
-       * layout and paint on **ONLY** affected nodes. This is much cheaper as compared to rendering
-       * all :::after of all calendar day elements. When dragging the entire calendar container,
-       * because of all layout and paint trigger on each and every ::after, this becomes a expensive
-       * task for the browsers especially on low-end devices. Even though animating opacity is much
-       * cheaper, the technique does not work here. Adding 'will-change' will further reduce overall
-       * painting at the expense of memory consumption as many cells in a table has been promoted
-       * a its own layer.
-       */
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
-        will-change: transform;
-      }
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after,
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
-        content: '';
-        display: block;
-        position: absolute;
-        width: 40px;
-        height: 40px;
-        top: 50%;
-        left: 50%;
-        background-color: var(--app-datepicker-primary-color);
-        border-radius: 50%;
-        transform: translate3d(-50%, -50%, 0);
-        will-change: transform;
-        opacity: 0;
-        pointer-events: none;
-      }
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
-        opacity: 1;
-      }
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
-        opacity: .15;
-      }
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
-        cursor: pointer;
-        pointer-events: auto;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      }
-      tr > td.full-calendar__day.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after,
-      tr > td.full-calendar__day.day--today.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
-        opacity: 1;
-      }
+        * NOTE: Required for Pointer Events API to work on touch devices.
+        * Native \`pan-y\` action will be fired by the browsers since we only care about the
+        * horizontal direction. This is great as vertical scrolling still works even when touch
+        * event happens on a datepicker's calendar.
+        */
+      touch-action: pan-y;
+      /* outline: none; */
+    }
 
-      tr > td.full-calendar__day > .calendar-day {
-        position: relative;
-        color: currentColor;
-        z-index: 1;
-        pointer-events: none;
-      }
-      tr > td.full-calendar__day.day--today {
-        color: var(--app-datepicker-primary-color);
-      }
-      tr > td.full-calendar__day.day--focused,
-      tr > td.full-calendar__day.day--today.day--focused {
-        color: #fff;
-      }
-      tr > td.full-calendar__day.day--empty,
-      tr > td.full-calendar__day.weekday-label,
-      tr > td.full-calendar__day.day--disabled > .calendar-day {
-        pointer-events: none;
-      }
-      tr > td.full-calendar__day.day--disabled,
-      tr > td.full-calendar__day.day--today.day--focused.day--disabled {
-        color: rgba(0, 0, 0, .35);
-      }
+    .year-list-view__full-list {
+      max-height: calc(48px * 7);
+      overflow-y: auto;
+    }
 
-      .year-list-view__list-item {
-        position: relative;
-        width: 100%;
-        padding: 12px 16px;
-        text-align: center;
-        /** NOTE: Reduce paint when hovering and scrolling, but this increases memory usage */
-        /* will-change: opacity; */
-        /* outline: none; */
-      }
-      .year-list-view__list-item:hover {
-        cursor: pointer;
-      }
-      .year-list-view__list-item > div {
-        z-index: 1;
-      }
-      .year-list-view__list-item::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: #000;
-        opacity: 0;
-        pointer-events: none;
-      }
-      .year-list-view__list-item:focus::after,
-      .year-list-view__list-item:hover::after {
-        opacity: .05;
-      }
-      .year-list-view__list-item.year--selected {
-        color: var(--app-datepicker-primary-color);
-        font-size: 24px;
-        font-weight: 500;
-      }
-      `,
-    ];
-    // tslint:enable:max-line-length
-  }
+    .calendar-weekdays > th,
+    td.weekday-label {
+      color: rgba(0, 0, 0, .55);
+      font-weight: 400;
+    }
+
+    .calendar-container {
+      max-width: calc(100% / 3);
+      width: calc(100% / 3);
+    }
+
+    .calendar-label,
+    .calendar-table {
+      width: calc(100% - 16px * 2);
+    }
+
+    .calendar-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      max-width: calc(100% - 8px * 2);
+      width: 100%;
+      height: 56px;
+      margin: 0 8px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .calendar-table {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+
+      margin: 0 16px;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    tr > th,
+    tr > td {
+      position: relative;
+      min-height: 40px;
+      height: 40px;
+      padding: 8px 0;
+    }
+
+    /**
+      * NOTE: Interesting fact! That is ::after will trigger paint when dragging. This will trigger
+      * layout and paint on **ONLY** affected nodes. This is much cheaper as compared to rendering
+      * all :::after of all calendar day elements. When dragging the entire calendar container,
+      * because of all layout and paint trigger on each and every ::after, this becomes a expensive
+      * task for the browsers especially on low-end devices. Even though animating opacity is much
+      * cheaper, the technique does not work here. Adding 'will-change' will further reduce overall
+      * painting at the expense of memory consumption as many cells in a table has been promoted
+      * a its own layer.
+      */
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
+      will-change: transform;
+    }
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after,
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
+      content: '';
+      display: block;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      top: 50%;
+      left: 50%;
+      background-color: var(--app-datepicker-primary-color);
+      border-radius: 50%;
+      transform: translate3d(-50%, -50%, 0);
+      will-change: transform;
+      opacity: 0;
+      pointer-events: none;
+    }
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
+      opacity: 1;
+    }
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
+      opacity: .15;
+    }
+    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
+      cursor: pointer;
+      pointer-events: auto;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    tr > td.full-calendar__day.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after,
+    tr > td.full-calendar__day.day--today.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
+      opacity: 1;
+    }
+
+    tr > td.full-calendar__day > .calendar-day {
+      position: relative;
+      color: currentColor;
+      z-index: 1;
+      pointer-events: none;
+    }
+    tr > td.full-calendar__day.day--today {
+      color: var(--app-datepicker-primary-color);
+    }
+    tr > td.full-calendar__day.day--focused,
+    tr > td.full-calendar__day.day--today.day--focused {
+      color: #fff;
+    }
+    tr > td.full-calendar__day.day--empty,
+    tr > td.full-calendar__day.weekday-label,
+    tr > td.full-calendar__day.day--disabled > .calendar-day {
+      pointer-events: none;
+    }
+    tr > td.full-calendar__day.day--disabled:not(.day--today) {
+      color: rgba(0, 0, 0, .35);
+    }
+
+    .year-list-view__list-item {
+      position: relative;
+      width: 100%;
+      padding: 12px 16px;
+      text-align: center;
+      /** NOTE: Reduce paint when hovering and scrolling, but this increases memory usage */
+      /* will-change: opacity; */
+      /* outline: none; */
+    }
+    .year-list-view__list-item:hover {
+      cursor: pointer;
+    }
+    .year-list-view__list-item > div {
+      z-index: 1;
+    }
+    .year-list-view__list-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .year-list-view__list-item:focus::after,
+    .year-list-view__list-item:hover::after {
+      opacity: .05;
+    }
+    .year-list-view__list-item.year--selected {
+      color: var(--app-datepicker-primary-color);
+      font-size: 24px;
+      font-weight: 500;
+    }
+    `,
+  // tslint:enable:max-line-length
+  ];
 
   public constructor() {
     super();
@@ -813,6 +809,7 @@ export class AppDatepicker extends LitElement {
   protected render() {
     const locale = this.locale;
     const disabledDays = this.disabledDays;
+    const disabledDates = this.disabledDates;
     const firstDayOfWeek = this.firstDayOfWeek;
     const min = this._min;
     const max = this._max;
@@ -840,6 +837,7 @@ export class AppDatepicker extends LitElement {
       startView === START_VIEW.CALENDAR
         ? renderDatepickerCalendar({
           disabledDays,
+          disabledDates,
           firstDayOfWeek,
           focusedDate,
           max,
