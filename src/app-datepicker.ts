@@ -30,13 +30,13 @@ import {
 
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { nothing } from 'lit-html';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { calendarDays, calendarWeekdays, WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
   arrayFilled,
-  computeNewFocusedDateWithKeyboard,
   computeThreeCalendarsInARow,
   dispatchCustomEvent,
   findShadowTarget,
@@ -48,8 +48,98 @@ import {
   targetScrollTo,
   toFormattedDateString,
   splitString,
+  // computeNextFocusedDate,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
+
+const allActionKeyCodes = [
+  KEYCODES_MAP.ARROW_DOWN,
+  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.ARROW_RIGHT,
+  KEYCODES_MAP.ARROW_UP,
+  KEYCODES_MAP.END,
+  KEYCODES_MAP.HOME,
+  KEYCODES_MAP.PAGE_DOWN,
+  KEYCODES_MAP.PAGE_UP,
+  KEYCODES_MAP.ENTER,
+  KEYCODES_MAP.SPACE,
+];
+
+function computeAllCalendars({
+  disabledDays,
+  disabledDates,
+  firstDayOfWeek,
+  max,
+  min,
+  selectedDate,
+  showWeekNumber,
+  weekNumberType,
+
+  longWeekdayFormatterFn,
+  narrowWeekdayFormatterFn,
+  dayFormatterFn,
+  fullDateFormatterFn,
+}) {
+  let clt = window.performance.now();
+  const minTime = +min;
+  const maxTime = +max;
+  const weekdays = calendarWeekdays({
+    firstDayOfWeek,
+    showWeekNumber,
+
+    longWeekdayFormatter: longWeekdayFormatterFn,
+    narrowWeekdayFormatter: narrowWeekdayFormatterFn,
+  });
+  const allCalendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
+    const nFy = n.getUTCFullYear();
+    const nM = n.getUTCMonth();
+    const firstDayOfMonthTime = +new Date(Date.UTC(nFy, nM, 1));
+    const lastDayOfMonthTime = +new Date(Date.UTC(nFy, nM + 1, 0));
+
+    /**
+     * NOTE: Return `null` when one of the followings fulfills:-
+     *
+     *           minTime            maxTime
+     *       |--------|--------o--------|--------|
+     *   last day     |   valid dates   |     first day
+     *
+     *  - last day of the month < `minTime` - entire month should be disabled
+     *  - first day of the month > `maxTime` - entire month should be disabled
+     */
+    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
+      return null;
+    }
+
+    return calendarDays({
+      firstDayOfWeek,
+      showWeekNumber,
+      weekNumberType,
+      selectedDate: n,
+      disabledDates: splitString(disabledDates, n => +getResolvedDate(n)),
+      disabledDays: splitString(disabledDays, n => (showWeekNumber ? 1 : 0) + +(n)),
+      max: maxTime,
+      min: minTime,
+      idOffset: idx * 10,
+
+      dayFormatter: dayFormatterFn,
+      fullDateFormatter: fullDateFormatterFn,
+    });
+  });
+  clt = window.performance.now() - clt;
+  const cltEl = document.body.querySelector('.calendar-render-time');
+  if (cltEl) {
+    cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
+  }
+
+  return {
+    weekdays,
+    calendars:
+      allCalendars.reduce((p, n) => p.concat(n && [n.calendar]), [] as unknown[]),
+    disabledDatesSet:
+      new Set(
+        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDays), [] as number[])),
+  };
+}
 
 function updateFormatters(locale: string): Formatters {
   const dayFormatter = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
@@ -151,79 +241,20 @@ function renderDatepickerYearList({
 }
 
 function renderDatepickerCalendar({
-  disabledDays,
-  disabledDates,
-  firstDayOfWeek,
-  focusedDate,
-  max,
-  min,
-  selectedDate,
+  weekdays,
   showWeekNumber,
+  focusedDate,
   todayDate,
-  weekNumberType,
+  calendars,
 
   updateFocusedDateFn,
   updateMonthFn,
   updateMonthWithKeyboardFn,
 
-  dayFormatterFn,
-  fullDateFormatterFn,
-  longWeekdayFormatterFn,
-  narrowWeekdayFormatterFn,
   longMonthYearFormatterFn,
 }) {
-  let clt = window.performance.now();
-  const minTime = +min;
-  const maxTime = +max;
-  const weekdays = calendarWeekdays({
-    firstDayOfWeek,
-    showWeekNumber,
-
-    longWeekdayFormatter: longWeekdayFormatterFn,
-    narrowWeekdayFormatter: narrowWeekdayFormatterFn,
-  });
-  const calendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
-    const nFy = n.getUTCFullYear();
-    const nM = n.getUTCMonth();
-    const firstDayOfMonthTime = +new Date(Date.UTC(nFy, nM, 1));
-    const lastDayOfMonthTime = +new Date(Date.UTC(nFy, nM + 1, 0));
-
-    /**
-     * NOTE: Return `null` when one of the followings fulfills:-
-     *
-     *           minTime            maxTime
-     *       |--------|--------o--------|--------|
-     *   last day     |   valid dates   |     first day
-     *
-     *  - last day of the month < `minTime` - entire month should be disabled
-     *  - first day of the month > `maxTime` - entire month should be disabled
-     */
-    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
-      return null;
-    }
-
-    return calendarDays({
-      firstDayOfWeek,
-      showWeekNumber,
-      weekNumberType,
-      selectedDate: n,
-      idOffset: idx * 10,
-
-      dayFormatter: dayFormatterFn,
-      fullDateFormatter: fullDateFormatterFn,
-    });
-  });
-  clt = window.performance.now() - clt;
-  const cltEl = document.body.querySelector('.calendar-render-time');
-  if (cltEl) {
-    cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
-  }
-
   let hasMinDate = false;
   let hasMaxDate = false;
-
-  const disabledDaysList = splitString(disabledDays, n => (showWeekNumber ? 1 : 0) + +(n));
-  const disabledDatesList = splitString(disabledDates, n => +getResolvedDate(n));
 
   const weekdaysContent = weekdays.map((o: any) => {
     return html`<th aria-label="${o.label}">${o.value}</th>`;
@@ -253,12 +284,8 @@ function renderDatepickerCalendar({
         }
 
         const curTime = +new Date(o.fullDate);
+        const isDisabledDay = o.disabled;
         if (formattedDate == null) formattedDate = longMonthYearFormatterFn(curTime);
-
-        const isDisabledDay =
-          disabledDaysList.some(nddl => nddl === oi) ||
-          disabledDatesList.some(nddl2 => nddl2 === curTime) ||
-          (curTime < minTime || curTime > maxTime);
 
         return html`
         <td
@@ -472,6 +499,7 @@ export class AppDatepicker extends LitElement {
   private _hasNativeElementAnimate: boolean =
     Element.prototype.animate.toString().indexOf('[native code]') >= 0;
   private _formatters: Formatters;
+  private _disabledDatesSet: Set<number>;
 
   // weekdayFormat: String,
 
@@ -833,37 +861,52 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
-    const datepickerBodyContent =
-      startView === START_VIEW.CALENDAR
-        ? renderDatepickerCalendar({
-          disabledDays,
-          disabledDates,
-          firstDayOfWeek,
-          focusedDate,
-          max,
-          min,
-          selectedDate,
-          showWeekNumber,
-          todayDate,
-          weekNumberType,
+    let datepickerBodyContent: import('lit-element').TemplateResult | typeof nothing = nothing;
 
-          updateFocusedDateFn: this._updateFocusedDateFn,
-          updateMonthFn: this._updateMonthFn,
-          updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
+    if (START_VIEW.YEAR_LIST === startView) {
+      datepickerBodyContent = renderDatepickerYearList({
+        selectedDate,
+        yearList,
 
-          dayFormatterFn: allFormatters.dayFormatter,
-          fullDateFormatterFn: allFormatters.fullDateFormatter,
-          longMonthYearFormatterFn: allFormatters.longMonthYearFormatter,
-          longWeekdayFormatterFn: allFormatters.longWeekdayFormatter,
-          narrowWeekdayFormatterFn: allFormatters.narrowWeekdayFormatter,
-        })
-        : renderDatepickerYearList({
-          selectedDate,
-          yearList,
+        updateYearFn: this._updateYearFn,
+        yearFormatterFn: allFormatters.yearFormatter,
+      });
+    } else {
+      const {
+        calendars,
+        disabledDatesSet,
+        weekdays,
+      } = computeAllCalendars({
+        disabledDates,
+        disabledDays,
+        firstDayOfWeek,
+        max,
+        min,
+        selectedDate,
+        showWeekNumber,
+        weekNumberType,
 
-          updateYearFn: this._updateYearFn,
-          yearFormatterFn: allFormatters.yearFormatter,
-        });
+        dayFormatterFn: allFormatters.dayFormatter,
+        fullDateFormatterFn: allFormatters.fullDateFormatter,
+        longWeekdayFormatterFn: allFormatters.longWeekdayFormatter,
+        narrowWeekdayFormatterFn: allFormatters.narrowWeekdayFormatter,
+      });
+
+      this._disabledDatesSet = disabledDatesSet;
+      datepickerBodyContent = renderDatepickerCalendar({
+        calendars,
+        focusedDate,
+        showWeekNumber,
+        todayDate,
+        weekdays,
+
+        longMonthYearFormatterFn: allFormatters.longMonthYearFormatter,
+
+        updateFocusedDateFn: this._updateFocusedDateFn,
+        updateMonthFn: this._updateMonthFn,
+        updateMonthWithKeyboardFn: this._updateMonthWithKeyboardFn,
+      });
+    }
 
     // tslint:disable:max-line-length
     return html`
@@ -1143,125 +1186,40 @@ export class AppDatepicker extends LitElement {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip for TAB key and other non-related keys */
-    if (keyCode === KEYCODES_MAP.TAB ||
-      (keyCode !== KEYCODES_MAP.ARROW_DOWN
-        && keyCode !== KEYCODES_MAP.ARROW_LEFT
-        && keyCode !== KEYCODES_MAP.ARROW_RIGHT
-        && keyCode !== KEYCODES_MAP.ARROW_UP
-        && keyCode !== KEYCODES_MAP.END
-        && keyCode !== KEYCODES_MAP.HOME
-        && keyCode !== KEYCODES_MAP.PAGE_DOWN
-        && keyCode !== KEYCODES_MAP.PAGE_UP
-        && keyCode !== KEYCODES_MAP.ENTER
-        && keyCode !== KEYCODES_MAP.SPACE)) return;
+    if (keyCode === KEYCODES_MAP.TAB || !allActionKeyCodes.includes(keyCode)) return;
 
-    const hasAltKey = ev.altKey;
-    const min = this._min;
-    const max = this._max;
-    const selectedDate = this._selectedDate;
-    const focusedDate = this._focusedDate;
-    const fdFy = focusedDate.getUTCFullYear();
-    const fdM = focusedDate.getUTCMonth();
-    const fdD = focusedDate.getUTCDate();
+    console.log(this._disabledDatesSet);
+    // const focusedDate = this._focusedDate;
+    // const {
+    //   shouldUpdateDate,
+    //   date,
+    // } = computeNextFocusedDate({
+    //   keyCode,
+    //   focusedDate,
+    //   hasAltKey: ev.altKey,
+    //   max: +this._max,
+    //   min: +this._min,
+    //   disabledDatesSet: this._disabledDatesSet,
+    //   selectedDate: this._selectedDate,
+    // });
 
-    let fy = fdFy;
-    let m = fdM;
-    let d = fdD;
-    let isMonthYearUpdate = false;
-
-    /**
-     * NOTE: Focus to the 1st day of the current month when:-
-     *
-     *  - `_selectedDate` has a different value of _full year_ than that of `_focusedDate`.
-     *  - `_selectedDate` has a different value of _month_ than that of `_focusedDate`.
-     *
-     * This could simply mean that user changes `_selectedDate` with a new value of `month` or
-     * `year` but `_focusedDate` remains unchanged and it could be an out-of-bound calendar date.
-     * When keyboard event is detected, the 1st day of the current visible/ focusing month should be
-     * focused by updating `_focusedDate` with that value.
-     */
-    if (selectedDate.getUTCMonth() !== fdM || selectedDate.getUTCFullYear() !== fdFy) {
-      this._focusedDate = new Date(Date.UTC(
-        selectedDate.getUTCFullYear(),
-        selectedDate.getUTCMonth(),
-        1));
-
-      return this.updateComplete;
-    }
-
-    switch (keyCode) {
-      case KEYCODES_MAP.ARROW_UP: {
-        d -= 7;
-        break;
-      }
-      case KEYCODES_MAP.ARROW_RIGHT: {
-        d += 1;
-        break;
-      }
-      case KEYCODES_MAP.ARROW_DOWN: {
-        d += 7;
-        break;
-      }
-      case KEYCODES_MAP.ARROW_LEFT: {
-        d -= 1;
-        break;
-      }
-      case KEYCODES_MAP.HOME: {
-        d = 1;
-        break;
-      }
-      case KEYCODES_MAP.END: {
-        m += 1;
-        d = 0;
-        break;
-      }
-      case KEYCODES_MAP.ENTER: {
-        if (+selectedDate !== +focusedDate) {
-          this._selectedDate = focusedDate;
-        }
-
-        return this.updateComplete;
-      }
-      case KEYCODES_MAP.PAGE_UP: {
-        isMonthYearUpdate = true;
-        hasAltKey ? fy -= 1 : m -= 1;
-        break;
-      }
-      case KEYCODES_MAP.PAGE_DOWN: {
-        isMonthYearUpdate = true;
-        hasAltKey ? fy += 1 : m += 1;
-        break;
-      }
-    }
-
-    /** NOTE: Skip calendar update if new focused date remains unchanged. */
-    if (fy === fdFy && m === fdM && d === fdD) return;
-
-    const { shouldUpdateDate, date } = computeNewFocusedDateWithKeyboard({
-      min,
-      max,
-      selectedDate,
-      fy,
-      m,
-      d,
-      isMonthYearUpdate,
-    });
+    // console.log('next-focused-date', [shouldUpdateDate, date]);
 
     /**
      * NOTE: If `date` returns null or `date` still same as `focusedDate`,
      * this can skip updating any dates. This could simply mean the new focused date is
      * within the range of * `min` and `max` dates.
      */
-    if (date == null || +date === +focusedDate) return;
+    // if (date == null || +date === +focusedDate) return this.updateComplete;
 
-    /**
-     * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
-     */
-    if (shouldUpdateDate) this._selectedDate = date;
+    // /**
+    //  * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
+    //  */
+    // if (shouldUpdateDate) this._selectedDate = date;
 
-    this._focusedDate = date;
+    // this._focusedDate = date;
 
-    return this.updateComplete;
+    // return this.updateComplete;
   }
 
 }

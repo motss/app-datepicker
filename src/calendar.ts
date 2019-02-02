@@ -99,6 +99,10 @@ export function calendarDays({
   selectedDate,
   showWeekNumber,
   weekNumberType,
+  disabledDates,
+  disabledDays,
+  min,
+  max,
   idOffset,
 
   fullDateFormatter,
@@ -111,8 +115,9 @@ export function calendarDays({
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
-
   const fullCalendar: unknown[][] = [];
+  const disabledDaysList: number[] = [];
+
   let calendarRow: unknown[] = [];
   let day = 1;
   let row = 0;
@@ -147,6 +152,7 @@ export function calendarDays({
         label: weekLabel,
         value: weekNumber,
         id: weekLabel,
+        disabled: true,
       });
       // calendarRow.push(weekNumber);
       continue;
@@ -158,13 +164,21 @@ export function calendarDays({
         label: null,
         value: null,
         id: (day + idOffset),
+        disabled: true,
       });
       // calendarRow.push(null);
       continue;
     }
 
     const d = new Date(Date.UTC(fy, selectedMonth, day));
+    const dTime = +d;
     const fullDate = d.toJSON();
+    const isDisabledDay =
+      disabledDays.some(ndd => ndd === col) ||
+      disabledDates.some(ndd => ndd === dTime) ||
+      (dTime < min || dTime > max);
+
+    if (isDisabledDay) disabledDaysList.push(+d);
 
     calendarRow.push({
       fullDate,
@@ -172,6 +186,7 @@ export function calendarDays({
       label: stripLTRMark(fullDateFormatter(d)),
       value: stripLTRMark(dayFormatter(d)),
       id: fullDate,
+      disabled: isDisabledDay,
     });
     // calendarRow.push(day);
     day += 1;
@@ -179,7 +194,10 @@ export function calendarDays({
     if (day > totalDays) calendarFilled = true;
   }
 
-  return fullCalendar;
+  return {
+    calendar: fullCalendar,
+    disabledDays: disabledDaysList,
+  };
 }
 
 export function calendar({
@@ -188,6 +206,10 @@ export function calendar({
   locale,
   selectedDate,
   weekNumberType,
+  disabledDates,
+  disabledDays,
+  min,
+  max,
   idOffset,
 
   longWeekdayFormatterFn,
@@ -236,6 +258,10 @@ export function calendar({
     selectedDate,
     showWeekNumber,
     weekNumberType,
+    disabledDates,
+    disabledDays,
+    min,
+    max,
     idOffset: idOffset == null ? 0 : idOffset,
   });
 
