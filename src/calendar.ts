@@ -116,7 +116,7 @@ export function calendarDays({
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
   const fullCalendar: unknown[][] = [];
-  const disabledDaysList: number[] = [];
+  const disabledDatesList: number[] = [];
 
   let calendarRow: unknown[] = [];
   let day = 1;
@@ -178,7 +178,7 @@ export function calendarDays({
       disabledDates.some(ndd => ndd === dTime) ||
       (dTime < min || dTime > max);
 
-    if (isDisabledDay) disabledDaysList.push(+d);
+    if (isDisabledDay) disabledDatesList.push(+d);
 
     calendarRow.push({
       fullDate,
@@ -196,7 +196,7 @@ export function calendarDays({
 
   return {
     calendar: fullCalendar,
-    disabledDays: disabledDaysList,
+    disabledDates: disabledDatesList,
   };
 }
 

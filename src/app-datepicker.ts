@@ -137,7 +137,7 @@ function computeAllCalendars({
       allCalendars.reduce((p, n) => p.concat(n && [n.calendar]), [] as unknown[]),
     disabledDatesSet:
       new Set(
-        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDays), [] as number[])),
+        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
   };
 }
 
@@ -499,6 +499,7 @@ export class AppDatepicker extends LitElement {
   private _hasNativeElementAnimate: boolean =
     Element.prototype.animate.toString().indexOf('[native code]') >= 0;
   private _formatters: Formatters;
+  private _disabledDaysSet: Set<number>;
   private _disabledDatesSet: Set<number>;
 
   // weekdayFormat: String,
@@ -893,6 +894,7 @@ export class AppDatepicker extends LitElement {
       });
 
       this._disabledDatesSet = disabledDatesSet;
+      this._disabledDaysSet = new Set(splitString(disabledDays, Number));
       datepickerBodyContent = renderDatepickerCalendar({
         calendars,
         focusedDate,
@@ -1188,7 +1190,7 @@ export class AppDatepicker extends LitElement {
     /** NOTE: Skip for TAB key and other non-related keys */
     if (keyCode === KEYCODES_MAP.TAB || !allActionKeyCodes.includes(keyCode)) return;
 
-    console.log(this._disabledDatesSet);
+    console.log(this._disabledDaysSet, this._disabledDatesSet);
     // const focusedDate = this._focusedDate;
     // const {
     //   shouldUpdateDate,

@@ -1,26 +1,65 @@
+export const enum KEYCODES_MAP {
+  ESCAPE = 27,
+  SHIFT = 16,
+  TAB = 9,
+  ENTER = 13,
+  SPACE = 32,
+  PAGE_UP = 33,
+  PAGE_DOWN = 34,
+  END = 35,
+  HOME = 36,
+  ARROW_LEFT = 37,
+  ARROW_UP = 38,
+  ARROW_RIGHT = 39,
+  ARROW_DOWN = 40,
+}
 export interface FocusTrap {
   disconnect: () => void;
 }
 type AnyEventType = CustomEvent | KeyboardEvent | MouseEvent | PointerEvent;
 type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
-export const KEYCODES_MAP = {
-  // CTRL: 17,
-  // ALT: 18,
-  ESCAPE: 27,
-  SHIFT: 16,
-  TAB: 9,
-  ENTER: 13,
-  SPACE: 32,
-  PAGE_UP: 33,
-  PAGE_DOWN: 34,
-  END: 35,
-  HOME: 36,
-  ARROW_LEFT: 37,
-  ARROW_UP: 38,
-  ARROW_RIGHT: 39,
-  ARROW_DOWN: 40,
-};
+// export const KEYCODES_MAP = {
+//   // CTRL: 17,
+//   // ALT: 18,
+//   ESCAPE: 27,
+//   SHIFT: 16,
+//   TAB: 9,
+//   ENTER: 13,
+//   SPACE: 32,
+//   PAGE_UP: 33,
+//   PAGE_DOWN: 34,
+//   END: 35,
+//   HOME: 36,
+//   ARROW_LEFT: 37,
+//   ARROW_UP: 38,
+//   ARROW_RIGHT: 39,
+//   ARROW_DOWN: 40,
+// };
+const PREV_KEYCODES_SET = new Set([
+  KEYCODES_MAP.ARROW_UP,
+  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.PAGE_UP,
+  KEYCODES_MAP.HOME,
+]);
+const NEXT_KEYCODES_SET = new Set([
+  KEYCODES_MAP.ARROW_DOWN,
+  KEYCODES_MAP.ARROW_RIGHT,
+  KEYCODES_MAP.PAGE_DOWN,
+  KEYCODES_MAP.END,
+]);
+const NEXT_DAY_KEYCODES_SET = new Set([
+  KEYCODES_MAP.ARROW_UP,
+  KEYCODES_MAP.ARROW_RIGHT,
+  KEYCODES_MAP.PAGE_UP,
+  KEYCODES_MAP.HOME,
+]);
+const PREV_DAY_KEYCODES_SET = new Set([
+  KEYCODES_MAP.ARROW_DOWN,
+  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.PAGE_DOWN,
+  KEYCODES_MAP.END,
+]);
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);
@@ -460,7 +499,165 @@ export function splitString(
 //         }),
 //   }
 // }
-export function computeNextFocusedDate({
+function getNextSelectableDate({
+  keyCode,
+  disabledDaysSet,
+  disabledDatesSet,
+  focusedDate,
+  maxTime,
+  minTime,
 }) {
-  return;
+  console.log(disabledDatesSet, keyCode, focusedDate);
+
+  const focusedDateTime = +focusedDate;
+  let isLessThanMinTime = focusedDateTime < minTime;
+  let isMoreThanMaxTime = focusedDateTime > maxTime;
+
+  let isDisabledDay =
+    isLessThanMinTime ||
+    isMoreThanMaxTime ||
+    disabledDaysSet.has((focusedDate as Date).getUTCDay()) ||
+    disabledDatesSet.has(focusedDateTime);
+
+  if (!isDisabledDay) return focusedDate;
+
+  const fy = focusedDate.getUTCFullYear();
+  const m = focusedDate.getUTCMonth();
+  let d = focusedDate.getUTCDate();
+  let selectableFocusedDate = focusedDate;
+  let selectableFocusedDateTime = 0;
+
+  while (isDisabledDay) {
+    switch (true) {
+      case isLessThanMinTime:
+      case !isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode): {
+        d += 1;
+        break;
+      }
+      case isMoreThanMaxTime:
+      case !isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode):
+      default: {
+        d -= 1;
+        break;
+      }
+    }
+
+    selectableFocusedDate = new Date(Date.UTC(fy, m, d));
+    selectableFocusedDateTime = +selectableFocusedDate;
+
+    isLessThanMinTime = selectableFocusedDateTime < minTime;
+    isMoreThanMaxTime = selectableFocusedDateTime > maxTime;
+    isDisabledDay =
+      isLessThanMinTime ||
+      isMoreThanMaxTime ||
+      disabledDaysSet.has(selectableFocusedDate.getUTCDay()) ||
+      disabledDatesSet.has(selectableFocusedDateTime);
+  }
+
+  return selectableFocusedDate;
+}
+export function computeNextFocusedDate({
+  hasAltKey,
+  keyCode,
+  focusedDate,
+  selectedDate,
+  disabledDaysSet,
+  disabledDatesSet,
+  minTime,
+  maxTime,
+}) {
+  /**
+   * To update focused date,
+   *
+   *   1. Checks if focused date is not in the same month, skip update by focusing 1st selectable
+   *      day of the new focused month. Continue at `Step 4.`.
+   *   2. Checks if current focused date is either `min` or `max` then bails out immediately.
+   *   3. Compute new focused date based on key pressed.
+   *        a. `UP` - `d -= 7`
+   *        b. `DOWN` - `d += 7`
+   *        c. `LEFT` - `d -= 1`
+   *        d. `RIGHT` - `d += 1`
+   *        e. `PAGE_DOWN` - `m += 1`
+   *        f. `PAGE_UP` - `m -= 1`
+   *        g. `Alt` + `PAGE_DOWN` - `fy += 1`
+   *        h. `Alt` + `PAGE_UP` - `fy -= 1`
+   *        i. `END` - `m += 1; d = 0`
+   *        j. `HOME` - `d = 1`
+   *   4. Compute selectable date based on new focused date with `while` loop for any disabled date:
+   *        a. UP, RIGHT, PAGE_UP, Alt + PAGE_UP - `d += 1`
+   *        b. DOWN, LEFT, PAGE_DOWN, Alt + PAGE_DOWN - `d -= 1`
+   *        c. If new focused date is either `min` or `max`, reverse order `d += 1` -> `d -= 1` and
+   *         continue the loop until new selectable focused date.
+   */
+
+  const oldFy = focusedDate.getUTCFullYear();
+  const oldM = focusedDate.getUTCMonth();
+  const oldD = focusedDate.getUTCDate();
+
+  const sdFy = selectedDate.getUTCFullYear();
+  const sdM = selectedDate.getUTCMonth();
+
+  let fy = oldFy;
+  let m = oldM;
+  let d = oldD;
+
+  switch (true) {
+    case sdM !== oldM || sdFy !== oldFy: {
+      fy = sdFy;
+      m = sdM;
+      d = 1;
+      break;
+    }
+    case focusedDate === minTime && PREV_KEYCODES_SET.has(keyCode):
+    case focusedDate === maxTime && NEXT_KEYCODES_SET.has(keyCode):
+      break;
+    case keyCode === KEYCODES_MAP.ARROW_UP: {
+      d -= 7;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.ARROW_DOWN: {
+      d += 7;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.ARROW_LEFT: {
+      d -= 1;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.ARROW_RIGHT: {
+      d += 1;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.PAGE_DOWN: {
+      hasAltKey ? fy += 1 : m += 1;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.PAGE_UP: {
+      hasAltKey ? fy -= 1 : m -= 1;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.END: {
+      m += 1;
+      d = 0;
+      break;
+    }
+    case keyCode === KEYCODES_MAP.HOME:
+    default: {
+      d = 1;
+      break;
+    }
+  }
+
+  /** Get next selectable focused date */
+  const newFocusedDate = getNextSelectableDate({
+    keyCode,
+    maxTime,
+    minTime,
+    disabledDaysSet,
+    disabledDatesSet,
+    focusedDate: new Date(Date.UTC(fy, m, d)),
+  });
+
+  console.log(newFocusedDate);
+
+  return newFocusedDate;
 }
