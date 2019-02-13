@@ -1,3 +1,7 @@
+import { CalendarDays, CalendarWeekdays } from './calendar';
+
+import { calendarDays, calendarWeekdays, WEEK_NUMBER_TYPE } from './calendar';
+
 export const enum KEYCODES_MAP {
   ESCAPE = 27,
   SHIFT = 16,
@@ -136,7 +140,7 @@ export function toFormattedDateString(date: Date) {
 }
 
 export function findShadowTarget(ev: AnyEventType, callback: (n: HTMLElement) => boolean) {
-  return ev.composedPath().find((n: HTMLElement) => {
+  return ev.composedPath().find((n) => {
     if (n instanceof HTMLElement) return callback(n);
     return false;
   });
@@ -499,6 +503,15 @@ export function splitString(
 //         }),
 //   }
 // }
+
+interface ParamsGetNextSelectableDate {
+  keyCode: KeyboardEvent['keyCode'];
+  disabledDaysSet: Set<number>;
+  disabledDatesSet: Set<number>;
+  focusedDate: Date;
+  maxTime: number;
+  minTime: number;
+}
 function getNextSelectableDate({
   keyCode,
   disabledDaysSet,
@@ -506,7 +519,7 @@ function getNextSelectableDate({
   focusedDate,
   maxTime,
   minTime,
-}) {
+}: ParamsGetNextSelectableDate) {
   console.log(disabledDatesSet, keyCode, focusedDate);
 
   const focusedDateTime = +focusedDate;
@@ -556,6 +569,170 @@ function getNextSelectableDate({
 
   return selectableFocusedDate;
 }
+
+export type DateTimeFormatter = (date?: number | Date | undefined) => string;
+export interface Formatters {
+  dayFormatter: DateTimeFormatter;
+  fullDateFormatter: DateTimeFormatter;
+  longWeekdayFormatter: DateTimeFormatter;
+  narrowWeekdayFormatter: DateTimeFormatter;
+  longMonthYearFormatter: DateTimeFormatter;
+  dateFormatter: DateTimeFormatter;
+  yearFormatter: DateTimeFormatter;
+
+  locale: string;
+}
+export function updateFormatters(locale: string): Formatters {
+  const dayFormatter = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
+  const fullDateFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format;
+  const longWeekdayFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    timeZone: 'UTC',
+  }).format;
+  const narrowWeekdayFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'narrow',
+    timeZone: 'UTC',
+  }).format;
+  const longMonthYearFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  }).format;
+  const dateFormatter = Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format;
+  const yearFormatter = Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format;
+
+  return {
+    dayFormatter,
+    fullDateFormatter,
+    longMonthYearFormatter,
+    longWeekdayFormatter,
+    narrowWeekdayFormatter,
+    dateFormatter,
+    yearFormatter,
+
+    locale,
+  };
+}
+
+interface ParamsComputeAllCalendars {
+  disabledDays: string;
+  disabledDates: string;
+  firstDayOfWeek: number;
+  max: Date;
+  min: Date;
+  selectedDate: Date;
+  showWeekNumber: boolean;
+  weekNumberType: WEEK_NUMBER_TYPE;
+
+  longWeekdayFormatterFn: DateTimeFormatter;
+  narrowWeekdayFormatterFn: DateTimeFormatter;
+  dayFormatterFn: DateTimeFormatter;
+  fullDateFormatterFn: DateTimeFormatter;
+}
+export interface AllCalendars {
+  weekdays: CalendarWeekdays[];
+  calendars: (CalendarDays['calendar'] | null)[];
+  disabledDatesSet: Set<number>;
+}
+export function computeAllCalendars({
+  disabledDays,
+  disabledDates,
+  firstDayOfWeek,
+  max,
+  min,
+  selectedDate,
+  showWeekNumber,
+  weekNumberType,
+
+  longWeekdayFormatterFn,
+  narrowWeekdayFormatterFn,
+  dayFormatterFn,
+  fullDateFormatterFn,
+}: ParamsComputeAllCalendars): AllCalendars {
+  let clt = window.performance.now();
+  const minTime = +min;
+  const maxTime = +max;
+  const weekdays = calendarWeekdays({
+    firstDayOfWeek,
+    showWeekNumber,
+
+    longWeekdayFormatter: longWeekdayFormatterFn,
+    narrowWeekdayFormatter: narrowWeekdayFormatterFn,
+  });
+  const allCalendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
+    const nFy = n.getUTCFullYear();
+    const nM = n.getUTCMonth();
+    const firstDayOfMonthTime = +new Date(Date.UTC(nFy, nM, 1));
+    const lastDayOfMonthTime = +new Date(Date.UTC(nFy, nM + 1, 0));
+
+    /**
+     * NOTE: Return `null` when one of the followings fulfills:-
+     *
+     *           minTime            maxTime
+     *       |--------|--------o--------|--------|
+     *   last day     |   valid dates   |     first day
+     *
+     *  - last day of the month < `minTime` - entire month should be disabled
+     *  - first day of the month > `maxTime` - entire month should be disabled
+     */
+    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
+      return null;
+    }
+
+    return calendarDays({
+      firstDayOfWeek,
+      showWeekNumber,
+      weekNumberType,
+      max,
+      min,
+      selectedDate: n,
+      disabledDatesList: splitString(disabledDates, o => +getResolvedDate(o)),
+      disabledDaysList: splitString(disabledDays, o => (showWeekNumber ? 1 : 0) + +(o)),
+      idOffset: idx * 10,
+
+      dayFormatter: dayFormatterFn,
+      fullDateFormatter: fullDateFormatterFn,
+    });
+  });
+  clt = window.performance.now() - clt;
+  const cltEl = document.body.querySelector('.calendar-render-time');
+  if (cltEl) {
+    cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
+  }
+
+  return {
+    weekdays,
+    calendars: allCalendars.map(n => n && n.calendar),
+      // allCalendars.reduce((p, n) => p.concat((n && [n.calendar])), [] as (CalendarDays)[]),
+    disabledDatesSet:
+      new Set(
+        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
+  };
+}
+
+interface ParamsComputeNextFocusedDate {
+  hasAltKey: boolean;
+  keyCode: KeyboardEvent['keyCode'];
+  focusedDate: Date;
+  selectedDate: Date;
+  disabledDaysSet: Set<number>;
+  disabledDatesSet: Set<number>;
+  minTime: number;
+  maxTime: number;
+}
 export function computeNextFocusedDate({
   hasAltKey,
   keyCode,
@@ -565,7 +742,7 @@ export function computeNextFocusedDate({
   disabledDatesSet,
   minTime,
   maxTime,
-}) {
+}: ParamsComputeNextFocusedDate) {
   /**
    * To update focused date,
    *
@@ -593,6 +770,7 @@ export function computeNextFocusedDate({
   const oldFy = focusedDate.getUTCFullYear();
   const oldM = focusedDate.getUTCMonth();
   const oldD = focusedDate.getUTCDate();
+  const focusedDateTime = +focusedDate;
 
   const sdFy = selectedDate.getUTCFullYear();
   const sdM = selectedDate.getUTCMonth();
@@ -608,8 +786,8 @@ export function computeNextFocusedDate({
       d = 1;
       break;
     }
-    case focusedDate === minTime && PREV_KEYCODES_SET.has(keyCode):
-    case focusedDate === maxTime && NEXT_KEYCODES_SET.has(keyCode):
+    case focusedDateTime === minTime && PREV_KEYCODES_SET.has(keyCode):
+    case focusedDateTime === maxTime && NEXT_KEYCODES_SET.has(keyCode):
       break;
     case keyCode === KEYCODES_MAP.ARROW_UP: {
       d -= 7;

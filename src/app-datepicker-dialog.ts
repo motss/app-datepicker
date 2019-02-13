@@ -20,7 +20,7 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   @property({ type: String })
-  public min: string;
+  public min?: string;
 
   @property({ type: String })
   public max: string = '2100-12-31';
@@ -38,7 +38,7 @@ export class AppDatepickerDialog extends LitElement {
   public disabledDays: string = '0,6';
 
   @property({ type: String })
-  public disableDates: string;
+  public disableDates?: string;
 
   @property({ type: String })
   public format: string = 'yyyy-MM-dd';
@@ -56,7 +56,7 @@ export class AppDatepickerDialog extends LitElement {
   public startView: string = 'calendar';
 
   @property({ type: String })
-  public value: string;
+  public value?: string;
 
   @property({ type: String })
   public dismissLabel: string = 'cancel';
@@ -68,19 +68,19 @@ export class AppDatepickerDialog extends LitElement {
   public noFocusTrap: boolean = false;
 
   @query('.scrim')
-  private _scrim: HTMLDivElement;
+  private _scrim?: HTMLDivElement;
 
   @query('.content-container')
-  private _contentContainer: HTMLDivElement;
+  private _contentContainer?: HTMLDivElement;
 
   @query('.datepicker')
-  private _datepicker: AppDatepicker;
+  private _datepicker?: AppDatepicker;
 
   @query('mwc-button[dialog-confirm]')
-  private _dialogConfirm: HTMLElement;
+  private _dialogConfirm?: HTMLElement;
 
-  private _focusable: HTMLElement;
-  private _focusTrap: FocusTrap;
+  private _focusable?: HTMLElement;
+  private _focusTrap?: FocusTrap;
 
   public constructor() {
     super();
@@ -91,12 +91,12 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   public open() {
-    const scrim = this._scrim;
-    const contentContainer = this._contentContainer;
+    const scrim = this._scrim!;
+    const contentContainer = this._contentContainer!;
 
     this.removeAttribute('aria-hidden');
     scrim.style.visibility = 'visible';
-    contentContainer.style.visibility = 'visible';
+    contentContainer!.style.visibility = 'visible';
 
     const keyframes: Keyframe[] = [
       { opacity: '0' },
@@ -110,12 +110,12 @@ export class AppDatepickerDialog extends LitElement {
     new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
       contentContainer.style.opacity = '1';
 
-      const focusable = this._focusable;
+      const focusable = this._focusable!;
 
       if (!this.noFocusTrap) {
         this._focusTrap = setFocusTrap(this, [
           focusable,
-          this._dialogConfirm,
+          this._dialogConfirm!,
         ])!;
       }
 
@@ -125,8 +125,8 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   public close() {
-    const scrim = this._scrim;
-    const contentContainer = this._contentContainer;
+    const scrim = this._scrim!;
+    const contentContainer = this._contentContainer!;
 
     scrim.style.visibility = '';
 
@@ -144,7 +144,7 @@ export class AppDatepickerDialog extends LitElement {
       contentContainer.style.visibility = '';
 
       this.setAttribute('aria-hidden', 'true');
-      if (!this.noFocusTrap) this._focusTrap.disconnect();
+      if (!this.noFocusTrap) this._focusTrap!.disconnect();
       dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
     });
   }
@@ -304,7 +304,7 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   private _updateValue() {
-    const datepicker = this._datepicker;
+    const datepicker = this._datepicker!;
     this.value = datepicker.value;
   }
 
@@ -313,4 +313,10 @@ export class AppDatepickerDialog extends LitElement {
     this._focusable = firstFocusableElement;
   }
 
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-datepicker-dialog': AppDatepickerDialog;
+  }
 }

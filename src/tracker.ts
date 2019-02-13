@@ -1,4 +1,4 @@
-type PointerType = MouseEvent | TouchEvent | PointerEvent;
+type PointerType = MouseEvent | TouchEvent | PointerEvent | TouchInit;
 interface ResolvedPointer {
   x: PointerEvent['pageX'];
   y: PointerEvent['pageY'];
@@ -11,16 +11,16 @@ interface FirstTouch {
 type DownCallback = (startPointer: ResolvedPointer, ev: PointerType) => void;
 type UpdateCallback =
   (changedPointer: ResolvedPointer, oldPointer: ResolvedPointer, ev: PointerType) => void;
-interface TrackerHandlers {
+export interface TrackerHandlers {
   down: DownCallback;
   move: UpdateCallback;
   up: UpdateCallback;
 }
 
-function toPointer(ev): ResolvedPointer {
-  const x = ev.pageX;
-  const y = ev.pageY;
-  const id = ev.identifier || ev.pointerId;
+function toPointer(ev: PointerType): ResolvedPointer {
+  const x = (ev as PointerEvent).pageX;
+  const y = (ev as PointerEvent).pageY;
+  const id = (ev as TouchInit).identifier || (ev as PointerEvent).pointerId;
 
   return { x, y, id: id == null ? 0 : id };
 }
@@ -39,6 +39,8 @@ function getFirstTouch(startPointer: ResolvedPointer | null, ev: PointerType): F
 }
 
 export class Tracker {
+  public readonly hasNativePointerEvent = 'PointerEvent' in window;
+
   private _startPointer: ResolvedPointer | null = null;
   private _started: boolean = false;
   // private readonly _element: HTMLElement;
@@ -49,6 +51,7 @@ export class Tracker {
   constructor(private _element: HTMLElement, handlers: TrackerHandlers) {
     const { down, move, up } = handlers;
 
+
     this._down = down;
     this._move = move;
     this._up = up;
@@ -58,7 +61,7 @@ export class Tracker {
     this._onUp = this._onUp.bind(this);
     this._isMouseEvent = this._isMouseEvent.bind(this);
 
-    if ('PointerEvent' in window) {
+    if (this.hasNativePointerEvent) {
       _element.addEventListener('pointerdown', this._onDown);
       _element.addEventListener('pointermove', this._onMove);
       _element.addEventListener('pointerup', this._onUp);
@@ -70,8 +73,23 @@ export class Tracker {
     }
   }
 
+  public disconnect() {
+    const rootEl = this._element;
+
+    if (this.hasNativePointerEvent) {
+      rootEl.removeEventListener('pointerdown', this._onDown);
+      rootEl.removeEventListener('pointermove', this._onMove);
+      rootEl.removeEventListener('pointerup', this._onUp);
+    } else {
+      rootEl.removeEventListener('mousedown', this._onDown);
+      rootEl.removeEventListener('touchstart', this._onDown);
+      rootEl.removeEventListener('touchmove', this._onMove);
+      rootEl.removeEventListener('touchend', this._onUp);
+    }
+  }
+
   private _onDown(ev: PointerType) {
-    ev.preventDefault();
+    (ev as MouseEvent).preventDefault();
 
     if (this._started) return;
 
@@ -96,8 +114,8 @@ export class Tracker {
     this._started = false;
   }
 
-  private _updatePointers(cb: (...args) => void, ev: PointerType, shouldReset?: boolean) {
-    ev.preventDefault();
+  private _updatePointers(cb: (...args: any[]) => void, ev: PointerType, shouldReset?: boolean) {
+    (ev as MouseEvent).preventDefault();
 
     if (!this._started) return;
 

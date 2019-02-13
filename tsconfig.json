@@ -1,20 +1,15 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
     "newLine": "LF",
+    "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "strictBindCallApply": true,
-    "strictNullChecks": true,
-    "traceResolution": false,
+    "resolveJsonModule": false,
+    "strict": true,
 
     "lib": [
       "dom",
@@ -36,7 +31,6 @@
       {
         "name": "typescript-lit-html-plugin",
         "tags": [
-          "css",
           "html",
           "svg"
         ]

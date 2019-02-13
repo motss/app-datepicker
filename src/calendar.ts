@@ -1,3 +1,6 @@
+import { AppDatepicker } from './app-datepicker';
+import { DateTimeFormatter } from './datepicker-helpers';
+
 export const enum WEEK_NUMBER_TYPE {
   FIRST_4_DAY_WEEK = 'first-4-day-week',
   FIRST_DAY_OF_YEAR = 'first-day-of-year',
@@ -40,7 +43,12 @@ function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
  * @param date {Date}
  * @return {}
  */
-function computeWeekNumber(weekNumberType: string, date: Date) {
+interface WeekNumber {
+  originalDate: Date;
+  fixedDate: Date;
+  weekNumber: number;
+}
+function computeWeekNumber(weekNumberType: string, date: Date): WeekNumber {
   const fixedNow = getFixedDateForWeekNumber(weekNumberType, date);
   const firstDayOfYear = new Date(Date.UTC(fixedNow.getUTCFullYear(), 0, 1));
   const wk = Math.ceil(((+fixedNow - +firstDayOfYear) / 864e5 + 1) / 7);
@@ -52,15 +60,26 @@ function computeWeekNumber(weekNumberType: string, date: Date) {
   };
 }
 
+interface ParamsCalendarWeekdays {
+  firstDayOfWeek: AppDatepicker['firstDayOfWeek'];
+  showWeekNumber: AppDatepicker['showWeekNumber'];
+
+  longWeekdayFormatter: DateTimeFormatter;
+  narrowWeekdayFormatter: DateTimeFormatter;
+}
+export interface CalendarWeekdays {
+  label: string;
+  value: string;
+}
 export function calendarWeekdays({
   firstDayOfWeek,
   showWeekNumber,
 
   longWeekdayFormatter,
   narrowWeekdayFormatter,
-}) {
+}: ParamsCalendarWeekdays): CalendarWeekdays[] {
   const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
-  const weekdays: unknown[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
+  const weekdays: CalendarWeekdays[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
 
   for (let i = 0, len = 7; i < len; i += 1) {
     const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
@@ -75,39 +94,64 @@ export function calendarWeekdays({
   return weekdays;
 }
 
-//  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-//  Days   31  28  31  30  31  30  31  31  30  31  30  31
-//   31?    0       2       4       6   7       9      11
-//   30?                3       5           8      10
-//  Feb?        1
-//  Su Mo Tu We Th Fr Sa    startDay - _firstDayOfWeek
-//                  1  2        5 - 0 < 0 ? 6 : 5 - 0;
-//  Mo Tu We Th Fr Sa Su
-//               1  2  3        5 - 1 < 0 ? 6 : 5 - 1;
-//  Tu We Th Fr Sa Su Mo
-//            1  2  3  4        5 - 2 < 0 ? 6 : 5 - 2;
-//  We Th Fr Sa Su Mo Tu
-//         1  2  3  4  5        5 - 3 < 0 ? 6 : 5 - 3;
-//  Th Fr Sa Su Mo Tu We
-//      1  2  3  4  5  6        5 - 4 < 0 ? 6 : 5 - 4;
-//  Fr Sa Su Mo Tu We Th
-//   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
-//  Sa Su Mo Tu We Th Fr
-//                     1        5 - 6 < 0 ? 6 : 5 - 6;
+interface ParamsCalendarDays {
+  firstDayOfWeek: AppDatepicker['firstDayOfWeek'];
+  selectedDate: AppDatepicker['_selectedDate'];
+  showWeekNumber: AppDatepicker['showWeekNumber'];
+  weekNumberType: AppDatepicker['weekNumberType'];
+  disabledDatesList: number[];
+  disabledDaysList: number[];
+  min: Date;
+  max: Date;
+  idOffset: number;
+
+  fullDateFormatter: DateTimeFormatter;
+  dayFormatter: DateTimeFormatter;
+}
+interface CalendarDay {
+  fullDate: ReturnType<Date['toJSON']> | null;
+  label: string | null;
+  value: string | null;
+  id: string;
+  disabled: boolean;
+}
+export interface CalendarDays {
+  calendar: CalendarDay[][];
+  disabledDates: number[];
+}
 export function calendarDays({
   firstDayOfWeek,
   selectedDate,
   showWeekNumber,
   weekNumberType,
-  disabledDates,
-  disabledDays,
+  disabledDatesList,
+  disabledDaysList,
   min,
   max,
   idOffset,
 
   fullDateFormatter,
   dayFormatter,
-}) {
+}: ParamsCalendarDays): CalendarDays {
+  //  Month Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+  //  Days   31  28  31  30  31  30  31  31  30  31  30  31
+  //   31?    0       2       4       6   7       9      11
+  //   30?                3       5           8      10
+  //  Feb?        1
+  //  Su Mo Tu We Th Fr Sa    startDay - _firstDayOfWeek
+  //                  1  2        5 - 0 < 0 ? 6 : 5 - 0;
+  //  Mo Tu We Th Fr Sa Su
+  //               1  2  3        5 - 1 < 0 ? 6 : 5 - 1;
+  //  Tu We Th Fr Sa Su Mo
+  //            1  2  3  4        5 - 2 < 0 ? 6 : 5 - 2;
+  //  We Th Fr Sa Su Mo Tu
+  //         1  2  3  4  5        5 - 3 < 0 ? 6 : 5 - 3;
+  //  Th Fr Sa Su Mo Tu We
+  //      1  2  3  4  5  6        5 - 4 < 0 ? 6 : 5 - 4;
+  //  Fr Sa Su Mo Tu We Th
+  //   1  2  3  4  5  6  7        5 - 5 < 0 ? 6 : 5 - 5;
+  //  Sa Su Mo Tu We Th Fr
+  //                     1        5 - 6 < 0 ? 6 : 5 - 6;
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
   const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
@@ -115,10 +159,12 @@ export function calendarDays({
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
-  const fullCalendar: unknown[][] = [];
-  const disabledDatesList: number[] = [];
+  const allCalendarRows: CalendarDay[][] = [];
+  const allDisabledDates: number[] = [];
+  const minTime = +min;
+  const maxTime = +max;
 
-  let calendarRow: unknown[] = [];
+  let calendarRow: CalendarDay[] = [];
   let day = 1;
   let row = 0;
   let col = 0;
@@ -133,7 +179,7 @@ export function calendarDays({
     if (col >= totalCol) {
       col = 0;
       row += 1;
-      fullCalendar.push(calendarRow);
+      allCalendarRows.push(calendarRow);
       calendarRow = [];
     }
 
@@ -150,10 +196,10 @@ export function calendarDays({
       calendarRow.push({
         fullDate: null,
         label: weekLabel,
-        value: weekNumber,
+        value: `${weekNumber}`,
         id: weekLabel,
         disabled: true,
-      });
+      } as CalendarDay);
       // calendarRow.push(weekNumber);
       continue;
     }
@@ -163,9 +209,9 @@ export function calendarDays({
         fullDate: null,
         label: null,
         value: null,
-        id: (day + idOffset),
+        id: `${(day + idOffset)}`,
         disabled: true,
-      });
+      } as CalendarDay);
       // calendarRow.push(null);
       continue;
     }
@@ -174,11 +220,11 @@ export function calendarDays({
     const dTime = +d;
     const fullDate = d.toJSON();
     const isDisabledDay =
-      disabledDays.some(ndd => ndd === col) ||
-      disabledDates.some(ndd => ndd === dTime) ||
-      (dTime < min || dTime > max);
+      disabledDaysList.some(ndd => ndd === col) ||
+      disabledDatesList.some(ndd => ndd === dTime) ||
+      (dTime < minTime || dTime > maxTime);
 
-    if (isDisabledDay) disabledDatesList.push(+d);
+    if (isDisabledDay) allDisabledDates.push(+d);
 
     calendarRow.push({
       fullDate,
@@ -187,7 +233,7 @@ export function calendarDays({
       value: stripLTRMark(dayFormatter(d)),
       id: fullDate,
       disabled: isDisabledDay,
-    });
+    } as CalendarDay);
     // calendarRow.push(day);
     day += 1;
 
@@ -195,75 +241,96 @@ export function calendarDays({
   }
 
   return {
-    calendar: fullCalendar,
-    disabledDates: disabledDatesList,
+    calendar: allCalendarRows,
+    disabledDates: allDisabledDates,
   };
 }
 
-export function calendar({
-  firstDayOfWeek,
-  showWeekNumber,
-  locale,
-  selectedDate,
-  weekNumberType,
-  disabledDates,
-  disabledDays,
-  min,
-  max,
-  idOffset,
+// interface ParamsFullCalendar {
+//   firstDayOfWeek: AppDatepicker['firstDayOfWeek'];
+//   showWeekNumber: AppDatepicker['showWeekNumber'];
+//   locale: AppDatepicker['locale'];
+//   selectedDate: AppDatepicker['_selectedDate'];
+//   weekNumberType: AppDatepicker['weekNumberType'];
+//   disabledDatesList: number[];
+//   disabledDaysList: number[];
+//   min: Date;
+//   max: Date;
+//   idOffset: number;
 
-  longWeekdayFormatterFn,
-  narrowWeekdayFormatterFn,
-  dayFormatterFn,
-  fullDateFormatterFn,
-}) {
-  const longWeekdayFormatter = longWeekdayFormatterFn == null
-    ? Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format
-    : longWeekdayFormatterFn;
-  const narrowWeekdayFormatter = narrowWeekdayFormatterFn == null
-    ? Intl.DateTimeFormat(locale, {
-      /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
-      // weekday: /^(short|narrow)/i.test(weekdayFormat)
-      //   ? weekdayFormat
-      //   : 'narrow',
-      weekday: 'narrow',
-      timeZone: 'UTC',
-    }).format
-    : narrowWeekdayFormatterFn;
-  const dayFormatter = dayFormatterFn == null
-    ? Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format
-    : dayFormatterFn;
-  const fullDateFormatter = fullDateFormatterFn == null
-    ? Intl.DateTimeFormat(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      weekday: 'short',
-      timeZone: 'UTC',
-    }).format
-    : fullDateFormatterFn;
+//   longWeekdayFormatterFn: DateTimeFormatter;
+//   narrowWeekdayFormatterFn: DateTimeFormatter;
+//   dayFormatterFn: DateTimeFormatter;
+//   fullDateFormatterFn: DateTimeFormatter;
+// }
+// interface Calendar {
+//   weekdays: CalendarWeekdays[];
+//   daysInMonth: CalendarDays;
+// }
+// export function fullCalendar({
+//   firstDayOfWeek,
+//   showWeekNumber,
+//   locale,
+//   selectedDate,
+//   weekNumberType,
+//   disabledDatesList,
+//   disabledDaysList,
+//   min,
+//   max,
+//   idOffset,
 
-  const weekdays = calendarWeekdays({
-    firstDayOfWeek,
-    showWeekNumber,
+//   longWeekdayFormatterFn,
+//   narrowWeekdayFormatterFn,
+//   dayFormatterFn,
+//   fullDateFormatterFn,
+// }: ParamsFullCalendar): Calendar {
+//   const longWeekdayFormatter = longWeekdayFormatterFn == null
+//     ? Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: 'UTC' }).format
+//     : longWeekdayFormatterFn;
+//   const narrowWeekdayFormatter = narrowWeekdayFormatterFn == null
+//     ? Intl.DateTimeFormat(locale, {
+//       /** NOTE: Only 'short' or 'narrow' (fallback) is allowed for 'weekdayFormat'. */
+//       // weekday: /^(short|narrow)/i.test(weekdayFormat)
+//       //   ? weekdayFormat
+//       //   : 'narrow',
+//       weekday: 'narrow',
+//       timeZone: 'UTC',
+//     }).format
+//     : narrowWeekdayFormatterFn;
+//   const dayFormatter = dayFormatterFn == null
+//     ? Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format
+//     : dayFormatterFn;
+//   const fullDateFormatter = fullDateFormatterFn == null
+//     ? Intl.DateTimeFormat(locale, {
+//       year: 'numeric',
+//       month: 'short',
+//       day: 'numeric',
+//       weekday: 'short',
+//       timeZone: 'UTC',
+//     }).format
+//     : fullDateFormatterFn;
 
-    longWeekdayFormatter,
-    narrowWeekdayFormatter,
-  });
-  const daysInMonth = calendarDays({
-    dayFormatter,
-    fullDateFormatter,
+//   const weekdays = calendarWeekdays({
+//     firstDayOfWeek,
+//     showWeekNumber,
 
-    firstDayOfWeek,
-    selectedDate,
-    showWeekNumber,
-    weekNumberType,
-    disabledDates,
-    disabledDays,
-    min,
-    max,
-    idOffset: idOffset == null ? 0 : idOffset,
-  });
+//     longWeekdayFormatter,
+//     narrowWeekdayFormatter,
+//   });
+//   const daysInMonth = calendarDays({
+//     dayFormatter,
+//     fullDateFormatter,
 
-  return { weekdays, daysInMonth };
-}
+//     firstDayOfWeek,
+//     selectedDate,
+//     showWeekNumber,
+//     weekNumberType,
+//     disabledDatesList,
+//     disabledDaysList,
+//     min,
+//     max,
+//     idOffset: idOffset == null ? 0 : idOffset,
+//   });
+
+//   return { weekdays, daysInMonth };
+// }
