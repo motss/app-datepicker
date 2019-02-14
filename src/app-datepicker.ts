@@ -546,7 +546,10 @@ export class AppDatepicker extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
 
-    this._calendarTracker!.disconnect();
+    /**
+     * NOTE: This could run before `_calendarTracker` is ready.
+     */
+    if (this._calendarTracker) this._calendarTracker.disconnect();
   }
 
   protected render() {
