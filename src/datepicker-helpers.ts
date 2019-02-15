@@ -20,7 +20,6 @@ export const enum KEYCODES_MAP {
 export interface FocusTrap {
   disconnect: () => void;
 }
-type AnyEventType = CustomEvent | KeyboardEvent | MouseEvent | PointerEvent;
 type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
 // export const KEYCODES_MAP = {
@@ -54,13 +53,13 @@ const NEXT_KEYCODES_SET = new Set([
 ]);
 const NEXT_DAY_KEYCODES_SET = new Set([
   KEYCODES_MAP.ARROW_UP,
-  KEYCODES_MAP.ARROW_RIGHT,
+  KEYCODES_MAP.ARROW_LEFT,
   KEYCODES_MAP.PAGE_UP,
   KEYCODES_MAP.HOME,
 ]);
 const PREV_DAY_KEYCODES_SET = new Set([
   KEYCODES_MAP.ARROW_DOWN,
-  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.ARROW_RIGHT,
   KEYCODES_MAP.PAGE_DOWN,
   KEYCODES_MAP.END,
 ]);
@@ -106,7 +105,7 @@ export function getResolvedDate(date?: number | Date | string | undefined): Date
    * expected but that is acceptable since we're relying on browser to tell us the local datetime
    * and we just use those values and treated them as if they were datetime to UTC.
    */
-  return new Date(Date.UTC(fy, m, d));
+  return toUTCDate(fy, m, d);
 }
 
 export function getResolvedLocale() {
@@ -124,9 +123,9 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const d = dateDate.getUTCDate();
 
   return [
-    new Date(Date.UTC(fy, m - 1, d)),
+    toUTCDate(fy, m - 1, d),
     dateDate,
-    new Date(Date.UTC(fy, m + 1, d)),
+    toUTCDate(fy, m + 1, d),
   ];
 }
 
@@ -137,13 +136,6 @@ export function toFormattedDateString(date: Date) {
   }
 
   return '';
-}
-
-export function findShadowTarget(ev: AnyEventType, callback: (n: HTMLElement) => boolean) {
-  return ev.composedPath().find((n) => {
-    if (n instanceof HTMLElement) return callback(n);
-    return false;
-  });
 }
 
 export function dispatchCustomEvent<T = CustomEvent['defaultPrevented']>(
@@ -225,6 +217,22 @@ export function targetScrollTo(target: HTMLElement, scrollToOptions: ScrollToOpt
   }
 }
 
+export function hasClass(target: HTMLElement, className: string) {
+  return target.classList.contains(className);
+}
+
+type AnyEventType = CustomEvent | KeyboardEvent | MouseEvent | PointerEvent;
+export function findShadowTarget(
+  ev: AnyEventType,
+  callback: (n: HTMLElement) => boolean
+) {
+  return ev.composedPath().find((n) => {
+    if (n instanceof HTMLElement) return callback(n);
+    return false;
+  });
+}
+
+
 export function stripLTRMark(s: string) {
   /**
    * NOTE: Due to IE11, a LTR mark (`\u200e` or `8206` in hex) will be included even when
@@ -255,6 +263,10 @@ export function arrayFilled(size: number) {
 
 export function isValidDate(date: string, dateDate: Date) {
   return !(date == null || !(dateDate instanceof Date) || isNaN(+dateDate));
+}
+
+export function toUTCDate(fullYear: number, month: number, day: number) {
+  return new Date(Date.UTC(fullYear, month, day));
 }
 
 export function splitString(dateString: string): string[];
@@ -504,72 +516,6 @@ export function splitString(
 //   }
 // }
 
-interface ParamsGetNextSelectableDate {
-  keyCode: KeyboardEvent['keyCode'];
-  disabledDaysSet: Set<number>;
-  disabledDatesSet: Set<number>;
-  focusedDate: Date;
-  maxTime: number;
-  minTime: number;
-}
-function getNextSelectableDate({
-  keyCode,
-  disabledDaysSet,
-  disabledDatesSet,
-  focusedDate,
-  maxTime,
-  minTime,
-}: ParamsGetNextSelectableDate) {
-  console.log(disabledDatesSet, keyCode, focusedDate);
-
-  const focusedDateTime = +focusedDate;
-  let isLessThanMinTime = focusedDateTime < minTime;
-  let isMoreThanMaxTime = focusedDateTime > maxTime;
-
-  let isDisabledDay =
-    isLessThanMinTime ||
-    isMoreThanMaxTime ||
-    disabledDaysSet.has((focusedDate as Date).getUTCDay()) ||
-    disabledDatesSet.has(focusedDateTime);
-
-  if (!isDisabledDay) return focusedDate;
-
-  const fy = focusedDate.getUTCFullYear();
-  const m = focusedDate.getUTCMonth();
-  let d = focusedDate.getUTCDate();
-  let selectableFocusedDate = focusedDate;
-  let selectableFocusedDateTime = 0;
-
-  while (isDisabledDay) {
-    switch (true) {
-      case isLessThanMinTime:
-      case !isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode): {
-        d += 1;
-        break;
-      }
-      case isMoreThanMaxTime:
-      case !isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode):
-      default: {
-        d -= 1;
-        break;
-      }
-    }
-
-    selectableFocusedDate = new Date(Date.UTC(fy, m, d));
-    selectableFocusedDateTime = +selectableFocusedDate;
-
-    isLessThanMinTime = selectableFocusedDateTime < minTime;
-    isMoreThanMaxTime = selectableFocusedDateTime > maxTime;
-    isDisabledDay =
-      isLessThanMinTime ||
-      isMoreThanMaxTime ||
-      disabledDaysSet.has(selectableFocusedDate.getUTCDay()) ||
-      disabledDatesSet.has(selectableFocusedDateTime);
-  }
-
-  return selectableFocusedDate;
-}
-
 export type DateTimeFormatter = (date?: number | Date | undefined) => string;
 export interface Formatters {
   dayFormatter: DateTimeFormatter;
@@ -675,8 +621,8 @@ export function computeAllCalendars({
   const allCalendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
     const nFy = n.getUTCFullYear();
     const nM = n.getUTCMonth();
-    const firstDayOfMonthTime = +new Date(Date.UTC(nFy, nM, 1));
-    const lastDayOfMonthTime = +new Date(Date.UTC(nFy, nM + 1, 0));
+    const firstDayOfMonthTime = +toUTCDate(nFy, nM, 1);
+    const lastDayOfMonthTime = +toUTCDate(nFy, nM + 1, 0);
 
     /**
      * NOTE: Return `null` when one of the followings fulfills:-
@@ -721,6 +667,75 @@ export function computeAllCalendars({
       new Set(
         allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
   };
+}
+
+interface ParamsGetNextSelectableDate {
+  keyCode: KeyboardEvent['keyCode'];
+  disabledDaysSet: Set<number>;
+  disabledDatesSet: Set<number>;
+  focusedDate: Date;
+  maxTime: number;
+  minTime: number;
+}
+function getNextSelectableDate({
+  keyCode,
+  disabledDaysSet,
+  disabledDatesSet,
+  focusedDate,
+  maxTime,
+  minTime,
+}: ParamsGetNextSelectableDate) {
+  console.log(disabledDatesSet, keyCode, focusedDate);
+
+  const focusedDateTime = +focusedDate;
+  let isLessThanMinTime = focusedDateTime < minTime;
+  let isMoreThanMaxTime = focusedDateTime > maxTime;
+
+  let isDisabledDay =
+    isLessThanMinTime ||
+    isMoreThanMaxTime ||
+    disabledDaysSet.has((focusedDate as Date).getUTCDay()) ||
+    disabledDatesSet.has(focusedDateTime);
+
+  if (!isDisabledDay) return focusedDate;
+
+  const fy = focusedDate.getUTCFullYear();
+  const m = focusedDate.getUTCMonth();
+  let d = focusedDate.getUTCDate();
+  let selectableFocusedDate = focusedDate;
+  let selectableFocusedDateTime = 0;
+
+  while (isDisabledDay) {
+    switch (true) {
+      /**
+       * FIXME(motss): Broken switch case. Need debugging.
+       */
+      case isLessThanMinTime:
+      case !isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode): {
+        d += 1;
+        break;
+      }
+      case isMoreThanMaxTime:
+      case !isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode):
+      default: {
+        d -= 1;
+        break;
+      }
+    }
+
+    selectableFocusedDate = toUTCDate(fy, m, d);
+    selectableFocusedDateTime = +selectableFocusedDate;
+
+    isLessThanMinTime = selectableFocusedDateTime < minTime;
+    isMoreThanMaxTime = selectableFocusedDateTime > maxTime;
+    isDisabledDay =
+      isLessThanMinTime ||
+      isMoreThanMaxTime ||
+      disabledDaysSet.has(selectableFocusedDate.getUTCDay()) ||
+      disabledDatesSet.has(selectableFocusedDateTime);
+  }
+
+  return selectableFocusedDate;
 }
 
 interface ParamsComputeNextFocusedDate {
@@ -832,7 +847,7 @@ export function computeNextFocusedDate({
     minTime,
     disabledDaysSet,
     disabledDatesSet,
-    focusedDate: new Date(Date.UTC(fy, m, d)),
+    focusedDate: toUTCDate(fy, m, d),
   });
 
   console.log(newFocusedDate);

@@ -1,4 +1,4 @@
-import { AllCalendars, Formatters } from './datepicker-helpers.js';
+import { AllCalendars, Formatters, hasClass, findShadowTarget, computeNextFocusedDate } from './datepicker-helpers.js';
 
 export const enum START_VIEW {
   CALENDAR = 'calendar',
@@ -9,16 +9,16 @@ export const enum MONTH_UPDATE_TYPE {
   NEXT = 'next',
 }
 
-interface ParamsRenderHeaderSelectorButton{
+interface ParamsRenderHeaderSelectorButton {
   selectedDate: Date;
   focusedDate: Date;
   startView: START_VIEW;
 }
-interface ParamsRenderDatepickerYearList{
+interface ParamsRenderDatepickerYearList {
   yearList: number[];
   selectedDate: Date;
 }
-interface ParamsRenderDatepickerCalendar{
+interface ParamsRenderDatepickerCalendar {
   showWeekNumber: boolean;
   focusedDate: Date;
   todayDate: Date;
@@ -28,8 +28,7 @@ interface ParamsRenderDatepickerCalendar{
 
 type Omit<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 type ClassProperties<T> = {
-  [P in keyof T]:
-    T[P] extends CallableFunction ? never : T[P];
+  [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
 }
 type ParamUpdatedChanged = ClassProperties<Omit<Omit<AppDatepicker, HTMLElement>, LitElement>>;
 
@@ -53,7 +52,6 @@ import {
   arrayFilled,
   computeAllCalendars,
   dispatchCustomEvent,
-  findShadowTarget,
   getResolvedDate,
   getResolvedLocale,
   isValidDate,
@@ -62,6 +60,7 @@ import {
   stripLTRMark,
   targetScrollTo,
   toFormattedDateString,
+  toUTCDate,
   updateFormatters,
   // computeNextFocusedDate,
 } from './datepicker-helpers.js';
@@ -670,8 +669,8 @@ export class AppDatepicker extends LitElement {
         move: (changedPointer, oldPointer) => {
           if (!started) return;
           dx += changedPointer.x - oldPointer.x;
-          abortDragIfHasMinDate = dx > 0 && dragEl.classList.contains('has-min-date');
-          abortDragIfHasMaxDate = dx < 0 && dragEl.classList.contains('has-max-date');
+          abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');;
+          abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
 
           if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
 
@@ -740,9 +739,7 @@ export class AppDatepicker extends LitElement {
                 'year--selected': selectedDate.getUTCFullYear() === n,
               })}"
               .year="${n}">
-              <div>${
-                stripLTRMark(this._formatters!.yearFormatter(new Date(Date.UTC(n, 0, 1))))
-              }</div>
+              <div>${stripLTRMark(this._formatters!.yearFormatter(toUTCDate(n, 0, 1)))}</div>
             </button>`)
         }</div>
     </div>
@@ -833,22 +830,23 @@ export class AppDatepicker extends LitElement {
      * styling when it first gets rendered. This workaround resolves the issue temporarily but still
      * good to dig into this further to find out the root cause and report it to the Polymer Team.
      */
-    const calendarViewFullCalendarContent = html`
-    <div
-      class="${classMap({
-        'calendar-view__full-calendar': true,
-        'has-min-date': hasMinDate,
-        'has-max-date': hasMaxDate,
-      })}"
-      tabindex="0"
-      @keyup="${(ev: KeyboardEvent) => this._updateMonthWithKeyboardFn(ev)}"
-    >${calendarsContent}</div>`;
+    const calendarViewFullCalendarContentCls = classMap({
+      'calendar-view__full-calendar': true,
+      'has-min-date': hasMinDate,
+      'has-max-date': hasMaxDate,
+    });
+    const calendarViewFullCalendarContent =
+      html`<div class="${calendarViewFullCalendarContentCls}">${calendarsContent}</div>`;
 
     /**
      * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
      */
     return html`
-    <div class="datepicker-body__calendar-view">
+    <div
+      class="datepicker-body__calendar-view"
+      tabindex="0"
+      @keyup="${(ev: KeyboardEvent) => this._updateMonthWithKeyboardFn(ev)}"
+    >
       <div class="calendar-view__month-selector">
         <div class="month-selector-container">
         ${hasMinDate
@@ -910,7 +908,7 @@ export class AppDatepicker extends LitElement {
       .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
       .then(() => {
         const newM = m + (isPreviousMonth ? -1 : 1);
-        this._selectedDate = new Date(Date.UTC(fy, newM, 1));
+        this._selectedDate = toUTCDate(fy, newM, 1);
 
         return this.updateComplete;
       })
@@ -921,7 +919,7 @@ export class AppDatepicker extends LitElement {
 
   private _updateYearFn(ev: MouseEvent) {
     const selectedYearEl =
-      findShadowTarget(ev, n => n.classList.contains('year-list-view__list-item'));
+      findShadowTarget(ev, (n: HTMLElement) => hasClass(n, 'year-list-view__list-item'));
 
     if (selectedYearEl == null) return;
 
@@ -936,19 +934,23 @@ export class AppDatepicker extends LitElement {
      *  - Update `_selectedDate` with selected year
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    this._selectedDate = new Date(Date.UTC(selectedYear, m, d));
+    this._selectedDate = toUTCDate(selectedYear, m, d);
     this._startView = START_VIEW.CALENDAR;
   }
 
   private _updateFocusedDateFn(ev: MouseEvent) {
-    const selectedDayEl = findShadowTarget(ev, n => n.classList.contains('full-calendar__day'));
+    const selectedDayEl = findShadowTarget(
+      ev,
+      (n: HTMLElement) => hasClass(n, 'full-calendar__day'));
 
     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
-    if (selectedDayEl == null
-      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--empty')
-      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--disabled')
-      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('day--focused')
-      || (selectedDayEl as HTMLTableDataCellElement).classList.contains('weekday-label')) return;
+    if (selectedDayEl == null ||
+      [
+        'day--empty',
+        'day--disabled',
+        'day--focused',
+        'weekday-label',
+      ].some(n => hasClass((selectedDayEl as HTMLTableDataCellElement), n))) return;
 
     const dateDate = new Date(this._selectedDate);
     const fy = dateDate.getUTCFullYear();
@@ -956,7 +958,7 @@ export class AppDatepicker extends LitElement {
     /** FIXME(motss): the content might not always be a number for other locale */
     const selectedDate = +((selectedDayEl as HTMLTableDataCellElement).textContent!);
 
-    this._focusedDate = new Date(Date.UTC(fy, m, selectedDate));
+    this._focusedDate = toUTCDate(fy, m, selectedDate);
   }
 
   private _trackingStartFn() {
@@ -1035,7 +1037,7 @@ export class AppDatepicker extends LitElement {
         const d = dateDate.getUTCDate();
         const nm = isPositive ? -1 : 1;
 
-        this._selectedDate = new Date(Date.UTC(fy, m + nm, d));
+        this._selectedDate = toUTCDate(fy, m + nm, d);
 
         return this.updateComplete;
       })
@@ -1073,7 +1075,24 @@ export class AppDatepicker extends LitElement {
     /** NOTE: Skip for TAB key and other non-related keys */
     if (keyCode === KEYCODES_MAP.TAB || !allActionKeyCodes.includes(keyCode)) return;
 
-    console.log(this._disabledDaysSet, this._disabledDatesSet);
+    const nextFocusedDate = computeNextFocusedDate({
+      keyCode,
+
+      disabledDatesSet: this._disabledDatesSet!,
+      disabledDaysSet: this._disabledDaysSet!,
+      focusedDate: this._focusedDate,
+      hasAltKey: ev.altKey,
+      maxTime: +this._max!,
+      minTime: +this._min!,
+      selectedDate: this._selectedDate,
+    });
+
+    console.log(
+      '[keyboard::updateMonth]',
+      this._disabledDaysSet,
+      this._disabledDatesSet,
+      nextFocusedDate);
+
     // const focusedDate = this._focusedDate;
     // const {
     //   shouldUpdateDate,

@@ -4,6 +4,7 @@ import { WEEK_NUMBER_TYPE } from '../calendar.js';
 import '../app-datepicker.js';
 import {
   getResolvedDate,
+  hasClass,
   stripLTRMark,
   toFormattedDateString,
 } from '../datepicker-helpers.js';
@@ -247,9 +248,7 @@ describe('app-datepicker', () => {
       isNotNull(lastDayBeforeMinDate, `Last day before 'min' not found`);
       isNotNull(focusedDate, 'Focused date not found');
 
-      isTrue(
-        !firstSelectableDate.classList.contains('day--disabled'),
-        'First selectable is disabled day');
+      isTrue(!hasClass(firstSelectableDate, 'day--disabled'), 'First selectable is disabled day');
       strictEqual(
         lastDayBeforeMinDate.getAttribute('aria-label'),
         'Jan 14, 2020',
@@ -267,7 +266,7 @@ describe('app-datepicker', () => {
       await el.updateComplete;
 
       isTrue(
-        !focusedDate.classList.contains('day--focused'),
+        !hasClass(focusedDate, 'day--focused'),
         `Focused date not matched ('value' < 'min')`);
       strictEqual(el.value, date13, `New 'value' not matched ('value' < 'min')`);
 
@@ -318,9 +317,7 @@ describe('app-datepicker', () => {
       isNotNull(firstDayAfterMaxDate, `Last day before 'min' not found`);
       isNotNull(focusedDate, 'Focused date not found');
 
-      isTrue(
-        !lastSelectableDate.classList.contains('day--disabled'),
-        'Last selectable is disabled day');
+      isTrue(!hasClass(lastSelectableDate, 'day--disabled'), 'Last selectable is disabled day');
       strictEqual(
         firstDayAfterMaxDate.getAttribute('aria-label'),
         'Jan 16, 2020',
@@ -337,9 +334,7 @@ describe('app-datepicker', () => {
       el.value = date17;
       await el.updateComplete;
 
-      isTrue(
-        !focusedDate.classList.contains('day--focused'),
-        `Focused date not matched ('value' > 'max')`);
+      isTrue(!hasClass(focusedDate, 'day--focused'), `Focused date not matched ('value' > 'max')`);
       strictEqual(el.value, date17, `New 'value' not matched ('value' > 'max')`);
 
       el.max = ''; /** Any falsy value, but here only tests empty string */
@@ -419,8 +414,7 @@ describe('app-datepicker', () => {
 
         const fullCalendarDays =
           shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day');
-        const firstDayInMonthIdx =
-          fullCalendarDays.findIndex(n => !n.classList.contains('day--empty'));
+        const firstDayInMonthIdx = fullCalendarDays.findIndex(n => !hasClass(n, 'day--empty'));
 
         strictEqual(el.firstDayOfWeek, i, `'firstDayOfWeek' (${i}) not matched after updated`);
         strictEqual(

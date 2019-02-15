@@ -1,5 +1,5 @@
 import { AppDatepicker } from './app-datepicker';
-import { DateTimeFormatter } from './datepicker-helpers';
+import { DateTimeFormatter, toUTCDate } from './datepicker-helpers';
 
 export const enum WEEK_NUMBER_TYPE {
   FIRST_4_DAY_WEEK = 'first-4-day-week',
@@ -12,9 +12,7 @@ import { stripLTRMark } from './datepicker-helpers';
 function normalizeWeekday(weekday: number) {
   if (weekday >= 0 && weekday < 7) return weekday;
 
-  const weekdayOffset = weekday < 0
-    ? 7 * Math.ceil(Math.abs(weekday / 7))
-    : 0;
+  const weekdayOffset = weekday < 0 ? 7 * Math.ceil(Math.abs(weekday / 7)) : 0;
 
   return (weekdayOffset + weekday) % 7;
 }
@@ -27,11 +25,11 @@ function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
 
   switch (weekNumberType) {
     case WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK:
-      return  new Date(Date.UTC(fy, m, d - wd + 3));
+      return toUTCDate(fy, m, d - wd + 3);
     case WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR:
-      return new Date(Date.UTC(fy, m, d - wd + 6));
+      return toUTCDate(fy, m, d - wd + 6);
     case WEEK_NUMBER_TYPE.FIRST_FULL_WEEK:
-      return new Date(Date.UTC(fy, m, d - wd));
+      return toUTCDate(fy, m, d - wd);
     default:
       return date;
   }
@@ -50,7 +48,7 @@ interface WeekNumber {
 }
 function computeWeekNumber(weekNumberType: string, date: Date): WeekNumber {
   const fixedNow = getFixedDateForWeekNumber(weekNumberType, date);
-  const firstDayOfYear = new Date(Date.UTC(fixedNow.getUTCFullYear(), 0, 1));
+  const firstDayOfYear = toUTCDate(fixedNow.getUTCFullYear(), 0, 1);
   const wk = Math.ceil(((+fixedNow - +firstDayOfYear) / 864e5 + 1) / 7);
 
   return {
@@ -82,7 +80,7 @@ export function calendarWeekdays({
   const weekdays: CalendarWeekdays[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
 
   for (let i = 0, len = 7; i < len; i += 1) {
-    const dateDate = new Date(Date.UTC(2017, 0, fixedFirstDayOfWeek + i));
+    const dateDate = toUTCDate(2017, 0, fixedFirstDayOfWeek + i);
 
     weekdays.push({
       /** NOTE: Stripping LTR mark away for x-browser compatibilities and consistency reason */
@@ -154,8 +152,8 @@ export function calendarDays({
   //                     1        5 - 6 < 0 ? 6 : 5 - 6;
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
-  const totalDays = new Date(Date.UTC(fy, selectedMonth + 1, 0)).getUTCDate();
-  const preFirstWeekday = new Date(Date.UTC(fy, selectedMonth, 1)).getUTCDay() - firstDayOfWeek;
+  const totalDays = toUTCDate(fy, selectedMonth + 1, 0).getUTCDate();
+  const preFirstWeekday = toUTCDate(fy, selectedMonth, 1).getUTCDay() - firstDayOfWeek;
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
@@ -190,7 +188,7 @@ export function calendarDays({
     if (!calendarFilled && showWeekNumber && col < 1) {
       const { weekNumber } = computeWeekNumber(
         weekNumberType,
-        new Date(Date.UTC(fy, selectedMonth, day - (row < 1 ? firstWeekday : 0))));
+        toUTCDate(fy, selectedMonth, day - (row < 1 ? firstWeekday : 0)));
       const weekLabel = `Week ${weekNumber}`;
 
       calendarRow.push({
@@ -216,7 +214,7 @@ export function calendarDays({
       continue;
     }
 
-    const d = new Date(Date.UTC(fy, selectedMonth, day));
+    const d = toUTCDate(fy, selectedMonth, day);
     const dTime = +d;
     const fullDate = d.toJSON();
     const isDisabledDay =
