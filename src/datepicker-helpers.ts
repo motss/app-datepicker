@@ -39,31 +39,24 @@ type SplitStringCb = (n: string, i: number, a: string[]) => number;
 //   ARROW_RIGHT: 39,
 //   ARROW_DOWN: 40,
 // };
-const PREV_KEYCODES_SET = new Set([
+const UP_KEYS = [
   KEYCODES_MAP.ARROW_UP,
-  KEYCODES_MAP.ARROW_LEFT,
   KEYCODES_MAP.PAGE_UP,
   KEYCODES_MAP.HOME,
-]);
-const NEXT_KEYCODES_SET = new Set([
+];
+const DOWN_KEYS = [
   KEYCODES_MAP.ARROW_DOWN,
-  KEYCODES_MAP.ARROW_RIGHT,
   KEYCODES_MAP.PAGE_DOWN,
   KEYCODES_MAP.END,
-]);
-const NEXT_DAY_KEYCODES_SET = new Set([
-  KEYCODES_MAP.ARROW_UP,
-  KEYCODES_MAP.ARROW_RIGHT,
-  KEYCODES_MAP.PAGE_UP,
-  KEYCODES_MAP.HOME,
-]);
-const PREV_DAY_KEYCODES_SET = new Set([
-  KEYCODES_MAP.ARROW_DOWN,
-  KEYCODES_MAP.ARROW_LEFT,
-  KEYCODES_MAP.PAGE_DOWN,
-  KEYCODES_MAP.END,
-]);
+];
 const dtFmt = Intl && Intl.DateTimeFormat;
+
+const PREV_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_LEFT, ...UP_KEYS]);
+const NEXT_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_RIGHT, ...DOWN_KEYS]);
+const NEXT_DAY_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_RIGHT, ...UP_KEYS]);
+const PREV_DAY_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_LEFT, ...DOWN_KEYS]);
+export const ALL_NAV_KEYS_SET =
+  new Set([KEYCODES_MAP.ARROW_LEFT, KEYCODES_MAP.ARROW_RIGHT, ...UP_KEYS, ...DOWN_KEYS]);
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);
@@ -135,7 +128,7 @@ export function toFormattedDateString(date: Date) {
   return '';
 }
 
-export function dispatchCustomEvent<T = CustomEvent['defaultPrevented']>(
+export function dispatchCustomEvent<T = CustomEvent['detail']>(
   target: HTMLElement,
   eventName: string,
   detail: T
@@ -290,46 +283,37 @@ function formatterPartial(formatter: Intl.DateTimeFormat): DateTimeFormatter {
   return n => formatter.format(n).replace(/\u200e/gi, '');
 }
 export function updateFormatters(locale: string): Formatters {
-  const dayFmt = dtFmt(locale, { day: 'numeric', timeZone: 'UTC' });
-  const fullDateFmt = dtFmt(locale, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
-  });
-  const longWeekdayFmt = dtFmt(locale, {
-    weekday: 'long',
-    timeZone: 'UTC',
-  });
-  const narrowWeekdayFmt = dtFmt(locale, {
-    weekday: 'narrow',
-    timeZone: 'UTC',
-  });
-  const longMonthYearFmt = dtFmt(locale, {
-    year: 'numeric',
-    month: 'long',
-    timeZone: 'UTC',
-  });
   const dateFmt = dtFmt(locale, {
+    timeZone: 'UTC',
     weekday: 'short',
     month: 'short',
     day: 'numeric',
-    timeZone: 'UTC',
   });
-  const yearFmt = dtFmt(locale, {
+  const dayFmt = dtFmt(locale, { timeZone: 'UTC', day: 'numeric' });
+  const fullDateFmt = dtFmt(locale, {
+    timeZone: 'UTC',
     year: 'numeric',
-    timeZone: 'UTC',
+    month: 'short',
+    day: 'numeric',
   });
+  const longMonthYearFmt = dtFmt(locale, {
+    timeZone: 'UTC',
+    year: 'numeric',
+    month: 'long',
+  });
+  const longWeekdayFmt = dtFmt(locale, { timeZone: 'UTC', weekday: 'long' });
+  const narrowWeekdayFmt = dtFmt(locale, { timeZone: 'UTC', weekday: 'narrow' });
+  const yearFmt = dtFmt(locale, { timeZone: 'UTC', year: 'numeric' });
 
   return {
     locale,
 
+    dateFormatter: formatterPartial(dateFmt),
     dayFormatter: formatterPartial(dayFmt),
     fullDateFormatter: formatterPartial(fullDateFmt),
     longMonthYearFormatter: formatterPartial(longMonthYearFmt),
     longWeekdayFormatter: formatterPartial(longWeekdayFmt),
     narrowWeekdayFormatter: formatterPartial(narrowWeekdayFmt),
-    dateFormatter: formatterPartial(dateFmt),
     yearFormatter: formatterPartial(yearFmt),
   };
 }

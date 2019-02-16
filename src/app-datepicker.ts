@@ -29,6 +29,7 @@ import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  ALL_NAV_KEYS_SET,
   arrayFilled,
   computeAllCalendars,
   computeNextFocusedDate,
@@ -46,19 +47,6 @@ import {
   updateFormatters,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
-
-const allActionKeyCodes = [
-  KEYCODES_MAP.ARROW_DOWN,
-  KEYCODES_MAP.ARROW_LEFT,
-  KEYCODES_MAP.ARROW_RIGHT,
-  KEYCODES_MAP.ARROW_UP,
-  KEYCODES_MAP.END,
-  KEYCODES_MAP.HOME,
-  KEYCODES_MAP.PAGE_DOWN,
-  KEYCODES_MAP.PAGE_UP,
-  KEYCODES_MAP.ENTER,
-  KEYCODES_MAP.SPACE,
-];
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -1017,8 +1005,14 @@ export class AppDatepicker extends LitElement {
   private _updateMonthWithKeyboardFn(ev: KeyboardEvent) {
     const keyCode = ev.keyCode;
 
+    /** NOTE: Skip updating and fire an event to notify of updated focused date. */
+    if (KEYCODES_MAP.ENTER === keyCode || KEYCODES_MAP.SPACE === keyCode) {
+      dispatchCustomEvent(this, 'datepicker-value-updated', { value: this.value });
+      return;
+    }
+
     /** NOTE: Skip for TAB key and other non-related keys */
-    if (keyCode === KEYCODES_MAP.TAB || !allActionKeyCodes.includes(keyCode)) return;
+    if (keyCode === KEYCODES_MAP.TAB || !ALL_NAV_KEYS_SET.has(keyCode)) return;
 
     const selectedDate = this._selectedDate;
 

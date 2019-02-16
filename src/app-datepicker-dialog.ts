@@ -19,6 +19,97 @@ export class AppDatepickerDialog extends LitElement {
     return 'app-datepicker-dialog';
   }
 
+  static get styles() {
+    return [
+      datepickerVariables,
+      css`
+      :host {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: var(--app-datepicker-dialog-z-index, 24);
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+      :host([opened]) > .scrim,
+      :host([opened]) > .content-container {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .scrim,
+      .content-container {
+        pointer-events: auto;
+      }
+
+      .scrim {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, .25);
+        visibility: hidden;
+        z-index: 22;
+      }
+
+      .content-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        max-width: 100%;
+        max-height: 100%;
+        background-color: #fff;
+        transform: translate3d(-50%, -50%, 0);
+        border-radius: var(--app-datepicker-border-radius);
+        will-change: transform, opacity;
+        overflow: hidden;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 23;
+      }
+
+      .datepicker {
+        --app-datepicker-border-bottom-left-radius: 0;
+        --app-datepicker-border-bottom-right-radius: 0;
+      }
+
+      .actions-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        margin: 0;
+        padding: 12px;
+        background-color: inherit;
+        color: var(--app-datepicker-primary-color);
+      }
+
+      mwc-button + mwc-button {
+        margin: 0 0 0 8px;
+      }
+
+      /**
+       * NOTE: IE11-only fix via CSS hack.
+       *
+       * Visit https://bit.ly/2DEUNZu|CSS for more relevant browsers' hacks.
+       */
+      @media screen and (-ms-high-contrast: none) {
+        mwc-button[dialog-dismiss] {
+          min-width: 10ch;
+        }
+      }
+      `,
+    ];
+  }
+
   @property({ type: String })
   public min?: string;
 
@@ -152,103 +243,10 @@ export class AppDatepickerDialog extends LitElement {
   protected firstUpdated() {
     this._updateValue();
     this.addEventListener('keyup', (ev: KeyboardEvent) => {
-      if (ev.keyCode === KEYCODES_MAP.ESCAPE) {
-        this.close();
-      }
-    });
+      if (ev.keyCode === KEYCODES_MAP.ESCAPE) this.close();
+    }, { passive: true });
 
     dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
-  }
-
-  static get styles() {
-    return [
-      datepickerVariables,
-      css`
-      :host {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: var(--app-datepicker-dialog-z-index, 24);
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
-      }
-      :host([opened]) > .scrim,
-      :host([opened]) > .content-container {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      .scrim,
-      .content-container {
-        pointer-events: auto;
-      }
-
-      .scrim {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, .25);
-        visibility: hidden;
-        z-index: 22;
-      }
-
-      .content-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        max-width: 100%;
-        max-height: 100%;
-        background-color: #fff;
-        transform: translate3d(-50%, -50%, 0);
-        border-radius: var(--app-datepicker-border-radius);
-        will-change: transform, opacity;
-        overflow: hidden;
-        visibility: hidden;
-        opacity: 0;
-        z-index: 23;
-      }
-
-      .datepicker {
-        --app-datepicker-border-bottom-left-radius: 0;
-        --app-datepicker-border-bottom-right-radius: 0;
-      }
-
-      .actions-container {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-
-        margin: 0;
-        padding: 12px;
-        background-color: inherit;
-        color: var(--app-datepicker-primary-color);
-      }
-
-      mwc-button + mwc-button {
-        margin: 0 0 0 8px;
-      }
-
-      /**
-       * NOTE: IE11-only fix via CSS hack.
-       *
-       * Visit https://bit.ly/2DEUNZu|CSS for more relevant browsers' hacks.
-       */
-      @media screen and (-ms-high-contrast: none) {
-        mwc-button[dialog-dismiss] {
-          min-width: 10ch;
-        }
-      }
-      `,
-    ];
   }
 
   protected render() {
@@ -286,6 +284,7 @@ export class AppDatepickerDialog extends LitElement {
         .startView="${startView}"
         .value="${value}"
         @datepicker-first-updated="${this._setFocusable}"
+        @datepicker-value-updated="${this._update}"
       ></app-datepicker>
 
       <div class="actions-container">
@@ -302,8 +301,7 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   private _updateValue() {
-    const datepicker = this._datepicker!;
-    this.value = datepicker.value;
+    this.value = this._datepicker!.value;
   }
 
   private _setFocusable(ev: CustomEvent) {

@@ -96,8 +96,12 @@
       datepickerDialogEl.open();
     });
 
+    datepickerDialogEl.addEventListener('datepicker-dialog-opened', (ev) => {
+      document.body.style.overflow = 'hidden';
+    });
     datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
       inputEl.value = ev.detail.value;
+      document.body.style.overflow = '';
     });
     datepickerDialogEl.addEventListener('datepicker-dialog-first-updated', (ev) => {
       inputEl.value = ev.detail.value;
@@ -134,13 +138,14 @@
     }
 
     h1 {
+      margin: 0;
       padding: 0 16px;
     }
 
     section {
       max-width: 600px;
       width: 100%;
-      margin: 16px auto;
+      margin: 16px auto 0;
     }
 
     app-datepicker {
@@ -148,28 +153,32 @@
     }
   </style>
 
-  <h1>app-datepicker</h1>
+  <header>
+    <h1>app-datepicker</h1>
+  </header>
 
-  <section>
-    <div class="calendar-render-time"></div>
-    <pre>PointerEvent: <input type="checkbox" disabled></pre>
-    <!-- <app-datepicker showWeekNumber landscape></app-datepicker> -->
-    <!-- <app-datepicker landscape></app-datepicker> -->
-    <!-- <app-datepicker showWeekNumber></app-datepicker> -->
-    <!-- <app-datepicker></app-datepicker> -->
-    <!-- <app-datepicker startView="year"></app-datepicker> -->
-    <!-- <test-rerender></test-rerender> -->
+  <main>
+    <section>
+      <div class="calendar-render-time"></div>
+      <pre>PointerEvent: <input type="checkbox" disabled></pre>
+      <!-- <app-datepicker showWeekNumber landscape></app-datepicker> -->
+      <!-- <app-datepicker landscape></app-datepicker> -->
+      <!-- <app-datepicker showWeekNumber></app-datepicker> -->
+      <!-- <app-datepicker></app-datepicker> -->
+      <!-- <app-datepicker startView="year"></app-datepicker> -->
+      <!-- <test-rerender></test-rerender> -->
 
-    <label for="selectedDate">
-      <span id="selectedDate">Selected date</span>
-      <input type="text" disabled>
-    </label>
+      <label for="selectedDate">
+        <span id="selectedDate">Selected date</span>
+        <input type="text" disabled>
+      </label>
 
-    <app-datepicker></app-datepicker>
+      <app-datepicker></app-datepicker>
 
-    <mwc-button>Select date</mwc-button>
-    <app-datepicker-dialog></app-datepicker-dialog>
-  </section>
+      <mwc-button>Select date</mwc-button>
+      <app-datepicker-dialog></app-datepicker-dialog>
+    </section>
+  </main>
 </body>
 
 </html>
