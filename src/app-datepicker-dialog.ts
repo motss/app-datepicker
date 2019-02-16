@@ -40,9 +40,6 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: String })
   public disableDates?: string;
 
-  @property({ type: String })
-  public format: string = 'yyyy-MM-dd';
-
   @property({ type: Boolean })
   public landscape: boolean = false;
 
@@ -66,6 +63,9 @@ export class AppDatepickerDialog extends LitElement {
 
   @property({ type: Boolean })
   public noFocusTrap: boolean = false;
+
+  // @property({ type: String })
+  // public format: string = 'yyyy-MM-dd';
 
   @query('.scrim')
   private _scrim?: HTMLDivElement;
@@ -259,7 +259,6 @@ export class AppDatepickerDialog extends LitElement {
     const weekNumberType = this.weekNumberType;
     const disabledDays = this.disabledDays;
     const disabledDates = this.disableDates;
-    const format = this.format;
     const landscape = this.landscape;
     const locale = this.locale;
     const dragRatio = this.dragRatio;
@@ -281,7 +280,6 @@ export class AppDatepickerDialog extends LitElement {
         .weekNumberType="${weekNumberType}"
         .disabledDays="${disabledDays}"
         .disabledDates="${disabledDates}"
-        .format="${format}"
         .landscape="${landscape}"
         .locale="${locale}"
         .dragRatio="${dragRatio}"
