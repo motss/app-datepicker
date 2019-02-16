@@ -40,7 +40,6 @@ import {
   isValidDate,
   KEYCODES_MAP,
   splitString,
-  stripLTRMark,
   targetScrollTo,
   toFormattedDateString,
   toUTCDate,
@@ -635,7 +634,7 @@ export class AppDatepicker extends LitElement {
   private _renderHeaderSelectorButton() {
     const { yearFormatter, dateFormatter } = this._formatters!;
     const isCalendarView = this.startView === START_VIEW.CALENDAR;
-    const formattedDate = stripLTRMark(dateFormatter(this._focusedDate));
+    const formattedDate = dateFormatter(this._focusedDate);
     const formatterFy = yearFormatter(new Date(this._selectedDate));
 
     return html`
@@ -667,7 +666,7 @@ export class AppDatepicker extends LitElement {
             'year--selected': selectedDateFy === n,
           })}"
           .year="${n}">
-          <div>${stripLTRMark(yearFormatter(toUTCDate(n, 0, 1)))}</div>
+          <div>${yearFormatter(toUTCDate(n, 0, 1))}</div>
         </button>`)
       }</div>
     </div>
@@ -858,7 +857,7 @@ export class AppDatepicker extends LitElement {
     });
 
     return new Promise(yay => (dragAnimation.onfinish = yay))
-      .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
+      .then(() => new Promise(yay => requestAnimationFrame(yay)))
       .then(() => {
         const newM = m + (isPreviousMonth ? -1 : 1);
         this._selectedDate = toUTCDate(fy, newM, 1);
@@ -963,7 +962,7 @@ export class AppDatepicker extends LitElement {
       const restoreDragAnimation = this._animateCalendar(calendarViewFullCalendar, initialX, newX);
 
       return new Promise(yay => (restoreDragAnimation.onfinish = yay))
-        .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
+        .then(() => new Promise(yay => requestAnimationFrame(yay)))
         .then(() => {
           calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
           return this.updateComplete;
@@ -975,7 +974,7 @@ export class AppDatepicker extends LitElement {
 
     /** NOTE(motss): Drag to next calendar when drag ratio meets threshold value */
     return new Promise(yay => (dragAnimation.onfinish = yay))
-      .then(() => new Promise(yay => window.requestAnimationFrame(yay)))
+      .then(() => new Promise(yay => requestAnimationFrame(yay)))
       .then(() => {
         const dateDate = new Date(this._selectedDate);
         const fy = dateDate.getUTCFullYear();

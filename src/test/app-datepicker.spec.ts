@@ -5,8 +5,8 @@ import '../app-datepicker.js';
 import {
   getResolvedDate,
   hasClass,
-  stripLTRMark,
   toFormattedDateString,
+  updateFormatters,
 } from '../datepicker-helpers.js';
 import {
   getComputedStylePropertyValue,
@@ -37,6 +37,12 @@ const defaultLocale = 'en-US';
 const date13 = '2020-01-13';
 const date15 = '2020-01-15';
 const date17 = '2020-01-17';
+const {
+  dateFormatter,
+  dayFormatter,
+  fullDateFormatter,
+  yearFormatter,
+} = updateFormatters(defaultLocale);
 
 describe('app-datepicker', () => {
   describe('initial render (calendar view)', () => {
@@ -80,13 +86,7 @@ describe('app-datepicker', () => {
 
       const now = getResolvedDate();
       const fy = now.getUTCFullYear().toString();
-      const formattedDate = stripLTRMark(Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-        day: 'numeric',
-        month: 'short',
-        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
-        timeZone: 'UTC',
-      }).format(now));
+      const formattedDate = dateFormatter(now);
 
       strictEqual(
         el.value,
@@ -109,18 +109,8 @@ describe('app-datepicker', () => {
         shadowQuery(el, '.day--today.day--focused > .calendar-day');
 
       const now = getResolvedDate();
-      const formattedDate = stripLTRMark(Intl.DateTimeFormat('en-US', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
-        timeZone: 'UTC',
-      }).format(now));
-      const formattedDay = stripLTRMark(Intl.DateTimeFormat('en-US', {
-        day: 'numeric',
-        /** NOTE: Internally, the datepicker defaults to datetime to UTC */
-        timeZone: 'UTC',
-      }).format(now));
+      const formattedDate = fullDateFormatter(now);
+      const formattedDay = dayFormatter(now);
 
       isTrue(dayTodayEl.isEqualNode(dayFocusedEl), `today's date != focused date`);
       strictEqual(el.value, toFormattedDateString(now));
@@ -131,7 +121,7 @@ describe('app-datepicker', () => {
       );
       strictEqual(
         getShadowInnerHTML(highlightedCalendarDayEl),
-        stripLTRMark(formattedDay),
+        formattedDay,
         'Highlighted day not matched'
       );
     });
@@ -176,10 +166,7 @@ describe('app-datepicker', () => {
 
       const now = getResolvedDate();
       const fy = now.getFullYear();
-      const formattedYear = stripLTRMark(Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        timeZone: 'UTC',
-      }).format(now));
+      const formattedYear = yearFormatter(now);
 
       isNotNull(yearSelectedEl, `Selected year not found`);
       isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);

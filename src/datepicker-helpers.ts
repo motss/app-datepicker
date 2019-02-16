@@ -232,26 +232,6 @@ export function findShadowTarget(
   });
 }
 
-export function stripLTRMark(s: string) {
-  /**
-   * NOTE: Due to IE11, a LTR mark (`\u200e` or `8206` in hex) will be included even when
-   * `locale=en-US` is used. This helper function strips that away for consistency's sake as
-   * modern browsers do not include that.
-   *
-   *   ```js
-   *   const now = new Date('2018-01-01');
-   *   const a = Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }).format(now);
-   *
-   *   a.split(''); // On IE11, this returns ['', '1'].
-   *   ```
-   */
-  if (typeof s !== 'string' || !s.length) return s;
-
-  const splitted = s.split('');
-
-  return splitted.length > 1 ? s.replace(/\u200e/gi, '') : s;
-}
-
 export function arrayFilled(size: number) {
   const filled: number[] = [];
   for (let i = 0; i < size; i += 1) {
@@ -297,37 +277,52 @@ export interface Formatters {
 
   locale: string;
 }
+function formatterPartial(locale: string, options: Intl.DateTimeFormatOptions): DateTimeFormatter {
+  /**
+   * NOTE: Due to IE11, a LTR mark (`\u200e` or `8206` in hex) will be included even when
+   * `locale=en-US` is used. This helper function strips that away for consistency's sake as
+   * modern browsers do not include that.
+   *
+   *   ```js
+   *   const now = new Date('2018-01-01');
+   *   const a = Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }).format(now);
+   *
+   *   a.split(''); // On IE11, this returns ['', '1'].
+   *   ```
+   */
+  return n => Intl.DateTimeFormat(locale, options).format(n).replace(/\u200e/gi, '');
+}
 export function updateFormatters(locale: string): Formatters {
-  const dayFormatter = Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format;
-  const fullDateFormatter = Intl.DateTimeFormat(locale, {
+  const dayFormatter = formatterPartial(locale, { day: 'numeric', timeZone: 'UTC' });
+  const fullDateFormatter = formatterPartial(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
-  }).format;
-  const longWeekdayFormatter = Intl.DateTimeFormat(locale, {
+  });
+  const longWeekdayFormatter = formatterPartial(locale, {
     weekday: 'long',
     timeZone: 'UTC',
-  }).format;
-  const narrowWeekdayFormatter = Intl.DateTimeFormat(locale, {
+  });
+  const narrowWeekdayFormatter = formatterPartial(locale, {
     weekday: 'narrow',
     timeZone: 'UTC',
-  }).format;
-  const longMonthYearFormatter = Intl.DateTimeFormat(locale, {
+  });
+  const longMonthYearFormatter = formatterPartial(locale, {
     year: 'numeric',
     month: 'long',
     timeZone: 'UTC',
-  }).format;
-  const dateFormatter = Intl.DateTimeFormat(locale, {
+  });
+  const dateFormatter = formatterPartial(locale, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
-  }).format;
-  const yearFormatter = Intl.DateTimeFormat(locale, {
+  });
+  const yearFormatter = formatterPartial(locale, {
     year: 'numeric',
     timeZone: 'UTC',
-  }).format;
+  });
 
   return {
     dayFormatter,
@@ -377,7 +372,7 @@ export function computeAllCalendars({
   dayFormatterFn,
   fullDateFormatterFn,
 }: ParamsComputeAllCalendars): AllCalendars {
-  let clt = window.performance.now();
+  let clt = performance.now();
   const minTime = +min;
   const maxTime = +max;
   const weekdays = calendarWeekdays({
@@ -422,7 +417,7 @@ export function computeAllCalendars({
       fullDateFormatter: fullDateFormatterFn,
     });
   });
-  clt = window.performance.now() - clt;
+  clt = performance.now() - clt;
   const cltEl = document.body.querySelector('.calendar-render-time');
   if (cltEl) {
     cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
