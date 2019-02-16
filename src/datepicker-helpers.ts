@@ -53,13 +53,13 @@ const NEXT_KEYCODES_SET = new Set([
 ]);
 const NEXT_DAY_KEYCODES_SET = new Set([
   KEYCODES_MAP.ARROW_UP,
-  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.ARROW_RIGHT,
   KEYCODES_MAP.PAGE_UP,
   KEYCODES_MAP.HOME,
 ]);
 const PREV_DAY_KEYCODES_SET = new Set([
   KEYCODES_MAP.ARROW_DOWN,
-  KEYCODES_MAP.ARROW_RIGHT,
+  KEYCODES_MAP.ARROW_LEFT,
   KEYCODES_MAP.PAGE_DOWN,
   KEYCODES_MAP.END,
 ]);
@@ -231,7 +231,6 @@ export function findShadowTarget(
     return false;
   });
 }
-
 
 export function stripLTRMark(s: string) {
   /**
@@ -685,8 +684,6 @@ function getNextSelectableDate({
   maxTime,
   minTime,
 }: ParamsGetNextSelectableDate) {
-  console.log(disabledDatesSet, keyCode, focusedDate);
-
   const focusedDateTime = +focusedDate;
   let isLessThanMinTime = focusedDateTime < minTime;
   let isMoreThanMaxTime = focusedDateTime > maxTime;
@@ -699,38 +696,44 @@ function getNextSelectableDate({
 
   if (!isDisabledDay) return focusedDate;
 
-  const fy = focusedDate.getUTCFullYear();
-  const m = focusedDate.getUTCMonth();
-  let d = focusedDate.getUTCDate();
-  let selectableFocusedDate = focusedDate;
   let selectableFocusedDateTime = 0;
+  let selectableFocusedDate =
+    isLessThanMinTime
+      ? new Date(isMoreThanMaxTime ? maxTime : minTime)
+      : focusedDate;
+
+  const fy = selectableFocusedDate.getUTCFullYear();
+  const m = selectableFocusedDate.getUTCMonth();
+  let d = selectableFocusedDate.getUTCDate();
 
   while (isDisabledDay) {
-    switch (true) {
-      /**
-       * FIXME(motss): Broken switch case. Need debugging.
-       */
-      case isLessThanMinTime:
-      case !isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode): {
-        d += 1;
-        break;
-      }
-      case isMoreThanMaxTime:
-      case !isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode):
-      default: {
-        d -= 1;
-        break;
-      }
-    }
+    if (isLessThanMinTime || (!isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode))) d += 1;
+    if (isMoreThanMaxTime || (!isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode))) d -= 1;
 
     selectableFocusedDate = toUTCDate(fy, m, d);
     selectableFocusedDateTime = +selectableFocusedDate;
 
-    isLessThanMinTime = selectableFocusedDateTime < minTime;
-    isMoreThanMaxTime = selectableFocusedDateTime > maxTime;
+    if (!isLessThanMinTime) {
+      isLessThanMinTime = selectableFocusedDateTime < minTime;
+
+      if (isLessThanMinTime) {
+        selectableFocusedDate = new Date(minTime);
+        selectableFocusedDateTime = +selectableFocusedDate;
+        d = selectableFocusedDate.getUTCDate();
+      }
+    }
+
+    if (!isMoreThanMaxTime) {
+      isMoreThanMaxTime = selectableFocusedDateTime > maxTime;
+
+      if (isMoreThanMaxTime) {
+        selectableFocusedDate = new Date(maxTime);
+        selectableFocusedDateTime = +selectableFocusedDate;
+        d = selectableFocusedDate.getUTCDate();
+      }
+    }
+
     isDisabledDay =
-      isLessThanMinTime ||
-      isMoreThanMaxTime ||
       disabledDaysSet.has(selectableFocusedDate.getUTCDay()) ||
       disabledDatesSet.has(selectableFocusedDateTime);
   }
@@ -849,8 +852,6 @@ export function computeNextFocusedDate({
     disabledDatesSet,
     focusedDate: toUTCDate(fy, m, d),
   });
-
-  console.log(newFocusedDate);
 
   return newFocusedDate;
 }

@@ -51,7 +51,6 @@ export class Tracker {
   constructor(private _element: HTMLElement, handlers: TrackerHandlers) {
     const { down, move, up } = handlers;
 
-
     this._down = down;
     this._move = move;
     this._up = up;

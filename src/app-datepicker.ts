@@ -1,4 +1,4 @@
-import { AllCalendars, Formatters, hasClass, findShadowTarget, computeNextFocusedDate } from './datepicker-helpers.js';
+import { AllCalendars, Formatters } from './datepicker-helpers.js';
 
 export const enum START_VIEW {
   CALENDAR = 'calendar',
@@ -29,7 +29,7 @@ interface ParamsRenderDatepickerCalendar {
 type Omit<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 type ClassProperties<T> = {
   [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
-}
+};
 type ParamUpdatedChanged = ClassProperties<Omit<Omit<AppDatepicker, HTMLElement>, LitElement>>;
 
 import {
@@ -51,9 +51,12 @@ import { datepickerVariables, resetButton } from './common-styles.js';
 import {
   arrayFilled,
   computeAllCalendars,
+  computeNextFocusedDate,
   dispatchCustomEvent,
+  findShadowTarget,
   getResolvedDate,
   getResolvedLocale,
+  hasClass,
   isValidDate,
   KEYCODES_MAP,
   splitString,
@@ -62,7 +65,6 @@ import {
   toFormattedDateString,
   toUTCDate,
   updateFormatters,
-  // computeNextFocusedDate,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
@@ -669,7 +671,7 @@ export class AppDatepicker extends LitElement {
         move: (changedPointer, oldPointer) => {
           if (!started) return;
           dx += changedPointer.x - oldPointer.x;
-          abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');;
+          abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
           abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
 
           if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
@@ -1075,8 +1077,12 @@ export class AppDatepicker extends LitElement {
     /** NOTE: Skip for TAB key and other non-related keys */
     if (keyCode === KEYCODES_MAP.TAB || !allActionKeyCodes.includes(keyCode)) return;
 
+    const selectedDate = this._selectedDate;
+
+    console.time('compute-next-focused-date');
     const nextFocusedDate = computeNextFocusedDate({
       keyCode,
+      selectedDate,
 
       disabledDatesSet: this._disabledDatesSet!,
       disabledDaysSet: this._disabledDaysSet!,
@@ -1084,46 +1090,27 @@ export class AppDatepicker extends LitElement {
       hasAltKey: ev.altKey,
       maxTime: +this._max!,
       minTime: +this._min!,
-      selectedDate: this._selectedDate,
     });
+    console.timeEnd('compute-next-focused-date');
 
-    console.log(
-      '[keyboard::updateMonth]',
-      this._disabledDaysSet,
-      this._disabledDatesSet,
-      nextFocusedDate);
+    // console.log(
+    //   '[keyboard::updateMonth]',
+    //   this._disabledDaysSet,
+    //   this._disabledDatesSet,
+    //   nextFocusedDate);
 
-    // const focusedDate = this._focusedDate;
-    // const {
-    //   shouldUpdateDate,
-    //   date,
-    // } = computeNextFocusedDate({
-    //   keyCode,
-    //   focusedDate,
-    //   hasAltKey: ev.altKey,
-    //   max: +this._max,
-    //   min: +this._min,
-    //   disabledDatesSet: this._disabledDatesSet,
-    //   selectedDate: this._selectedDate,
-    // });
-
-    // console.log('next-focused-date', [shouldUpdateDate, date]);
-
+    const nextFocusedDateFy = nextFocusedDate.getUTCFullYear();
+    const nextFocusedDateM = nextFocusedDate.getUTCMonth();
+    const selectedDateFY = selectedDate.getUTCFullYear();
+    const selectedDateM = selectedDate.getUTCMonth();
     /**
-     * NOTE: If `date` returns null or `date` still same as `focusedDate`,
-     * this can skip updating any dates. This could simply mean the new focused date is
-     * within the range of * `min` and `max` dates.
+     * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
      */
-    // if (date == null || +date === +focusedDate) return this.updateComplete;
+    if (nextFocusedDateFy !== selectedDateFY || nextFocusedDateM !== selectedDateM) {
+      this._selectedDate = nextFocusedDate;
+    }
 
-    // /**
-    //  * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
-    //  */
-    // if (shouldUpdateDate) this._selectedDate = date;
-
-    // this._focusedDate = date;
-
-    // return this.updateComplete;
+    this._focusedDate = nextFocusedDate;
   }
 
 }
