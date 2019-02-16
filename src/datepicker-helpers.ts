@@ -63,6 +63,7 @@ const PREV_DAY_KEYCODES_SET = new Set([
   KEYCODES_MAP.PAGE_DOWN,
   KEYCODES_MAP.END,
 ]);
+const dtFmt = Intl && Intl.DateTimeFormat;
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);
@@ -109,11 +110,7 @@ export function getResolvedDate(date?: number | Date | string | undefined): Date
 }
 
 export function getResolvedLocale() {
-  return (Intl
-    && Intl.DateTimeFormat
-    && Intl.DateTimeFormat().resolvedOptions
-    && Intl.DateTimeFormat().resolvedOptions().locale)
-    || 'en-US';
+  return (dtFmt && dtFmt().resolvedOptions && dtFmt().resolvedOptions().locale) || 'en-US';
 }
 
 export function computeThreeCalendarsInARow(selectedDate: Date) {
@@ -277,7 +274,7 @@ export interface Formatters {
 
   locale: string;
 }
-function formatterPartial(locale: string, options: Intl.DateTimeFormatOptions): DateTimeFormatter {
+function formatterPartial(formatter: Intl.DateTimeFormat): DateTimeFormatter {
   /**
    * NOTE: Due to IE11, a LTR mark (`\u200e` or `8206` in hex) will be included even when
    * `locale=en-US` is used. This helper function strips that away for consistency's sake as
@@ -290,50 +287,50 @@ function formatterPartial(locale: string, options: Intl.DateTimeFormatOptions): 
    *   a.split(''); // On IE11, this returns ['', '1'].
    *   ```
    */
-  return n => Intl.DateTimeFormat(locale, options).format(n).replace(/\u200e/gi, '');
+  return n => formatter.format(n).replace(/\u200e/gi, '');
 }
 export function updateFormatters(locale: string): Formatters {
-  const dayFormatter = formatterPartial(locale, { day: 'numeric', timeZone: 'UTC' });
-  const fullDateFormatter = formatterPartial(locale, {
+  const dayFmt = dtFmt(locale, { day: 'numeric', timeZone: 'UTC' });
+  const fullDateFmt = dtFmt(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
   });
-  const longWeekdayFormatter = formatterPartial(locale, {
+  const longWeekdayFmt = dtFmt(locale, {
     weekday: 'long',
     timeZone: 'UTC',
   });
-  const narrowWeekdayFormatter = formatterPartial(locale, {
+  const narrowWeekdayFmt = dtFmt(locale, {
     weekday: 'narrow',
     timeZone: 'UTC',
   });
-  const longMonthYearFormatter = formatterPartial(locale, {
+  const longMonthYearFmt = dtFmt(locale, {
     year: 'numeric',
     month: 'long',
     timeZone: 'UTC',
   });
-  const dateFormatter = formatterPartial(locale, {
+  const dateFmt = dtFmt(locale, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
   });
-  const yearFormatter = formatterPartial(locale, {
+  const yearFmt = dtFmt(locale, {
     year: 'numeric',
     timeZone: 'UTC',
   });
 
   return {
-    dayFormatter,
-    fullDateFormatter,
-    longMonthYearFormatter,
-    longWeekdayFormatter,
-    narrowWeekdayFormatter,
-    dateFormatter,
-    yearFormatter,
-
     locale,
+
+    dayFormatter: formatterPartial(dayFmt),
+    fullDateFormatter: formatterPartial(fullDateFmt),
+    longMonthYearFormatter: formatterPartial(longMonthYearFmt),
+    longWeekdayFormatter: formatterPartial(longWeekdayFmt),
+    narrowWeekdayFormatter: formatterPartial(narrowWeekdayFmt),
+    dateFormatter: formatterPartial(dateFmt),
+    yearFormatter: formatterPartial(yearFmt),
   };
 }
 
