@@ -522,23 +522,16 @@ export class AppDatepicker extends LitElement {
   }
 
   protected render() {
-    const locale = this.locale;
-    const formatters = this._formatters!;
-    const startView = this._startView;
-
-    const didLocaleChange = formatters.locale !== locale;
-    const allFormatters = didLocaleChange ? updateFormatters(locale) : formatters;
-
     /**
      * NOTE: Update `_formatters` when `locale` changes.
      */
-    if (didLocaleChange) this._formatters = allFormatters;
+    if (this._formatters!.locale !== this.locale) this._formatters = updateFormatters(this.locale);
 
     /**
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
     const datepickerBodyContent: import('lit-element').TemplateResult =
-      START_VIEW.YEAR_LIST === startView
+      START_VIEW.YEAR_LIST === this._startView
         ? this._renderDatepickerYearList()
         : this._renderDatepickerCalendar();
 
@@ -789,29 +782,21 @@ export class AppDatepicker extends LitElement {
       @keyup="${this._updateMonthWithKeyboard}"
     >
       <div class="calendar-view__month-selector">
-        <div class="month-selector-container">
-        ${hasMinDate
-          ? null
-          : html`
+        <div class="month-selector-container">${hasMinDate ? null : html`
           <button
             class="month-selector-button"
             aria-label="Previous month"
             @click="${this._updateMonth(MONTH_UPDATE_TYPE.PREVIOUS)}"
           >${iconChevronLeft}</button>
-          `}
-        </div>
+        `}</div>
 
-        <div class="month-selector-container">
-          ${hasMaxDate
-            ? null
-            : html`
-              <button
-                class="month-selector-button"
-                aria-label="Next month"
-                @click="${this._updateMonth(MONTH_UPDATE_TYPE.NEXT)}"
-              >${iconChevronRight}</button>
-            `}
-        </div>
+        <div class="month-selector-container">${hasMaxDate ? null : html`
+          <button
+            class="month-selector-button"
+            aria-label="Next month"
+            @click="${this._updateMonth(MONTH_UPDATE_TYPE.NEXT)}"
+          >${iconChevronRight}</button>
+        `}</div>
       </div>
 
       ${calendarViewFullCalendarContent}
@@ -834,28 +819,19 @@ export class AppDatepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarViewFullCalendar = this._calendarViewFullCalendar!;
       const totalDraggableDistance = this._totalDraggableDistance!;
-      const dateDate = this._selectedDate;
-      const fy = dateDate.getUTCFullYear();
-      const m = dateDate.getUTCMonth();
       const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
       const initialX = totalDraggableDistance * -1;
       const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
 
-      const dragAnimation = calendarViewFullCalendar.animate([
-        { transform: `translate3d(${initialX}px, 0, 0)` },
-        { transform: `translate3d(${newDx}px, 0, 0)` },
-      ], {
-        duration: this._dragAnimationDuration,
-        easing: 'cubic-bezier(0, 0, .4, 1)',
-        fill: this._hasNativeElementAnimate ? 'none' : 'both',
-      });
+      const dragAnimation = this._animateCalendar(calendarViewFullCalendar, initialX, newDx);
 
       return new Promise(yay => (dragAnimation.onfinish = yay))
         .then(() => new Promise(yay => requestAnimationFrame(yay)))
         .then(() => {
-          const newM = m + (isPreviousMonth ? -1 : 1);
-          this._selectedDate = toUTCDate(fy, newM, 1);
+          const dateDate = this._selectedDate;
+          const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
 
+          this._selectedDate = new Date(dateDate.setUTCMonth(newM, 1));
           return this.updateComplete;
         })
         .then(() => {
@@ -868,23 +844,18 @@ export class AppDatepicker extends LitElement {
 
   @eventOptions({ passive: true })
   private _updateYear(ev: MouseEvent) {
-    const selectedYearEl =
-      findShadowTarget(ev, (n: HTMLElement) => hasClass(n, 'year-list-view__list-item'));
+    const selectedYearEl = findShadowTarget(
+      ev,
+      (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')) as HTMLTableDataCellElement;
 
     if (selectedYearEl == null) return;
-
-    const dateDate = this._selectedDate;
-    const m = dateDate.getUTCMonth();
-    const d = dateDate.getUTCDate();
-    /** FIXME(motss): the content might not always be a number for other locale */
-    const selectedYear = +((selectedYearEl as HTMLButtonElement).textContent!);
 
     /**
      * 2 things to do here:
      *  - Update `_selectedDate` with selected year
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    this._selectedDate = toUTCDate(selectedYear, m, d);
+    this._selectedDate = new Date(this._selectedDate.setUTCFullYear(+selectedYearEl.day));
     this._startView = START_VIEW.CALENDAR;
   }
 
@@ -903,17 +874,12 @@ export class AppDatepicker extends LitElement {
         'weekday-label',
       ].some(n => hasClass(selectedDayEl, n))) return;
 
-    const dateDate = new Date(this._selectedDate);
-    const fy = dateDate.getUTCFullYear();
-    const m = dateDate.getUTCMonth();
-
-    this._focusedDate = toUTCDate(fy, m, +selectedDayEl.day!);
+    this._focusedDate = new Date(this._selectedDate.setUTCDate(+selectedDayEl.day!));
   }
 
   private _trackingStartFn() {
     const trackableEl = this._calendarViewFullCalendar!;
     const trackableElWidth = trackableEl.getBoundingClientRect().width;
-    const totalDraggableDistance = trackableElWidth / 3;
 
     /**
      * NOTE(motss): Perf tips - By setting fixed width for the following containers,
@@ -923,22 +889,20 @@ export class AppDatepicker extends LitElement {
      *  - `.calendar-view__full-calender`
      *  - `.datepicker-body__calendar-view`
      */
-    trackableEl.style.width = `${trackableElWidth}px`;
-    trackableEl.style.minWidth = `${trackableElWidth}px`;
-    this._totalDraggableDistance = totalDraggableDistance;
+    trackableEl.style.width = trackableEl.style.minWidth = `${trackableElWidth}px`;
+    this._totalDraggableDistance = trackableElWidth / 3;
   }
   private _trackingMoveFn(dx: number) {
     const totalDraggableDistance = this._totalDraggableDistance!;
     const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
-    const isPositive = dx > 0;
-    const newX = totalDraggableDistance! * -1 + (clamped * (isPositive ? 1 : -1));
+    const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
 
     this._calendarViewFullCalendar!.style.transform = `translate3d(${newX}px, 0, 0)`;
   }
   private _animateCalendar(target: HTMLElement, oldX: number, newX: number) {
     return target.animate([
-      { transform: `translate3d(${newX}px, 0, 0)` },
       { transform: `translate3d(${oldX}px, 0, 0)` },
+      { transform: `translate3d(${newX}px, 0, 0)` },
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
@@ -958,7 +922,7 @@ export class AppDatepicker extends LitElement {
      * NOTE(motss): If dragged distance < `dragRatio`, reset calendar position.
      */
     if (absDx < totalDraggableDistance! * this.dragRatio) {
-      const restoreDragAnimation = this._animateCalendar(calendarViewFullCalendar, initialX, newX);
+      const restoreDragAnimation = this._animateCalendar(calendarViewFullCalendar, newX, initialX);
 
       return new Promise(yay => (restoreDragAnimation.onfinish = yay))
         .then(() => new Promise(yay => requestAnimationFrame(yay)))
@@ -969,20 +933,16 @@ export class AppDatepicker extends LitElement {
     }
 
     const restDx = totalDraggableDistance! * (isPositive ? 0 : -2);
-    const dragAnimation = this._animateCalendar(calendarViewFullCalendar, restDx, newX);
+    const dragAnimation = this._animateCalendar(calendarViewFullCalendar, newX, restDx);
 
     /** NOTE(motss): Drag to next calendar when drag ratio meets threshold value */
     return new Promise(yay => (dragAnimation.onfinish = yay))
       .then(() => new Promise(yay => requestAnimationFrame(yay)))
       .then(() => {
         const dateDate = new Date(this._selectedDate);
-        const fy = dateDate.getUTCFullYear();
         const m = dateDate.getUTCMonth();
-        const d = dateDate.getUTCDate();
-        const nm = isPositive ? -1 : 1;
 
-        this._selectedDate = toUTCDate(fy, m + nm, d);
-
+        this._selectedDate = new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
         return this.updateComplete;
       })
       .then(() => {

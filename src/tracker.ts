@@ -58,7 +58,6 @@ export class Tracker {
     this._onDown = this._onDown.bind(this);
     this._onMove = this._onMove.bind(this);
     this._onUp = this._onUp.bind(this);
-    this._isMouseEvent = this._isMouseEvent.bind(this);
 
     if (this.hasNativePointerEvent) {
       _element.addEventListener('pointerdown', this._onDown);
@@ -92,7 +91,7 @@ export class Tracker {
 
     if (this._started) return;
 
-    if (this._isMouseEvent(ev)) {
+    if (ev instanceof MouseEvent) {
       this._element.addEventListener('mousemove', this._onMove);
       this._element.addEventListener('mouseup', this._onUp);
     }
@@ -118,7 +117,7 @@ export class Tracker {
 
     if (!this._started) return;
 
-    if (shouldReset && this._isMouseEvent(ev)) {
+    if (shouldReset && ev instanceof MouseEvent) {
       this._element.removeEventListener('mousemove', this._onMove);
       this._element.removeEventListener('mouseup', this._onUp);
     }
@@ -128,9 +127,5 @@ export class Tracker {
     cb(newPointer, oldPointer, ev);
 
     this._startPointer = shouldReset ? null : newPointer;
-  }
-
-  private _isMouseEvent(ev: PointerType) {
-    return ev instanceof MouseEvent;
   }
 }
