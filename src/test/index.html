@@ -11,6 +11,9 @@
 
   <body>
     <script>
+      WCT.mochaOptions = {};
+      WCT.mochaOptions.timeout = 999e3;
+
       WCT.loadSuites([
         'runner.html',
         'runner.html?wc-shadydom=true',

@@ -147,6 +147,9 @@ export class AppDatepickerDialog extends LitElement {
   public value?: string;
 
   @property({ type: String })
+  public weekLabel: string = '';
+
+  @property({ type: String })
   public dismissLabel: string = 'cancel';
 
   @property({ type: String })
@@ -275,15 +278,16 @@ export class AppDatepickerDialog extends LitElement {
         .min="${min}"
         .max="${max}"
         .firstDayOfWeek="${firstDayOfWeek}"
-        .showWeekNumber="${showWeekNumber}"
+        ?showWeekNumber="${showWeekNumber}"
         .weekNumberType="${weekNumberType}"
         .disabledDays="${disabledDays}"
         .disabledDates="${disabledDates}"
-        .landscape="${landscape}"
+        ?landscape="${landscape}"
         .locale="${locale}"
         .dragRatio="${dragRatio}"
         .startView="${startView}"
         .value="${value}"
+        .weekLabel="${this.weekLabel}"
         @datepicker-first-updated="${this._setFocusable}"
         @datepicker-value-updated="${this._update}"
       ></app-datepicker>

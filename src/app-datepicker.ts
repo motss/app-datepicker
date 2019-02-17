@@ -401,7 +401,7 @@ export class AppDatepicker extends LitElement {
 
   @property({ type: String, reflect: true })
   public get startView() {
-    return this._startView;
+    return this._startView!;
   }
   public set startView(val: string) {
     /**
@@ -473,7 +473,7 @@ export class AppDatepicker extends LitElement {
 
   private _min?: Date;
   private _max?: Date;
-  private _startView: START_VIEW;
+  private _startView?: START_VIEW;
   private _todayDate: Date;
   private _totalDraggableDistance?: number;
   private _dragAnimationDuration: number = 150;
@@ -503,8 +503,8 @@ export class AppDatepicker extends LitElement {
 
     this.min = formattedTodayDate;
     this.value = formattedTodayDate;
+    this.startView = START_VIEW.CALENDAR;
 
-    this._startView = START_VIEW.CALENDAR;
     this._yearList = yearList;
     this._todayDate = todayDate;
     this._selectedDate = todayDate;
