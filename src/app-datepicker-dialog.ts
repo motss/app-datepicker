@@ -1,7 +1,7 @@
 import { AppDatepicker } from './app-datepicker.js';
 import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
 
-import { css, customElement, html, LitElement, property, query } from 'lit-element';
+import { css, customElement, eventOptions, html, LitElement, property, query } from 'lit-element';
 
 import '@material/mwc-button/mwc-button.js';
 
@@ -215,6 +215,7 @@ export class AppDatepickerDialog extends LitElement {
     });
   }
 
+  @eventOptions({ passive: true })
   public close() {
     const scrim = this._scrim!;
     const contentContainer = this._contentContainer!;
@@ -295,15 +296,17 @@ export class AppDatepickerDialog extends LitElement {
     `;
   }
 
+  private _updateValue() {
+    this.value = this._datepicker!.value;
+  }
+
+  @eventOptions({ passive: true })
   private _update() {
     this._updateValue();
     this.close();
   }
 
-  private _updateValue() {
-    this.value = this._datepicker!.value;
-  }
-
+  @eventOptions({ passive: true })
   private _setFocusable(ev: CustomEvent) {
     const { firstFocusableElement } = ev.detail;
     this._focusable = firstFocusableElement;

@@ -1,6 +1,7 @@
+import { AppDatepicker } from './app-datepicker';
 import { CalendarDays, CalendarWeekdays } from './calendar';
 
-import { calendarDays, calendarWeekdays, WEEK_NUMBER_TYPE } from './calendar';
+import { calendarDays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
   ESCAPE = 27,
@@ -319,14 +320,15 @@ export function updateFormatters(locale: string): Formatters {
 }
 
 interface ParamsComputeAllCalendars {
-  disabledDays: string;
-  disabledDates: string;
-  firstDayOfWeek: number;
+  disabledDays: AppDatepicker['disabledDays'];
+  disabledDates: AppDatepicker['disabledDates'];
+  firstDayOfWeek: AppDatepicker['firstDayOfWeek'];
   max: Date;
   min: Date;
-  selectedDate: Date;
-  showWeekNumber: boolean;
-  weekNumberType: WEEK_NUMBER_TYPE;
+  selectedDate: AppDatepicker['_selectedDate'];
+  showWeekNumber: AppDatepicker['showWeekNumber'];
+  weekNumberType: AppDatepicker['weekNumberType'];
+  weekLabel?: AppDatepicker['weekLabel'];
 
   longWeekdayFormatterFn: DateTimeFormatter;
   narrowWeekdayFormatterFn: DateTimeFormatter;
@@ -347,6 +349,7 @@ export function computeAllCalendars({
   selectedDate,
   showWeekNumber,
   weekNumberType,
+  weekLabel,
 
   longWeekdayFormatterFn,
   narrowWeekdayFormatterFn,
@@ -359,6 +362,7 @@ export function computeAllCalendars({
   const weekdays = calendarWeekdays({
     firstDayOfWeek,
     showWeekNumber,
+    weekLabel,
 
     longWeekdayFormatter: longWeekdayFormatterFn,
     narrowWeekdayFormatter: narrowWeekdayFormatterFn,
@@ -600,4 +604,8 @@ export function computeNextFocusedDate({
   });
 
   return newFocusedDate;
+}
+
+export function passiveHandler(cb: (...params: any[]) => any) {
+  return { passive: true, handleEvent: cb };
 }

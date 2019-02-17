@@ -16,6 +16,7 @@ export const enum MONTH_UPDATE_TYPE {
 import {
   css,
   customElement,
+  eventOptions,
   html,
   LitElement,
   property,
@@ -40,6 +41,7 @@ import {
   hasClass,
   isValidDate,
   KEYCODES_MAP,
+  passiveHandler,
   splitString,
   targetScrollTo,
   toFormattedDateString,
@@ -439,6 +441,9 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public disabledDates: string = '';
 
+  @property({ type: String })
+  public weekLabel: string = '';
+
   @property({ type: Number })
   public dragRatio: number = .15;
 
@@ -486,14 +491,9 @@ export class AppDatepicker extends LitElement {
   public constructor() {
     super();
 
-    this._updateMonthFn = this._updateMonthFn.bind(this);
-    this._updateViewFn = this._updateViewFn.bind(this);
-    this._updateYearFn = this._updateYearFn.bind(this);
-    this._updateFocusedDateFn = this._updateFocusedDateFn.bind(this);
     this._trackingStartFn = this._trackingStartFn.bind(this);
     this._trackingMoveFn = this._trackingMoveFn.bind(this);
     this._trackingEndFn = this._trackingEndFn.bind(this);
-    this._updateMonthWithKeyboardFn = this._updateMonthWithKeyboardFn.bind(this);
 
     const todayDate = getResolvedDate();
     const todayDateFullYear = todayDate.getUTCFullYear();
@@ -629,13 +629,13 @@ export class AppDatepicker extends LitElement {
     <button
       class="${classMap({ 'btn__selector-year': true, selected: !isCalendarView })}"
       data-view="${START_VIEW.YEAR_LIST}"
-      @click="${() => this._updateViewFn(START_VIEW.YEAR_LIST)}">${formatterFy}</button>
+      @click="${this._updateView(START_VIEW.YEAR_LIST)}">${formatterFy}</button>
 
     <div class="datepicker-toolbar">
       <button
         class="${classMap({ 'btn__selector-calendar': true, selected: isCalendarView })}"
         data-view="${START_VIEW.CALENDAR}"
-        @click="${() => this._updateViewFn(START_VIEW.CALENDAR)}">${formattedDate}</button>
+        @click="${this._updateView(START_VIEW.CALENDAR)}">${formattedDate}</button>
     </div>
     `;
   }
@@ -646,7 +646,7 @@ export class AppDatepicker extends LitElement {
 
     return html`
     <div class="datepicker-body__year-list-view">
-      <div class="year-list-view__full-list" @click="${(ev: MouseEvent) => this._updateYearFn(ev)}">
+      <div class="year-list-view__full-list" @click="${this._updateYear}">
       ${this._yearList.map(n =>
         html`<button
           class="${classMap({
@@ -686,6 +686,7 @@ export class AppDatepicker extends LitElement {
       weekNumberType: this.weekNumberType,
       max: this._max!,
       min: this._min!,
+      weekLabel: this.weekLabel,
 
       dayFormatterFn: dayFormatter,
       fullDateFormatterFn: fullDateFormatter,
@@ -749,7 +750,7 @@ export class AppDatepicker extends LitElement {
       <div class="calendar-container">
         <div class="calendar-label">${formattedDate}</div>
 
-        <table class="calendar-table" @click="${(ev: MouseEvent) => this._updateFocusedDateFn(ev)}">
+        <table class="calendar-table" @click="${this._updateFocusedDate}">
           <thead>
             <tr class="calendar-weekdays">${weekdaysContent}</tr>
           </thead>
@@ -785,7 +786,7 @@ export class AppDatepicker extends LitElement {
     <div
       class="datepicker-body__calendar-view"
       tabindex="0"
-      @keyup="${(ev: KeyboardEvent) => this._updateMonthWithKeyboardFn(ev)}"
+      @keyup="${this._updateMonthWithKeyboard}"
     >
       <div class="calendar-view__month-selector">
         <div class="month-selector-container">
@@ -795,7 +796,7 @@ export class AppDatepicker extends LitElement {
           <button
             class="month-selector-button"
             aria-label="Previous month"
-            @click="${() => this._updateMonthFn(MONTH_UPDATE_TYPE.PREVIOUS)}"
+            @click="${this._updateMonth(MONTH_UPDATE_TYPE.PREVIOUS)}"
           >${iconChevronLeft}</button>
           `}
         </div>
@@ -807,7 +808,7 @@ export class AppDatepicker extends LitElement {
               <button
                 class="month-selector-button"
                 aria-label="Next month"
-                @click="${() => this._updateMonthFn(MONTH_UPDATE_TYPE.NEXT)}"
+                @click="${this._updateMonth(MONTH_UPDATE_TYPE.NEXT)}"
               >${iconChevronRight}</button>
             `}
         </div>
@@ -818,46 +819,55 @@ export class AppDatepicker extends LitElement {
     `;
   }
 
-  private _updateViewFn(view: START_VIEW) {
-    const oldView = this._startView;
+  private _updateView(view: START_VIEW) {
+    const handleUpdateView = () => {
+      const oldView = this._startView;
 
-    this._startView = view;
-    this.requestUpdate('_startView', oldView);
+      this._startView = view;
+      this.requestUpdate('_startView', oldView);
+    };
+
+    return passiveHandler(handleUpdateView);
   }
 
-  private _updateMonthFn(updateType: string) {
-    const calendarViewFullCalendar = this._calendarViewFullCalendar!;
-    const totalDraggableDistance = this._totalDraggableDistance!;
-    const dateDate = this._selectedDate;
-    const fy = dateDate.getUTCFullYear();
-    const m = dateDate.getUTCMonth();
-    const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
-    const initialX = totalDraggableDistance * -1;
-    const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
+  private _updateMonth(updateType: string) {
+    const handleUpdateMonth = () => {
+      const calendarViewFullCalendar = this._calendarViewFullCalendar!;
+      const totalDraggableDistance = this._totalDraggableDistance!;
+      const dateDate = this._selectedDate;
+      const fy = dateDate.getUTCFullYear();
+      const m = dateDate.getUTCMonth();
+      const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
+      const initialX = totalDraggableDistance * -1;
+      const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
 
-    const dragAnimation = calendarViewFullCalendar.animate([
-      { transform: `translate3d(${initialX}px, 0, 0)` },
-      { transform: `translate3d(${newDx}px, 0, 0)` },
-    ], {
-      duration: this._dragAnimationDuration,
-      easing: 'cubic-bezier(0, 0, .4, 1)',
-      fill: this._hasNativeElementAnimate ? 'none' : 'both',
-    });
-
-    return new Promise(yay => (dragAnimation.onfinish = yay))
-      .then(() => new Promise(yay => requestAnimationFrame(yay)))
-      .then(() => {
-        const newM = m + (isPreviousMonth ? -1 : 1);
-        this._selectedDate = toUTCDate(fy, newM, 1);
-
-        return this.updateComplete;
-      })
-      .then(() => {
-        calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
+      const dragAnimation = calendarViewFullCalendar.animate([
+        { transform: `translate3d(${initialX}px, 0, 0)` },
+        { transform: `translate3d(${newDx}px, 0, 0)` },
+      ], {
+        duration: this._dragAnimationDuration,
+        easing: 'cubic-bezier(0, 0, .4, 1)',
+        fill: this._hasNativeElementAnimate ? 'none' : 'both',
       });
+
+      return new Promise(yay => (dragAnimation.onfinish = yay))
+        .then(() => new Promise(yay => requestAnimationFrame(yay)))
+        .then(() => {
+          const newM = m + (isPreviousMonth ? -1 : 1);
+          this._selectedDate = toUTCDate(fy, newM, 1);
+
+          return this.updateComplete;
+        })
+        .then(() => {
+          calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
+        });
+    };
+
+    return passiveHandler(handleUpdateMonth);
   }
 
-  private _updateYearFn(ev: MouseEvent) {
+  @eventOptions({ passive: true })
+  private _updateYear(ev: MouseEvent) {
     const selectedYearEl =
       findShadowTarget(ev, (n: HTMLElement) => hasClass(n, 'year-list-view__list-item'));
 
@@ -878,7 +888,8 @@ export class AppDatepicker extends LitElement {
     this._startView = START_VIEW.CALENDAR;
   }
 
-  private _updateFocusedDateFn(ev: MouseEvent) {
+  @eventOptions({ passive: true })
+  private _updateFocusedDate(ev: MouseEvent) {
     const selectedDayEl = findShadowTarget(
       ev,
       (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableDataCellElement;
@@ -1002,7 +1013,8 @@ export class AppDatepicker extends LitElement {
   //  close/previous/next selection buttons, otherwise move to the field following/preceding the
   //  date textbox associated with the datepicker
   // Enter / Space Fill the date textbox with the selected date then close the datepicker widget.
-  private _updateMonthWithKeyboardFn(ev: KeyboardEvent) {
+  @eventOptions({ passive: true })
+  private _updateMonthWithKeyboard(ev: KeyboardEvent) {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip updating and fire an event to notify of updated focused date. */
@@ -1030,12 +1042,6 @@ export class AppDatepicker extends LitElement {
     });
     console.timeEnd('compute-next-focused-date');
 
-    // console.log(
-    //   '[keyboard::updateMonth]',
-    //   this._disabledDaysSet,
-    //   this._disabledDatesSet,
-    //   nextFocusedDate);
-
     const nextFocusedDateFy = nextFocusedDate.getUTCFullYear();
     const nextFocusedDateM = nextFocusedDate.getUTCMonth();
     const selectedDateFY = selectedDate.getUTCFullYear();
@@ -1062,12 +1068,12 @@ declare global {
   }
 }
 
-// TODO: To look into `passive` event listener option in future.
+// FIXED: To look into `passive` event listener option in future.
+// FIXED: To reflect value on certain properties according to specs/ browser impl: min, max, value.
+// FIXED: `disabledDates` are not supported
+// FIXED: Updating `min` via attribute or property breaks entire UI
+// FIXED: To improve date navigation using keyboard. Disabled date are selectable with Left, Right
+//        arrows.
+// FIXED: To add support for labels such week number for better i18n
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// TODO: To reflect value on certain properties according to specs/ browser impl: min, max, value.
-// TODO: `disabledDates` are not supported
-// FIXME: Updating `min` via attribute or property breaks entire UI
-// TODO: To add support for labels such week number for better i18n
-// FIXME: To improve date navigation using keyboard. Disabled date are selectable with Left, Right
-//        arrows.

@@ -59,6 +59,7 @@ function computeWeekNumber(weekNumberType: string, date: Date): WeekNumber {
 interface ParamsCalendarWeekdays {
   firstDayOfWeek: AppDatepicker['firstDayOfWeek'];
   showWeekNumber: AppDatepicker['showWeekNumber'];
+  weekLabel?: AppDatepicker['weekLabel'];
 
   longWeekdayFormatter: DateTimeFormatter;
   narrowWeekdayFormatter: DateTimeFormatter;
@@ -70,12 +71,14 @@ export interface CalendarWeekdays {
 export function calendarWeekdays({
   firstDayOfWeek,
   showWeekNumber,
+  weekLabel,
 
   longWeekdayFormatter,
   narrowWeekdayFormatter,
 }: ParamsCalendarWeekdays): CalendarWeekdays[] {
   const fixedFirstDayOfWeek = 1 + ((firstDayOfWeek + (firstDayOfWeek < 0 ? 7 : 0)) % 7);
-  const weekdays: CalendarWeekdays[] = showWeekNumber ? [{ label: 'Week', value: 'Wk' }] : [];
+  const weekdays: CalendarWeekdays[] =
+    showWeekNumber ? [{ label: 'Week', value: !weekLabel ? 'Wk' : weekLabel }] : [];
 
   for (let i = 0, len = 7; i < len; i += 1) {
     const dateDate = toUTCDate(2017, 0, fixedFirstDayOfWeek + i);
