@@ -9,6 +9,7 @@
 [![Version][version-badge]][version-url]
 [![Node version][node-version-badge]][node-version-url]
 [![MIT License][mit-license-badge]][mit-license-url]
+<!-- [![lit-element][lit-element-version-badge]][lit-element-url] -->
 
 [![jsDelivr downloads][jsdelivr-badge]][jsdelivr-url]
 [![Downloads][downloads-badge]][downloads-url]
@@ -51,7 +52,8 @@ The following are the list of tools used that makes it shine:
 
 - [Node.js][node-js-url] >= 10.13.0
 - [NPM][npm-url] >= 5.5.1 ([NPM][npm-url] comes with [Node.js][node-js-url] so there is no need to install separately.)
-- [lit-element][lit-element-url] >= 2.0.0-rc.5
+- [lit-element][lit-element-url] >= 2.0.1
+- [TypeScript][typescript-url] >= 3.3.3
 
 ## Installation
 
@@ -61,53 +63,49 @@ The following are the list of tools used that makes it shine:
   $ npm i app-datepicker@next
   ```
 
-- Alternatively, it is available on the following awesome CDNs:
+- Alternatively, it can be downloaded from any of the following awesome CDNs:
 
-  1. [jsdelivr][jsdelivr-url]
-
-      - `esm` https://cdn.jsdelivr.net/npm/app-datepicker@4.0.0-rc.5/dist/app-datepicker.js
-
-  2. [unpkg][unpkg-url]
-
-      - `esm` https://unpkg.com/app-datepicker@4.0.0-rc.5/dist/app-datepicker.js
+  1. [jsdelivr (ESM)][jsdelivr-url]
+  2. [unpkg (ESM)][unpkg-url]
 
 ## How to use
+
+**my-app.ts**
 
 ```ts
 /**
  * Say you've already installed the element via NPM, simply import the package to your application.
  * Here I'm using `lit-element` for developing my application.
  */
-import { css, customElement, html, LitElement} from 'lit-element';
+import { css, customElement, html, LitElement } from 'lit-element';
 import 'app-datepicker';
 
 @customElement(MyApp.is)
 export class MyApp extends LitElement {
   static is() { return 'my-app'; }
 
-  static get styles() {
-    return [
-      css`
-      :host {
-        display: block;
-      }
+  static styles = [
+    css`
+    :host {
+      display: block;
+    }
 
-      * {
-        box-sizing: border-box;
-      }
-      `,
-    ];
-  }
+    * {
+      box-sizing: border-box;
+    }
+    `
+  ];
 
   protected render() {
-    return html`
-    <app-datepicker></app-datepicker>
-    `;
+    return html`<app-datepicker></app-datepicker>`;
   }
 }
 ```
 
+**index.html**
+
 ```html
+<!doctype html>
 <html>
   <!-- Using ES modules to load the app -->
   <script type="module" src="/my-app.js"></script>
@@ -120,6 +118,10 @@ export class MyApp extends LitElement {
   ...
 </html> 
 ```
+
+## API
+
+_Coming soon!_
 
 ## Older versions
 
@@ -139,8 +141,8 @@ Meantime, feel free to check the older version out at:
 [typescript-url]: https://github.com/Microsoft/TypeScript
 [web-components-community-url]: https://www.webcomponents.org
 [lit-element-url]: https://github.com/Polymer/lit-element
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=4.0.0-rc.5
-[unpkg-url]: https://unpkg.com/app-datepicker@4.0.0-rc.5/
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next
+[unpkg-url]: https://unpkg.com/app-datepicker@next/
 [material-design-2-url]: https://material.io/design/
 [2-x-url]: https://github.com/motss/app-datepicker/tree/2.x
 [3-x-url]: https://github.com/motss/app-datepicker/tree/3.x
@@ -159,13 +161,14 @@ Meantime, feel free to check the older version out at:
 <!-- Badges -->
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
+<!-- [lit-element-version-badge]: https://flat.badgen.net/lit-element/v/lit-element/latest -->
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
-[jsdelivr-badge]: https://data.jsdelivr.com/v1/package/npm/app-datepicker/badge?version=latest
+[jsdelivr-badge]: https://data.jsdelivr.com/v1/package/npm/app-datepicker/badge?version=next
 [downloads-badge]: https://flat.badgen.net/npm/dm/app-datepicker
 [total-downloads-badge]: https://flat.badgen.net/npm/dt/app-datepicker?label=total%20downloads
-[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker
-[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker
+[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40next
+[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
 
 [travis-badge]: https://flat.badgen.net/travis/motss/app-datepicker/master
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/app-datepicker
@@ -175,14 +178,15 @@ Meantime, feel free to check the older version out at:
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
-[version-url]: https://www.npmjs.com/package/app-datepicker
+[version-url]: https://www.npmjs.com/package/app-datepicker/v/next
 [node-version-url]: https://nodejs.org/en/download
+<!-- [lit-element-url]: https://www.npmjs.com/package/lit-element/v/latest -->
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE
 
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=1.0.1
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next
 [downloads-url]: http://www.npmtrends.com/app-datepicker
-[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker
-[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker
+[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next
+[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next
 
 [travis-url]: https://travis-ci.org/motss/app-datepicker
 [daviddm-url]: https://david-dm.org/motss/app-datepicker
