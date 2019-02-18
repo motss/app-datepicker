@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://polyfill.io" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
   <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
   <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
@@ -75,6 +76,9 @@
     // import '/node_modules/@polymer/lit-element/lit-element.js';
     import '/dist/app-datepicker.js';
     import '/dist/app-datepicker-dialog.js';
+    import { dragTo } from '/dist/test/test-helpers.js';
+
+    window.DragTo = { dragTo };
 
     // import '/dist/test-rerender.js';
     // import '/dist/calendar-benchmark.js';

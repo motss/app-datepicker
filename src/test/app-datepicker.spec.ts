@@ -1205,6 +1205,27 @@ describe('app-datepicker', () => {
 
   });
 
-  // describe('keyboard support', () => {});
+  // describe('keyboard support', () => {
+  //   let el: AppDatepicker;
+
+  //   beforeEach(async () => {
+  //     el = document.createElement('app-datepicker') as AppDatepicker;
+  //     el.locale = defaultLocale;
+  //     el.startView = START_VIEW.CALENDAR;
+
+  //     document.body.appendChild(el);
+
+  //     await el.updateComplete;
+  //   });
+
+  //   afterEach(() => {
+  //     document.body.removeChild(el);
+  //   });
+
+  //   it(``);
+
+  // });
+
+  // describe('timezones', () => {});
 
 });
