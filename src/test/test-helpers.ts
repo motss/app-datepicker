@@ -63,16 +63,18 @@ export const getComputedStylePropertyValue =
   (target: Element | HTMLElement, property: string) =>
     getComputedStyle && getComputedStyle(target)[property as any];
 
-export const dispatchPointerEvent =
+export const dispatchEvent =
   (n: HTMLElement, eventName: string, options: PointerEvent) => {
-    const {
-      clientX,
-      clientY,
-      pageX,
-      pageY,
-      detail = {} as CustomEventInit,
-    } = options || {} as PointerEvent;
-    const ev = new CustomEvent(eventName, detail as CustomEventInit);
+    const { clientX, clientY, pageX, pageY, ...otherOptions } = options || {} as PointerEvent;
+    /**
+     * NOTE: `otherOptions` might contain the following properties for a typical CustomEvent:
+     *
+     *   1. `bubbles`
+     *   2. `cancelable`
+     *   3. `composed`
+     *   4. `detail`
+     */
+    const ev = new CustomEvent(eventName, otherOptions);
 
     (ev as any).clientX = clientX;
     (ev as any).clientY = clientY;
@@ -87,39 +89,36 @@ export const dragTo =
   async (target: HTMLElement, { x, y, dx, dy, step, delay }: OptionsDragTo) => {
     const eachStep = step == null || step < 0 ? 20 : step;
     const eachDelay = delay == null || delay < 0 ? 8 : delay;
-    const hasDx = typeof dx === 'number' && Number.isFinite(dx);
-    const hasDy = typeof dy === 'number' && Number.isFinite(dy);
+    const hasDx = typeof dx === 'number' && Number.isFinite(dx) && dx !== 0;
+    const hasDy = typeof dy === 'number' && Number.isFinite(dy) && dy !== 0;
 
     if (!hasDx && !hasDy) {
       throw new TypeError(`Expected 'dx' or 'dy', but found none.`);
     }
 
-    dispatchPointerEvent(
+    dispatchEvent(
       target,
       'pointerdown',
       { clientX: x, pageX: x, clientY: y, pageY: y } as PointerEvent);
 
-    const dd = hasDx && hasDy ? (hasDx ? dx! : dy!) : Math.max(dx!, dy!);
-    const len = Math.ceil(dd / eachStep);
+    const dd = hasDx && hasDy ? Math.max(dx!, dy!) : (hasDx ? dx! : dy!);
+    const inc = Math.abs(dd / eachStep);
+    const isNeg = dd < 0;
 
-    for (let i = 0, ni = dd * i; i < len; i += 1) {
+    for (let i = 0; i < eachStep; i += inc) {
+      const ni = i * inc * (isNeg ? -1 : 1);
       const nx = x + (hasDx ? ni : 0);
       const ny = y + (hasDy ? ni : 0);
-      const eventOptions = {
-        clientX: nx,
-        clientY: ny,
-        pageX: nx,
-        pageY: ny,
-      } as PointerEvent;
+      const eventOptions = { clientX: nx, clientY: ny, pageX: nx, pageY: ny } as PointerEvent;
 
-      dispatchPointerEvent(target, 'pointermove', eventOptions);
-
-      await new Promise(yay => setTimeout(yay, eachDelay));
+      dispatchEvent(target, 'pointermove', eventOptions);
+      await new Promise(yay => requestAnimationFrame(yay));
     }
 
     const tx = x + (hasDx ? dx! : 0);
     const ty = y + (hasDy ? dy! : 0);
-    dispatchPointerEvent(
+
+    dispatchEvent(
       target,
       'pointerup',
       { clientX: tx, pageX: tx, clientY: ty, pageY: ty } as PointerEvent);
@@ -131,7 +130,6 @@ export const dragTo =
         y: ty,
         step: eachStep,
         delay: eachDelay,
-        totalRun: len,
       },
     });
   };
