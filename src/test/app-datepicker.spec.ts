@@ -13,6 +13,7 @@ import {
   getShadowInnerHTML,
   shadowQuery,
   shadowQueryAll,
+  triggerEvent,
 } from './test-helpers';
 
 const {
@@ -78,8 +79,8 @@ describe('app-datepicker', () => {
     });
 
     it(`renders today's formatted date`, () => {
-      const btnSelectorYearEl = shadowQuery(el, '.btn__selector-year');
-      const btnSelectorCalendarEl = shadowQuery(el, '.btn__selector-calendar');
+      const btnSelectorYearEl = shadowQuery(el, '.btn__year-selector');
+      const btnSelectorCalendarEl = shadowQuery(el, '.btn__calendar-selector');
 
       const selectedFullYear = getShadowInnerHTML(btnSelectorYearEl);
       const selectedFormattedDate = getShadowInnerHTML(btnSelectorCalendarEl);
@@ -506,7 +507,7 @@ describe('app-datepicker', () => {
 
     it(`renders with different 'locale'`, async () => {
       const getBtnSelectorCalendarInnerHTML =
-        () => getShadowInnerHTML(shadowQuery(el, '.btn__selector-calendar'));
+        () => getShadowInnerHTML(shadowQuery(el, '.btn__calendar-selector'));
       const getCalendarWeekdaysInnerHTML =
         () => shadowQueryAll(el, '.calendar-container:nth-of-type(2) .calendar-weekdays > th')
                 .map(n => getShadowInnerHTML(n)).join(', ');
@@ -1006,7 +1007,7 @@ describe('app-datepicker', () => {
 
     it(`renders with different 'locale'`, async () => {
       const getBtnSelectorCalendarInnerHTML =
-        () => getShadowInnerHTML(shadowQuery(el, '.btn__selector-calendar'));
+        () => getShadowInnerHTML(shadowQuery(el, '.btn__calendar-selector'));
       const getCalendarWeekdaysInnerHTML =
         () => shadowQueryAll(el, '.calendar-container:nth-of-type(2) .calendar-weekdays > th')
                 .map(n => getShadowInnerHTML(n)).join(', ');
@@ -1205,26 +1206,178 @@ describe('app-datepicker', () => {
 
   });
 
-  // describe('keyboard support', () => {
-  //   let el: AppDatepicker;
+  describe('navigating calendar with buttons', () => {
+    let el: AppDatepicker;
+    const getBtnNextMonthSelector =
+      (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Next month"]');
+    const getBtnPrevMonthSelector =
+      (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Previous month"]');
+    const getBtnYearSelectorEl =
+      (n: AppDatepicker) => shadowQuery(n, '.btn__year-selector');
+    const getBtnCalendarSelectorEl =
+      (n: AppDatepicker) => shadowQuery(n, '.btn__calendar-selector');
+    const getCalendarLabelEl =
+      (n: AppDatepicker) => shadowQuery(n, '.calendar-container:nth-of-type(2) .calendar-label');
+    const waitForDragAnimationFinished =
+      (n: AppDatepicker) => new Promise(yay =>
+        requestAnimationFrame(() => setTimeout(() => yay(n.updateComplete), 1e3)));
+    const getYearListViewFullListEl =
+      (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
+    const getYearListViewListItemYearSelectedEl =
+      (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected div');
+    const selectNewYearFromYearListView =
+      (n: AppDatepicker, y: string) => {
+        const allSelectableYearItems =
+          shadowQueryAll(n, '.year-list-view__list-item:not(.year--selected)');
+        const matched =
+          allSelectableYearItems.find(o => y === getShadowInnerHTML(o.querySelector('div')!));
 
-  //   beforeEach(async () => {
-  //     el = document.createElement('app-datepicker') as AppDatepicker;
-  //     el.locale = defaultLocale;
-  //     el.startView = START_VIEW.CALENDAR;
+        triggerEvent(matched!, 'click');
+      };
 
-  //     document.body.appendChild(el);
+    beforeEach(async () => {
+      el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
 
-  //     await el.updateComplete;
-  //   });
+      document.body.appendChild(el);
 
-  //   afterEach(() => {
-  //     document.body.removeChild(el);
-  //   });
+      await el.updateComplete;
+    });
 
-  //   it(``);
+    afterEach(() => {
+      document.body.removeChild(el);
+    });
 
-  // });
+    it(`goes to next month`, async () => {
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      const nextBtnMonthSelectorEl = getBtnNextMonthSelector(el);
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+
+      strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
+      strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+
+      triggerEvent(nextBtnMonthSelectorEl, 'click');
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
+      strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['February 2020', 'February, 2020'].some(n => newCalendarLabel === n));
+    });
+
+    it(`goes to previous month`, async () => {
+      el.min = date13;
+      el.value = '2020-05-13';
+      await el.updateComplete;
+
+      const prevBtnMonthSelectorEl = getBtnPrevMonthSelector(el);
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+
+      strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
+      strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['May 2020', 'May, 2020'].some(n => calendarLabel === n));
+
+      triggerEvent(prevBtnMonthSelectorEl, 'click');
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
+      strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['April 2020', 'April, 2020'].some(n => newCalendarLabel === n));
+    });
+
+    it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+
+      strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
+
+      triggerEvent(btnYearSelectorEl, 'click');
+      await el.updateComplete;
+
+      isNotNull(getYearListViewFullListEl(el));
+      strictEqual(
+        getShadowInnerHTML(getYearListViewListItemYearSelectedEl(el)), '2020');
+
+      triggerEvent(getBtnCalendarSelectorEl(el), 'click');
+      await el.updateComplete;
+
+      strictEqual(getShadowInnerHTML(getBtnYearSelectorEl(el)), '2020');
+      strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Wed, Jan 15');
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+    });
+
+    it(`restores to focused date when switches back to calendar view`, async () =>{
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      let runClick = 3;
+      while (runClick) {
+        triggerEvent(getBtnNextMonthSelector(el), 'click');
+        await waitForDragAnimationFinished(el);
+        runClick -= 1;
+      }
+
+      triggerEvent(getBtnYearSelectorEl(el), 'click');
+      await el.updateComplete;
+
+      triggerEvent(getBtnCalendarSelectorEl(el), 'click');
+      await el.updateComplete;
+
+      strictEqual(getShadowInnerHTML(getBtnYearSelectorEl(el)), '2020');
+      strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Wed, Jan 15');
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+    });
+
+    it(`switches back to calendar view with new selected year`, async () =>{
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      let runClick = 3;
+      while (runClick) {
+        triggerEvent(getBtnNextMonthSelector(el), 'click');
+        await waitForDragAnimationFinished(el);
+        runClick -= 1;
+      }
+
+      triggerEvent(getBtnYearSelectorEl(el), 'click');
+      await el.updateComplete;
+
+      selectNewYearFromYearListView(el, '2025');
+      await el.updateComplete;
+
+      strictEqual(getShadowInnerHTML(getBtnYearSelectorEl(el)), '2025');
+      strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Tue, Apr 15');
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(['April 2025', 'April, 2025'].some(n => calendarLabel === n));
+    });
+
+  });
+
+  // describe('keyboard support', () => {});
 
   // describe('timezones', () => {});
 

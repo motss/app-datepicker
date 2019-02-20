@@ -13,18 +13,17 @@
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
 
   <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
-  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations-next-lite.min.js"></script> -->
   <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
   <script>
-    // const isES6Supported = () => {
-    //   'use strict';
-    //   try { eval('var foo = (x)=>x+1'); }
-    //   catch (e) { return false; }
-    //   return true;
-    // };
+    const isES6Supported = () => {
+      'use strict';
+      try { eval('var foo = (x)=>x+1'); }
+      catch (e) { return false; }
+      return true;
+    };
 
     // if (!isES6Supported()) {
     //   const wa = document.createElement('script');
@@ -41,6 +40,15 @@
     //   wa.onerror = console.error;
     //   document.head.appendChild(wa);
     // }
+
+    if (!isES6Supported()) {
+      const cea = document.createElement('script');
+      cea.src =
+        '/node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+      cea.onload = () => console.info('⚒ CE ES5 adapter loaded');
+      cea.onerror = console.error;
+      document.head.appendChild(cea);
+    }
 
     if (!(Element.prototype.animate)) {
       const wa = document.createElement('script');

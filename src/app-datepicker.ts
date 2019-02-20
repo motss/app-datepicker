@@ -103,14 +103,14 @@ export class AppDatepicker extends LitElement {
       min-width: calc(14ch + 24px * 2);
     }
 
-    .btn__selector-year,
-    .btn__selector-calendar {
+    .btn__year-selector,
+    .btn__calendar-selector {
       color: rgba(0, 0, 0, .55);
       cursor: pointer;
       /* outline: none; */
     }
-    .btn__selector-year.selected,
-    .btn__selector-calendar.selected {
+    .btn__year-selector.selected,
+    .btn__calendar-selector.selected {
       color: currentColor;
     }
 
@@ -121,11 +121,11 @@ export class AppDatepicker extends LitElement {
       width: 100%;
     }
 
-    .btn__selector-year {
+    .btn__year-selector {
       font-size: 16px;
       font-weight: 700;
     }
-    .btn__selector-calendar {
+    .btn__calendar-selector {
       font-size: 36px;
       font-weight: 700;
       line-height: 1;
@@ -168,7 +168,7 @@ export class AppDatepicker extends LitElement {
       color: rgba(0, 0, 0, .25);
     } */
 
-    .month-selector-button {
+    .btn__month-selector {
       padding: calc((56px - 24px) / 2);
       /**
         * NOTE: button element contains no text, only SVG.
@@ -176,7 +176,7 @@ export class AppDatepicker extends LitElement {
         */
       line-height: 0;
     }
-    .month-selector-button:hover {
+    .btn__month-selector:hover {
       cursor: pointer;
     }
 
@@ -390,8 +390,8 @@ export class AppDatepicker extends LitElement {
     const valDate = getResolvedDate(val);
 
     if (isValidDate(val, valDate)) {
-      this._focusedDate = valDate;
-      this._selectedDate = valDate;
+      this._focusedDate = new Date(valDate);
+      this._selectedDate = new Date(valDate);
       // this.valueAsDate = newDate;
       // this.valueAsNumber = +newDate;
 
@@ -465,7 +465,7 @@ export class AppDatepicker extends LitElement {
   @query('.calendar-view__full-calendar')
   private _calendarViewFullCalendar?: HTMLDivElement;
 
-  @query('.btn__selector-year')
+  @query('.btn__year-selector')
   private _buttonSelectorYear?: HTMLButtonElement;
 
   @query('.year-list-view__list-item')
@@ -506,9 +506,9 @@ export class AppDatepicker extends LitElement {
     this.startView = START_VIEW.CALENDAR;
 
     this._yearList = yearList;
-    this._todayDate = todayDate;
-    this._selectedDate = todayDate;
-    this._focusedDate = todayDate;
+    this._todayDate = new Date(todayDate);
+    this._selectedDate = new Date(todayDate);
+    this._focusedDate = new Date(todayDate);
     this._formatters = allFormatters;
   }
 
@@ -615,18 +615,19 @@ export class AppDatepicker extends LitElement {
   private _renderHeaderSelectorButton() {
     const { yearFormatter, dateFormatter } = this._formatters!;
     const isCalendarView = this.startView === START_VIEW.CALENDAR;
-    const formattedDate = dateFormatter(this._focusedDate);
-    const formatterFy = yearFormatter(new Date(this._selectedDate));
+    const focusedDate = this._focusedDate;
+    const formattedDate = dateFormatter(focusedDate);
+    const formatterFy = yearFormatter(focusedDate);
 
     return html`
     <button
-      class="${classMap({ 'btn__selector-year': true, selected: !isCalendarView })}"
+      class="${classMap({ 'btn__year-selector': true, selected: !isCalendarView })}"
       data-view="${START_VIEW.YEAR_LIST}"
       @click="${this._updateView(START_VIEW.YEAR_LIST)}">${formatterFy}</button>
 
     <div class="datepicker-toolbar">
       <button
-        class="${classMap({ 'btn__selector-calendar': true, selected: isCalendarView })}"
+        class="${classMap({ 'btn__calendar-selector': true, selected: isCalendarView })}"
         data-view="${START_VIEW.CALENDAR}"
         @click="${this._updateView(START_VIEW.CALENDAR)}">${formattedDate}</button>
     </div>
@@ -635,7 +636,7 @@ export class AppDatepicker extends LitElement {
 
   private _renderDatepickerYearList() {
     const { yearFormatter } = this._formatters!;
-    const selectedDateFy = this._selectedDate.getUTCFullYear();
+    const focusedDateFy = this._focusedDate.getUTCFullYear();
 
     return html`
     <div class="datepicker-body__year-list-view">
@@ -644,7 +645,7 @@ export class AppDatepicker extends LitElement {
         html`<button
           class="${classMap({
             'year-list-view__list-item': true,
-            'year--selected': selectedDateFy === n,
+            'year--selected': focusedDateFy === n,
           })}"
           .year="${n}">
           <div>${yearFormatter(toUTCDate(n, 0, 1))}</div>
@@ -784,7 +785,7 @@ export class AppDatepicker extends LitElement {
       <div class="calendar-view__month-selector">
         <div class="month-selector-container">${hasMinDate ? null : html`
           <button
-            class="month-selector-button"
+            class="btn__month-selector"
             aria-label="Previous month"
             @click="${this._updateMonth(MONTH_UPDATE_TYPE.PREVIOUS)}"
           >${iconChevronLeft}</button>
@@ -792,7 +793,7 @@ export class AppDatepicker extends LitElement {
 
         <div class="month-selector-container">${hasMaxDate ? null : html`
           <button
-            class="month-selector-button"
+            class="btn__month-selector"
             aria-label="Next month"
             @click="${this._updateMonth(MONTH_UPDATE_TYPE.NEXT)}"
           >${iconChevronRight}</button>
@@ -807,9 +808,11 @@ export class AppDatepicker extends LitElement {
   private _updateView(view: START_VIEW) {
     const handleUpdateView = () => {
       const oldView = this._startView;
-
       this._startView = view;
-      this.requestUpdate('_startView', oldView);
+
+      view !== START_VIEW.CALENDAR
+        ? this.requestUpdate('_startView', oldView)
+        : this._selectedDate = new Date(this._focusedDate);
     };
 
     return passiveHandler(handleUpdateView);
@@ -831,7 +834,7 @@ export class AppDatepicker extends LitElement {
           const dateDate = this._selectedDate;
           const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
 
-          this._selectedDate = new Date(dateDate.setUTCMonth(newM, 1));
+          this._selectedDate = new Date(dateDate.setUTCMonth(newM));
           return this.updateComplete;
         })
         .then(() => {
@@ -846,7 +849,7 @@ export class AppDatepicker extends LitElement {
   private _updateYear(ev: MouseEvent) {
     const selectedYearEl = findShadowTarget(
       ev,
-      (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')) as HTMLTableDataCellElement;
+      (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')) as HTMLButtonElement;
 
     if (selectedYearEl == null) return;
 
@@ -855,7 +858,9 @@ export class AppDatepicker extends LitElement {
      *  - Update `_selectedDate` with selected year
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    this._selectedDate = new Date(this._selectedDate.setUTCFullYear(+selectedYearEl.day));
+    const selectedYear = new Date(this._selectedDate.setUTCFullYear(+selectedYearEl.year));
+    this._selectedDate = selectedYear;
+    this._focusedDate = new Date(selectedYear);
     this._startView = START_VIEW.CALENDAR;
   }
 
@@ -1025,6 +1030,10 @@ declare global {
 
   interface HTMLTableDataCellElement {
     day: string;
+  }
+
+  interface HTMLButtonElement {
+    year: string;
   }
 }
 
