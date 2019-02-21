@@ -1262,7 +1262,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
 
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
 
       triggerEvent(nextBtnMonthSelectorEl, 'click');
       await waitForDragAnimationFinished(el);
@@ -1271,7 +1272,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
 
       const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['February 2020', 'February, 2020'].some(n => newCalendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n));
     });
 
     it(`goes to previous month`, async () => {
@@ -1287,7 +1289,7 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
 
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['May 2020', 'May, 2020'].some(n => calendarLabel === n));
+      isTrue(['May, 2020', 'May 2020'].some(n => calendarLabel === n));
 
       triggerEvent(prevBtnMonthSelectorEl, 'click');
       await waitForDragAnimationFinished(el);
@@ -1296,7 +1298,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
 
       const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['April 2020', 'April, 2020'].some(n => newCalendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n));
     });
 
     it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
@@ -1322,7 +1325,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Wed, Jan 15');
 
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
     });
 
     it(`restores to focused date when switches back to calendar view`, async () =>{
@@ -1347,7 +1351,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Wed, Jan 15');
 
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['January 2020', 'January, 2020'].some(n => calendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
     });
 
     it(`switches back to calendar view with new selected year`, async () =>{
@@ -1372,7 +1377,8 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(getBtnCalendarSelectorEl(el)), 'Tue, Apr 15');
 
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
-      isTrue(['April 2025', 'April, 2025'].some(n => calendarLabel === n));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(['Apr 2025', 'April, 2025', 'April 2025'].some(n => calendarLabel === n));
     });
 
   });
