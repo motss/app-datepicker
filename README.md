@@ -8,8 +8,8 @@
 
 [![Version][version-badge]][version-url]
 [![Node version][node-version-badge]][node-version-url]
+[![lit-element][lit-element-version-badge]][lit-element-url]
 [![MIT License][mit-license-badge]][mit-license-url]
-<!-- [![lit-element][lit-element-version-badge]][lit-element-url] -->
 
 [![jsDelivr downloads][jsdelivr-badge]][jsdelivr-url]
 [![Downloads][downloads-badge]][downloads-url]
@@ -119,7 +119,7 @@ export class MyApp extends LitElement {
 </html> 
 ```
 
-## API
+## API reference
 
 _Coming soon!_
 
@@ -161,7 +161,7 @@ Meantime, feel free to check the older version out at:
 <!-- Badges -->
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
-<!-- [lit-element-version-badge]: https://flat.badgen.net/lit-element/v/lit-element/latest -->
+[lit-element-version-badge]: https://badgen.net/runkit/get-npm-package-version-b8uss2igm6zr/lit-element?color=blue&icon=npm
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
 [jsdelivr-badge]: https://data.jsdelivr.com/v1/package/npm/app-datepicker/badge?version=next
@@ -180,7 +180,6 @@ Meantime, feel free to check the older version out at:
 <!-- Links -->
 [version-url]: https://www.npmjs.com/package/app-datepicker/v/next
 [node-version-url]: https://nodejs.org/en/download
-<!-- [lit-element-url]: https://www.npmjs.com/package/lit-element/v/latest -->
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE
 
 [jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next
