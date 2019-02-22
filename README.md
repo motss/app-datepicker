@@ -6,9 +6,11 @@
 
 <hr />
 
+[![Follow me][follow-me-badge]][follow-me-url]
+
 [![Version][version-badge]][version-url]
-[![Node version][node-version-badge]][node-version-url]
 [![lit-element][lit-element-version-badge]][lit-element-url]
+[![Node version][node-version-badge]][node-version-url]
 [![MIT License][mit-license-badge]][mit-license-url]
 
 [![jsDelivr downloads][jsdelivr-badge]][jsdelivr-url]
@@ -135,33 +137,35 @@ Meantime, feel free to check the older version out at:
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
 
 <!-- References -->
-[node-js-url]: https://nodejs.org
-[npm-url]: https://www.npmjs.com
-[node-releases-url]: https://nodejs.org/en/download/releases
-[typescript-url]: https://github.com/Microsoft/TypeScript
-[web-components-community-url]: https://www.webcomponents.org
-[lit-element-url]: https://github.com/Polymer/lit-element
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next
-[unpkg-url]: https://unpkg.com/app-datepicker@next/
-[material-design-2-url]: https://material.io/design/
-[2-x-url]: https://github.com/motss/app-datepicker/tree/2.x
-[3-x-url]: https://github.com/motss/app-datepicker/tree/3.x
-[polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview
-[polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview
+[node-js-url]: https://nodejs.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[npm-url]: https://www.npmjs.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[node-releases-url]: https://nodejs.org/en/download/releases?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[typescript-url]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[unpkg-url]: https://unpkg.com/app-datepicker@next/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[2-x-url]: https://github.com/motss/app-datepicker/tree/2.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[3-x-url]: https://github.com/motss/app-datepicker/tree/3.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 <!-- MDN -->
-[map-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-[string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String
-[object-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
-[number-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
-[boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-[html-style-element-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLStyleElement
-[promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[map-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map?utm_source=github.com&amp;utm_medium=referral
+[string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String?utm_source=github.com&amp;utm_medium=referral
+[object-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object?utm_source=github.com&amp;utm_medium=referral
+[number-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number?utm_source=github.com&amp;utm_medium=referral
+[boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean?utm_source=github.com&amp;utm_medium=referral
+[html-style-element-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLStyleElement?utm_source=github.com&amp;utm_medium=referral
+[promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise?utm_source=github.com&amp;utm_medium=referral
 
 <!-- Badges -->
-[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next
+[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb
+
+[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next?icon=npm
+[lit-element-version-badge]: https://flat.badgen.net/npm/v/lit-element/latest?icon=npm&label=lit-element
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
-[lit-element-version-badge]: https://badgen.net/runkit/get-npm-package-version-b8uss2igm6zr/lit-element?color=blue&icon=npm
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
 [jsdelivr-badge]: https://data.jsdelivr.com/v1/package/npm/app-datepicker/badge?version=next
@@ -170,29 +174,31 @@ Meantime, feel free to check the older version out at:
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40next
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
 
-[travis-badge]: https://flat.badgen.net/travis/motss/app-datepicker/master
+[travis-badge]: https://flat.badgen.net/travis/motss/app-datepicker/master?icon=travis
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/app-datepicker
 
-[codacy-badge]: https://api.codacy.com/project/badge/Grade/0525e4467aa5414b85ea0feebe8fbd95
 [codebeat-badge]: https://codebeat.co/badges/3a212108-43cd-4a1f-ab2c-fe890ad734b6
+[codacy-badge]: https://api.codacy.com/project/badge/Grade/0525e4467aa5414b85ea0feebe8fbd95
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
-[version-url]: https://www.npmjs.com/package/app-datepicker/v/next
-[node-version-url]: https://nodejs.org/en/download
-[mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE
+[follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next
-[downloads-url]: http://www.npmtrends.com/app-datepicker
-[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next
-[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next
+[version-url]: https://www.npmjs.com/package/app-datepicker/v/next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[node-version-url]: https://nodejs.org/en/download?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[travis-url]: https://travis-ci.org/motss/app-datepicker
-[daviddm-url]: https://david-dm.org/motss/app-datepicker
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
+[travis-url]: https://travis-ci.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[daviddm-url]: https://david-dm.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+
+[codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [codacy-url]: https://www.codacy.com/app/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker&amp;utm_campaign=Badge_Grade
-[codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919
-[coc-url]: https://github.com/motss/app-datepicker/blob/master/CODE_OF_CONDUCT.md
+[coc-url]: https://github.com/motss/app-datepicker/blob/master/code-of-conduct.md?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 <!-- [intl-polyfill-url]: https://github.com/andyearnshaw/Intl.js -->
 <!-- [web-animations-js-polyfill-url]: https://www.npmjs.com/package/web-animations-js -->

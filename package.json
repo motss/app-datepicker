@@ -58,7 +58,7 @@
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "tslint": "^5.12.1",
-    "typescript": "^3.3.3",
+    "typescript": "^3.3.3333",
     "wct-mocha": "^1.0.0"
   },
   "engines": {
