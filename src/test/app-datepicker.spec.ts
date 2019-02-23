@@ -66,7 +66,7 @@ describe('app-datepicker', () => {
   const getYearListViewFullListEl =
     (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
   const getYearListViewListItemYearSelectedEl =
-    (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected div');
+    (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected > div');
   const selectNewYearFromYearListView =
     (n: AppDatepicker, y: string) => {
       const allSelectableYearItems =
@@ -199,12 +199,34 @@ describe('app-datepicker', () => {
 
       isString(elHTML, 'HTML content is not string');
       isNotNull(yearListView, 'Year list view not found');
-      isAtLeast(allYearListViewItems.length, 1, 'year list items not found');
+      isAtLeast(allYearListViewItems.length, 1, 'No year list items found');
+
+      const formattedYear = yearFormatter(getResolvedDate());
+
+      const firstSelectableYearEl = allYearListViewItems[0];
+      const lastSelectableYearEl = allYearListViewItems[allYearListViewItems.length - 1];
+
+      isNotNull(firstSelectableYearEl, `No first selectable year found`);
+      isNotNull(lastSelectableYearEl, `No last selectable year found`);
+
+      const firstSelectableYearLabel =
+        getShadowInnerHTML(firstSelectableYearEl.querySelector('div')!);
+      const lastSelectableYearLabel =
+        getShadowInnerHTML(lastSelectableYearEl.querySelector('div')!);
+
+      strictEqual(
+        firstSelectableYearLabel,
+        formattedYear,
+        `First selectable not matched (${formattedYear})`);
+      strictEqual(
+        lastSelectableYearLabel,
+        '2100',
+        `Last selectable not matched (${lastSelectableYearLabel})`);
     });
 
     it(`selects, highlights this year`, async () => {
       const yearSelectedEl = shadowQuery(el, '.year-list-view__list-item.year--selected');
-      const yearSelectedDivEl = shadowQuery(el, '.year-list-view__list-item.year--selected > div');
+      const yearSelectedDivEl = getYearListViewListItemYearSelectedEl(el);
 
       const now = getResolvedDate();
       const fy = now.getFullYear();
@@ -212,16 +234,13 @@ describe('app-datepicker', () => {
 
       isNotNull(yearSelectedEl, `Selected year not found`);
       isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
+      strictEqual((yearSelectedEl as any).year, fy, `'year' property not matched`);
+
+      const selectedYearLabel = getShadowInnerHTML(yearSelectedDivEl);
       strictEqual(
-        (yearSelectedEl as any).year,
-        fy,
-        `'year' property not matched`
-      );
-      strictEqual(
-        getShadowInnerHTML(yearSelectedDivEl),
+        selectedYearLabel,
         formattedYear,
-        'Formatted year not matched'
-      );
+        `Selected year label not matched (${selectedYearLabel})`);
     });
 
   });
@@ -1628,6 +1647,101 @@ describe('app-datepicker', () => {
     });
 
   });
+
+  describe('navigating year list by buttons', () => {
+    let el: AppDatepicker;
+
+    beforeEach(async () => {
+      el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
+      el.min = date13;
+      el.value = date15;
+
+      document.body.appendChild(el);
+
+      await el.updateComplete;
+    });
+
+    afterEach(() => {
+      document.body.removeChild(el);
+    });
+
+    it(`navigates to year list by button`, async () => {
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      const btnYearSelectorLabel = getShadowInnerHTML(getBtnYearSelectorEl(el));
+
+      strictEqual(
+        el.startView,
+        START_VIEW.CALENDAR,
+        `Initial 'startView' is not ${START_VIEW.CALENDAR}`);
+      strictEqual(
+        btnYearSelectorLabel,
+        '2020',
+        `Initial year selector label not matched (${btnYearSelectorLabel})`);
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+        `Initial calendar label not matched (${calendarLabel})`);
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+
+      triggerEvent(btnYearSelectorEl, 'click');
+      await el.updateComplete;
+
+      strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+      isTrue(getCalendarLabelEl(el) == null, `No calendar should render`);
+      isNotNull(getYearListViewFullListEl(el), `Year list view should render`);
+
+      const selectedYearEl = getYearListViewListItemYearSelectedEl(el);
+      isNotNull(selectedYearEl, `Selected year not found`);
+      strictEqual(getShadowInnerHTML(selectedYearEl), '2020', `Selected year label not matched`);
+    });
+
+    it(`selects new year by button`, async () => {
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+
+      triggerEvent(btnYearSelectorEl, 'click');
+      await el.updateComplete;
+
+      strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+      isTrue(getCalendarLabelEl(el) == null, `No calendar should render`);
+      isNotNull(getYearListViewFullListEl(el), `Year list view should render`);
+
+      selectNewYearFromYearListView(el, '2025');
+      await el.updateComplete;
+
+      const newBtnYearSelectorEl = getBtnYearSelectorEl(el);
+
+      isNotNull(newBtnYearSelectorEl, `Year selector button not found`);
+      strictEqual(el.startView, START_VIEW.CALENDAR, `Calendar should render`);
+      strictEqual(
+        getShadowInnerHTML(newBtnYearSelectorEl),
+        '2025',
+        `New selected year not matched`);
+    });
+
+  });
+
+  // describe('focusing new date with buttons/ gestures', () => {
+  //   let el: AppDatepicker;
+
+  //   beforeEach(async () => {
+  //     el = document.createElement('app-datepicker') as AppDatepicker;
+  //     el.locale = defaultLocale;
+  //     el.startView = START_VIEW.CALENDAR;
+  //     el.min = date13;
+  //     el.value = date15;
+
+  //     document.body.appendChild(el);
+
+  //     await el.updateComplete;
+  //   });
+
+  //   afterEach(() => {
+  //     document.body.removeChild(el);
+  //   });
+  // });
 
   // describe('keyboard support', () => {});
 
