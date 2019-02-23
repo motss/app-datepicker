@@ -121,6 +121,27 @@ export class MyApp extends LitElement {
 </html> 
 ```
 
+## Browser compatibility
+
+`app-datepicker` works in all major browsers (Chrome, Firefox, IE, Edge, Safari, and Opera).
+
+[Heavily tested](/.travis.yml) on the following browsers:
+
+| Name | OS |
+| --- | --- |
+| Internet Explorer 11 | Windows 7 |
+| Edge 13 | Windows 10 |
+| Edge 17 | Windows 10 |
+| Edge 18 | Windows 10 |
+| Safari 9 | Mac OS X 10.11 |
+| Safari 10.1 | Mac OS 10.12 |
+| Safari 11.1 | Mac OS 10.13 |
+| Safari 12 | Mac OS 10.13 |
+| Chrome 41 (used by Googlebot) | Linux |
+| Chrome 70 | Windows 10 |
+| Firefox 62 (w/o native Shadow DOM) | Windows 10 |
+| Firefox 63 (native Shadow DOM support) | Windows 10 |
+
 ## API reference
 
 _Coming soon!_
@@ -150,6 +171,9 @@ Meantime, feel free to check the older version out at:
 [3-x-url]: https://github.com/motss/app-datepicker/tree/3.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+
+<!-- Browers logo -->
+[ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
 
 <!-- MDN -->
 [map-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map?utm_source=github.com&amp;utm_medium=referral
