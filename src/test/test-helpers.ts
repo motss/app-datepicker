@@ -12,7 +12,7 @@ interface ShadyDOM {
   inUse: boolean;
 }
 
-interface OptionsDragTo {
+export interface OptionsDragTo {
   x: number;
   y: number;
   dx?: number;
@@ -63,14 +63,32 @@ export const getComputedStylePropertyValue =
   (target: Element | HTMLElement, property: string) =>
     getComputedStyle && getComputedStyle(target)[property as any];
 
-export const triggerEvent =
+export function triggerEvent(n: HTMLElement, eventName: string, options?: PointerEvent) {
+  n.dispatchEvent(new CustomEvent(eventName, {
+    composed: true,
+    bubbles: true,
+    ...options,
+  }));
+};
+
+const simulateInputEvent =
   (n: HTMLElement, eventName: string, options?: PointerEvent) => {
-    const { clientX, clientY, pageX, pageY, ...otherOptions } = {
+    /**
+     * NOTE: For all MS Edge < 16, `PointerEvent` has a bug where `pageX` is always < 10 and it can
+     * neither be overridable nor configurable unlike other browsers. However, it works perfectly
+     * well with real user gestures.
+     *
+     * To tackle such weird situation, `MouseEvent` will be used instead for all MS Edges as well as
+     * IE11.
+     */
+    const isPointerEvent = /^pointer/i.test(eventName) &&
+      !('MSPointerEvent' in window) &&
+      !('MSGestureEvent' in window);
+    const otherOptions = {
       /** NOTE: Making sure all events triggered bubbles and propagates across shadow boundary. */
-      composed: true,
       bubbles: true,
-      ...options!,
-    } || {} as PointerEvent;
+      ...options,
+    };
     /**
      * NOTE: `otherOptions` might contain the following properties for a typical CustomEvent:
      *
@@ -78,56 +96,80 @@ export const triggerEvent =
      *   2. `cancelable`
      *   3. `composed`
      *   4. `detail`
+     *
+     * In IE11, `new PointerEvent(...)` is not prohibited in script or dev tools. In script, all
+     * events except `PointerEvent` can be instantiated.
+     *
+     * Here, it accidentally becomes a working implementation: `new MouseEvent('pointerdown', ...)`,
+     * which sounds ridiculous at first, but so far this is by far the _only_ way to trigger
+     * animations when dragging/ swiping the calendar. `Event` and `CustomEvent` will skip running
+     * the animations which is a good thing but worth to be documented here for future reference.
      */
-    const ev = new CustomEvent(eventName, otherOptions);
-
-    (ev as any).clientX = clientX;
-    (ev as any).clientY = clientY;
-
-    (ev as any).pageX = pageX;
-    (ev as any).pageY = pageY;
+    const ev = isPointerEvent ?
+      new PointerEvent(eventName, otherOptions) :
+      new MouseEvent(eventName, otherOptions);
 
     n.dispatchEvent(ev);
   };
 
 export const dragTo =
   async (target: HTMLElement, { x, y, dx, dy, step, delay }: OptionsDragTo) => {
+    const hasNativePointerEvent = 'PointerEvent' in window;
+    const toPointerEventOptions = (px: number, py: number) => {
+      return {
+        clientX: px,
+        pageX: px,
+        offsetX: px,
+        x: px,
+
+        clientY: py,
+        pageY: py,
+        offsetY: py,
+        y: py,
+      } as PointerEvent;
+    };
+
     try {
       const eachStep = step == null || step < 0 ? 20 : step;
       const eachDelay = delay == null || delay < 0 ? 8 : delay;
-      const hasDx = typeof dx === 'number' && Number.isFinite(dx) && dx !== 0;
-      const hasDy = typeof dy === 'number' && Number.isFinite(dy) && dy !== 0;
+      const hasDx = typeof dx === 'number' && isFinite(dx) && dx !== 0;
+      const hasDy = typeof dy === 'number' && isFinite(dy) && dy !== 0;
 
       if (!hasDx && !hasDy) {
         throw new TypeError(`Expected 'dx' or 'dy', but found none.`);
       }
 
-      triggerEvent(
+      const rx = Math.round(x || 0);
+      const ry = Math.round(y || 0);
+
+      simulateInputEvent(
         target,
-        'pointerdown',
-        { clientX: x, pageX: x, clientY: y, pageY: y } as PointerEvent);
+        hasNativePointerEvent ? 'pointerdown' : 'mousedown',
+        toPointerEventOptions(rx, ry));
 
       const dd = hasDx && hasDy ? Math.max(dx!, dy!) : (hasDx ? dx! : dy!);
       const inc = Math.abs(dd / eachStep);
-      const isNeg = dd < 0;
+      const factor = dd < 0 ? -1 : 1;
 
       for (let i = 0; i < eachStep; i += inc) {
-        const ni = i * inc * (isNeg ? -1 : 1);
-        const nx = x + (hasDx ? ni : 0);
-        const ny = y + (hasDy ? ni : 0);
-        const eventOptions = { clientX: nx, clientY: ny, pageX: nx, pageY: ny } as PointerEvent;
+        const ni = i * inc * factor;
+        const nx = Math.floor(x + (hasDx ? ni : 0));
+        const ny = Math.floor(y + (hasDy ? ni : 0));
 
-        triggerEvent(target, 'pointermove', eventOptions);
+        simulateInputEvent(
+          target,
+          hasNativePointerEvent ? 'pointermove' : 'mousemove',
+          toPointerEventOptions(nx, ny));
         await new Promise(yay => requestAnimationFrame(yay));
       }
 
-      const tx = x + (hasDx ? dx! : 0);
-      const ty = y + (hasDy ? dy! : 0);
+      const tx = Math.floor(x + (hasDx ? dx! : 0));
+      const ty = Math.floor(y + (hasDy ? dy! : 0));
 
-      triggerEvent(
+      simulateInputEvent(
         target,
-        'pointerup',
-        { clientX: tx, pageX: tx, clientY: ty, pageY: ty } as PointerEvent);
+        hasNativePointerEvent ? 'pointerup' : 'mouseup',
+        toPointerEventOptions(tx, ty));
 
       return Promise.resolve({
         done: true,

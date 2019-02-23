@@ -12,6 +12,22 @@
     <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
 
     <script>
+      const isES6Supported = () => {
+        'use strict';
+        try { eval('var foo = (x)=>x+1'); }
+        catch (e) { return false; }
+        return true;
+      };
+
+      if (!isES6Supported()) {
+        const cea = document.createElement('script');
+        cea.src =
+          '/node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+        cea.onload = () => console.info('⚒ CE ES5 adapter loaded');
+        cea.onerror = console.error;
+        document.head.appendChild(cea);
+      }
+
       if (!(Element.prototype.animate)) {
         const wa = document.createElement('script');
         wa.src =

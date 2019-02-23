@@ -18,8 +18,18 @@ export interface TrackerHandlers {
 }
 
 function toPointer(ev: PointerType): ResolvedPointer {
-  const x = (ev as PointerEvent).pageX;
-  const y = (ev as PointerEvent).pageY;
+  const { clientX, clientY, pageX, pageY } = ev as PointerEvent;
+  /**
+   * NOTE: For MS Edge < 16, `PointerEvents` triggered by unit tests always fail to set defined
+   * `pageX` and `pageY`. Those values are overriden by the browser but the values are incorrect as
+   * they are less than 10.
+   *
+   * Therefore, we are finding the max values between `pageX` and `clientX`. Perhaps `client*`
+   * properties can be used instead. For code safety during typical situation/ testing, this seems
+   * like the best of both worlds.
+   */
+  const x = Math.max(pageX, clientX);
+  const y = Math.max(pageY, clientY);
   const id = (ev as TouchInit).identifier || (ev as PointerEvent).pointerId;
 
   return { x, y, id: id == null ? 0 : id };
@@ -104,7 +114,10 @@ export class Tracker {
   }
 
   private _onMove(ev: PointerType) {
-    this._updatePointers(this._move, ev);
+    if (this._started) {
+      console.log('onmove', ev);
+      this._updatePointers(this._move, ev);
+    }
   }
 
   private _onUp(ev: PointerType) {

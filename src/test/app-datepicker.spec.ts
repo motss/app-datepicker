@@ -1,3 +1,5 @@
+type DragDirection = 'left' | 'right';
+
 import { AppDatepicker, START_VIEW } from '../app-datepicker.js';
 import { WEEK_NUMBER_TYPE } from '../calendar.js';
 
@@ -9,8 +11,10 @@ import {
   updateFormatters,
 } from '../datepicker-helpers.js';
 import {
+  dragTo,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
+  OptionsDragTo,
   shadowQuery,
   shadowQueryAll,
   triggerEvent,
@@ -46,6 +50,43 @@ const {
 } = updateFormatters(defaultLocale);
 
 describe('app-datepicker', () => {
+  const getBtnNextMonthSelector =
+    (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Next month"]');
+  const getBtnPrevMonthSelector =
+    (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Previous month"]');
+  const getBtnYearSelectorEl =
+    (n: AppDatepicker) => shadowQuery(n, '.btn__year-selector');
+  const getBtnCalendarSelectorEl =
+    (n: AppDatepicker) => shadowQuery(n, '.btn__calendar-selector');
+  const getCalendarLabelEl =
+    (n: AppDatepicker) => shadowQuery(n, '.calendar-container:nth-of-type(2) .calendar-label');
+  const waitForDragAnimationFinished =
+    (n: AppDatepicker) => new Promise(yay =>
+      requestAnimationFrame(() => setTimeout(() => yay(n.updateComplete), 1e3)));
+  const getYearListViewFullListEl =
+    (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
+  const getYearListViewListItemYearSelectedEl =
+    (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected div');
+  const selectNewYearFromYearListView =
+    (n: AppDatepicker, y: string) => {
+      const allSelectableYearItems =
+        shadowQueryAll(n, '.year-list-view__list-item:not(.year--selected)');
+      const matched =
+        allSelectableYearItems.find(o => y === getShadowInnerHTML(o.querySelector('div')!));
+
+      triggerEvent(matched!, 'click');
+    };
+  const setupDragPoint = (direction: DragDirection, el: HTMLElement) => {
+    const datepickerRect = el.getBoundingClientRect();
+    const calendarRect = shadowQuery(el, '.calendar-view__full-calendar').getBoundingClientRect();
+
+    const lFactor = 'left' === direction ? .78 : .22;
+    const left = datepickerRect.left + (datepickerRect.width * lFactor);
+    const top = calendarRect.top + (calendarRect.height * .22);
+
+    return { x: left, y: top };
+  };
+
   describe('initial render (calendar view)', () => {
     let el: AppDatepicker;
 
@@ -682,6 +723,76 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not reset`);
     });
 
+    it(`renders with optional 'dragRatio'`, async () => {
+      strictEqual(el.dragRatio, .15, `Initial 'dragRatio' not matched`);
+
+      el.min = date13;
+      el.value = date15;
+      el.dragRatio = .5;
+      await el.updateComplete;
+
+      strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      const calendarViewFullCalendarEl = shadowQuery(el, '.calendar-view__full-calendar');
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `First year selector text not matched`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `First calendar selector text not matched`);
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+        `First calendar label not matched (${calendarLabel})`);
+
+      const oldStartingPoint = setupDragPoint('left', el);
+      const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
+      await dragTo(calendarViewFullCalendarEl, oldDragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `Calendar selector text should not change`);
+
+      const oldCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
+        `Calendar label should not update (${oldCalendarLabel})`);
+
+      const startingPoint = setupDragPoint('left', el);
+      const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
+      await dragTo(calendarViewFullCalendarEl, dragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `Calendar selector text should not change`);
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+        `New calendar label not updated (${newCalendarLabel})`);
+    });
+
   });
 
   describe('updates via attributes', () => {
@@ -1204,36 +1315,82 @@ describe('app-datepicker', () => {
       strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not reset`);
     });
 
+    it(`renders with optional 'dragRatio'`, async () => {
+      strictEqual(el.dragRatio, .15, `Initial 'dragRatio' not matched`);
+      isTrue(!el.hasAttribute('dragratio'), `Initial 'dragratio' attribute set`);
+
+      el.min = date13;
+      el.value = date15;
+      el.setAttribute('dragratio', '.5');
+      await el.updateComplete;
+
+      strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
+      strictEqual(el.getAttribute('dragratio'), '.5', `'dragratio' attribute not matched`);
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      const calendarViewFullCalendarEl = shadowQuery(el, '.calendar-view__full-calendar');
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `First year selector text not matched`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `First calendar selector text not matched`);
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+        `First calendar label not matched (${calendarLabel})`);
+
+      const oldStartingPoint = setupDragPoint('left', el);
+      const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
+      await dragTo(calendarViewFullCalendarEl, oldDragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `Calendar selector text should not change`);
+
+      const oldCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
+        `Calendar label should not update (${oldCalendarLabel})`);
+
+      const startingPoint = setupDragPoint('left', el);
+      const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
+      await dragTo(calendarViewFullCalendarEl, dragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `Calendar selector text should not change`);
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+        `New calendar label not updated (${newCalendarLabel})`);
+    });
+
   });
 
-  describe('navigating calendar with buttons', () => {
+  describe('navigating calendar by buttons/ gestures', () => {
     let el: AppDatepicker;
-    const getBtnNextMonthSelector =
-      (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Next month"]');
-    const getBtnPrevMonthSelector =
-      (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Previous month"]');
-    const getBtnYearSelectorEl =
-      (n: AppDatepicker) => shadowQuery(n, '.btn__year-selector');
-    const getBtnCalendarSelectorEl =
-      (n: AppDatepicker) => shadowQuery(n, '.btn__calendar-selector');
-    const getCalendarLabelEl =
-      (n: AppDatepicker) => shadowQuery(n, '.calendar-container:nth-of-type(2) .calendar-label');
-    const waitForDragAnimationFinished =
-      (n: AppDatepicker) => new Promise(yay =>
-        requestAnimationFrame(() => setTimeout(() => yay(n.updateComplete), 1e3)));
-    const getYearListViewFullListEl =
-      (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
-    const getYearListViewListItemYearSelectedEl =
-      (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected div');
-    const selectNewYearFromYearListView =
-      (n: AppDatepicker, y: string) => {
-        const allSelectableYearItems =
-          shadowQueryAll(n, '.year-list-view__list-item:not(.year--selected)');
-        const matched =
-          allSelectableYearItems.find(o => y === getShadowInnerHTML(o.querySelector('div')!));
-
-        triggerEvent(matched!, 'click');
-      };
 
     beforeEach(async () => {
       el = document.createElement('app-datepicker') as AppDatepicker;
@@ -1379,6 +1536,95 @@ describe('app-datepicker', () => {
       const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
       /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
       isTrue(['Apr 2025', 'April, 2025', 'April 2025'].some(n => calendarLabel === n));
+    });
+
+    it(`goes to next month by dragging/ swiping calendar`, async () => {
+      el.min = date13;
+      el.value = date15;
+      await el.updateComplete;
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      const calendarViewFullCalendarEl = shadowQuery(el, '.calendar-view__full-calendar');
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `First year selector text not matched`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `First calendar selector text not matched`);
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+        `First calendar label not matched (${calendarLabel})`);
+
+      const startingPoint = setupDragPoint('left', el);
+      const dragOptions: OptionsDragTo = { ...startingPoint, dx: -50 };
+      await dragTo(calendarViewFullCalendarEl, dragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, Jan 15',
+        `Calendar selector text should not change`);
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+        `New calendar label not updated (${newCalendarLabel})`);
+    });
+
+    it(`goes to previous month by dragging/ swiping calendar`, async () => {
+      el.min = date13;
+      el.value = '2020-05-13';
+      await el.updateComplete;
+
+      const btnYearSelectorEl = getBtnYearSelectorEl(el);
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      const calendarViewFullCalendarEl = shadowQuery(el, '.calendar-view__full-calendar');
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `First year selector text not matched`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, May 13',
+        `First calendar selector text not matched`);
+
+      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      isTrue(
+        ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
+        `First calendar label not matched (${calendarLabel})`);
+
+      const startingPoint = setupDragPoint('right', el);
+      const dragOptions: OptionsDragTo = { ...startingPoint, dx: 50 };
+      await dragTo(calendarViewFullCalendarEl, dragOptions);
+      await waitForDragAnimationFinished(el);
+
+      strictEqual(
+        getShadowInnerHTML(btnYearSelectorEl),
+        '2020',
+        `Year selector text should not change`);
+      strictEqual(
+        getShadowInnerHTML(btnCalendarSelectorEl),
+        'Wed, May 13',
+        `Calendar selector text should not change`);
+
+      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      isTrue(
+        ['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n),
+        `New calendar label not updated (${newCalendarLabel})`);
     });
 
   });
