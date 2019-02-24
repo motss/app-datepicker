@@ -6,6 +6,7 @@
     <title>app-datepicker tests</title>
 
     <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.2.5/dist/polyfill.min.js"></script>
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
@@ -57,19 +58,19 @@
         });
       }
 
-      if ([].findIndex == null) {
-        Object.defineProperty(Array.prototype, 'findIndex', {
-          value: function arrayFindIndex(cb) {
-            if (Array.isArray(this) && this.length > 0) {
-              for (var i = 0, len = this.length; i < len; i += 1) {
-                if (cb(this[i], i, this)) return i;
-              }
-            }
+      // if ([].findIndex == null) {
+      //   Object.defineProperty(Array.prototype, 'findIndex', {
+      //     value: function arrayFindIndex(cb) {
+      //       if (Array.isArray(this) && this.length > 0) {
+      //         for (var i = 0, len = this.length; i < len; i += 1) {
+      //           if (cb(this[i], i, this)) return i;
+      //         }
+      //       }
 
-            return -1;
-          },
-        });
-      }
+      //       return -1;
+      //     },
+      //   });
+      // }
     </script>
   </head>
 

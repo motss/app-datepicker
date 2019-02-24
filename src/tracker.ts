@@ -115,7 +115,6 @@ export class Tracker {
 
   private _onMove(ev: PointerType) {
     if (this._started) {
-      console.log('onmove', ev);
       this._updatePointers(this._move, ev);
     }
   }

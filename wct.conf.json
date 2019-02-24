@@ -16,6 +16,6 @@
     }
   },
   "suites": ["src/test"],
-  "testTimeout": 59000,
+  "testTimeout": 99000,
   "verbose": true
 }

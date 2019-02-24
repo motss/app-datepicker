@@ -14,6 +14,7 @@
 
   <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
   <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.2.5/dist/polyfill.min.js"></script>
   <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
@@ -69,15 +70,15 @@
       document.head.appendChild(wa);
     }
 
-    if ([].find == null) {
-      Object.defineProperty(Array.prototype, 'find', {
-        value: function arrayFind(cb) {
-          return Array.isArray(this) && this.length > 0
-            ? this.filter(cb)[0]
-            : null;
-        },
-      });
-    }
+    // if ([].find == null) {
+    //   Object.defineProperty(Array.prototype, 'find', {
+    //     value: function arrayFind(cb) {
+    //       return Array.isArray(this) && this.length > 0
+    //         ? this.filter(cb)[0]
+    //         : null;
+    //     },
+    //   });
+    // }
   </script>
   <script type="module">
     // import '/node_modules/lit-html/lit-html.js';

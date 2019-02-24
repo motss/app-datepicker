@@ -55,6 +55,10 @@ export const getShadowInnerHTML = (target: Element | HTMLElement) => {
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
 
+export const getinnerHTML =
+  (target: Element | HTMLElement) =>
+    target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
+
 export const getOuterHTML =
   (target: Element | HTMLElement) =>
     target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
@@ -63,13 +67,26 @@ export const getComputedStylePropertyValue =
   (target: Element | HTMLElement, property: string) =>
     getComputedStyle && getComputedStyle(target)[property as any];
 
-export function triggerEvent(n: HTMLElement, eventName: string, options?: PointerEvent) {
-  n.dispatchEvent(new CustomEvent(eventName, {
+export interface KeyboardEventOptions extends KeyboardEventInit {
+  keyCode: number;
+}
+export function triggerEvent(
+  n: HTMLElement,
+  eventName: string,
+  options?: PointerEvent | KeyboardEventOptions
+) {
+  const c = new CustomEvent(eventName, {
     composed: true,
     bubbles: true,
     ...options,
-  }));
-};
+  });
+
+  Object.keys(options || {}).forEach((o) => {
+    Object.defineProperty(c, o, { value: (options as any)[o] });
+  });
+
+  n.dispatchEvent(c);
+}
 
 const simulateInputEvent =
   (n: HTMLElement, eventName: string, options?: PointerEvent) => {

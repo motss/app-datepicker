@@ -2,6 +2,8 @@ type DragDirection = 'left' | 'right';
 
 import { AppDatepicker, START_VIEW } from '../app-datepicker.js';
 import { WEEK_NUMBER_TYPE } from '../calendar.js';
+import { KEYCODES_MAP } from '../datepicker-helpers.js';
+import { KeyboardEventOptions, OptionsDragTo } from './test-helpers';
 
 import '../app-datepicker.js';
 import {
@@ -13,8 +15,8 @@ import {
 import {
   dragTo,
   getComputedStylePropertyValue,
+  getinnerHTML,
   getShadowInnerHTML,
-  OptionsDragTo,
   shadowQuery,
   shadowQueryAll,
   triggerEvent,
@@ -67,6 +69,12 @@ describe('app-datepicker', () => {
     (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
   const getYearListViewListItemYearSelectedEl =
     (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected > div');
+  const getDatepickerBodyCalendarViewEl =
+    (n: AppDatepicker) => shadowQuery(n, '.datepicker-body__calendar-view[tabindex="0"]');
+  const getDatepickerBodyCalendarViewDayFocusedEl =
+    (n: AppDatepicker) => shadowQuery(n, '.calendar-container:nth-of-type(2)')
+      .querySelector('.full-calendar__day:not(.day--disabled).day--focused > div');
+
   const selectNewYearFromYearListView =
     (n: AppDatepicker, y: string) => {
       const allSelectableYearItems =
@@ -1408,7 +1416,7 @@ describe('app-datepicker', () => {
 
   });
 
-  describe('navigating calendar by buttons/ gestures', () => {
+  describe('navigating calendar by button/ gesture', () => {
     let el: AppDatepicker;
 
     beforeEach(async () => {
@@ -1505,7 +1513,7 @@ describe('app-datepicker', () => {
       isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
     });
 
-    it(`restores to focused date when switches back to calendar view`, async () =>{
+    it(`restores to focused date when switches back to calendar view`, async () => {
       el.min = date13;
       el.value = date15;
       await el.updateComplete;
@@ -1531,7 +1539,7 @@ describe('app-datepicker', () => {
       isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
     });
 
-    it(`switches back to calendar view with new selected year`, async () =>{
+    it(`switches back to calendar view with new selected year`, async () => {
       el.min = date13;
       el.value = date15;
       await el.updateComplete;
@@ -1648,7 +1656,7 @@ describe('app-datepicker', () => {
 
   });
 
-  describe('navigating year list by buttons', () => {
+  describe('navigating year list by button', () => {
     let el: AppDatepicker;
 
     beforeEach(async () => {
@@ -1723,27 +1731,165 @@ describe('app-datepicker', () => {
 
   });
 
-  // describe('focusing new date with buttons/ gestures', () => {
-  //   let el: AppDatepicker;
+  describe('focusing new date with button/ gesture/ keyboard', () => {
+    let el: AppDatepicker;
 
-  //   beforeEach(async () => {
-  //     el = document.createElement('app-datepicker') as AppDatepicker;
-  //     el.locale = defaultLocale;
-  //     el.startView = START_VIEW.CALENDAR;
-  //     el.min = date13;
-  //     el.value = date15;
+    beforeEach(async () => {
+      el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
+      el.min = date13;
+      el.value = date15;
 
-  //     document.body.appendChild(el);
+      document.body.appendChild(el);
 
-  //     await el.updateComplete;
-  //   });
+      await el.updateComplete;
+    });
 
-  //   afterEach(() => {
-  //     document.body.removeChild(el);
-  //   });
-  // });
+    afterEach(() => {
+      document.body.removeChild(el);
+    });
 
-  // describe('keyboard support', () => {});
+    it(`focuses correct date by gesture`, async () => {
+      strictEqual(el.value, date15, `Focused date not matched (${el.value})`);
+
+      const newFocusedDateEl =
+        shadowQuery(el, '.calendar-container:nth-of-type(2)')
+          .querySelector('.full-calendar__day:not(.day--disabled)[aria-label="Jan 22, 2020"]');
+      triggerEvent(newFocusedDateEl as HTMLElement, 'click');
+      await el.updateComplete;
+
+      strictEqual(el.value, '2020-01-22', `New focused date not updated (${el.value})`);
+
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      isNotNull(btnCalendarSelectorEl, `Calendar selector button not found`);
+
+      const calendarSelectorLabel = getinnerHTML(btnCalendarSelectorEl);
+      strictEqual(
+        calendarSelectorLabel,
+        'Wed, Jan 22',
+        `Calendar selector label not matched (${calendarSelectorLabel})`);
+
+      const newFocusedDateLabelEl = getDatepickerBodyCalendarViewDayFocusedEl(el);
+      isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+      const newFocusedDateLabel = getinnerHTML(newFocusedDateLabelEl!);
+      strictEqual(
+        newFocusedDateLabel,
+        '22',
+        `New focused date label not matched (${newFocusedDateLabel})`);
+    });
+
+    it(`focuses date on new month by button and gesture`, async () => {
+      strictEqual(el.value, date15, `Focused date not matched (${el.value})`);
+
+      const nextBtnMonthSelectorEl = getBtnNextMonthSelector(el);
+      isNotNull(nextBtnMonthSelectorEl, `Next month selector button not found`);
+
+      triggerEvent(nextBtnMonthSelectorEl, 'click');
+      await waitForDragAnimationFinished(el);
+
+      const newFocusedDateEl =
+        shadowQuery(el, '.calendar-container:nth-of-type(2)')
+          .querySelector('.full-calendar__day:not(.day--disabled)[aria-label="Feb 25, 2020"]');
+      triggerEvent(newFocusedDateEl as HTMLElement, 'click');
+      await el.updateComplete;
+
+      strictEqual(el.value, '2020-02-25', `New focused date not updated (${el.value})`);
+
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+      const calendarSelectorLabel = getinnerHTML(btnCalendarSelectorEl);
+      strictEqual(
+        calendarSelectorLabel,
+        'Tue, Feb 25',
+        `Calendar selector label not matched (${calendarSelectorLabel})`);
+
+      const newFocusedDateLabelEl = getDatepickerBodyCalendarViewDayFocusedEl(el);
+      isNotNull(newFocusedDateLabelEl, 'New focused date not found');
+
+      const newFocusedDateLabel = getinnerHTML(newFocusedDateLabelEl!);
+      strictEqual(
+        newFocusedDateLabel,
+        '25',
+        `New focused date label not matched (${newFocusedDateLabel})`);
+    });
+
+    it(`focuses date by keyboard (Left)`, async () => {
+      const datepickerBodyCalendarViewEl = getDatepickerBodyCalendarViewEl(el);
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      const keyboardEventOptions: KeyboardEventOptions = {
+        keyCode: KEYCODES_MAP.ARROW_LEFT,
+      };
+      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      await el.updateComplete;
+
+      strictEqual(el.value, '2020-01-14', `New focused date not matched (${el.value})`);
+
+      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+      isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+      const btnCalendarSelectorLabel = getinnerHTML(btnCalendarSelectorEl);
+      strictEqual(
+        btnCalendarSelectorLabel,
+        `Tue, Jan 14`,
+        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+
+      const newFocusedDateLabelEl = getDatepickerBodyCalendarViewDayFocusedEl(el);
+      isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+      const newFocusedDateLabel = getinnerHTML(newFocusedDateLabelEl!);
+      strictEqual(
+        newFocusedDateLabel,
+        '14',
+        `New focused label not matched (${newFocusedDateLabel})`);
+    });
+
+    it(`focuses date by keyboard (Left + first focusable date)`, async () => {
+      const tasks = [
+        async () => { el.value = date13; await el.updateComplete; return 0; },
+        async () => { el.disabledDates = '2020-01-14'; await el.updateComplete; return 1; },
+      ];
+
+      for (const fn of tasks) {
+        const val = await fn();
+        if (!val) strictEqual(el.value, '2020-01-13', `'value' not updated`);
+        if (val === 1) strictEqual(el.disabledDates, '2020-01-14', `'disabledDates' not updated`);
+
+        const datepickerBodyCalendarViewEl = getDatepickerBodyCalendarViewEl(el);
+        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+        const keyboardEventOptions: KeyboardEventOptions = {
+          keyCode: KEYCODES_MAP.ARROW_LEFT,
+        };
+        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        await el.updateComplete;
+
+        strictEqual(el.value, '2020-01-13', `New focused date not matched (${el.value})`);
+
+        const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
+        isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+        const btnCalendarSelectorLabel = getinnerHTML(btnCalendarSelectorEl);
+        strictEqual(
+          btnCalendarSelectorLabel,
+          `Mon, Jan 13`,
+          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+
+        const newFocusedDateLabelEl = getDatepickerBodyCalendarViewDayFocusedEl(el);
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        const newFocusedDateLabel = getinnerHTML(newFocusedDateLabelEl!);
+        strictEqual(
+          newFocusedDateLabel,
+          '13',
+          `New focused label not matched (${newFocusedDateLabel})`);
+      }
+    });
+
+  });
 
   // describe('timezones', () => {});
 
