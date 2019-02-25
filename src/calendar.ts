@@ -1,5 +1,5 @@
 import { AppDatepicker } from './app-datepicker';
-import { DateTimeFormatter, toUTCDate } from './datepicker-helpers';
+import { DateTimeFormatter, toUTCDate, getResolvedDate } from './datepicker-helpers';
 
 export const enum WEEK_NUMBER_TYPE {
   FIRST_4_DAY_WEEK = 'first-4-day-week',
@@ -159,7 +159,7 @@ export function calendarDays({
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
   const allCalendarRows: CalendarDay[][] = [];
-  const allDisabledDates: number[] = [];
+  const allDisabledDates: number[] = disabledDatesList.map(n => +getResolvedDate(n));
   const minTime = +min;
   const maxTime = +max;
 

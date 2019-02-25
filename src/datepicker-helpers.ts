@@ -61,10 +61,9 @@ export const ALL_NAV_KEYS_SET =
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);
-  const isUTCDateFormat =
-    typeof date === 'string' && (
-      /^\d{4}[^\d\w]\d{2}[^\d\w]\d{2}$/i.test(date) ||
-      /^\d{4}[^\d\w]\d{2}[^\d\w]\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i.test(date));
+  const isUTCDateFormat = typeof date === 'string' && (
+    /^\d{4}-\d{2}-\d{2}$/i.test(date) ||
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i.test(date));
 
   let fy = dateDate.getFullYear();
   let m = dateDate.getMonth();
@@ -447,10 +446,8 @@ function getNextSelectableDate({
   if (!isDisabledDay) return focusedDate;
 
   let selectableFocusedDateTime = 0;
-  let selectableFocusedDate =
-    isLessThanMinTime
-      ? new Date(isMoreThanMaxTime ? maxTime : minTime)
-      : focusedDate;
+  let selectableFocusedDate = isLessThanMinTime === isMoreThanMaxTime ?
+    focusedDate : new Date(isLessThanMinTime ? minTime - 864e5 : 864e5 + maxTime);
 
   const fy = selectableFocusedDate.getUTCFullYear();
   const m = selectableFocusedDate.getUTCMonth();
@@ -534,7 +531,6 @@ export function computeNextFocusedDate({
    *        c. If new focused date is either `min` or `max`, reverse order `d += 1` -> `d -= 1` and
    *         continue the loop until new selectable focused date.
    */
-
   const oldFy = focusedDate.getUTCFullYear();
   const oldM = focusedDate.getUTCMonth();
   const oldD = focusedDate.getUTCDate();
