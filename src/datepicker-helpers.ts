@@ -64,6 +64,7 @@ export function getResolvedDate(date?: number | Date | string | undefined): Date
   const isUTCDateFormat = typeof date === 'string' && (
     /^\d{4}-\d{2}-\d{2}$/i.test(date) ||
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/i.test(date));
+  const isUnixTimestamp = typeof date === 'number' && date > 0 && isFinite(date);
 
   let fy = dateDate.getFullYear();
   let m = dateDate.getMonth();
@@ -85,7 +86,7 @@ export function getResolvedDate(date?: number | Date | string | undefined): Date
    * dateDate.getDate(); // 2
    * ```
    */
-  if (isUTCDateFormat) {
+  if (isUTCDateFormat || isUnixTimestamp) {
     fy = dateDate.getUTCFullYear();
     m = dateDate.getUTCMonth();
     d = dateDate.getUTCDate();

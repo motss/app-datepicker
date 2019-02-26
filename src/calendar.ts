@@ -159,7 +159,7 @@ export function calendarDays({
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
   const allCalendarRows: CalendarDay[][] = [];
-  const allDisabledDates: number[] = disabledDatesList.map(n => +getResolvedDate(n));
+  const allDisabledDates: number[] = disabledDatesList;
   const minTime = +min;
   const maxTime = +max;
 
