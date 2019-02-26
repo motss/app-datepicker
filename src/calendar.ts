@@ -1,5 +1,5 @@
 import { AppDatepicker } from './app-datepicker';
-import { DateTimeFormatter, toUTCDate, getResolvedDate } from './datepicker-helpers';
+import { DateTimeFormatter, toUTCDate } from './datepicker-helpers';
 
 export const enum WEEK_NUMBER_TYPE {
   FIRST_4_DAY_WEEK = 'first-4-day-week',
