@@ -2789,6 +2789,60 @@ describe('app-datepicker', () => {
       }
     });
 
+    it(`fires 'datepicker-value-updated' event by keyboard (Enter)`, async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await el.updateComplete;
+
+      const datepickerBodyCalendarViewEl = getDatepickerBodyCalendarViewEl(el);
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await el.updateComplete;
+
+      strictEqual(el.value, '2020-01-21', `New focused date not updated (${el.value})`);
+
+      const valueMatchedFromEvent = new Promise((yay) => {
+        el.addEventListener('datepicker-value-updated', (ev) => {
+          const { value } = (ev as CustomEvent).detail;
+
+          strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
+          yay();
+        }, { once: true });
+      });
+
+      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
+      await el.updateComplete;
+      await valueMatchedFromEvent;
+    });
+
+    it(`fires 'datepicker-value-updated' event by keyboard (Space)`, async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await el.updateComplete;
+
+      const datepickerBodyCalendarViewEl = getDatepickerBodyCalendarViewEl(el);
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await el.updateComplete;
+
+      strictEqual(el.value, '2020-01-21', `New focused date not updated (${el.value})`);
+
+      const valueMatchedFromEvent = new Promise((yay) => {
+        el.addEventListener('datepicker-value-updated', (ev) => {
+          const { value } = (ev as CustomEvent).detail;
+
+          strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
+          yay();
+        }, { once: true });
+      });
+
+      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });
+      await el.updateComplete;
+      await valueMatchedFromEvent;
+    });
+
   });
 
   // describe('timezones', () => {});

@@ -24,6 +24,7 @@
 
 [![codebeat badge][codebeat-badge]][codebeat-url]
 [![Codacy Badge][codacy-badge]][codacy-url]
+[![Language grade: JavaScript][lgtm-badge]][lgtm-url]
 [![Code of Conduct][coc-badge]][coc-url]
 
 > A different way of `datepicker`-ing on the web.
@@ -203,6 +204,7 @@ Meantime, feel free to check the older version out at:
 
 [codebeat-badge]: https://codebeat.co/badges/3a212108-43cd-4a1f-ab2c-fe890ad734b6
 [codacy-badge]: https://api.codacy.com/project/badge/Grade/0525e4467aa5414b85ea0feebe8fbd95
+[lgtm-badge]: https://flat.badgen.net/lgtm/grade/javascript/g/motss/app-datepicker?icon=lgtm
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
@@ -222,6 +224,7 @@ Meantime, feel free to check the older version out at:
 
 [codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [codacy-url]: https://www.codacy.com/app/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker&amp;utm_campaign=Badge_Grade
+[lgtm-url]: https://lgtm.com/projects/g/motss/app-datepicker/context:javascript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [coc-url]: https://github.com/motss/app-datepicker/blob/master/code-of-conduct.md?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 <!-- [intl-polyfill-url]: https://github.com/andyearnshaw/Intl.js -->
