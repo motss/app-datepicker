@@ -19,21 +19,6 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
   <script>
-    const isES6Supported = () => {
-      'use strict';
-      try { eval('var foo = (x)=>x+1'); }
-      catch (e) { return false; }
-      return true;
-    };
-
-    // if (!isES6Supported()) {
-    //   const wa = document.createElement('script');
-    //   wa.src = 'https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch';
-    //   wa.onload = () => console.info('✅ ES6 polyfill loaded');
-    //   wa.onerror = console.error;
-    //   document.head.appendChild(wa);
-    // }
-
     // if (!window.HTMLTemplateElement || !window.customElements || !Element.prototype.attachShadow) {
     //   const wa = document.createElement('script');
     //   wa.src = '/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js';
@@ -41,15 +26,6 @@
     //   wa.onerror = console.error;
     //   document.head.appendChild(wa);
     // }
-
-    if (!isES6Supported()) {
-      const cea = document.createElement('script');
-      cea.src =
-        '/node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
-      cea.onload = () => console.info('⚒ CE ES5 adapter loaded');
-      cea.onerror = console.error;
-      document.head.appendChild(cea);
-    }
 
     if (!(Element.prototype.animate)) {
       const wa = document.createElement('script');
@@ -63,9 +39,9 @@
     if (!window.Intl) {
       const wa = document.createElement('script');
       /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
-      // wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
+      wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
       // wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
-      wa.src = 'https://polyfill.io/v3/polyfill.min.js?rum=true&features=default%2CIntl';
+      // wa.src = 'https://polyfill.io/v3/polyfill.min.js?rum=true&features=default%2CIntl';
       wa.onload = () => console.info('🌐 Intl polyfill loaded');
       wa.onerror = console.error;
       document.head.appendChild(wa);
@@ -86,9 +62,6 @@
     // import '/node_modules/@polymer/lit-element/lit-element.js';
     import '/dist/app-datepicker.js';
     import '/dist/app-datepicker-dialog.js';
-    import { dragTo } from '/dist/test/test-helpers.js';
-
-    window.DragTo = { dragTo };
 
     // import '/dist/test-rerender.js';
     // import '/dist/calendar-benchmark.js';
