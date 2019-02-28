@@ -64,8 +64,9 @@
       const wa = document.createElement('script');
       /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
       // wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
-      wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
-      wa.onload = () => console.info('🌐 Intl.complete loaded');
+      // wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+      wa.src = 'https://polyfill.io/v3/polyfill.min.js?rum=true&features=default%2CIntl';
+      wa.onload = () => console.info('🌐 Intl polyfill loaded');
       wa.onerror = console.error;
       document.head.appendChild(wa);
     }
