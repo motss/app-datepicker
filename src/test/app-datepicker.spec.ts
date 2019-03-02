@@ -21,6 +21,7 @@ import {
   shadowQueryAll,
   triggerEvent,
 } from './test-helpers';
+import { getAllDateStrings } from './timezones.js';
 
 const {
   isString,
@@ -2845,6 +2846,46 @@ describe('app-datepicker', () => {
 
   });
 
-  // describe('timezones', () => {});
+  describe('timezones', () => {
+    let el: AppDatepicker;
+
+    beforeEach(async () => {
+      el = document.createElement('app-datepicker') as AppDatepicker;
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
+      el.min = date13;
+      el.value = date15;
+
+      document.body.appendChild(el);
+
+      await el.updateComplete;
+    });
+
+    afterEach(() => {
+      document.body.removeChild(el);
+    });
+
+    it(`resolves to correct date in different timezones`, async () => {
+      strictEqual(el.value, date15, `Initial date not matched`);
+
+      const dateStringsList = getAllDateStrings();
+
+      for (const { dates } of dateStringsList) {
+        await el.updateComplete;
+        for (const { date, value } of dates) {
+          el.value = date;
+          await el.updateComplete;
+
+          strictEqual(
+            el.value,
+            value,
+            `'value' not updated ('${date}'). Expected '${value}' but found ('${el.value}')`);
+        }
+      }
+
+      return el.updateComplete;
+    });
+
+  });
 
 });
