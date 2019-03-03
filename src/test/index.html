@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>app-datepicker tests</title>
+
+    <script>
+    /**
+     * NOTE(motss): Modify WCT's global configuration.
+     *
+     * Reference: {@link https://bit.ly/2Hdn2AU|tools/config.ts at master · Polymer/tools}
+     */
+    window.WCT = {
+      mochaOptions: { timeout: 99e3 },
+      numConcurrentSuites: 4,
+      verbose: true,
+    };
+    </script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
@@ -11,9 +24,6 @@
 
   <body>
     <script>
-      WCT.mochaOptions = {};
-      WCT.mochaOptions.timeout = 999e3;
-
       WCT.loadSuites([
         'runner.html',
         'runner.html?wc-shadydom=true',

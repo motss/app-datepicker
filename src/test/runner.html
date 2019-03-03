@@ -11,7 +11,7 @@
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
 
-    <script>
+    <script type="module">
       const isES6ClassSupported = () => {
         'use strict';
         try { eval('class Foo {}'); }
@@ -46,11 +46,13 @@
         document.head.appendChild(wa);
       }
     </script>
-    <script type="module" src="../../dist/app-datepicker.js"></script>
-    <script type="module" src="../../dist/app-datepicker-dialog.js"></script>
   </head>
 
   <body>
-    <script type="module" src="../../dist/test/app-datepicker/app-datepicker.spec.js"></script>
+    <script type="module">
+      import '../../dist/app-datepicker.js';
+      import '../../dist/app-datepicker-dialog.js';
+      import '../../dist/test/app-datepicker/app-datepicker.spec.js';
+    </script>
   </body>
 </html>
