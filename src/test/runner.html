@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>app-datepicker tests</title>
 
-    <!-- <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&rum=true&features=default%2CArray.from%2CArray.prototype.find%2Cfetch%2CArray.prototype.keys"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.2.5/dist/polyfill.min.js"></script>
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
@@ -41,41 +40,17 @@
       if (!window.Intl) {
         const wa = document.createElement('script');
         /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
-        // wa.src = 'https://cdn.jsdelivr.net/npm/intl@latest/dist/Intl.complete.js';
-        // wa.src = 'https://polyfill.io/v3/polyfill.min.js?rum=true&features=default%2CIntl';
         wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
         wa.onload = () => console.info('🌐 Intl polyfill loaded');
         wa.onerror = console.error;
         document.head.appendChild(wa);
       }
-
-      if ([].find == null) {
-        Object.defineProperty(Array.prototype, 'find', {
-          value: function arrayFind(cb) {
-            return Array.isArray(this) && this.length > 0
-              ? this.filter(cb)[0]
-              : null;
-          },
-        });
-      }
-
-      // if ([].findIndex == null) {
-      //   Object.defineProperty(Array.prototype, 'findIndex', {
-      //     value: function arrayFindIndex(cb) {
-      //       if (Array.isArray(this) && this.length > 0) {
-      //         for (var i = 0, len = this.length; i < len; i += 1) {
-      //           if (cb(this[i], i, this)) return i;
-      //         }
-      //       }
-
-      //       return -1;
-      //     },
-      //   });
-      // }
     </script>
+    <script type="module" src="../../dist/app-datepicker.js"></script>
+    <script type="module" src="../../dist/app-datepicker-dialog.js"></script>
   </head>
 
   <body>
-    <script type="module" src="../../dist/test/app-datepicker.spec.js"></script>
+    <script type="module" src="../../dist/test/app-datepicker/app-datepicker.spec.js"></script>
   </body>
 </html>

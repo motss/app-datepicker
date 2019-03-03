@@ -23,8 +23,8 @@ const timezones = [
   '-03:00',
   '-02:00',
   '-01:00',
-  '+00:00',
   '-00:00',
+  '+00:00',
   '+01:00',
   '+02:00',
   '+03:00',
@@ -78,12 +78,22 @@ const toDateString = (options: OptionsToDateString) => {
 //   return [fy, `0${m}`.slice(-2), `0${d + (isPreviousDay ? -1 : 1)}`.slice(-2)].join('-');
 // }
 
+export interface DateString {
+  date: string;
+  value: string;
+}
+interface GetAllDateStrings {
+  timezone: string;
+  dates: DateString[];
+}
 export function getAllDateStrings() {
   const fy = '2020';
   const m = '02';
   const d = '02';
 
-  return timezones.map((tz) => {
+  const tzObj: Record<string, GetAllDateStrings> = {};
+
+  for (const tz of timezones) {
     const dateStringsList = hours.map((h) => {
       const dateString = toDateString({
         year: fy,
@@ -113,6 +123,8 @@ export function getAllDateStrings() {
       };
     });
 
-    return { timezone: tz, dates: dateStringsList };
-  });
+    tzObj[tz] = { timezone: tz, dates: dateStringsList };
+  }
+
+  return tzObj;
 }
