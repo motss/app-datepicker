@@ -1,6 +1,7 @@
 type DragDirection = 'left' | 'right';
 
 import { AppDatepicker } from '../../app-datepicker';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 
 import {
   getShadowInnerHTML,
@@ -9,8 +10,8 @@ import {
   triggerEvent,
 } from '../test-helpers';
 
-export const getBtnNextMonthSelector =
-  (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Next month"]');
+export const getBtnNextMonthSelector = <T extends AppDatepicker>(n: T) =>
+  shadowQuery(n, '.btn__month-selector[aria-label="Next month"]');
 export const getBtnPrevMonthSelector =
   (n: AppDatepicker) => shadowQuery(n, '.btn__month-selector[aria-label="Previous month"]');
 export const getBtnYearSelectorEl =
@@ -22,20 +23,21 @@ export const getCalendarLabelEl =
 export const waitForDragAnimationFinished =
   (n: AppDatepicker) => new Promise(yay =>
     requestAnimationFrame(() => setTimeout(() => yay(n.updateComplete), 1e3)));
-export const getYearListViewFullListEl =
-  (n: AppDatepicker) => shadowQuery(n, '.year-list-view__full-list');
+export const getYearListViewFullListEl = <T extends AppDatepicker|AppDatepickerDialog>(n: T) =>
+  shadowQuery(n, '.year-list-view__full-list');
 export const getYearListViewListItemYearSelectedEl =
   (n: AppDatepicker) => shadowQuery(n, '.year-list-view__list-item.year--selected > div');
 export const getDatepickerBodyCalendarViewEl =
   (n: AppDatepicker) => shadowQuery(n, '.datepicker-body__calendar-view[tabindex="0"]');
 export const getDatepickerBodyCalendarViewDayFocusedEl =
   (n: AppDatepicker) => shadowQuery(n, '.calendar-container:nth-of-type(2)')
-    .querySelector('.full-calendar__day:not(.day--disabled).day--focused > div');
+    .querySelector<HTMLElement>('.full-calendar__day:not(.day--disabled).day--focused > div');
 
 export const selectNewYearFromYearListView =
   (n: AppDatepicker, y: string) => {
-    const allSelectableYearItems =
-      shadowQueryAll(n, '.year-list-view__list-item:not(.year--selected)');
+    const allSelectableYearItems = shadowQueryAll<AppDatepicker, HTMLButtonElement>(
+      n,
+      '.year-list-view__list-item:not(.year--selected)');
     const matched =
       allSelectableYearItems.find(o => y === getShadowInnerHTML(o.querySelector('div')!));
 

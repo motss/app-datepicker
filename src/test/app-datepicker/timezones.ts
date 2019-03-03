@@ -6,7 +6,7 @@ interface OptionsToDateString {
   timezone: string;
 }
 
-import { arrayFilled, toFormattedDateString } from '../datepicker-helpers';
+import { arrayFilled, toFormattedDateString } from '../../datepicker-helpers';
 
 const timezones = [
   '-12:00',

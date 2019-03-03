@@ -42,29 +42,30 @@ export const getComputedStyleValue = (element: Element, property: string) =>
     ? window.ShadyCSS!.getComputedStyleValue(element, property)
   : getComputedStyle(element).getPropertyValue(property);
 
+export type ElementTypes = HTMLElement;
 export const shadowQuery =
-  (target: Element | HTMLElement, selector: string) =>
-    target.shadowRoot!.querySelector<HTMLElement>(selector)!;
+  <T extends ElementTypes, U extends ElementTypes>(target: T, selector: string) =>
+    target.shadowRoot!.querySelector<U>(selector)!;
 
 export const shadowQueryAll =
-  (target: Element | HTMLElement, selector: string) =>
-    Array.from(target.shadowRoot!.querySelectorAll<HTMLElement>(selector))!;
+  <T extends ElementTypes, U extends ElementTypes>(target: T, selector: string) =>
+    Array.from(target.shadowRoot!.querySelectorAll<U>(selector))!;
 
-export const getShadowInnerHTML = (target: Element | HTMLElement) => {
+export const getShadowInnerHTML = (target: ElementTypes) => {
   const root = (target.shadowRoot || target);
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
 
 export const getinnerHTML =
-  (target: Element | HTMLElement) =>
+  (target: ElementTypes) =>
     target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
 
 export const getOuterHTML =
-  (target: Element | HTMLElement) =>
+  (target: ElementTypes) =>
     target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
 
 export const getComputedStylePropertyValue =
-  (target: Element | HTMLElement, property: string) =>
+  (target: ElementTypes, property: string) =>
     getComputedStyle && getComputedStyle(target)[property as any];
 
 export interface KeyboardEventOptions extends KeyboardEventInit {

@@ -1,7 +1,7 @@
 import { AppDatepicker, START_VIEW } from '../../app-datepicker';
 
 import { date13, date15, defaultLocale } from '../test-config';
-import { getAllDateStrings } from '../timezones';
+import { getAllDateStrings } from './timezones';
 
 const {
   strictEqual,
