@@ -1,3 +1,6 @@
+import { AppDatepicker } from '../app-datepicker';
+import { AppDatepickerDialog } from '../app-datepicker-dialog';
+
 interface ShadyCSS {
   nativeCss: boolean;
   nativeShadow: boolean;
@@ -42,30 +45,16 @@ export const getComputedStyleValue = (element: Element, property: string) =>
     ? window.ShadyCSS!.getComputedStyleValue(element, property)
   : getComputedStyle(element).getPropertyValue(property);
 
-export type ElementTypes = HTMLElement;
-export const shadowQuery =
-  <T extends ElementTypes, U extends ElementTypes>(target: T, selector: string) =>
-    target.shadowRoot!.querySelector<U>(selector)!;
-
-export const shadowQueryAll =
-  <T extends ElementTypes, U extends ElementTypes>(target: T, selector: string) =>
-    Array.from(target.shadowRoot!.querySelectorAll<U>(selector))!;
-
-export const getShadowInnerHTML = (target: ElementTypes) => {
-  const root = (target.shadowRoot || target);
-  return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
-};
-
 export const getinnerHTML =
-  (target: ElementTypes) =>
+  (target: HTMLElement) =>
     target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
 
 export const getOuterHTML =
-  (target: ElementTypes) =>
+  (target: HTMLElement) =>
     target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
 
 export const getComputedStylePropertyValue =
-  (target: ElementTypes, property: string) =>
+  (target: HTMLElement, property: string) =>
     getComputedStyle && getComputedStyle(target)[property as any];
 
 export interface KeyboardEventOptions extends KeyboardEventInit {
@@ -202,3 +191,103 @@ export const dragTo =
       throw e;
     }
   };
+
+export const selectNewYearFromYearListView =
+  (n: AppDatepicker, y: string) => {
+    const allSelectableYearItems = shadowQueryAll<AppDatepicker, HTMLButtonElement>(
+      n,
+      '.year-list-view__list-item:not(.year--selected)');
+    const matched =
+      allSelectableYearItems.find(o => y === getShadowInnerHTML(o.querySelector('div')!));
+
+    triggerEvent(matched!, 'click');
+  };
+
+type DragDirection = 'left' | 'right';
+export const setupDragPoint = (direction: DragDirection, el: HTMLElement) => {
+  const datepickerRect = el.getBoundingClientRect();
+  const calendarRect = shadowQuery(el, '.calendar-view__full-calendar').getBoundingClientRect();
+
+  const lFactor = 'left' === direction ? .78 : .22;
+  const left = datepickerRect.left + (datepickerRect.width * lFactor);
+  const top = calendarRect.top + (calendarRect.height * .22);
+
+  return { x: left, y: top };
+};
+
+export const shadowQuery =
+  <T extends HTMLElement, U extends HTMLElement>(target: T, selector: string) =>
+    target.shadowRoot!.querySelector<U>(selector)!;
+export const shadowQueryAll =
+  <T extends HTMLElement, U extends HTMLElement>(target: T, selector: string) =>
+    Array.from(target.shadowRoot!.querySelectorAll<U>(selector))!;
+
+export const getShadowInnerHTML = (target: HTMLElement) => {
+  const root = (target.shadowRoot || target);
+  return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
+};
+export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
+  el: T
+) => {
+  const elem = ('APP-DATEPICKER-DIALOG' === el.tagName ?
+    shadowQuery(el, AppDatepicker.is) : el) as AppDatepicker;
+
+  const getSelectableDate = <U extends HTMLElement>(label: string) =>
+    shadowQuery<typeof elem, U>(
+      elem, `.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="${label}"]`);
+
+  const getAllDisabledDates = <U extends HTMLElement>() =>
+    shadowQueryAll<typeof elem, U>(
+      elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
+
+  const getFocusedDate = <U extends HTMLElement>() =>
+    shadowQuery<typeof elem, U>(
+      elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+
+  const getBtnNextMonthSelector = () =>
+    shadowQuery(elem, '.btn__month-selector[aria-label="Next month"]');
+
+  const getBtnPrevMonthSelector = () =>
+    shadowQuery(elem, '.btn__month-selector[aria-label="Previous month"]');
+
+  const getBtnYearSelector = () => shadowQuery(elem, '.btn__year-selector');
+
+  const getBtnCalendarSelector = () => shadowQuery(elem, '.btn__calendar-selector');
+
+  const getCalendarLabel = () =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2) .calendar-label');
+
+  const getYearListViewFullList = () =>
+    shadowQuery(elem, '.year-list-view__full-list');
+
+  const getYearListViewListItemYearSelected = () =>
+    shadowQuery(elem, '.year-list-view__list-item.year--selected > div');
+
+  const getDatepickerBodyCalendarView = () =>
+    shadowQuery(elem, '.datepicker-body__calendar-view[tabindex="0"]');
+
+  const getDatepickerBodyCalendarViewDayFocused = () =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
+      .querySelector<HTMLElement>('.full-calendar__day:not(.day--disabled).day--focused > div');
+
+  const waitForDragAnimationFinished = () => new Promise(yay =>
+    requestAnimationFrame(() => setTimeout(() => yay(elem.updateComplete), 1e3)))
+
+  return {
+    elem,
+    getSelectableDate,
+    getAllDisabledDates,
+    getFocusedDate,
+    getBtnNextMonthSelector,
+    getBtnPrevMonthSelector,
+    getBtnYearSelector,
+    getBtnCalendarSelector,
+    getCalendarLabel,
+    getYearListViewFullList,
+    getYearListViewListItemYearSelected,
+    getDatepickerBodyCalendarView,
+    getDatepickerBodyCalendarViewDayFocused,
+
+    waitForDragAnimationFinished,
+  };
+};

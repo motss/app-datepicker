@@ -1,4 +1,3 @@
-import { AppDatepicker } from './app-datepicker.js';
 import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
 
 import { css, customElement, eventOptions, html, LitElement, property, query } from 'lit-element';
@@ -168,21 +167,13 @@ export class AppDatepickerDialog extends LitElement {
   private _contentContainer?: HTMLDivElement;
 
   @query('.datepicker')
-  private _datepicker?: AppDatepicker;
+  private _datepicker?: import('./app-datepicker').AppDatepicker;
 
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm?: HTMLElement;
 
   private _focusable?: HTMLElement;
   private _focusTrap?: FocusTrap;
-
-  public constructor() {
-    super();
-
-    this.setAttribute('role', 'dialog');
-    this.setAttribute('aria-label', 'datepicker');
-    this.setAttribute('aria-modal', 'true');
-  }
 
   public open() {
     const scrim = this._scrim!;
@@ -245,6 +236,10 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   protected firstUpdated() {
+    this.setAttribute('role', 'dialog');
+    this.setAttribute('aria-label', 'datepicker');
+    this.setAttribute('aria-modal', 'true');
+
     this._updateValue();
     this.addEventListener('keyup', (ev: KeyboardEvent) => {
       if (ev.keyCode === KEYCODES_MAP.ESCAPE) this.close();

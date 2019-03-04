@@ -1,27 +1,29 @@
 import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 
 import 'axe-core/axe';
 import { axeReport } from 'pwa-helpers/axe-report';
 
-import { getYearListViewFullListEl } from '../app-datepicker/helpers';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import { defaultLocale } from '../test-config';
-import { getAppDatepickerEl } from './helpers';
+import { queryInit } from '../test-helpers';
 
 const { isNotNull } = chai.assert;
+const name = AppDatepickerDialog.is;
 
-describe('app-datepicker-dialog', () => {
+describe(name, () => {
   describe('a11y', () => {
     let el: AppDatepickerDialog;
+    let t: ReturnType<typeof queryInit>;
 
     beforeEach(async () => {
-      el = document.createElement('app-datepicker-dialog') as AppDatepickerDialog;
-      el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
-
+      el = document.createElement(name) as AppDatepickerDialog;
       document.body.appendChild(el);
 
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
       await el.updateComplete;
+
+      t = queryInit(el);
     });
 
     afterEach(() => {
@@ -33,7 +35,7 @@ describe('app-datepicker-dialog', () => {
       el.startView = START_VIEW.YEAR_LIST;
       await el.updateComplete;
 
-      const yearListViewFullListEl = getYearListViewFullListEl(getAppDatepickerEl(el));
+      const yearListViewFullListEl = t.getYearListViewFullList();
       isNotNull(yearListViewFullListEl, `Year list view not found`);
 
       return axeReport(el);
