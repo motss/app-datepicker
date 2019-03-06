@@ -55,7 +55,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.10.4",
     "@webcomponents/webcomponentsjs": "^2.2.7",
-    "axe-core": "^3.1.2",
+    "axe-core": "^3.2.0",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "pwa-helpers": "^0.9.1",

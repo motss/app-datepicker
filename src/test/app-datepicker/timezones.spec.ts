@@ -1,5 +1,6 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker';
+import { START_VIEW } from '../../app-datepicker';
 
+import { AppDatepicker } from '../../app-datepicker';
 import { date13, date15, defaultLocale } from '../test-config';
 import { getAllDateStrings } from './timezones';
 
@@ -35,13 +36,12 @@ describe('app-datepicker', () => {
 
     beforeEach(async () => {
       el = document.createElement('app-datepicker') as AppDatepicker;
+      document.body.appendChild(el);
+
       el.locale = defaultLocale;
       el.startView = START_VIEW.CALENDAR;
       el.min = date13;
       el.value = date15;
-
-      document.body.appendChild(el);
-
       await el.updateComplete;
     });
 

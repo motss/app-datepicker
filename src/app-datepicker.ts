@@ -868,7 +868,7 @@ export class AppDatepicker extends LitElement {
   private _updateFocusedDate(ev: MouseEvent) {
     const selectedDayEl = findShadowTarget(
       ev,
-      (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableDataCellElement;
+      (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableCellElement;
 
     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
     if (selectedDayEl == null ||
@@ -1028,7 +1028,7 @@ declare global {
     'app-datepicker': AppDatepicker;
   }
 
-  interface HTMLTableDataCellElement {
+  interface HTMLTableCellElement {
     day: string;
   }
 

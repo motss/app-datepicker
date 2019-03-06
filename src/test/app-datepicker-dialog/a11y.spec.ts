@@ -35,10 +35,18 @@ describe(name, () => {
       el.startView = START_VIEW.YEAR_LIST;
       await el.updateComplete;
 
+      /**
+       * FIXME(motss): Workaround to ensure child custom elements renders complete.
+       * Related bug issue at `Polymer/lit-element#594`.
+       */
+      el.requestUpdate();
+      await el.updateComplete;
+
       const yearListViewFullListEl = t.getYearListViewFullList();
       isNotNull(yearListViewFullListEl, `Year list view not found`);
 
       return axeReport(el);
     });
+
   });
 });

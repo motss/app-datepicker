@@ -45,10 +45,6 @@ export const getComputedStyleValue = (element: Element, property: string) =>
     ? window.ShadyCSS!.getComputedStyleValue(element, property)
   : getComputedStyle(element).getPropertyValue(property);
 
-export const getinnerHTML =
-  (target: HTMLElement) =>
-    target && target.innerHTML && stripExpressionDelimiters(target.innerHTML!);
-
 export const getOuterHTML =
   (target: HTMLElement) =>
     target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
@@ -60,11 +56,12 @@ export const getComputedStylePropertyValue =
 export interface KeyboardEventOptions extends KeyboardEventInit {
   keyCode: number;
 }
-export function triggerEvent(
-  n: HTMLElement,
+export function triggerEvent<T extends HTMLElement>(
+  n: T,
   eventName: string,
   options?: PointerEvent | KeyboardEventOptions
 ) {
+  /** Reference about creating and triggering events: https://mzl.la/1APSl8U */
   const c = new CustomEvent(eventName, {
     composed: true,
     bubbles: true,
@@ -226,33 +223,64 @@ export const getShadowInnerHTML = (target: HTMLElement) => {
   const root = (target.shadowRoot || target);
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
+const waitForNextRender = (target: AppDatepicker|AppDatepickerDialog) =>
+  new Promise(yay =>
+    requestAnimationFrame(() => setTimeout(() => yay(target.updateComplete), 1e3)));
 export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
   el: T
 ) => {
-  const elem = ('APP-DATEPICKER-DIALOG' === el.tagName ?
-    shadowQuery(el, AppDatepicker.is) : el) as AppDatepicker;
+  const isDatepickerDialog = 'APP-DATEPICKER-DIALOG' === el.tagName;
+  const elem = (isDatepickerDialog ? shadowQuery(el, AppDatepicker.is) : el) as AppDatepicker;
 
-  const getSelectableDate = <U extends HTMLElement>(label: string) =>
-    shadowQuery<typeof elem, U>(
+  const getSelectableDate = (label: string) =>
+    shadowQuery<typeof elem, HTMLTableCellElement>(
       elem, `.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="${label}"]`);
 
-  const getAllDisabledDates = <U extends HTMLElement>() =>
-    shadowQueryAll<typeof elem, U>(
+  const getTodayDay = () => shadowQuery<typeof elem, HTMLTableCellElement>(elem, '.day--today');
+
+  const getAllDisabledDates = () =>
+    shadowQueryAll<typeof elem, HTMLTableCellElement>(
       elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
 
-  const getFocusedDate = <U extends HTMLElement>() =>
-    shadowQuery<typeof elem, U>(
+  const getAllCalendarDays = () =>
+    shadowQueryAll<typeof elem, HTMLTableCellElement>(
+      elem, '.calendar-container:nth-of-type(2) .full-calendar__day');
+
+  const getAllCalendarTables = () => shadowQueryAll<typeof elem, HTMLTableElement>(
+    elem, '.calendar-table');
+
+  const getAllYearListViewListItems = () => shadowQueryAll<typeof elem, HTMLButtonElement>(
+    elem, '.year-list-view__list-item');
+
+  const getAllWeekdays = () =>
+    shadowQueryAll<typeof elem, HTMLTableCellElement>(
+      elem, '.calendar-container:nth-of-type(2) .calendar-weekdays > th');
+
+  const getWeekLabel = () =>
+    shadowQuery<typeof elem, HTMLTableCellElement>(elem, 'th[aria-label="Week"]');
+
+  const getFocusedDate = () =>
+    shadowQuery<typeof elem, HTMLTableCellElement>(
       elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
 
+  const getHighlightedDayDiv = () =>
+    shadowQuery<typeof elem, HTMLDivElement>(
+      elem,
+      '.calendar-container:nth-of-type(2) .day--today.day--focused > .calendar-day');
+
   const getBtnNextMonthSelector = () =>
-    shadowQuery(elem, '.btn__month-selector[aria-label="Next month"]');
+    shadowQuery<typeof elem, HTMLButtonElement>(
+      elem, '.btn__month-selector[aria-label="Next month"]');
 
   const getBtnPrevMonthSelector = () =>
-    shadowQuery(elem, '.btn__month-selector[aria-label="Previous month"]');
+    shadowQuery<typeof elem, HTMLButtonElement>(
+      elem, '.btn__month-selector[aria-label="Previous month"]');
 
-  const getBtnYearSelector = () => shadowQuery(elem, '.btn__year-selector');
+  const getBtnYearSelector = () =>
+    shadowQuery<typeof elem, HTMLButtonElement>(elem, '.btn__year-selector');
 
-  const getBtnCalendarSelector = () => shadowQuery(elem, '.btn__calendar-selector');
+  const getBtnCalendarSelector = () =>
+    shadowQuery<typeof elem, HTMLButtonElement>(elem, '.btn__calendar-selector');
 
   const getCalendarLabel = () =>
     shadowQuery(elem, '.calendar-container:nth-of-type(2) .calendar-label');
@@ -261,33 +289,85 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     shadowQuery(elem, '.year-list-view__full-list');
 
   const getYearListViewListItemYearSelected = () =>
-    shadowQuery(elem, '.year-list-view__list-item.year--selected > div');
+    shadowQuery<typeof elem, HTMLButtonElement>(
+      elem, '.year-list-view__list-item.year--selected');
+
+  const getYearListViewListItemYearSelectedDiv = () =>
+    shadowQuery<typeof elem, HTMLDivElement>(
+      elem, '.year-list-view__list-item.year--selected > div');
+
+  const getCalendarViewFullCalendar = () =>
+    shadowQuery<typeof elem, HTMLDivElement>(elem, '.calendar-view__full-calendar');
 
   const getDatepickerBodyCalendarView = () =>
     shadowQuery(elem, '.datepicker-body__calendar-view[tabindex="0"]');
 
-  const getDatepickerBodyCalendarViewDayFocused = () =>
-    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
-      .querySelector<HTMLElement>('.full-calendar__day:not(.day--disabled).day--focused > div');
+  const getDatepickerBodyYearListView = () =>
+    shadowQuery(elem, '.datepicker-body__year-list-view');
 
-  const waitForDragAnimationFinished = () => new Promise(yay =>
-    requestAnimationFrame(() => setTimeout(() => yay(elem.updateComplete), 1e3)))
+  const getDatepickerBodyCalendarViewDay = (label?: string) =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
+      .querySelector<HTMLTableCellElement>(
+        `.full-calendar__day:not(.day--disabled)${
+          !label ? '' : `[aria-label="${label}"]`}`);
+
+  const getDatepickerBodyCalendarViewDayDiv = (label?: string) =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
+      .querySelector<HTMLTableCellElement>(
+        `.full-calendar__day:not(.day--disabled)${
+          !label ? '' : `[aria-label="${label}"]`} > div`);
+
+  const getDatepickerBodyCalendarViewDayFocused = (label?: string) =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
+      .querySelector<HTMLTableCellElement>(
+        `.full-calendar__day:not(.day--disabled)${
+          !label ? '' : `[aria-label="${label}"]`}.day--focused`);
+
+  const getDatepickerBodyCalendarViewDayFocusedDiv = (label?: string) =>
+    shadowQuery(elem, '.calendar-container:nth-of-type(2)')
+      .querySelector<HTMLTableCellElement>(
+        `.full-calendar__day:not(.day--disabled)${
+          !label ? '' : `[aria-label="${label}"]`}.day--focused > div`);
+
+  const getFirstWeekdayLabel = <U extends HTMLTableCellElement>() =>
+    shadowQuery<typeof elem, U>(elem, '.calendar-container:nth-of-type(2) .weekday-label');
 
   return {
     elem,
-    getSelectableDate,
+
     getAllDisabledDates,
-    getFocusedDate,
+    getAllCalendarDays,
+    getAllWeekdays,
+    getAllCalendarTables,
+    getAllYearListViewListItems,
+
     getBtnNextMonthSelector,
     getBtnPrevMonthSelector,
     getBtnYearSelector,
     getBtnCalendarSelector,
+
+    getWeekLabel,
     getCalendarLabel,
+    getFirstWeekdayLabel,
+
+    getFocusedDate,
+    getSelectableDate,
+    getTodayDay,
+    getHighlightedDayDiv,
+
     getYearListViewFullList,
     getYearListViewListItemYearSelected,
-    getDatepickerBodyCalendarView,
-    getDatepickerBodyCalendarViewDayFocused,
+    getYearListViewListItemYearSelectedDiv,
 
-    waitForDragAnimationFinished,
+    getCalendarViewFullCalendar,
+
+    getDatepickerBodyCalendarView,
+    getDatepickerBodyYearListView,
+    getDatepickerBodyCalendarViewDay,
+    getDatepickerBodyCalendarViewDayDiv,
+    getDatepickerBodyCalendarViewDayFocused,
+    getDatepickerBodyCalendarViewDayFocusedDiv,
+
+    waitForDragAnimationFinished: () => waitForNextRender(elem),
   };
 };

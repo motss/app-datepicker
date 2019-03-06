@@ -1,5 +1,6 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { START_VIEW } from '../../app-datepicker.js';
 
+import { AppDatepicker } from '../../app-datepicker.js';
 import '../../app-datepicker.js';
 import {
   getResolvedDate,
@@ -14,12 +15,8 @@ import {
 } from '../test-config.js';
 import {
   getShadowInnerHTML,
-  shadowQuery,
-  shadowQueryAll,
+  queryInit,
 } from '../test-helpers';
-import {
-  getYearListViewListItemYearSelectedEl,
-} from './helpers.js';
 
 const {
   isString,
@@ -34,13 +31,16 @@ describe('app-datepicker', () => {
   describe('initial render', () => {
     describe('initial render (calendar view)', () => {
       let el: AppDatepicker;
+      let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
         el = document.createElement('app-datepicker') as AppDatepicker;
-        el.locale = defaultLocale;
         document.body.appendChild(el);
 
+        el.locale = defaultLocale;
         await el.updateComplete;
+
+        t = queryInit(el);
       });
 
       afterEach(() => {
@@ -55,8 +55,8 @@ describe('app-datepicker', () => {
 
       it('renders initial content (calendar)', () => {
         const elHTML = getShadowInnerHTML(el);
-        const calendarView = shadowQuery(el, '.datepicker-body__calendar-view');
-        const allCalendarTables = shadowQueryAll(el, '.calendar-table');
+        const calendarView = t.getDatepickerBodyCalendarView();
+        const allCalendarTables = t.getAllCalendarTables();
 
         isString(elHTML, 'HTML content is not string');
         isNotNull(calendarView, 'Calendar view not found');
@@ -65,8 +65,8 @@ describe('app-datepicker', () => {
       });
 
       it(`renders today's formatted date`, () => {
-        const btnSelectorYearEl = shadowQuery(el, '.btn__year-selector');
-        const btnSelectorCalendarEl = shadowQuery(el, '.btn__calendar-selector');
+        const btnSelectorYearEl = t.getBtnYearSelector();
+        const btnSelectorCalendarEl = t.getBtnCalendarSelector();
 
         const selectedFullYear = getShadowInnerHTML(btnSelectorYearEl);
         const selectedFormattedDate = getShadowInnerHTML(btnSelectorCalendarEl);
@@ -90,10 +90,9 @@ describe('app-datepicker', () => {
         el.disabledDays = '';
         await el.updateComplete;
 
-        const dayTodayEl = shadowQuery(el, '.day--today');
-        const dayFocusedEl = shadowQuery(el, '.day--focused');
-        const highlightedCalendarDayEl =
-          shadowQuery(el, '.day--today.day--focused > .calendar-day');
+        const dayTodayEl = t.getTodayDay();
+        const dayFocusedEl = t.getFocusedDate();
+        const highlightedCalendarDayEl = t.getHighlightedDayDiv();
 
         const now = getResolvedDate();
         const formattedDate = fullDateFormatter(now);
@@ -116,15 +115,17 @@ describe('app-datepicker', () => {
 
     describe('initial render (year list view)', () => {
       let el: AppDatepicker;
+      let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
         el = document.createElement('app-datepicker') as AppDatepicker;
-        el.locale = defaultLocale;
-        el.startView = START_VIEW.YEAR_LIST;
-
         document.body.appendChild(el);
 
+        el.locale = defaultLocale;
+        el.startView = START_VIEW.YEAR_LIST;
         await el.updateComplete;
+
+        t = queryInit(el);
       });
 
       afterEach(() => {
@@ -139,8 +140,8 @@ describe('app-datepicker', () => {
 
       it(`renders initial content (year list)`, async () => {
         const elHTML = getShadowInnerHTML(el);
-        const yearListView = shadowQuery(el, '.datepicker-body__year-list-view');
-        const allYearListViewItems = shadowQueryAll(el, '.year-list-view__list-item');
+        const yearListView = t.getDatepickerBodyYearListView();
+        const allYearListViewItems = t.getAllYearListViewListItems();
 
         isString(elHTML, 'HTML content is not string');
         isNotNull(yearListView, 'Year list view not found');
@@ -170,8 +171,8 @@ describe('app-datepicker', () => {
       });
 
       it(`selects, highlights this year`, async () => {
-        const yearSelectedEl = shadowQuery(el, '.year-list-view__list-item.year--selected');
-        const yearSelectedDivEl = getYearListViewListItemYearSelectedEl(el);
+        const yearSelectedEl = t.getYearListViewListItemYearSelected();
+        const yearSelectedDivEl = t.getYearListViewListItemYearSelectedDiv();
 
         const now = getResolvedDate();
         const fy = now.getFullYear();

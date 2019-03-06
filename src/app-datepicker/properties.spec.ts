@@ -1,16 +1,16 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
-import { OptionsDragTo } from '../test-helpers';
+import { AppDatepicker, START_VIEW } from '../app-datepicker';
+import { WEEK_NUMBER_TYPE } from '../calendar';
+import { OptionsDragTo } from '../test/test-helpers';
 
-import { getResolvedDate, hasClass, toFormattedDateString } from '../../datepicker-helpers';
-import { date13, date15, date17, defaultLocale } from '../test-config';
+import { getResolvedDate, hasClass, toFormattedDateString } from '../datepicker-helpers';
+import { date13, date15, date17, defaultLocale } from '../test/test-config';
 import {
   dragTo,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   shadowQuery,
   shadowQueryAll,
-} from '../test-helpers';
+} from '../test/test-helpers';
 import {
   getBtnCalendarSelectorEl,
   getBtnYearSelectorEl,

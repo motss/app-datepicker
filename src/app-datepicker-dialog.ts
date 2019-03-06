@@ -1,3 +1,5 @@
+import { START_VIEW } from './app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
 
 import { css, customElement, eventOptions, html, LitElement, property, query } from 'lit-element';
@@ -122,13 +124,13 @@ export class AppDatepickerDialog extends LitElement {
   public showWeekNumber: boolean = false;
 
   @property({ type: String })
-  public weekNumberType: string = 'first-4-day-week';
+  public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
 
   @property({ type: String })
   public disabledDays: string = '0,6';
 
   @property({ type: String })
-  public disableDates?: string;
+  public disabledDates?: string;
 
   @property({ type: Boolean })
   public landscape: boolean = false;
@@ -139,8 +141,8 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: Number })
   public dragRatio: number = .15;
 
-  @property({ type: String })
-  public startView: string = 'calendar';
+  @property({ type: String, reflect: true })
+  public startView: START_VIEW = START_VIEW.CALENDAR;
 
   @property({ type: String })
   public value?: string;
@@ -157,9 +159,6 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: Boolean })
   public noFocusTrap: boolean = false;
 
-  // @property({ type: String })
-  // public format: string = 'yyyy-MM-dd';
-
   @query('.scrim')
   private _scrim?: HTMLDivElement;
 
@@ -175,65 +174,80 @@ export class AppDatepickerDialog extends LitElement {
   private _focusable?: HTMLElement;
   private _focusTrap?: FocusTrap;
 
-  public open() {
-    const scrim = this._scrim!;
-    const contentContainer = this._contentContainer!;
+  // @property({ type: String })
+  // public format: string = 'yyyy-MM-dd';
 
-    this.removeAttribute('aria-hidden');
-    scrim.style.visibility = 'visible';
-    contentContainer!.style.visibility = 'visible';
+  public async open() {
+    try {
+      const scrim = this._scrim!;
+      const contentContainer = this._contentContainer!;
 
-    const keyframes: Keyframe[] = [
-      { opacity: '0' },
-      { opacity: '1' },
-    ];
-    const opts: KeyframeAnimationOptions = {
-      duration: 100,
-    };
-    const fadeInAnimation = contentContainer.animate(keyframes, opts);
+      this.removeAttribute('aria-hidden');
+      scrim.style.visibility = 'visible';
+      contentContainer!.style.visibility = 'visible';
 
-    new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
-      contentContainer.style.opacity = '1';
+      const keyframes: Keyframe[] = [
+        { opacity: '0' },
+        { opacity: '1' },
+      ];
+      const opts: KeyframeAnimationOptions = {
+        duration: 100,
+      };
+      const fadeInAnimation = contentContainer.animate(keyframes, opts);
 
-      const focusable = this._focusable!;
+      await new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
+        contentContainer.style.opacity = '1';
 
-      if (!this.noFocusTrap) {
-        this._focusTrap = setFocusTrap(this, [
-          focusable,
-          this._dialogConfirm!,
-        ])!;
-      }
+        const focusable = this._focusable!;
 
-      focusable.focus();
-      dispatchCustomEvent(this, 'datepicker-dialog-opened', { opened: true, value: this.value });
-    });
+        if (!this.noFocusTrap) {
+          this._focusTrap = setFocusTrap(this, [
+            focusable,
+            this._dialogConfirm!,
+          ])!;
+        }
+
+        focusable.focus();
+        dispatchCustomEvent(this, 'datepicker-dialog-opened', { opened: true, value: this.value });
+      });
+    } catch (e) {
+      throw e;
+    }
   }
 
   @eventOptions({ passive: true })
-  public close() {
-    const scrim = this._scrim!;
-    const contentContainer = this._contentContainer!;
+  public async close() {
+    try {
+      const scrim = this._scrim!;
+      const contentContainer = this._contentContainer!;
 
-    scrim.style.visibility = '';
+      scrim.style.visibility = '';
 
-    const keyframes: Keyframe[] = [
-      { opacity: '1' },
-      { opacity: '0' },
-    ];
-    const opts: KeyframeAnimationOptions = {
-      duration: 100,
-    };
-    const fadeOutAnimation = contentContainer.animate(keyframes, opts);
+      const keyframes: Keyframe[] = [
+        { opacity: '1' },
+        { opacity: '0' },
+      ];
+      const opts: KeyframeAnimationOptions = {
+        duration: 100,
+      };
+      const fadeOutAnimation = contentContainer.animate(keyframes, opts);
 
-    new Promise(yay => (fadeOutAnimation.onfinish = yay)).then(() => {
-      contentContainer.style.opacity = '';
-      contentContainer.style.visibility = '';
+      await new Promise(yay => (fadeOutAnimation.onfinish = yay)).then(() => {
+        contentContainer.style.opacity = '';
+        contentContainer.style.visibility = '';
 
-      this.setAttribute('aria-hidden', 'true');
-      if (!this.noFocusTrap) this._focusTrap!.disconnect();
-      dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
-    });
+        this.setAttribute('aria-hidden', 'true');
+        if (!this.noFocusTrap) this._focusTrap!.disconnect();
+        dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
+      });
+    } catch (e) {
+      throw e;
+    }
   }
+
+  // protected shouldUpdate() {
+  //   return !this.hasAttribute('aria-hidden');
+  // }
 
   protected firstUpdated() {
     this.setAttribute('role', 'dialog');
@@ -249,47 +263,31 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   protected render() {
-    const min = this.min;
-    const max = this.max;
-    const firstDayOfWeek = this.firstDayOfWeek;
-    const showWeekNumber = this.showWeekNumber;
-    const weekNumberType = this.weekNumberType;
-    const disabledDays = this.disabledDays;
-    const disabledDates = this.disableDates;
-    const landscape = this.landscape;
-    const locale = this.locale;
-    const dragRatio = this.dragRatio;
-    const startView = this.startView;
-    const value = this.value;
-    const dismissLabel = this.dismissLabel;
-    const confirmLabel = this.confirmLabel;
-
-    // <div class="scrim" @pointerup="${this.close}"></div>
     return html`
     <div class="scrim" @click="${this.close}"></div>
 
     <div class="content-container">
       <app-datepicker class="datepicker"
-        .min="${min}"
-        .max="${max}"
-        .firstDayOfWeek="${firstDayOfWeek}"
-        ?showWeekNumber="${showWeekNumber}"
-        .weekNumberType="${weekNumberType}"
-        .disabledDays="${disabledDays}"
-        .disabledDates="${disabledDates}"
-        ?landscape="${landscape}"
-        .locale="${locale}"
-        .dragRatio="${dragRatio}"
-        .startView="${startView}"
-        .value="${value}"
+        .min="${this.min}"
+        .max="${this.max}"
+        .firstDayOfWeek="${this.firstDayOfWeek}"
+        ?showWeekNumber="${this.showWeekNumber}"
+        .weekNumberType="${this.weekNumberType}"
+        .disabledDays="${this.disabledDays}"
+        .disabledDates="${this.disabledDates}"
+        ?landscape="${this.landscape}"
+        .locale="${this.locale}"
+        .dragRatio="${this.dragRatio}"
+        .startView="${this.startView}"
+        .value="${this.value}"
         .weekLabel="${this.weekLabel}"
         @datepicker-first-updated="${this._setFocusable}"
         @datepicker-value-updated="${this._update}"
       ></app-datepicker>
 
       <div class="actions-container">
-        <mwc-button dialog-dismiss @click="${this.close}">${dismissLabel}</mwc-button>
-        <mwc-button dialog-confirm @click="${this._update}">${confirmLabel}</mwc-button>
+        <mwc-button dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
+        <mwc-button dialog-confirm @click="${this._update}">${this.confirmLabel}</mwc-button>
       </div>
     </div>
     `;
