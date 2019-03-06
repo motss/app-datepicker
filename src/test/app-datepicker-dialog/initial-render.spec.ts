@@ -1,6 +1,6 @@
 import { START_VIEW } from '../../app-datepicker.js';
 
-import { AppDatepicker } from '../../app-datepicker.js';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import '../../app-datepicker.js';
 import {
   getResolvedDate,
@@ -14,6 +14,7 @@ import {
   yearFormatter,
 } from '../test-config.js';
 import {
+  forceUpdate,
   getShadowInnerHTML,
   queryInit,
 } from '../test-helpers';
@@ -26,19 +27,20 @@ const {
   isAtLeast,
   isAtMost,
 } = chai.assert;
+const name = AppDatepickerDialog.is;
 
-describe('app-datepicker', () => {
+describe(name, () => {
   describe('initial render', () => {
     describe('initial render (calendar view)', () => {
-      let el: AppDatepicker;
+      let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepickerDialog;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -114,16 +116,16 @@ describe('app-datepicker', () => {
     });
 
     describe('initial render (year list view)', () => {
-      let el: AppDatepicker;
+      let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepickerDialog;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.YEAR_LIST;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -190,6 +192,57 @@ describe('app-datepicker', () => {
       });
 
     });
+
+    describe('initial render (scrim & action buttons)', () => {
+      let el: AppDatepickerDialog;
+      let t: ReturnType<typeof queryInit>;
+
+      beforeEach(async () => {
+        el = document.createElement(name) as AppDatepickerDialog;
+        document.body.appendChild(el);
+
+        el.locale = defaultLocale;
+        el.startView = START_VIEW.YEAR_LIST;
+        await forceUpdate(el);
+
+        t = queryInit(el);
+      });
+
+      afterEach(() => {
+        document.body.removeChild(el);
+      });
+
+      it(`renders scrim`, () => {
+        const scrimEl = t.getDialogScrim();
+        isNotNull(scrimEl, `Scrim not found`);
+      });
+
+      it(`renders actions buttons`, () => {
+        const actionsContainerEl = t.getDialogActionsContainer();
+        const actionButtonsEl = t.getDialogActionButtons();
+
+        isNotNull(actionsContainerEl, `Actions container not found`);
+        isNotNull(actionButtonsEl, `Action buttons not found`);
+      });
+
+      it(`renders action buttons with corresponding labels`, () => {
+        const actionButtonsEl = t.getDialogActionButtons();
+        const actionButtonsLabel = actionButtonsEl.map((n) => {
+          const dismissAttr = n.hasAttribute('dialog-dismiss');
+          const confirmAttr = n.hasAttribute('dialog-confirm');
+          const textContent = n.textContent;
+
+          if (dismissAttr && confirmAttr) return false;
+          if (dismissAttr) return 'cancel' === textContent;
+          if (confirmAttr) return 'ok' === textContent;
+          return false;
+        });
+
+        isTrue(actionButtonsLabel.every(Boolean), `Not all action buttons matched`);
+      });
+
+    });
+
   });
 
 });

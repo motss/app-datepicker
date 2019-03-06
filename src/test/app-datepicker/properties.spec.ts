@@ -1,23 +1,26 @@
-import { AppDatepicker, START_VIEW } from '../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../calendar';
-import { OptionsDragTo } from '../test/test-helpers';
+import { START_VIEW } from '../../app-datepicker';
+import { WEEK_NUMBER_TYPE } from '../../calendar';
+import { OptionsDragTo } from '../test-helpers';
 
-import { getResolvedDate, hasClass, toFormattedDateString } from '../datepicker-helpers';
-import { date13, date15, date17, defaultLocale } from '../test/test-config';
+import { AppDatepicker } from '../../app-datepicker';
+import {
+  getResolvedDate,
+  hasClass,
+  toFormattedDateString,
+} from '../../datepicker-helpers';
+import {
+  date13,
+  date15,
+  date17,
+  defaultLocale,
+} from '../test-config';
 import {
   dragTo,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
-  shadowQuery,
-  shadowQueryAll,
-} from '../test/test-helpers';
-import {
-  getBtnCalendarSelectorEl,
-  getBtnYearSelectorEl,
-  getCalendarLabelEl,
+  queryInit,
   setupDragPoint,
-  waitForDragAnimationFinished,
-} from './helpers';
+} from '../test-helpers';
 
 const {
   isTrue,
@@ -28,15 +31,17 @@ const {
 describe('app-datepicker', () => {
   describe('updates via properties', () => {
     let el: AppDatepicker;
+    let t: ReturnType<typeof queryInit>;
 
     beforeEach(async () => {
       el = document.createElement('app-datepicker') as AppDatepicker;
-      el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
-
       document.body.appendChild(el);
 
+      el.locale = defaultLocale;
+      el.startView = START_VIEW.CALENDAR;
       await el.updateComplete;
+
+      t = queryInit(el);
     });
 
     afterEach(() => {
@@ -51,21 +56,12 @@ describe('app-datepicker', () => {
       el.value = valueVal;
       await el.updateComplete;
 
-      const firstSelectableDate =
-        shadowQuery(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 15, 2020"]');
-      const allDisabledDates =
-        shadowQueryAll(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
-      const focusedDate =
-        shadowQuery(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      const firstSelectableDate = t.getDatepickerBodyCalendarViewDay('Jan 15, 2020')!;
+      const allDisabledDates = t.getAllDisabledDates();
+      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
       const lastDayBeforeMinDate = allDisabledDates.reduce((p, n) => {
-        const pDay = +(p as any).day;
-        const nDay = +(n as any).day;
+        const pDay = +p.day;
+        const nDay = +n.day;
 
         /**
          * NOTE: `15` means day of `date15`.
@@ -102,8 +98,7 @@ describe('app-datepicker', () => {
       el.min = ''; /** Any falsy value, but here only tests empty string */
       await el.updateComplete;
 
-      const newFocusedDateWithoutMin =
-        shadowQuery(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      const newFocusedDateWithoutMin = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
       strictEqual(el.min, '', `New 'min' not matched`);
       strictEqual(el.getAttribute('min'), '', `New 'min' attribute not matched`);
@@ -121,21 +116,12 @@ describe('app-datepicker', () => {
       el.value = valueVal;
       await el.updateComplete;
 
-      const lastSelectableDate =
-        shadowQuery(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="Jan 15, 2020"]');
-      const allDisabledDates =
-        shadowQueryAll(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
-      const focusedDate =
-        shadowQuery(
-          el,
-          '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      const lastSelectableDate = t.getDatepickerBodyCalendarViewDay('Jan 15, 2020')!;
+      const allDisabledDates = t.getAllDisabledDates();
+      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
       const firstDayAfterMaxDate = allDisabledDates.reduceRight((p, n) => {
-        const pDay = +(p as any).day;
-        const nDay = +(n as any).day;
+        const pDay = +p.day;
+        const nDay = +n.day;
 
         /**
          * NOTE: `15` means day of `date15`.
@@ -170,8 +156,7 @@ describe('app-datepicker', () => {
       el.max = ''; /** Any falsy value, but here only tests empty string */
       await el.updateComplete;
 
-      const newFocusedDateWithoutMax =
-        shadowQuery(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
+      const newFocusedDateWithoutMax = t.getDatepickerBodyCalendarViewDayFocused()!;
 
       isNotNull(newFocusedDateWithoutMax, `New focused date not found`);
       strictEqual(el.max, '', `New 'max' not matched`);
@@ -212,7 +197,7 @@ describe('app-datepicker', () => {
       el.startView = START_VIEW.YEAR_LIST;
       await el.updateComplete;
 
-      const yearListView = shadowQuery(el, '.datepicker-body__year-list-view');
+      const yearListView = t.getDatepickerBodyYearListView();
 
       strictEqual(el.startView, START_VIEW.YEAR_LIST, `New 'startView' not matched`);
       strictEqual(
@@ -251,8 +236,7 @@ describe('app-datepicker', () => {
         el.firstDayOfWeek = i;
         await el.updateComplete;
 
-        const fullCalendarDays =
-          shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day');
+        const fullCalendarDays = t.getAllCalendarDays();
         const firstDayInMonthIdx = fullCalendarDays.findIndex(n => !hasClass(n, 'day--empty'));
 
         strictEqual(el.firstDayOfWeek, i, `New 'firstDayOfWeek' (${i}) not matched`);
@@ -274,7 +258,7 @@ describe('app-datepicker', () => {
       el.showWeekNumber = true;
       await el.updateComplete;
 
-      const weekdays = shadowQueryAll(el, 'tr.calendar-weekdays > th');
+      const weekdays = t.getAllWeekdays();
       const weekNumberLabel = weekdays && weekdays[0] && getShadowInnerHTML(weekdays[0]);
 
       strictEqual(weekNumberLabel, 'Wk', `Week number label not found`);
@@ -310,8 +294,7 @@ describe('app-datepicker', () => {
         el.weekNumberType = weekNumberType;
         await el.updateComplete;
 
-        const firstWeekdayLabel =
-          getShadowInnerHTML(shadowQuery(el, '.calendar-container:nth-of-type(2) .weekday-label'));
+        const firstWeekdayLabel = getShadowInnerHTML(t.getFirstWeekdayLabel());
 
         strictEqual(
           el.weekNumberType,
@@ -348,10 +331,9 @@ describe('app-datepicker', () => {
 
     it(`renders with different 'locale'`, async () => {
       const getBtnSelectorCalendarInnerHTML =
-        () => getShadowInnerHTML(shadowQuery(el, '.btn__calendar-selector'));
+        () => getShadowInnerHTML(t.getBtnCalendarSelector());
       const getCalendarWeekdaysInnerHTML =
-        () => shadowQueryAll(el, '.calendar-container:nth-of-type(2) .calendar-weekdays > th')
-                .map(n => getShadowInnerHTML(n)).join(', ');
+        () => t.getAllWeekdays().map(n => getShadowInnerHTML(n)).join(', ');
 
       el.min = date13;
       el.value = date15;
@@ -397,8 +379,7 @@ describe('app-datepicker', () => {
 
     it(`renders with different 'disabledDays'`, async () => {
       const getAllDisabledDays = () =>
-        shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled')
-          .map(n => n.getAttribute('aria-label')!);
+        t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
 
       el.value = date13;
       await el.updateComplete;
@@ -458,8 +439,7 @@ describe('app-datepicker', () => {
 
     it(`renders with different 'disabledDates'`, async () => {
       const getAllDisabledDays = () =>
-        shadowQueryAll(el, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled')
-          .map(n => n.getAttribute('aria-label')!);
+        t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
 
       /**
        * NOTE: It is to ensure not other disabled days on the calendar of the datepicker.
@@ -504,7 +484,7 @@ describe('app-datepicker', () => {
       el.showWeekNumber = true;
       await el.updateComplete;
 
-      const weekLabelEl = shadowQuery(el, 'th[aria-label="Week"]');
+      const weekLabelEl = t.getWeekLabel();
 
       strictEqual(el.weekLabel, '', `'weekLabel' not matched`);
       strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not matched`);
@@ -533,9 +513,9 @@ describe('app-datepicker', () => {
 
       strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
 
-      const btnYearSelectorEl = getBtnYearSelectorEl(el);
-      const btnCalendarSelectorEl = getBtnCalendarSelectorEl(el);
-      const calendarViewFullCalendarEl = shadowQuery(el, '.calendar-view__full-calendar');
+      const btnYearSelectorEl = t.getBtnYearSelector();
+      const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
 
       strictEqual(
         getShadowInnerHTML(btnYearSelectorEl),
@@ -546,7 +526,7 @@ describe('app-datepicker', () => {
         'Wed, Jan 15',
         `First calendar selector text not matched`);
 
-      const calendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
       /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
       isTrue(
         ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
@@ -555,7 +535,7 @@ describe('app-datepicker', () => {
       const oldStartingPoint = setupDragPoint('left', el);
       const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
       await dragTo(calendarViewFullCalendarEl, oldDragOptions);
-      await waitForDragAnimationFinished(el);
+      await t.waitForDragAnimationFinished();
 
       strictEqual(
         getShadowInnerHTML(btnYearSelectorEl),
@@ -566,7 +546,7 @@ describe('app-datepicker', () => {
         'Wed, Jan 15',
         `Calendar selector text should not change`);
 
-      const oldCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      const oldCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
       /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
       isTrue(
         ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
@@ -575,7 +555,7 @@ describe('app-datepicker', () => {
       const startingPoint = setupDragPoint('left', el);
       const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
       await dragTo(calendarViewFullCalendarEl, dragOptions);
-      await waitForDragAnimationFinished(el);
+      await t.waitForDragAnimationFinished();
 
       strictEqual(
         getShadowInnerHTML(btnYearSelectorEl),
@@ -586,7 +566,7 @@ describe('app-datepicker', () => {
         'Wed, Jan 15',
         `Calendar selector text should not change`);
 
-      const newCalendarLabel = getShadowInnerHTML(getCalendarLabelEl(el));
+      const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
       /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
       isTrue(
         ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),

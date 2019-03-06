@@ -5,7 +5,7 @@ import { axeReport } from 'pwa-helpers/axe-report';
 
 import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import { defaultLocale } from '../test-config';
-import { queryInit } from '../test-helpers';
+import { forceUpdate, queryInit } from '../test-helpers';
 
 const { isNotNull } = chai.assert;
 const name = AppDatepickerDialog.is;
@@ -21,7 +21,10 @@ describe(name, () => {
 
       el.locale = defaultLocale;
       el.startView = START_VIEW.CALENDAR;
-      await el.updateComplete;
+      await forceUpdate(el);
+
+      el.open();
+      await forceUpdate(el);
 
       t = queryInit(el);
     });
@@ -33,14 +36,7 @@ describe(name, () => {
     it(`is accesible (calendar view)`, async () => axeReport(el));
     it(`is accesible (year list view)`, async () => {
       el.startView = START_VIEW.YEAR_LIST;
-      await el.updateComplete;
-
-      /**
-       * FIXME(motss): Workaround to ensure child custom elements renders complete.
-       * Related bug issue at `Polymer/lit-element#594`.
-       */
-      el.requestUpdate();
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const yearListViewFullListEl = t.getYearListViewFullList();
       isNotNull(yearListViewFullListEl, `Year list view not found`);

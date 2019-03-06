@@ -58,7 +58,7 @@ describe('app-datepicker', () => {
 
       const firstSelectableDate = t.getSelectableDate('Jan 15, 2020')
       const allDisabledDates = t.getAllDisabledDates();
-      const focusedDate = t.getFocusedDate();
+      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
       const lastDayBeforeMinDate = allDisabledDates.reduce((p, n) => {
         const pDay = +p.day;
         const nDay = +n.day;
@@ -98,7 +98,7 @@ describe('app-datepicker', () => {
       el.setAttribute('min', ''); /** Any falsy value, but here only tests empty string */
       await el.updateComplete;
 
-      const newFocusedDateWithoutMin = t.getFocusedDate();
+      const newFocusedDateWithoutMin = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
       strictEqual(el.min, '', `New 'min' not matched`);
       strictEqual(el.getAttribute('min'), '', `New 'min' attribute not matched`);
@@ -118,7 +118,7 @@ describe('app-datepicker', () => {
 
       const lastSelectableDate = t.getSelectableDate('Jan 15, 2020');
       const allDisabledDates = t.getAllDisabledDates();
-      const focusedDate = t.getFocusedDate();
+      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
       const firstDayAfterMaxDate = allDisabledDates.reduceRight((p, n) => {
         const pDay = +p.day;
         const nDay = +n.day;
@@ -158,7 +158,7 @@ describe('app-datepicker', () => {
       el.setAttribute('max', ''); /** Any falsy value, but here only tests empty string */
       await el.updateComplete;
 
-      const newFocusedDateWithoutMax = t.getFocusedDate();
+      const newFocusedDateWithoutMax = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMax, `New focused date not found`);
       strictEqual(el.max, '', `New 'max' not matched`);
       strictEqual(el.getAttribute('max'), '', `New 'max' not matched`);

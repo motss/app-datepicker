@@ -232,12 +232,6 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
   const isDatepickerDialog = 'APP-DATEPICKER-DIALOG' === el.tagName;
   const elem = (isDatepickerDialog ? shadowQuery(el, AppDatepicker.is) : el) as AppDatepicker;
 
-  const getSelectableDate = (label: string) =>
-    shadowQuery<typeof elem, HTMLTableCellElement>(
-      elem, `.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="${label}"]`);
-
-  const getTodayDay = () => shadowQuery<typeof elem, HTMLTableCellElement>(elem, '.day--today');
-
   const getAllDisabledDates = () =>
     shadowQueryAll<typeof elem, HTMLTableCellElement>(
       elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--disabled');
@@ -246,27 +240,15 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     shadowQueryAll<typeof elem, HTMLTableCellElement>(
       elem, '.calendar-container:nth-of-type(2) .full-calendar__day');
 
+  const getAllWeekdays = () =>
+  shadowQueryAll<typeof elem, HTMLTableCellElement>(
+    elem, '.calendar-container:nth-of-type(2) .calendar-weekdays > th');
+
   const getAllCalendarTables = () => shadowQueryAll<typeof elem, HTMLTableElement>(
     elem, '.calendar-table');
 
   const getAllYearListViewListItems = () => shadowQueryAll<typeof elem, HTMLButtonElement>(
     elem, '.year-list-view__list-item');
-
-  const getAllWeekdays = () =>
-    shadowQueryAll<typeof elem, HTMLTableCellElement>(
-      elem, '.calendar-container:nth-of-type(2) .calendar-weekdays > th');
-
-  const getWeekLabel = () =>
-    shadowQuery<typeof elem, HTMLTableCellElement>(elem, 'th[aria-label="Week"]');
-
-  const getFocusedDate = () =>
-    shadowQuery<typeof elem, HTMLTableCellElement>(
-      elem, '.calendar-container:nth-of-type(2) .full-calendar__day.day--focused');
-
-  const getHighlightedDayDiv = () =>
-    shadowQuery<typeof elem, HTMLDivElement>(
-      elem,
-      '.calendar-container:nth-of-type(2) .day--today.day--focused > .calendar-day');
 
   const getBtnNextMonthSelector = () =>
     shadowQuery<typeof elem, HTMLButtonElement>(
@@ -282,8 +264,24 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
   const getBtnCalendarSelector = () =>
     shadowQuery<typeof elem, HTMLButtonElement>(elem, '.btn__calendar-selector');
 
+  const getWeekLabel = () =>
+    shadowQuery<typeof elem, HTMLTableCellElement>(elem, 'th[aria-label="Week"]');
   const getCalendarLabel = () =>
     shadowQuery(elem, '.calendar-container:nth-of-type(2) .calendar-label');
+
+  const getFirstWeekdayLabel = <U extends HTMLTableCellElement>() =>
+    shadowQuery<typeof elem, U>(elem, '.calendar-container:nth-of-type(2) .weekday-label');
+
+  const getSelectableDate = (label: string) =>
+    shadowQuery<typeof elem, HTMLTableCellElement>(
+      elem, `.calendar-container:nth-of-type(2) .full-calendar__day[aria-label="${label}"]`);
+
+  const getTodayDay = () => shadowQuery<typeof elem, HTMLTableCellElement>(elem, '.day--today');
+
+  const getHighlightedDayDiv = () =>
+    shadowQuery<typeof elem, HTMLDivElement>(
+      elem,
+      '.calendar-container:nth-of-type(2) .day--today.day--focused > .calendar-day');
 
   const getYearListViewFullList = () =>
     shadowQuery(elem, '.year-list-view__full-list');
@@ -329,8 +327,14 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
         `.full-calendar__day:not(.day--disabled)${
           !label ? '' : `[aria-label="${label}"]`}.day--focused > div`);
 
-  const getFirstWeekdayLabel = <U extends HTMLTableCellElement>() =>
-    shadowQuery<typeof elem, U>(elem, '.calendar-container:nth-of-type(2) .weekday-label');
+  const getDialogScrim = () =>
+    shadowQuery<typeof el, HTMLDivElement>(el, '.scrim');
+
+  const getDialogActionsContainer = () =>
+    shadowQuery<typeof el, HTMLDivElement>(el, '.actions-container');
+
+  const getDialogActionButtons = () =>
+    shadowQueryAll<typeof el, HTMLDivElement>(el, '.actions-container > mwc-button');
 
   return {
     elem,
@@ -350,7 +354,6 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     getCalendarLabel,
     getFirstWeekdayLabel,
 
-    getFocusedDate,
     getSelectableDate,
     getTodayDay,
     getHighlightedDayDiv,
@@ -368,6 +371,21 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     getDatepickerBodyCalendarViewDayFocused,
     getDatepickerBodyCalendarViewDayFocusedDiv,
 
-    waitForDragAnimationFinished: () => waitForNextRender(elem),
+    getDialogScrim,
+    getDialogActionsContainer,
+    getDialogActionButtons,
+
+    waitForDragAnimationFinished: async () => waitForNextRender(elem),
   };
 };
+
+export const forceUpdate = async (el: AppDatepickerDialog) => {
+  await el.updateComplete;
+
+  /**
+   * FIXME(motss): Workaround to ensure child custom elements renders complete.
+   * Related bug issue at `Polymer/lit-element#594`.
+   */
+  el.requestUpdate();
+  return el.updateComplete;
+}
