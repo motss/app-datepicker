@@ -4,11 +4,16 @@ import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
 
 import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
-import { cache } from 'lit-html/directives/cache';
 
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import { dispatchCustomEvent, getResolvedLocale, setFocusTrap } from './datepicker-helpers.js';
+import {
+  dispatchCustomEvent,
+  getResolvedDate,
+  getResolvedLocale,
+  setFocusTrap,
+  toFormattedDateString,
+} from './datepicker-helpers.js';
 
 const opts: KeyframeAnimationOptions = { duration: 100 };
 
@@ -102,19 +107,19 @@ export class AppDatepickerDialog extends LitElement {
     ];
   }
 
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   public min?: string;
 
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   public max: string = '2100-12-31';
 
-  @property({ type: Number })
+  @property({ type: Number, reflect: true })
   public firstDayOfWeek: number = 0;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public showWeekNumber: boolean = false;
 
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
 
   @property({ type: String })
@@ -123,7 +128,7 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: String })
   public disabledDates?: string;
 
-  @property({ type: Boolean })
+  @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
 
   @property({ type: String })
@@ -136,7 +141,7 @@ export class AppDatepickerDialog extends LitElement {
   public startView: START_VIEW = START_VIEW.CALENDAR;
 
   @property({ type: String })
-  public value?: string;
+  public value?: string = toFormattedDateString(getResolvedDate());
 
   @property({ type: String })
   public weekLabel: string = '';
@@ -167,36 +172,31 @@ export class AppDatepickerDialog extends LitElement {
   private _opened?: boolean = false;
 
   public open() {
+    this.removeAttribute('aria-hidden');
     this.style.display = 'block';
     this._opened = true;
     this.requestUpdate();
 
-    const contentContainer = this._contentContainer!;
-    const scrim = this._scrim!;
-
     return this.updateComplete.then(() => {
-      this.removeAttribute('aria-hidden');
-      scrim.style.visibility = contentContainer.style.visibility = 'visible';
-
+      const contentContainer = this._contentContainer!;
       const keyframes: Keyframe[] = [
         { opacity: '0' },
         { opacity: '1' },
       ];
+
+      this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
+
       const fadeInAnimation = contentContainer.animate(keyframes, opts);
-      return new Promise(yay => (fadeInAnimation.onfinish = yay));
-    }).then(() => {
-      contentContainer.style.opacity = '1';
+      return new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
+        contentContainer.style.opacity = '1';
 
-      const focusable = this._focusable!;
-      if (!this.noFocusTrap) {
-        this._focusTrap = setFocusTrap(this, [
-          focusable,
-          this._dialogConfirm!,
-        ])!;
-      }
-
-      focusable.focus();
-      dispatchCustomEvent(this, 'datepicker-dialog-opened', { opened: true, value: this.value });
+        const focusable = this._focusable!;
+        if (!this.noFocusTrap) {
+          this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
+        }
+        focusable.focus();
+        dispatchCustomEvent(this, 'datepicker-dialog-opened', { opened: true, value: this.value });
+      });
     });
   }
 
@@ -214,14 +214,11 @@ export class AppDatepickerDialog extends LitElement {
       return new Promise(yay => (fadeOutAnimation.onfinish = yay)).then(() => {
         contentContainer.style.opacity = contentContainer.style.visibility = '';
         this.setAttribute('aria-hidden', 'true');
+        this.style.display = 'none';
 
         if (!this.noFocusTrap) this._focusTrap!.disconnect();
-
-        this.style.display = 'none';
-        return this.updateComplete;
+        dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
       });
-    }).then(() => {
-      dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
     });
   }
 
@@ -233,11 +230,10 @@ export class AppDatepickerDialog extends LitElement {
     this.setAttribute('role', 'dialog');
     this.setAttribute('aria-label', 'datepicker');
     this.setAttribute('aria-modal', 'true');
-
-    // this._updateValue();
     this.addEventListener('keyup', (ev: KeyboardEvent) => {
       if (ev.keyCode === KEYCODES_MAP.ESCAPE) this.close();
     });
+
     dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
   }
 
@@ -245,7 +241,7 @@ export class AppDatepickerDialog extends LitElement {
     return html`
     <div class="scrim" @click="${this.close}"></div>
 
-    <div class="content-container">${cache(this._opened ? html`
+    ${this._opened ? html`<div class="content-container">
     <app-datepicker class="datepicker"
       .min="${this.min}"
       .max="${this.max}"
@@ -261,13 +257,13 @@ export class AppDatepickerDialog extends LitElement {
       .value="${this.value}"
       .weekLabel="${this.weekLabel}"
       @datepicker-first-updated="${this._setFocusable}"
-      @datepicker-value-updated="${this._update}"></app-datepicker>` : null)}
+      @datepicker-value-updated="${this._update}"></app-datepicker>
 
       <div class="actions-container">
         <mwc-button dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
         <mwc-button dialog-confirm @click="${this._update}">${this.confirmLabel}</mwc-button>
       </div>
-    </div>
+    </div>` : null}
     `;
   }
 
@@ -281,8 +277,8 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   private _setFocusable(ev: CustomEvent) {
-    const { firstFocusableElement } = ev.detail;
-    this._focusable = firstFocusableElement;
+    this._focusable = ev.detail && ev.detail.firstFocusableElement;
+    this._updateValue();
   }
 
 }

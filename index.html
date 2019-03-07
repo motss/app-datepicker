@@ -53,14 +53,18 @@
     });
 
     datepickerDialogEl.addEventListener('datepicker-dialog-opened', (ev) => {
+      const { value } = ev.detail || {};
+      inputEl.value = value;
       document.body.style.overflow = 'hidden';
     });
     datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
-      inputEl.value = ev.detail.value;
+      const { value } = ev.detail || {};
+      inputEl.value = value;
       document.body.style.overflow = '';
     });
     datepickerDialogEl.addEventListener('datepicker-dialog-first-updated', (ev) => {
-      inputEl.value = ev.detail.value;
+      const { value } = ev.detail || {};
+      inputEl.value = value;
     });
 
   </script>
