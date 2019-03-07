@@ -111,7 +111,7 @@ export class AppDatepickerDialog extends LitElement {
   public min?: string;
 
   @property({ type: String, reflect: true })
-  public max: string = '2100-12-31';
+  public max?: string;
 
   @property({ type: Number, reflect: true })
   public firstDayOfWeek: number = 0;
@@ -230,6 +230,7 @@ export class AppDatepickerDialog extends LitElement {
     this.setAttribute('role', 'dialog');
     this.setAttribute('aria-label', 'datepicker');
     this.setAttribute('aria-modal', 'true');
+    this.setAttribute('aria-hidden', 'true');
     this.addEventListener('keyup', (ev: KeyboardEvent) => {
       if (ev.keyCode === KEYCODES_MAP.ESCAPE) this.close();
     });
@@ -246,11 +247,11 @@ export class AppDatepickerDialog extends LitElement {
       .min="${this.min}"
       .max="${this.max}"
       .firstDayOfWeek="${this.firstDayOfWeek}"
-      ?showWeekNumber="${this.showWeekNumber}"
+      .showWeekNumber="${this.showWeekNumber}"
       .weekNumberType="${this.weekNumberType}"
       .disabledDays="${this.disabledDays}"
       .disabledDates="${this.disabledDates}"
-      ?landscape="${this.landscape}"
+      .landscape="${this.landscape}"
       .locale="${this.locale}"
       .dragRatio="${this.dragRatio}"
       .startView="${this.startView}"
@@ -288,3 +289,6 @@ declare global {
     'app-datepicker-dialog': AppDatepickerDialog;
   }
 }
+
+// FIXME: Should `min` set to today's date?
+// TODO: To add tests for action buttons (confirm + dismiss)

@@ -1,7 +1,7 @@
 import { START_VIEW } from '../../app-datepicker';
 import { OptionsDragTo } from '../test-helpers';
 
-import { AppDatepicker } from '../../app-datepicker';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import {
   date13,
   date15,
@@ -9,6 +9,7 @@ import {
 } from '../test-config';
 import {
   dragTo,
+  forceUpdate,
   getShadowInnerHTML,
   queryInit,
   selectNewYearFromYearListView,
@@ -21,20 +22,24 @@ const {
   isNotNull,
   isTrue,
 } = chai.assert;
+const name = AppDatepickerDialog.is;
 
-describe('app-datepicker', () => {
+describe(name, () => {
   describe('gestures', () => {
     describe('navigating calendar by gestures', () => {
-      let el: AppDatepicker;
+      let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepickerDialog;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.CALENDAR;
-        await el.updateComplete;
+        await forceUpdate(el);
+
+        el.open();
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -46,7 +51,7 @@ describe('app-datepicker', () => {
       it(`goes to next month`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
         const btnYearSelectorEl = t.getBtnYearSelector();
@@ -77,7 +82,7 @@ describe('app-datepicker', () => {
       it(`goes to previous month`, async () => {
         el.min = date13;
         el.value = '2020-05-13';
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
         const btnYearSelectorEl = t.getBtnYearSelector();
@@ -107,7 +112,7 @@ describe('app-datepicker', () => {
       it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnYearSelectorLabel = getShadowInnerHTML(btnYearSelectorEl);
@@ -117,7 +122,7 @@ describe('app-datepicker', () => {
           `Year selector label not matched (${btnYearSelectorLabel})`);
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const newSelectedYearLabel = getShadowInnerHTML(
           t.getYearListViewListItemYearSelectedDiv());
@@ -128,7 +133,7 @@ describe('app-datepicker', () => {
           `New selected year label not matched (${newSelectedYearLabel})`);
 
         triggerEvent(t.getBtnCalendarSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const newBtnYearSelectorLabel = getShadowInnerHTML(t.getBtnYearSelector());
         strictEqual(
@@ -152,7 +157,7 @@ describe('app-datepicker', () => {
       it(`restores to focused date when switches back to calendar view`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         let runClick = 3;
         while (runClick) {
@@ -162,10 +167,10 @@ describe('app-datepicker', () => {
         }
 
         triggerEvent(t.getBtnYearSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         triggerEvent(t.getBtnCalendarSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2020');
         strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Wed, Jan 15');
@@ -178,7 +183,7 @@ describe('app-datepicker', () => {
       it(`switches back to calendar view with new selected year`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         let runClick = 3;
         while (runClick) {
@@ -188,10 +193,10 @@ describe('app-datepicker', () => {
         }
 
         triggerEvent(t.getBtnYearSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
-        selectNewYearFromYearListView(el, '2025');
-        await el.updateComplete;
+        selectNewYearFromYearListView(t.elem, '2025');
+        await forceUpdate(el);
 
         strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2025');
         strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Tue, Apr 15');
@@ -204,7 +209,7 @@ describe('app-datepicker', () => {
       it(`goes to next month by dragging/ swiping calendar`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
@@ -225,7 +230,7 @@ describe('app-datepicker', () => {
           ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
           `First calendar label not matched (${calendarLabel})`);
 
-        const startingPoint = setupDragPoint('left', el);
+        const startingPoint = setupDragPoint('left', t.elem);
         const dragOptions: OptionsDragTo = { ...startingPoint, dx: -50 };
         await dragTo(calendarViewFullCalendarEl, dragOptions);
         await t.waitForDragAnimationFinished();
@@ -249,7 +254,7 @@ describe('app-datepicker', () => {
       it(`goes to previous month by dragging/ swiping calendar`, async () => {
         el.min = date13;
         el.value = '2020-05-13';
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
@@ -269,7 +274,7 @@ describe('app-datepicker', () => {
           ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
           `First calendar label not matched (${calendarLabel})`);
 
-        const startingPoint = setupDragPoint('right', el);
+        const startingPoint = setupDragPoint('right', t.elem);
         const dragOptions: OptionsDragTo = { ...startingPoint, dx: 50 };
         await dragTo(calendarViewFullCalendarEl, dragOptions);
         await t.waitForDragAnimationFinished();
@@ -293,18 +298,21 @@ describe('app-datepicker', () => {
     });
 
     describe('navigating year list by button', () => {
-      let el: AppDatepicker;
+      let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepickerDialog;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.CALENDAR;
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
+
+        el.open();
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -333,9 +341,20 @@ describe('app-datepicker', () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
-        strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+        /**
+         * NOTE: Datepicker dialog will remain the initial value which is `START_VIEW.CALENDAR`.
+         * Only datepicker updates the value of `startView`.
+         */
+        strictEqual(
+          t.elem.startView,
+          START_VIEW.YEAR_LIST,
+          `Datepicker's 'startView' not updated`);
+        strictEqual(
+          el.startView,
+          START_VIEW.CALENDAR,
+          `Datepicker dialog's 'startView' should not update`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
         isNotNull(t.getYearListViewFullList(), `Year list view should render`);
 
@@ -348,14 +367,25 @@ describe('app-datepicker', () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
-        strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+        /**
+         * NOTE: Datepicker dialog will remain the initial value which is `START_VIEW.CALENDAR`.
+         * Only datepicker updates the value of `startView`.
+         */
+        strictEqual(
+          t.elem.startView,
+          START_VIEW.YEAR_LIST,
+          `Datepicker's 'startView' not updated`);
+        strictEqual(
+          el.startView,
+          START_VIEW.CALENDAR,
+          `Datepicker dialog's 'startView' should not update`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
         isNotNull(t.getYearListViewFullList(), `Year list view should render`);
 
-        selectNewYearFromYearListView(el, '2025');
-        await el.updateComplete;
+        selectNewYearFromYearListView(t.elem, '2025');
+        await forceUpdate(el);
 
         const newBtnYearSelectorEl = t.getBtnYearSelector();
 
@@ -370,18 +400,21 @@ describe('app-datepicker', () => {
     });
 
     describe('focusing new date by gestures', () => {
-      let el: AppDatepicker;
+      let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepickerDialog;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.CALENDAR;
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
+
+        el.open();
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -395,9 +428,17 @@ describe('app-datepicker', () => {
 
         const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Jan 22, 2020')!;
         triggerEvent(newCalendarDay, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
-        strictEqual(el.value, '2020-01-22', `New focused date not updated (${el.value})`);
+        /**
+         * NOTE: Datepicker dialog only updates `value` when user agrees upon by clicking on
+         * the confirm button. Datepicker's `value` however updates on selection.
+         */
+        strictEqual(
+          t.elem.value,
+          '2020-01-22',
+          `Datepicker's new focused date not updated (${el.value})`);
+        strictEqual(el.value, date15, `Datepicker dialog's 'value' should not update`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector button not found`);
@@ -431,9 +472,14 @@ describe('app-datepicker', () => {
         isNotNull(newCalendarDay, `New calendar day not found`);
 
         triggerEvent(newCalendarDay, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
-        strictEqual(el.value, '2020-02-25', `New focused date not updated (${el.value})`);
+        /**
+         * NOTE: Datepicker dialog only updates `value` when user agrees upon by clicking on
+         * the confirm button. Datepicker's `value` however updates on selection.
+         */
+        strictEqual(t.elem.value, '2020-02-25', `New focused date not updated (${el.value})`);
+        strictEqual(el.value, date15, `New focused date not updated (${el.value})`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');

@@ -40,18 +40,15 @@ export const stripExpressionDelimiters = (html: string) => html.replace(/<!---->
 
 export const nextFrame = () => new Promise(yay => requestAnimationFrame(yay));
 
-export const getComputedStyleValue = (element: Element, property: string) =>
-  window.ShadyCSS
-    ? window.ShadyCSS!.getComputedStyleValue(element, property)
-  : getComputedStyle(element).getPropertyValue(property);
+export const getComputedStyleValue = (element: Element, property: string) => window.ShadyCSS ?
+  window.ShadyCSS!.getComputedStyleValue(element, property) :
+  getComputedStyle(element).getPropertyValue(property);
 
-export const getOuterHTML =
-  (target: HTMLElement) =>
-    target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
+export const getOuterHTML = (target: HTMLElement) =>
+  target && target.outerHTML && stripExpressionDelimiters(target.outerHTML!);
 
-export const getComputedStylePropertyValue =
-  (target: HTMLElement, property: string) =>
-    getComputedStyle && getComputedStyle(target)[property as any];
+export const getComputedStylePropertyValue = (target: HTMLElement, property: string) =>
+  getComputedStyle && getComputedStyle(target)[property as any];
 
 export interface KeyboardEventOptions extends KeyboardEventInit {
   keyCode: number;
@@ -201,7 +198,7 @@ export const selectNewYearFromYearListView =
   };
 
 type DragDirection = 'left' | 'right';
-export const setupDragPoint = (direction: DragDirection, el: HTMLElement) => {
+export const setupDragPoint = (direction: DragDirection, el: AppDatepicker) => {
   const datepickerRect = el.getBoundingClientRect();
   const calendarRect = shadowQuery(el, '.calendar-view__full-calendar').getBoundingClientRect();
 
@@ -388,4 +385,4 @@ export const forceUpdate = async (el: AppDatepickerDialog) => {
    */
   el.requestUpdate();
   return el.updateComplete;
-}
+};
