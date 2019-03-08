@@ -1,7 +1,3 @@
-import { START_VIEW } from '../../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
-import { OptionsDragTo } from '../test-helpers';
-
 import { AppDatepicker } from '../../app-datepicker';
 import {
   getResolvedDate,
@@ -18,23 +14,29 @@ import {
   dragTo,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
+  getTestName,
   queryInit,
   setupDragPoint,
 } from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker';
+import { WEEK_NUMBER_TYPE } from '../../calendar';
+import { OptionsDragTo } from '../test-helpers';
 
 const {
   isTrue,
   strictEqual,
   isNotNull,
 } = chai.assert;
+const name = AppDatepicker.is;
 
-describe('app-datepicker', () => {
+describe(getTestName(name), () => {
   describe('updates via properties', () => {
     let el: AppDatepicker;
     let t: ReturnType<typeof queryInit>;
 
     beforeEach(async () => {
-      el = document.createElement('app-datepicker') as AppDatepicker;
+      el = document.createElement(name) as AppDatepicker;
       document.body.appendChild(el);
 
       el.locale = defaultLocale;

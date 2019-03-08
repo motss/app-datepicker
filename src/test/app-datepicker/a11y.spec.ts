@@ -1,21 +1,22 @@
-import { START_VIEW } from '../../app-datepicker';
-
 import 'axe-core/axe';
 import { axeReport } from 'pwa-helpers/axe-report';
 
 import { AppDatepicker } from '../../app-datepicker';
 import { defaultLocale } from '../test-config';
-import { queryInit } from '../test-helpers';
+import { getTestName, queryInit } from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker';
 
 const { isNotNull } = chai.assert;
+const name = AppDatepicker.is;
 
-describe('app-datepicker', () => {
+describe(getTestName(name), () => {
   describe('a11y', () => {
     let el: AppDatepicker;
     let t: ReturnType<typeof queryInit>;
 
     beforeEach(async () => {
-      el = document.createElement('app-datepicker') as AppDatepicker;
+      el = document.createElement(name) as AppDatepicker;
       document.body.appendChild(el);
 
       el.locale = defaultLocale;

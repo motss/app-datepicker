@@ -1,16 +1,20 @@
-import { START_VIEW } from '../../app-datepicker';
-
 import 'axe-core/axe';
 import { axeReport } from 'pwa-helpers/axe-report';
 
 import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import { defaultLocale } from '../test-config';
-import { forceUpdate, queryInit } from '../test-helpers';
+import {
+  forceUpdate,
+  getTestName,
+  queryInit,
+} from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker';
 
 const { isNotNull } = chai.assert;
 const name = AppDatepickerDialog.is;
 
-describe(name, () => {
+describe(getTestName(name), () => {
   describe('a11y', () => {
     let el: AppDatepickerDialog;
     let t: ReturnType<typeof queryInit>;

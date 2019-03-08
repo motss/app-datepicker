@@ -1,6 +1,3 @@
-import { START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
-
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import '../../app-datepicker.js';
 import {
@@ -18,8 +15,12 @@ import {
   forceUpdate,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
+  getTestName,
   queryInit,
 } from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 
 const {
   isString,
@@ -31,7 +32,7 @@ const {
 } = chai.assert;
 const name = AppDatepickerDialog.is;
 
-describe(name, () => {
+describe(getTestName(name), () => {
   describe('initial render', () => {
     let el: AppDatepickerDialog;
     let t: ReturnType<typeof queryInit>;

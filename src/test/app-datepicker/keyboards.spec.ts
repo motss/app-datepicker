@@ -1,7 +1,3 @@
-import { START_VIEW } from '../../app-datepicker';
-import { KEYCODES_MAP } from '../../datepicker-helpers';
-import { KeyboardEventOptions } from '../test-helpers';
-
 import { AppDatepicker } from '../../app-datepicker';
 import {
   date13,
@@ -11,22 +7,28 @@ import {
 } from '../test-config';
 import {
   getShadowInnerHTML,
+  getTestName,
   queryInit,
   triggerEvent,
 } from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker';
+import { KEYCODES_MAP } from '../../datepicker-helpers';
+import { KeyboardEventOptions } from '../test-helpers';
 
 const {
   strictEqual,
   isNotNull,
 } = chai.assert;
+const name = AppDatepicker.is;
 
-describe('app-datepicker', () => {
+describe(getTestName(name), () => {
   describe('keyboards', () => {
     let el: AppDatepicker;
     let t: ReturnType<typeof queryInit>;
 
     beforeEach(async () => {
-      el = document.createElement('app-datepicker') as AppDatepicker;
+      el = document.createElement(name) as AppDatepicker;
       document.body.appendChild(el);
 
       el.locale = defaultLocale;

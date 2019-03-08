@@ -1,6 +1,3 @@
-import { START_VIEW } from '../../app-datepicker';
-import { OptionsDragTo } from '../test-helpers';
-
 import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import {
   date13,
@@ -11,11 +8,15 @@ import {
   dragTo,
   forceUpdate,
   getShadowInnerHTML,
+  getTestName,
   queryInit,
   selectNewYearFromYearListView,
   setupDragPoint,
   triggerEvent,
 } from '../test-helpers';
+
+import { START_VIEW } from '../../app-datepicker';
+import { OptionsDragTo } from '../test-helpers';
 
 const {
   strictEqual,
@@ -24,7 +25,7 @@ const {
 } = chai.assert;
 const name = AppDatepickerDialog.is;
 
-describe(name, () => {
+describe(getTestName(name), () => {
   describe('gestures', () => {
     describe('navigating calendar by gestures', () => {
       let el: AppDatepickerDialog;

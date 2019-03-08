@@ -220,9 +220,9 @@ export const getShadowInnerHTML = (target: HTMLElement) => {
   const root = (target.shadowRoot || target);
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
-const waitForNextRender = (target: AppDatepicker|AppDatepickerDialog) =>
+const waitForNextRender = (target: AppDatepicker|AppDatepickerDialog, waitFor: number = 3e3) =>
   new Promise(yay =>
-    requestAnimationFrame(() => setTimeout(() => yay(target.updateComplete), 1e3)));
+    requestAnimationFrame(() => setTimeout(() => yay(target.updateComplete), waitFor)));
 export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
   el: T
 ) => {
@@ -372,9 +372,11 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     getDialogActionsContainer,
     getDialogActionButtons,
 
-    waitForDragAnimationFinished: async () => waitForNextRender(elem),
+    waitForDragAnimationFinished: async (waitFor?: number) => waitForNextRender(elem, waitFor),
   };
 };
+
+export const getTestName = (name: string) => `${name}${new URL(window.location.href).search}`;
 
 export const forceUpdate = async (el: AppDatepickerDialog) => {
   await el.updateComplete;

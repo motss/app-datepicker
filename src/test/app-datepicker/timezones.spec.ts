@@ -1,14 +1,16 @@
-import { START_VIEW } from '../../app-datepicker';
-
 import { AppDatepicker } from '../../app-datepicker';
 import { date13, date15, defaultLocale } from '../test-config';
+import { getTestName } from '../test-helpers';
 import { getAllDateStrings } from './timezones';
+
+import { START_VIEW } from '../../app-datepicker';
 
 const {
   strictEqual,
 } = chai.assert;
+const name = AppDatepicker.is;
 
-describe('app-datepicker', () => {
+describe(getTestName(name), () => {
   describe('timezones', () => {
     const allDateStrings = getAllDateStrings();
     const runTest = async (tz: string) => {
@@ -35,7 +37,7 @@ describe('app-datepicker', () => {
     let el: AppDatepicker;
 
     beforeEach(async () => {
-      el = document.createElement('app-datepicker') as AppDatepicker;
+      el = document.createElement(name) as AppDatepicker;
       document.body.appendChild(el);
 
       el.locale = defaultLocale;

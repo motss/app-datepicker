@@ -1,6 +1,3 @@
-import { START_VIEW } from '../../app-datepicker';
-import { OptionsDragTo } from '../test-helpers';
-
 import { AppDatepicker } from '../../app-datepicker';
 import {
   date13,
@@ -10,26 +7,31 @@ import {
 import {
   dragTo,
   getShadowInnerHTML,
+  getTestName,
   queryInit,
   selectNewYearFromYearListView,
   setupDragPoint,
   triggerEvent,
 } from '../test-helpers';
 
+import { START_VIEW } from '../../app-datepicker';
+import { OptionsDragTo } from '../test-helpers';
+
 const {
   strictEqual,
   isNotNull,
   isTrue,
 } = chai.assert;
+const name = AppDatepicker.is;
 
-describe('app-datepicker', () => {
+describe(getTestName(name), () => {
   describe('gestures', () => {
     describe('navigating calendar by gestures', () => {
       let el: AppDatepicker;
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepicker;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
@@ -297,7 +299,7 @@ describe('app-datepicker', () => {
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepicker;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
@@ -374,7 +376,7 @@ describe('app-datepicker', () => {
       let t: ReturnType<typeof queryInit>;
 
       beforeEach(async () => {
-        el = document.createElement('app-datepicker') as AppDatepicker;
+        el = document.createElement(name) as AppDatepicker;
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
