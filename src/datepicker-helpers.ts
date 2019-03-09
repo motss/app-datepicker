@@ -132,7 +132,7 @@ export function toFormattedDateString(date: Date) {
 export function dispatchCustomEvent<T = CustomEvent['detail']>(
   target: HTMLElement,
   eventName: string,
-  detail: T
+  detail?: T
 ) {
   return target.dispatchEvent(new CustomEvent(eventName, {
     detail,

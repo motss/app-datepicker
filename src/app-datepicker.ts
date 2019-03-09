@@ -4,6 +4,14 @@ type ClassProperties<T> = {
 };
 type ParamUpdatedChanged = ClassProperties<Omit<Omit<AppDatepicker, HTMLElement>, LitElement>>;
 
+interface ParamsAnimateCalendar {
+  target: HTMLElement;
+  from: number;
+  to: number;
+  postX: number;
+  postTask: () => Promise<unknown>;
+}
+
 export const enum START_VIEW {
   CALENDAR = 'calendar',
   YEAR_LIST = 'yearList',
@@ -826,20 +834,19 @@ export class AppDatepicker extends LitElement {
       const initialX = totalDraggableDistance * -1;
       const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
 
-      const dragAnimation = this._animateCalendar(calendarViewFullCalendar, initialX, newDx);
-
-      return new Promise(yay => (dragAnimation.onfinish = yay))
-        .then(() => new Promise(yay => requestAnimationFrame(yay)))
-        .then(() => {
+      return this._animateCalendar({
+        target: calendarViewFullCalendar,
+        from: initialX,
+        to: newDx,
+        postX: initialX,
+        postTask: () => {
           const dateDate = this._selectedDate;
           const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
 
           this._selectedDate = new Date(dateDate.setUTCMonth(newM));
           return this.updateComplete;
-        })
-        .then(() => {
-          calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
-        });
+        },
+      });
     };
 
     return passiveHandler(handleUpdateMonth);
@@ -904,56 +911,50 @@ export class AppDatepicker extends LitElement {
 
     this._calendarViewFullCalendar!.style.transform = `translate3d(${newX}px, 0, 0)`;
   }
-  private _animateCalendar(target: HTMLElement, oldX: number, newX: number) {
-    return target.animate([
-      { transform: `translate3d(${oldX}px, 0, 0)` },
-      { transform: `translate3d(${newX}px, 0, 0)` },
+
+  private _animateCalendar({ target, from, to, postX, postTask }: ParamsAnimateCalendar) {
+    return new Promise(yay => (target.animate([
+      { transform: `translate3d(${from}px, 0, 0)` },
+      { transform: `translate3d(${to}px, 0, 0)` },
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
       fill: this._hasNativeElementAnimate ? 'none' : 'both',
-    });
+    })).onfinish = yay)
+      .then(postTask)
+      .then(() => {
+        target.style.transform = `translate3d(${postX}px, 0, 0)`;
+        return this.updateComplete;
+      })
+      .then(() => dispatchCustomEvent(this, 'datepicker-animation-finished'));
   }
   private _trackingEndFn(dx: number) {
-    const calendarViewFullCalendar = this._calendarViewFullCalendar!;
     const totalDraggableDistance = this._totalDraggableDistance!;
     const isPositive = dx > 0;
     const absDx = Math.abs(dx);
     const clamped = Math.min(totalDraggableDistance, absDx);
     const initialX = totalDraggableDistance * -1;
     const newX = totalDraggableDistance * -1 + (clamped * (isPositive ? 1 : -1));
-
     /**
      * NOTE(motss): If dragged distance < `dragRatio`, reset calendar position.
      */
-    if (absDx < totalDraggableDistance! * this.dragRatio) {
-      const restoreDragAnimation = this._animateCalendar(calendarViewFullCalendar, newX, initialX);
+    const shouldReset = absDx < totalDraggableDistance * this.dragRatio;
 
-      return new Promise(yay => (restoreDragAnimation.onfinish = yay))
-        .then(() => new Promise(yay => requestAnimationFrame(yay)))
-        .then(() => {
-          calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
-          return this.updateComplete;
-        });
-    }
+    return this._animateCalendar({
+      target: this._calendarViewFullCalendar!,
+      from: newX,
+      to: shouldReset ? initialX : totalDraggableDistance! * (isPositive ? 0 : -2),
+      postX: initialX,
+      postTask: () => {
+        if (!shouldReset) {
+          const dateDate = new Date(this._selectedDate);
+          const m = dateDate.getUTCMonth();
+          this._selectedDate = new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
+        }
 
-    const restDx = totalDraggableDistance! * (isPositive ? 0 : -2);
-    const dragAnimation = this._animateCalendar(calendarViewFullCalendar, newX, restDx);
-
-    /** NOTE(motss): Drag to next calendar when drag ratio meets threshold value */
-    return new Promise(yay => (dragAnimation.onfinish = yay))
-      .then(() => new Promise(yay => requestAnimationFrame(yay)))
-      .then(() => {
-        const dateDate = new Date(this._selectedDate);
-        const m = dateDate.getUTCMonth();
-
-        this._selectedDate = new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
         return this.updateComplete;
-      })
-      .then(() => {
-        calendarViewFullCalendar.style.transform = `translate3d(${initialX}px, 0, 0)`;
-        return this.updateComplete;
-      });
+      },
+    });
   }
 
   // Left Move focus to the previous day. Will move to the last day of the previous month,

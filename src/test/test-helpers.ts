@@ -220,12 +220,23 @@ export const getShadowInnerHTML = (target: HTMLElement) => {
   const root = (target.shadowRoot || target);
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
-const waitForNextRender = (target: AppDatepicker|AppDatepickerDialog, waitFor: number = 3e3) =>
-  new Promise(yay =>
-    requestAnimationFrame(() => setTimeout(() => yay(target.updateComplete), waitFor)));
-export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
-  el: T
-) => {
+
+export const forceUpdate = async (el: AppDatepickerDialog) => {
+  await el.updateComplete;
+  /**
+   * FIXME(motss): Workaround to ensure child custom elements renders complete.
+   * Related bug issue at `Polymer/lit-element#594`.
+   */
+  return el.requestUpdate();
+};
+// const waitForNextRender = (target: AppDatepicker, waitFor?: number) => {
+//   // const numWaitFor = null == waitFor ? ('mediaDevices' in navigator ? 1e3 : 5e3) : +waitFor;
+//   const numWaitFor = waitFor || 5e3;
+//   return new Promise(yay =>
+//     requestAnimationFrame(() => setTimeout(() => yay(target.requestUpdate()), numWaitFor)));
+// };
+
+export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) => {
   const isDatepickerDialog = 'APP-DATEPICKER-DIALOG' === el.tagName;
   const elem = (isDatepickerDialog ? shadowQuery(el, AppDatepicker.is) : el) as AppDatepicker;
 
@@ -372,19 +383,16 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(
     getDialogActionsContainer,
     getDialogActionButtons,
 
-    waitForDragAnimationFinished: async (waitFor?: number) => waitForNextRender(elem, waitFor),
+    waitForDragAnimationFinished: async () => new Promise(yay => {
+      const animationFinished = () => {
+        yay(elem.requestUpdate());
+        elem.removeEventListener('datepicker-animation-finished', animationFinished);
+      };
+
+      elem.addEventListener('datepicker-animation-finished', animationFinished);
+    }),
+    // waitForNextRender(elem, waitFor),
   };
 };
 
 export const getTestName = (name: string) => `${name}${new URL(window.location.href).search}`;
-
-export const forceUpdate = async (el: AppDatepickerDialog) => {
-  await el.updateComplete;
-
-  /**
-   * FIXME(motss): Workaround to ensure child custom elements renders complete.
-   * Related bug issue at `Polymer/lit-element#594`.
-   */
-  el.requestUpdate();
-  return el.updateComplete;
-};

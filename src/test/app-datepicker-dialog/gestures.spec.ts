@@ -67,8 +67,9 @@ describe(getTestName(name), () => {
           ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
           `Calendar label not matched (${calendarLabel})`);
 
+        const animationComplete = t.waitForDragAnimationFinished();
         triggerEvent(nextBtnMonthSelectorEl, 'click');
-        await t.waitForDragAnimationFinished();
+        await animationComplete;
 
         strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
         strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
@@ -97,8 +98,9 @@ describe(getTestName(name), () => {
           ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
           `Calendar label not matched (${calendarLabel})`);
 
+        const animationComplete = t.waitForDragAnimationFinished();
         triggerEvent(prevBtnMonthSelectorEl, 'click');
-        await t.waitForDragAnimationFinished();
+        await animationComplete;
 
         strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
         strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
@@ -162,8 +164,9 @@ describe(getTestName(name), () => {
 
         let runClick = 3;
         while (runClick) {
+          const animationComplete = t.waitForDragAnimationFinished();
           triggerEvent(t.getBtnNextMonthSelector(), 'click');
-          await t.waitForDragAnimationFinished();
+          await animationComplete;
           runClick -= 1;
         }
 
@@ -188,8 +191,9 @@ describe(getTestName(name), () => {
 
         let runClick = 3;
         while (runClick) {
+          const animationComplete = t.waitForDragAnimationFinished();
           triggerEvent(t.getBtnNextMonthSelector(), 'click');
-          await t.waitForDragAnimationFinished();
+          await animationComplete;
           runClick -= 1;
         }
 
@@ -233,8 +237,9 @@ describe(getTestName(name), () => {
 
         const startingPoint = setupDragPoint('left', t.elem);
         const dragOptions: OptionsDragTo = { ...startingPoint, dx: -50 };
+        const animationComplete = t.waitForDragAnimationFinished();
         await dragTo(calendarViewFullCalendarEl, dragOptions);
-        await t.waitForDragAnimationFinished();
+        await animationComplete;
 
         strictEqual(
           getShadowInnerHTML(btnYearSelectorEl),
@@ -277,8 +282,9 @@ describe(getTestName(name), () => {
 
         const startingPoint = setupDragPoint('right', t.elem);
         const dragOptions: OptionsDragTo = { ...startingPoint, dx: 50 };
+        const animationComplete = t.waitForDragAnimationFinished();
         await dragTo(calendarViewFullCalendarEl, dragOptions);
-        await t.waitForDragAnimationFinished();
+        await animationComplete;
 
         strictEqual(
           getShadowInnerHTML(btnYearSelectorEl),
@@ -466,8 +472,9 @@ describe(getTestName(name), () => {
         const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
         isNotNull(nextBtnMonthSelectorEl, `Next month selector button not found`);
 
+        const animationComplete = t.waitForDragAnimationFinished();
         triggerEvent(nextBtnMonthSelectorEl, 'click');
-        await t.waitForDragAnimationFinished();
+        await animationComplete;
 
         const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Feb 25, 2020')!;
         isNotNull(newCalendarDay, `New calendar day not found`);
