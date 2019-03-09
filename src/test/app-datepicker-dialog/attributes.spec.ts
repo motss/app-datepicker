@@ -562,8 +562,9 @@ describe(getTestName(name), () => {
 
       const oldStartingPoint = setupDragPoint('left', t.elem);
       const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
+      const animationTask = t.waitForDragAnimationFinished();
       await dragTo(calendarViewFullCalendarEl, oldDragOptions);
-      await t.waitForDragAnimationFinished();
+      await animationTask;
 
       strictEqual(
         getShadowInnerHTML(btnYearSelectorEl),
@@ -582,8 +583,9 @@ describe(getTestName(name), () => {
 
       const startingPoint = setupDragPoint('left', t.elem);
       const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
+      const newAnimationTask = t.waitForDragAnimationFinished();
       await dragTo(calendarViewFullCalendarEl, dragOptions);
-      await t.waitForDragAnimationFinished();
+      await newAnimationTask;
 
       strictEqual(
         getShadowInnerHTML(btnYearSelectorEl),
