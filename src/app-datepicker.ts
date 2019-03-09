@@ -904,6 +904,7 @@ export class AppDatepicker extends LitElement {
     trackableEl.style.width = trackableEl.style.minWidth = `${trackableElWidth}px`;
     this._totalDraggableDistance = trackableElWidth / 3;
   }
+
   private _trackingMoveFn(dx: number) {
     const totalDraggableDistance = this._totalDraggableDistance!;
     const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
@@ -992,9 +993,8 @@ export class AppDatepicker extends LitElement {
     /** NOTE: Skip for TAB key and other non-related keys */
     if (keyCode === KEYCODES_MAP.TAB || !ALL_NAV_KEYS_SET.has(keyCode)) return;
 
-    const selectedDate = this._selectedDate;
-
     console.time('compute-next-focused-date');
+    const selectedDate = this._selectedDate;
     const nextFocusedDate = computeNextFocusedDate({
       keyCode,
       selectedDate,
