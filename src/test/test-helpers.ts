@@ -1,3 +1,5 @@
+import { Button } from '@material/mwc-button';
+
 import { AppDatepicker } from '../app-datepicker';
 import { AppDatepickerDialog } from '../app-datepicker-dialog';
 
@@ -342,7 +344,13 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     shadowQuery<typeof el, HTMLDivElement>(el, '.actions-container');
 
   const getDialogActionButtons = () =>
-    shadowQueryAll<typeof el, HTMLDivElement>(el, '.actions-container > mwc-button');
+    shadowQueryAll<typeof el, Button>(el, '.actions-container > mwc-button');
+
+  const getDialogConfirmActionButton = () =>
+    shadowQuery<typeof el, Button>(el, '.actions-container > mwc-button[dialog-confirm]');
+
+  const getDialogDismissActionButton = () =>
+    shadowQuery<typeof el, Button>(el, '.actions-container > mwc-button[dialog-dismiss]');
 
   return {
     elem,
@@ -382,6 +390,8 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     getDialogScrim,
     getDialogActionsContainer,
     getDialogActionButtons,
+    getDialogConfirmActionButton,
+    getDialogDismissActionButton,
 
     waitForDragAnimationFinished: async () => new Promise(yay => {
       const animationFinished = () => {

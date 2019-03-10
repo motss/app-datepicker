@@ -7,6 +7,7 @@ import {
 } from '../test-config';
 import {
   forceUpdate,
+  getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
   queryInit,
@@ -18,6 +19,7 @@ import { KEYCODES_MAP } from '../../datepicker-helpers';
 import { KeyboardEventOptions } from '../test-helpers';
 
 const {
+  isTrue,
   strictEqual,
   isNotNull,
 } = chai.assert;
@@ -25,6 +27,23 @@ const name = AppDatepickerDialog.is;
 
 describe(getTestName(name), () => {
   describe('keyboards', () => {
+    interface RunTestCustomEvent {
+      opened: boolean;
+      value: string;
+    }
+    const runTestOnDialogClosed = (cb: (ev: CustomEvent<RunTestCustomEvent>) => void) =>
+      new Promise((yay, nah) => {
+        el.addEventListener('datepicker-dialog-closed', async (ev) => {
+          try {
+            await forceUpdate(el);
+            cb(ev as CustomEvent);
+            yay();
+          } catch (e) {
+            nah(e);
+          }
+        }, { once: true });
+      });
+
     let el: AppDatepickerDialog;
     let t: ReturnType<typeof queryInit>;
 
@@ -1061,7 +1080,7 @@ describe(getTestName(name), () => {
       }
     });
 
-    it(`fires 'datepicker-value-updated' event by keyboard (Enter)`, async () => {
+    it(`updates datepicker by keyboard (Enter)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
       await forceUpdate(el);
@@ -1069,18 +1088,32 @@ describe(getTestName(name), () => {
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
 
-      const valueMatchedFromEvent = new Promise((yay) => {
-        el.addEventListener('datepicker-value-updated', (ev) => {
-          const { value } = (ev as CustomEvent).detail;
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
 
-          strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
-          yay();
-        }, { once: true });
+        strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
       });
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
@@ -1088,7 +1121,7 @@ describe(getTestName(name), () => {
       await valueMatchedFromEvent;
     });
 
-    it(`fires 'datepicker-value-updated' event by keyboard (Space)`, async () => {
+    it(`updates datepicker by keyboard (Space)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
       await forceUpdate(el);
@@ -1096,23 +1129,271 @@ describe(getTestName(name), () => {
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
 
-      const valueMatchedFromEvent = new Promise((yay) => {
-        el.addEventListener('datepicker-value-updated', (ev) => {
-          const { value } = (ev as CustomEvent).detail;
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
 
-          strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
-          yay();
-        }, { once: true });
+        strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
       });
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });
       await forceUpdate(el);
       await valueMatchedFromEvent;
+    });
+
+    it(`closes datepicker dialog by keyboard (Escape)`, async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await forceUpdate(el);
+
+      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await forceUpdate(el);
+
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
+        const expectedValue = '2020-01-22';
+
+        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
+      });
+
+      const dialogDismissActionButton = t.getDialogDismissActionButton();
+      isNotNull(dialogDismissActionButton, `Dialog dismiss action button not found`);
+
+      /**
+       * NOTE: Keyboard events triggers `click` event on native HTML buttons.
+       */
+      triggerEvent(dialogDismissActionButton, 'click');
+      await forceUpdate(el);
+      await valueMatchedFromEvent;
+      await forceUpdate(el);
+    });
+
+    it(`updates datepicker by triggering confirm button (Enter/ Space)`, async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await forceUpdate(el);
+
+      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await forceUpdate(el);
+
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = (ev as CustomEvent).detail;
+        const expectedValue = '2020-01-21';
+
+        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
+      });
+
+      const dialogConfirmActionButton = t.getDialogConfirmActionButton();
+      isNotNull(dialogConfirmActionButton, `Dialog confirm action button not found`);
+
+      /**
+       * NOTE: Keyboard events triggers `click` event on native HTML buttons.
+       */
+      triggerEvent(dialogConfirmActionButton, 'click');
+      await forceUpdate(el);
+      await valueMatchedFromEvent;
+    });
+
+    it(`does not update datepicker by triggering dismiss button (Enter/ Space)`, async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await forceUpdate(el);
+
+      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await forceUpdate(el);
+
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
+        const expectedValue = '2020-01-22';
+
+        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
+      });
+
+      const dialogDismissActionButton = t.getDialogDismissActionButton();
+      isNotNull(dialogDismissActionButton, `Dialog dismiss action button not found`);
+
+      /**
+       * NOTE: Keyboard events triggers `click` event on native HTML buttons.
+       */
+      triggerEvent(dialogDismissActionButton, 'click');
+      await forceUpdate(el);
+      await valueMatchedFromEvent;
+    });
+
+    it(`updates datepicker with previously selected date by reopening datepicker dialog`,
+    async () => {
+      el.min = date13;
+      el.value = '2020-01-22';
+      await forceUpdate(el);
+
+      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+      triggerEvent(
+        datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      await forceUpdate(el);
+
+      strictEqual(
+        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+
+      const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
+        const expectedValue = '2020-01-22';
+
+        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          '2020-01-21',
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
+      });
+
+      const dialogDismissActionButton = t.getDialogDismissActionButton();
+      isNotNull(dialogDismissActionButton, `Dialog dismiss action button not found`);
+
+      /**
+       * NOTE: Keyboard events triggers `click` event on native HTML buttons.
+       */
+      triggerEvent(dialogDismissActionButton, 'click');
+      await forceUpdate(el);
+      await valueMatchedFromEvent;
+      await forceUpdate(el);
+
+      el.open();
+      await forceUpdate(el);
+
+      strictEqual(
+        t.elem.value,
+        '2020-01-21',
+        `Previously selected date not matched (${t.elem.value})`);
+
+      const dialogConfirmActionButton = t.getDialogConfirmActionButton();
+      isNotNull(dialogConfirmActionButton, `Dialog confirm button not found`);
+
+      const updateValueFromEvent = runTestOnDialogClosed((ev) => {
+        const { opened, value } = ev.detail;
+        const expectedValue = '2020-01-21';
+
+        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(
+          el.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${el.value})`);
+        strictEqual(
+          t.elem.value,
+          expectedValue,
+          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+        isTrue(!opened, `Datepicker dialog's should be closed`);
+        isTrue(
+          'none' === getComputedStylePropertyValue(el, 'display'),
+          `Datepicker dialog's 'display' should set to 'none'`);
+        isTrue(
+          el.hasAttribute('aria-hidden'),
+          `Datepicker dialog's has to be closed after new date selection`);
+      });
+      /**
+       * NOTE: Keyboard events triggers `click` event on native HTML buttons.
+       */
+      triggerEvent(dialogConfirmActionButton, 'click');
+      await forceUpdate(el);
+      await updateValueFromEvent;
     });
 
   });

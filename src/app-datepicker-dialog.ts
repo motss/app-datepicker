@@ -186,8 +186,10 @@ export class AppDatepickerDialog extends LitElement {
 
       this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
 
-      const fadeInAnimation = contentContainer.animate(keyframes, opts);
-      return new Promise(yay => (fadeInAnimation.onfinish = yay)).then(() => {
+      const fadeInAnimationTask = new Promise(yay =>
+        ((contentContainer.animate(keyframes, opts)).onfinish = yay));
+
+      return fadeInAnimationTask.then(() => {
         contentContainer.style.opacity = '1';
 
         const focusable = this._focusable!;
@@ -209,9 +211,10 @@ export class AppDatepickerDialog extends LitElement {
         { opacity: '1' },
         { opacity: '0' },
       ];
-      const fadeOutAnimation = contentContainer.animate(keyframes, opts);
+      const fadeOutAnimationTask = new Promise(yay =>
+        ((contentContainer.animate(keyframes, opts)).onfinish = yay));
 
-      return new Promise(yay => (fadeOutAnimation.onfinish = yay)).then(() => {
+      return fadeOutAnimationTask.then(() => {
         contentContainer.style.opacity = contentContainer.style.visibility = '';
         this.setAttribute('aria-hidden', 'true');
         this.style.display = 'none';
