@@ -15,6 +15,7 @@ import {
 } from '../test-helpers';
 
 import { START_VIEW } from '../../app-datepicker';
+import { DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
 import { KEYCODES_MAP } from '../../datepicker-helpers';
 import { KeyboardEventOptions } from '../test-helpers';
 
@@ -27,22 +28,19 @@ const name = AppDatepickerDialog.is;
 
 describe(getTestName(name), () => {
   describe('keyboards', () => {
-    interface RunTestCustomEvent {
-      opened: boolean;
-      value: string;
-    }
-    const runTestOnDialogClosed = (cb: (ev: CustomEvent<RunTestCustomEvent>) => void) =>
-      new Promise((yay, nah) => {
-        el.addEventListener('datepicker-dialog-closed', async (ev) => {
-          try {
-            await forceUpdate(el);
-            cb(ev as CustomEvent);
-            yay();
-          } catch (e) {
-            nah(e);
-          }
-        }, { once: true });
-      });
+    const runTestOnDialogClosed =
+      (cb: (ev: CustomEvent<DatepickerDialogClosedDetail>) => void) =>
+        new Promise((yay, nah) => {
+          el.addEventListener('datepicker-dialog-closed', async (ev) => {
+            try {
+              await forceUpdate(el);
+              cb(ev as CustomEvent);
+              yay();
+            } catch (e) {
+              nah(e);
+            }
+          }, { once: true });
+        });
 
     let el: AppDatepickerDialog;
     let t: ReturnType<typeof queryInit>;

@@ -1,3 +1,8 @@
+export interface DatepickerDialogClosedDetail {
+  opened: boolean;
+  value: AppDatepickerDialog['value'];
+}
+
 import { START_VIEW } from './app-datepicker.js';
 import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
@@ -220,7 +225,8 @@ export class AppDatepickerDialog extends LitElement {
         this.style.display = 'none';
 
         if (!this.noFocusTrap) this._focusTrap!.disconnect();
-        dispatchCustomEvent(this, 'datepicker-dialog-closed', { opened: false, value: this.value });
+        dispatchCustomEvent<DatepickerDialogClosedDetail>(
+          this, 'datepicker-dialog-closed', { opened: false, value: this.value });
       });
     });
   }

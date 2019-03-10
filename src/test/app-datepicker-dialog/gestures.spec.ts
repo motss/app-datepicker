@@ -7,6 +7,7 @@ import {
 import {
   dragTo,
   forceUpdate,
+  getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
   queryInit,
@@ -16,6 +17,7 @@ import {
 } from '../test-helpers';
 
 import { START_VIEW } from '../../app-datepicker';
+import { DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
 import { OptionsDragTo } from '../test-helpers';
 
 const {
@@ -407,6 +409,20 @@ describe(getTestName(name), () => {
     });
 
     describe('focusing new date by gestures', () => {
+      const runTestOnDialogClosed =
+        (cb: (ev: CustomEvent<DatepickerDialogClosedDetail>) => void) =>
+          new Promise((yay, nah) => {
+            el.addEventListener('datepicker-dialog-closed', async (ev) => {
+              try {
+                await forceUpdate(el);
+                cb(ev as CustomEvent);
+                yay();
+              } catch (e) {
+                nah(e);
+              }
+            }, { once: true });
+          });
+
       let el: AppDatepickerDialog;
       let t: ReturnType<typeof queryInit>;
 
@@ -506,6 +522,198 @@ describe(getTestName(name), () => {
           newFocusedDateLabel,
           '25',
           `New focused date label not matched (${newFocusedDateLabel})`);
+      });
+
+      it(`selects new date by gestures + confirm button`, async () => {
+        strictEqual(el.value, date15, `Focused date not matched (${el.value})`);
+
+        const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Jan 22, 2020')!;
+        triggerEvent(newCalendarDay, 'click');
+        await forceUpdate(el);
+
+        /**
+         * NOTE: Datepicker dialog only updates `value` when user agrees upon by clicking on
+         * the confirm button. Datepicker's `value` however updates on selection.
+         */
+        strictEqual(
+          t.elem.value,
+          '2020-01-22',
+          `Datepicker's new focused date not updated (${el.value})`);
+        strictEqual(el.value, date15, `Datepicker dialog's 'value' should not update`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector button not found`);
+
+        const calendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
+        strictEqual(
+          calendarSelectorLabel,
+          'Wed, Jan 22',
+          `Calendar selector label not matched (${calendarSelectorLabel})`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
+        strictEqual(
+          newFocusedDateLabel,
+          '22',
+          `New focused date label not matched (${newFocusedDateLabel})`);
+
+        const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+          const { opened, value } = ev.detail;
+          const expectedValue = '2020-01-22';
+
+          strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+          strictEqual(
+            el.value,
+            expectedValue,
+            `Datepicker dialog's 'value' not updated (${el.value})`);
+          strictEqual(
+            t.elem.value,
+            expectedValue,
+            `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          isTrue(!opened, `Datepicker dialog's should be closed`);
+          isTrue(
+            'none' === getComputedStylePropertyValue(el, 'display'),
+            `Datepicker dialog's 'display' should set to 'none'`);
+          isTrue(
+            el.hasAttribute('aria-hidden'),
+            `Datepicker dialog's has to be closed after new date selection`);
+        });
+        const dialogConfirmActionButton = t.getDialogConfirmActionButton();
+        isNotNull(dialogConfirmActionButton, `Dialog confirm button not found`);
+
+        triggerEvent(dialogConfirmActionButton, 'click');
+        await forceUpdate(el);
+        await valueMatchedFromEvent;
+      });
+
+      it(`does not confirm new selected date by gestures + dismiss button`, async () => {
+        strictEqual(el.value, date15, `Focused date not matched (${el.value})`);
+
+        const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Jan 22, 2020')!;
+        triggerEvent(newCalendarDay, 'click');
+        await forceUpdate(el);
+
+        /**
+         * NOTE: Datepicker dialog only updates `value` when user agrees upon by clicking on
+         * the confirm button. Datepicker's `value` however updates on selection.
+         */
+        strictEqual(
+          t.elem.value,
+          '2020-01-22',
+          `Datepicker's new focused date not updated (${el.value})`);
+        strictEqual(el.value, date15, `Datepicker dialog's 'value' should not update`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector button not found`);
+
+        const calendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
+        strictEqual(
+          calendarSelectorLabel,
+          'Wed, Jan 22',
+          `Calendar selector label not matched (${calendarSelectorLabel})`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
+        strictEqual(
+          newFocusedDateLabel,
+          '22',
+          `New focused date label not matched (${newFocusedDateLabel})`);
+
+        const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+          const { opened, value } = ev.detail;
+          const expectedValue = date15;
+
+          strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+          strictEqual(
+            el.value,
+            expectedValue,
+            `Datepicker dialog's 'value' not updated (${el.value})`);
+          strictEqual(
+            t.elem.value,
+            '2020-01-22',
+            `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          isTrue(!opened, `Datepicker dialog's should be closed`);
+          isTrue(
+            'none' === getComputedStylePropertyValue(el, 'display'),
+            `Datepicker dialog's 'display' should set to 'none'`);
+          isTrue(
+            el.hasAttribute('aria-hidden'),
+            `Datepicker dialog's has to be closed after new date selection`);
+        });
+        const dialogDismissActionButton = t.getDialogDismissActionButton();
+        isNotNull(dialogDismissActionButton, `Dialog confirm button not found`);
+
+        triggerEvent(dialogDismissActionButton, 'click');
+        await forceUpdate(el);
+        await valueMatchedFromEvent;
+      });
+
+      it(`closes dialog by clicking on scrim`, async () => {
+        strictEqual(el.value, date15, `Focused date not matched (${el.value})`);
+
+        const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Jan 22, 2020')!;
+        triggerEvent(newCalendarDay, 'click');
+        await forceUpdate(el);
+
+        /**
+         * NOTE: Datepicker dialog only updates `value` when user agrees upon by clicking on
+         * the confirm button. Datepicker's `value` however updates on selection.
+         */
+        strictEqual(
+          t.elem.value,
+          '2020-01-22',
+          `Datepicker's new focused date not updated (${el.value})`);
+        strictEqual(el.value, date15, `Datepicker dialog's 'value' should not update`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector button not found`);
+
+        const calendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
+        strictEqual(
+          calendarSelectorLabel,
+          'Wed, Jan 22',
+          `Calendar selector label not matched (${calendarSelectorLabel})`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
+        strictEqual(
+          newFocusedDateLabel,
+          '22',
+          `New focused date label not matched (${newFocusedDateLabel})`);
+
+        const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
+          const { opened, value } = ev.detail;
+          const expectedValue = date15;
+
+          strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+          strictEqual(
+            el.value,
+            expectedValue,
+            `Datepicker dialog's 'value' not updated (${el.value})`);
+          strictEqual(
+            t.elem.value,
+            '2020-01-22',
+            `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          isTrue(!opened, `Datepicker dialog's should be closed`);
+          isTrue(
+            'none' === getComputedStylePropertyValue(el, 'display'),
+            `Datepicker dialog's 'display' should set to 'none'`);
+          isTrue(
+            el.hasAttribute('aria-hidden'),
+            `Datepicker dialog's has to be closed after new date selection`);
+        });
+        const dialogScrim = t.getDialogScrim();
+        isNotNull(dialogScrim, `Dialog confirm button not found`);
+
+        triggerEvent(dialogScrim, 'click');
+        await forceUpdate(el);
+        await valueMatchedFromEvent;
       });
 
     });
