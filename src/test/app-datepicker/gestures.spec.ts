@@ -6,6 +6,7 @@ import {
 } from '../test-config';
 import {
   dragTo,
+  forceUpdate,
   getShadowInnerHTML,
   getTestName,
   queryInit,
@@ -36,7 +37,7 @@ describe(getTestName(name), () => {
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.CALENDAR;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -48,7 +49,7 @@ describe(getTestName(name), () => {
       it(`goes to next month`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
         const btnYearSelectorEl = t.getBtnYearSelector();
@@ -79,7 +80,7 @@ describe(getTestName(name), () => {
       it(`goes to previous month`, async () => {
         el.min = date13;
         el.value = '2020-05-13';
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
         const btnYearSelectorEl = t.getBtnYearSelector();
@@ -109,7 +110,7 @@ describe(getTestName(name), () => {
       it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnYearSelectorLabel = getShadowInnerHTML(btnYearSelectorEl);
@@ -119,7 +120,7 @@ describe(getTestName(name), () => {
           `Year selector label not matched (${btnYearSelectorLabel})`);
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const newSelectedYearLabel = getShadowInnerHTML(
           t.getYearListViewListItemYearSelectedDiv());
@@ -130,7 +131,7 @@ describe(getTestName(name), () => {
           `New selected year label not matched (${newSelectedYearLabel})`);
 
         triggerEvent(t.getBtnCalendarSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const newBtnYearSelectorLabel = getShadowInnerHTML(t.getBtnYearSelector());
         strictEqual(
@@ -154,7 +155,7 @@ describe(getTestName(name), () => {
       it(`restores to focused date when switches back to calendar view`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         let runClick = 3;
         while (runClick) {
@@ -164,10 +165,10 @@ describe(getTestName(name), () => {
         }
 
         triggerEvent(t.getBtnYearSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         triggerEvent(t.getBtnCalendarSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2020');
         strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Wed, Jan 15');
@@ -180,7 +181,7 @@ describe(getTestName(name), () => {
       it(`switches back to calendar view with new selected year`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         let runClick = 3;
         while (runClick) {
@@ -190,10 +191,10 @@ describe(getTestName(name), () => {
         }
 
         triggerEvent(t.getBtnYearSelector(), 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         selectNewYearFromYearListView(el, '2025');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2025');
         strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Tue, Apr 15');
@@ -206,7 +207,7 @@ describe(getTestName(name), () => {
       it(`goes to next month by dragging/ swiping calendar`, async () => {
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
@@ -251,7 +252,7 @@ describe(getTestName(name), () => {
       it(`goes to previous month by dragging/ swiping calendar`, async () => {
         el.min = date13;
         el.value = '2020-05-13';
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
@@ -306,7 +307,7 @@ describe(getTestName(name), () => {
         el.startView = START_VIEW.CALENDAR;
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -335,7 +336,7 @@ describe(getTestName(name), () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
@@ -350,14 +351,14 @@ describe(getTestName(name), () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
 
         triggerEvent(btnYearSelectorEl, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
         isNotNull(t.getYearListViewFullList(), `Year list view should render`);
 
         selectNewYearFromYearListView(el, '2025');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const newBtnYearSelectorEl = t.getBtnYearSelector();
 
@@ -383,7 +384,7 @@ describe(getTestName(name), () => {
         el.startView = START_VIEW.CALENDAR;
         el.min = date13;
         el.value = date15;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -397,7 +398,7 @@ describe(getTestName(name), () => {
 
         const newCalendarDay = t.getDatepickerBodyCalendarViewDay('Jan 22, 2020')!;
         triggerEvent(newCalendarDay, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, '2020-01-22', `New focused date not updated (${el.value})`);
 
@@ -433,7 +434,7 @@ describe(getTestName(name), () => {
         isNotNull(newCalendarDay, `New calendar day not found`);
 
         triggerEvent(newCalendarDay, 'click');
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, '2020-02-25', `New focused date not updated (${el.value})`);
 

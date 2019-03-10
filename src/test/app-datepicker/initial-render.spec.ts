@@ -12,6 +12,7 @@ import {
   yearFormatter,
 } from '../test-config.js';
 import {
+  forceUpdate,
   getShadowInnerHTML,
   getTestName,
   queryInit,
@@ -40,7 +41,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });
@@ -90,7 +91,7 @@ describe(getTestName(name), () => {
          * NOTE: Resetting disabled days to eliminate the factor that will affect this testing.
          */
         el.disabledDays = '';
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const dayTodayEl = t.getTodayDay();
         const dayFocusedEl = t.getDatepickerBodyCalendarViewDayFocused();
@@ -125,7 +126,7 @@ describe(getTestName(name), () => {
 
         el.locale = defaultLocale;
         el.startView = START_VIEW.YEAR_LIST;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         t = queryInit(el);
       });

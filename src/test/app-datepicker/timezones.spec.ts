@@ -1,6 +1,6 @@
 import { AppDatepicker } from '../../app-datepicker';
 import { date13, date15, defaultLocale } from '../test-config';
-import { getTestName } from '../test-helpers';
+import { forceUpdate, getTestName } from '../test-helpers';
 import { getAllDateStrings } from './timezones';
 
 import { START_VIEW } from '../../app-datepicker';
@@ -25,7 +25,7 @@ describe(getTestName(name), () => {
 
       for (const { date, value } of dates) {
         el.value = date;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(
           el.value,
@@ -44,7 +44,7 @@ describe(getTestName(name), () => {
       el.startView = START_VIEW.CALENDAR;
       el.min = date13;
       el.value = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
     });
 
     afterEach(() => {

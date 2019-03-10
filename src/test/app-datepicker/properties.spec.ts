@@ -12,6 +12,7 @@ import {
 } from '../test-config';
 import {
   dragTo,
+  forceUpdate,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
@@ -41,7 +42,7 @@ describe(getTestName(name), () => {
 
       el.locale = defaultLocale;
       el.startView = START_VIEW.CALENDAR;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       t = queryInit(el);
     });
@@ -56,7 +57,7 @@ describe(getTestName(name), () => {
 
       el.min = minVal;
       el.value = valueVal;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const firstSelectableDate = t.getDatepickerBodyCalendarViewDay('Jan 15, 2020')!;
       const allDisabledDates = t.getAllDisabledDates();
@@ -90,7 +91,7 @@ describe(getTestName(name), () => {
       strictEqual(el.getAttribute('min'), minVal, `'min' attribute not matched`);
 
       el.value = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(
         !hasClass(focusedDate, 'day--focused'),
@@ -98,7 +99,7 @@ describe(getTestName(name), () => {
       strictEqual(el.value, date13, `New 'value' not matched ('value' < 'min')`);
 
       el.min = ''; /** Any falsy value, but here only tests empty string */
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const newFocusedDateWithoutMin = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
@@ -116,7 +117,7 @@ describe(getTestName(name), () => {
 
       el.max = maxVal;
       el.value = valueVal;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const lastSelectableDate = t.getDatepickerBodyCalendarViewDay('Jan 15, 2020')!;
       const allDisabledDates = t.getAllDisabledDates();
@@ -150,13 +151,13 @@ describe(getTestName(name), () => {
       strictEqual(el.getAttribute('max'), maxVal, `'max' attribute not matched`);
 
       el.value = date17;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(!hasClass(focusedDate, 'day--focused'), `Focused date not matched ('value' > 'max')`);
       strictEqual(el.value, date17, `New 'value' not matched ('value' > 'max')`);
 
       el.max = ''; /** Any falsy value, but here only tests empty string */
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const newFocusedDateWithoutMax = t.getDatepickerBodyCalendarViewDayFocused()!;
 
@@ -181,7 +182,7 @@ describe(getTestName(name), () => {
       /** NOTE: To ensure 'min' is lesser than 'val' */
       el.min = date13;
       el.value = val;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, val, `New 'value' not matched`);
     });
@@ -197,7 +198,7 @@ describe(getTestName(name), () => {
         `Incorrect initial 'startview' attribute`);
 
       el.startView = START_VIEW.YEAR_LIST;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const yearListView = t.getDatepickerBodyYearListView();
 
@@ -219,7 +220,7 @@ describe(getTestName(name), () => {
       /** NOTE: Ensure dates are not disabled during testings */
       el.min = date13;
       el.value = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const expectedFirstDayInMonthIdx = [
         4,
@@ -236,7 +237,7 @@ describe(getTestName(name), () => {
 
       for (let i = -1; i < 9; i += 1) {
         el.firstDayOfWeek = i;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const fullCalendarDays = t.getAllCalendarDays();
         const firstDayInMonthIdx = fullCalendarDays.findIndex(n => !hasClass(n, 'day--empty'));
@@ -258,7 +259,7 @@ describe(getTestName(name), () => {
       isTrue(!el.hasAttribute('showweeknumber'), `'showweeknumber' attribute is set`);
 
       el.showWeekNumber = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const weekdays = t.getAllWeekdays();
       const weekNumberLabel = weekdays && weekdays[0] && getShadowInnerHTML(weekdays[0]);
@@ -272,7 +273,7 @@ describe(getTestName(name), () => {
       el.min = date13;
       el.value = date15;
       el.showWeekNumber = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(
         el.weekNumberType,
@@ -294,7 +295,7 @@ describe(getTestName(name), () => {
         const weekNumberType = allWeekNumberTypes[i];
 
         el.weekNumberType = weekNumberType;
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const firstWeekdayLabel = getShadowInnerHTML(t.getFirstWeekdayLabel());
 
@@ -321,7 +322,7 @@ describe(getTestName(name), () => {
         `Element has no 'display: block'`);
 
       el.landscape = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(el.landscape, `'landscape' not matched`);
       isTrue(el.hasAttribute('landscape'), `No 'landscape' attribute set`);
@@ -341,7 +342,7 @@ describe(getTestName(name), () => {
       el.value = date15;
       el.showWeekNumber = false;
       el.firstDayOfWeek = 0;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.locale, defaultLocale, `'locale' not matched`);
       strictEqual(
@@ -359,7 +360,7 @@ describe(getTestName(name), () => {
 
       const jaJpLocale = 'ja-JP';
       el.locale = jaJpLocale;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.locale, jaJpLocale, `'locale' not matched ('${jaJpLocale}')`);
       /**
@@ -384,7 +385,7 @@ describe(getTestName(name), () => {
         t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
 
       el.value = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allDisabledDays = getAllDisabledDays();
 
@@ -407,7 +408,7 @@ describe(getTestName(name), () => {
        * disabled days.
        */
       el.disabledDays = '1,3,5';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allNewDisabledDays = getAllDisabledDays();
 
@@ -432,7 +433,7 @@ describe(getTestName(name), () => {
         `All new disabled days not matched (disabledDays=1,3,5)`);
 
       el.disabledDays = '';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
       isTrue(
@@ -449,7 +450,7 @@ describe(getTestName(name), () => {
        */
       el.value = date13;
       el.disabledDays = '';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
       isTrue(getAllDisabledDays().length === 0, `Disabled days not reset`);
@@ -459,7 +460,7 @@ describe(getTestName(name), () => {
        * disabled dates.
        */
       el.disabledDates = '2020-01-06, 2020-01-16, 2020-01-23';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allNewDisabledDays = getAllDisabledDays();
 
@@ -476,7 +477,7 @@ describe(getTestName(name), () => {
         `New disabled dates not matched`);
 
       el.disabledDates = '';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDates, '', `'disabledDates' not reset`);
       isTrue(getAllDisabledDays().length === 0, `All disabled dates not reset`);
@@ -485,7 +486,7 @@ describe(getTestName(name), () => {
     it(`renders with optional 'weekLabel'`, async () => {
       el.locale = defaultLocale;
       el.showWeekNumber = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const weekLabelEl = t.getWeekLabel();
 
@@ -494,13 +495,13 @@ describe(getTestName(name), () => {
 
       const newWeekLabel = '周数';
       el.weekLabel = newWeekLabel;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.weekLabel, newWeekLabel, `New 'weekLabel' not matched`);
       strictEqual(getShadowInnerHTML(weekLabelEl), newWeekLabel, `New week label not matched`);
 
       el.weekLabel = '';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.weekLabel, '', `'weekLabel' not reset`);
       strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not reset`);
@@ -512,7 +513,7 @@ describe(getTestName(name), () => {
       el.min = date13;
       el.value = date15;
       el.dragRatio = .5;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
 

@@ -3,7 +3,7 @@ import { axeReport } from 'pwa-helpers/axe-report';
 
 import { AppDatepicker } from '../../app-datepicker';
 import { defaultLocale } from '../test-config';
-import { getTestName, queryInit } from '../test-helpers';
+import { forceUpdate, getTestName, queryInit } from '../test-helpers';
 
 import { START_VIEW } from '../../app-datepicker';
 
@@ -21,7 +21,7 @@ describe(getTestName(name), () => {
 
       el.locale = defaultLocale;
       el.startView = START_VIEW.CALENDAR;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       t = queryInit(el);
     });
@@ -33,7 +33,7 @@ describe(getTestName(name), () => {
     it(`is accesible (calendar view)`, async () => axeReport(el));
     it(`is accesible (year list view)`, async () => {
       el.startView = START_VIEW.YEAR_LIST;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const yearListViewFullListEl = t.getYearListViewFullList();
       isNotNull(yearListViewFullListEl, `Year list view not found`);

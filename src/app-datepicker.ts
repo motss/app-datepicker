@@ -35,11 +35,8 @@ import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
-import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
-  ALL_NAV_KEYS_SET,
-  arrayFilled,
   computeAllCalendars,
   computeNextFocusedDate,
   dispatchCustomEvent,
@@ -48,21 +45,22 @@ import {
   getResolvedLocale,
   hasClass,
   isValidDate,
-  KEYCODES_MAP,
   passiveHandler,
   splitString,
   targetScrollTo,
   toFormattedDateString,
   toUTCDate,
+  toYearList,
   updateFormatters,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
 
+import { WEEK_NUMBER_TYPE } from './calendar.js';
+import { ALL_NAV_KEYS_SET, KEYCODES_MAP } from './datepicker-helpers.js';
+
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
-  static get is() {
-    return 'app-datepicker';
-  }
+  static get is() { return 'app-datepicker'; }
 
   public static styles = [
     // tslint:disable:max-line-length
@@ -399,27 +397,32 @@ export class AppDatepicker extends LitElement {
 
   @property({ type: String, reflect: true })
   public get min() {
-    return toFormattedDateString(this._min!);
+    return this.__hasMin ? toFormattedDateString(this._min!) : '';
   }
   public set min(val: string) {
     const valDate = getResolvedDate(val);
-    const oldVal = this._min;
+    const focusedDate = this._focusedDate;
+    const isValidMin = isValidDate(val, valDate);
 
-    this._min = isValidDate(val, valDate) ? valDate : new Date('');
-    this.requestUpdate('min', oldVal);
+    this._min = isValidMin ? valDate : this._todayDate;
+    this.__hasMin = isValidMin;
+    this.value = toFormattedDateString(+focusedDate < +valDate ? valDate : focusedDate);
+    this.updateComplete.then(() => this.requestUpdate('min'));
   }
 
   @property({ type: String, reflect: true })
   public get max() {
-    return toFormattedDateString(this._max!);
+    return this.__hasMax ? toFormattedDateString(this._max!) : '';
   }
-  // public max: string = '2100-12-31';
   public set max(val: string) {
     const valDate = getResolvedDate(val);
-    const oldVal = this._max;
+    const focusedDate = this._focusedDate;
+    const isValidMax = isValidDate(val, valDate);
 
-    this._max = isValidDate(val, valDate) ? valDate : new Date('');
-    this.requestUpdate('max', oldVal);
+    this._max = isValidMax ? valDate : this._maxDate;
+    this.__hasMax = isValidMax;
+    this.value = toFormattedDateString(+focusedDate > +valDate ? valDate : focusedDate);
+    this.updateComplete.then(() => this.requestUpdate('max'));
   }
 
   @property({ type: String })
@@ -481,8 +484,11 @@ export class AppDatepicker extends LitElement {
 
   private _min?: Date;
   private _max?: Date;
-  private _todayDate: Date;
+  private __hasMin?: boolean = false;
+  private __hasMax?: boolean = false;
   private _totalDraggableDistance?: number;
+  private _todayDate?: Date;
+  private _maxDate?: Date;
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
   private _hasCalendarSetup: boolean = false;
@@ -501,16 +507,18 @@ export class AppDatepicker extends LitElement {
     this._trackingEndFn = this._trackingEndFn.bind(this);
 
     const todayDate = getResolvedDate();
-    const todayFy = todayDate.getUTCFullYear();
-    const yearList = arrayFilled(2100 - todayFy + 1).map((_, i) => todayFy + i);
     const allFormatters = updateFormatters(this.locale);
     const formattedTodayDate = toFormattedDateString(todayDate);
+    const max = getResolvedDate('2100-12-31');
 
     this.value = formattedTodayDate;
     this.startView = START_VIEW.CALENDAR;
 
-    this._yearList = yearList;
-    this._todayDate = new Date(todayDate);
+    this._min = new Date(todayDate);
+    this._max = new Date(max);
+    this._todayDate = todayDate;
+    this._maxDate = max;
+    this._yearList = toYearList(todayDate, max);
     this._selectedDate = new Date(todayDate);
     this._focusedDate = new Date(todayDate);
     this._formatters = allFormatters;
@@ -535,9 +543,9 @@ export class AppDatepicker extends LitElement {
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
     const datepickerBodyContent: import('lit-element').TemplateResult =
-      START_VIEW.YEAR_LIST === this._startView
-        ? this._renderDatepickerYearList()
-        : this._renderDatepickerCalendar();
+      START_VIEW.YEAR_LIST === this._startView ?
+        this._renderDatepickerYearList() :
+        this._renderDatepickerCalendar();
 
     return html`
     <div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>
@@ -546,20 +554,25 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const firstFocusableElement =
-      this._startView === START_VIEW.CALENDAR
-        ? this._buttonSelectorYear
-        : this._yearViewListItem;
+    const firstFocusableElement = this._startView === START_VIEW.CALENDAR ?
+      this._buttonSelectorYear :
+      this._yearViewListItem;
 
     dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
 
   protected updated(changed: Map<keyof ParamUpdatedChanged, unknown>) {
+    if (changed.has('min') || changed.has('max')) {
+      this._yearList = toYearList(this._min!, this._max!);
+      this.requestUpdate('_yearList');
+      return;
+    }
+
     const startView = this._startView;
 
-    if (startView === START_VIEW.YEAR_LIST) {
+    if (START_VIEW.YEAR_LIST === startView) {
       const selectedYearScrollTop =
-        (this._selectedDate.getUTCFullYear() - this._todayDate.getUTCFullYear() - 2) * 48;
+        48 * (this._selectedDate.getUTCFullYear() - this._min!.getUTCFullYear() - 2);
 
       targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
       return;
@@ -567,7 +580,7 @@ export class AppDatepicker extends LitElement {
 
     const shouldTriggerCalendarLayout = changed.has('landscape') || !this._hasCalendarSetup;
 
-    if (startView === START_VIEW.CALENDAR && shouldTriggerCalendarLayout) {
+    if (START_VIEW.CALENDAR === startView && shouldTriggerCalendarLayout) {
       const dragEl = this._calendarViewFullCalendar!;
       const totalDraggableDistance =
         this._datepickerBodyCalendarView!.getBoundingClientRect().width;

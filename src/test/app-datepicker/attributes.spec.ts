@@ -12,6 +12,7 @@ import {
 } from '../test-config';
 import {
   dragTo,
+  forceUpdate,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
@@ -43,7 +44,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
       t = queryInit(el);
 
-      await el.updateComplete;
+      await forceUpdate(el);
     });
 
     afterEach(() => {
@@ -56,7 +57,7 @@ describe(getTestName(name), () => {
 
       el.setAttribute('min', minVal);
       el.value = valueVal;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const firstSelectableDate = t.getSelectableDate('Jan 15, 2020')
       const allDisabledDates = t.getAllDisabledDates();
@@ -90,7 +91,7 @@ describe(getTestName(name), () => {
       strictEqual(el.getAttribute('min'), minVal, `'min' attribute not matched`);
 
       el.value = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(
         !hasClass(focusedDate, 'day--focused'),
@@ -98,7 +99,7 @@ describe(getTestName(name), () => {
       strictEqual(el.value, date13, `New 'value' not matched ('value' < 'min')`);
 
       el.setAttribute('min', ''); /** Any falsy value, but here only tests empty string */
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const newFocusedDateWithoutMin = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
@@ -116,7 +117,7 @@ describe(getTestName(name), () => {
 
       el.setAttribute('max', maxVal);
       el.value = valueVal;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const lastSelectableDate = t.getSelectableDate('Jan 15, 2020');
       const allDisabledDates = t.getAllDisabledDates();
@@ -150,7 +151,7 @@ describe(getTestName(name), () => {
       strictEqual(el.getAttribute('max'), maxVal, `'max' attribute not matched`);
 
       el.value = date17;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(
         !hasClass(focusedDate, 'day--focused'),
@@ -158,7 +159,7 @@ describe(getTestName(name), () => {
       strictEqual(el.value, date17, `New 'value' not matched ('value' > 'max')`);
 
       el.setAttribute('max', ''); /** Any falsy value, but here only tests empty string */
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const newFocusedDateWithoutMax = t.getDatepickerBodyCalendarViewDayFocused()!;
       isNotNull(newFocusedDateWithoutMax, `New focused date not found`);
@@ -183,7 +184,7 @@ describe(getTestName(name), () => {
       /** NOTE: To ensure 'min' is lesser than 'val' */
       el.min = date13;
       el.setAttribute('value', val);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, val, `New 'value' not matched`);
       strictEqual(el.getAttribute('value'), val, `New 'value' attribute not matched`);
@@ -202,7 +203,7 @@ describe(getTestName(name), () => {
 
       /** FIXME: Shady DOM only supports all attributs in lowercase */
       el.setAttribute('startview', START_VIEW.YEAR_LIST);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const yearListView = t.getDatepickerBodyYearListView();
       strictEqual(el.startView, START_VIEW.YEAR_LIST, `New 'startView' not matched`);
@@ -219,7 +220,7 @@ describe(getTestName(name), () => {
       /** NOTE: Ensure dates are not disabled during testings */
       el.min = date13;
       el.value = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const expectedFirstDayInMonthIdx = [
         4,
@@ -236,7 +237,7 @@ describe(getTestName(name), () => {
 
       for (let i = -1; i < 9; i += 1) {
         el.setAttribute('firstdayofweek', `${i}`);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const fullCalendarDays = t.getAllCalendarDays();
         const firstDayInMonthIdx = fullCalendarDays.findIndex(n => !hasClass(n, 'day--empty'));
@@ -258,7 +259,7 @@ describe(getTestName(name), () => {
       isTrue(!el.hasAttribute('showweeknumber'), `'showweeknumber' attribute is set`);
 
       el.setAttribute('showweeknumber', '');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const weekdays = t.getAllWeekdays();
       const weekNumberLabel = weekdays && weekdays[0] && getShadowInnerHTML(weekdays[0]);
@@ -272,7 +273,7 @@ describe(getTestName(name), () => {
       el.min = date13;
       el.value = date15;
       el.showWeekNumber = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(
         el.weekNumberType,
@@ -294,7 +295,7 @@ describe(getTestName(name), () => {
         const weekNumberType = allWeekNumberTypes[i];
 
         el.setAttribute('weeknumbertype', weekNumberType);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         const firstWeekdayLabel = getShadowInnerHTML(t.getFirstWeekdayLabel());
         strictEqual(
@@ -320,7 +321,7 @@ describe(getTestName(name), () => {
         `Element has no 'display: block'`);
 
       el.setAttribute('landscape', '');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       isTrue(el.landscape, `'landscape' not matched`);
       isTrue(el.hasAttribute('landscape'), `No 'landscape' attribute set`);
@@ -340,7 +341,7 @@ describe(getTestName(name), () => {
       el.value = date15;
       el.showWeekNumber = false;
       el.firstDayOfWeek = 0;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.locale, defaultLocale, `'locale' not matched`);
       strictEqual(
@@ -358,7 +359,7 @@ describe(getTestName(name), () => {
 
       const jaJpLocale = 'ja-JP';
       el.setAttribute('locale', jaJpLocale);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.locale, jaJpLocale, `'locale' not matched ('${jaJpLocale}')`);
       strictEqual(
@@ -387,7 +388,7 @@ describe(getTestName(name), () => {
         t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
 
       el.value = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allDisabledDays = getAllDisabledDays();
 
@@ -410,7 +411,7 @@ describe(getTestName(name), () => {
        * comprehensive combination of disabled days.
        */
       el.setAttribute('disableddays', '1,3,5');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allNewDisabledDays = getAllDisabledDays();
 
@@ -439,7 +440,7 @@ describe(getTestName(name), () => {
         `All new disabled days not matched (disabledDays=1,3,5)`);
 
       el.setAttribute('disableddays', '');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
       strictEqual(el.getAttribute('disableddays'), '', `'disableddays' attribute not reset`);
@@ -457,7 +458,7 @@ describe(getTestName(name), () => {
        */
       el.value = date13;
       el.disabledDays = '';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
       isTrue(getAllDisabledDays().length === 0, `Disabled days not reset`);
@@ -467,7 +468,7 @@ describe(getTestName(name), () => {
        * of disabled dates.
        */
       el.setAttribute('disableddates', '2020-01-06, 2020-01-16, 2020-01-23');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const allNewDisabledDays = getAllDisabledDays();
 
@@ -488,7 +489,7 @@ describe(getTestName(name), () => {
         `New disabled dates not matched`);
 
       el.setAttribute('disableddates', '');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.disabledDates, '', `'disabledDates' not reset`);
       strictEqual(el.getAttribute('disableddates'), '', `'disableddates' attribute not reset`);
@@ -498,7 +499,7 @@ describe(getTestName(name), () => {
     it(`renders with optional 'weekLabel'`, async () => {
       el.locale = defaultLocale;
       el.showWeekNumber = true;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const weekLabelEl = t.getWeekLabel();
       strictEqual(el.weekLabel, '', `'weekLabel' not matched`);
@@ -506,7 +507,7 @@ describe(getTestName(name), () => {
 
       const newWeekLabel = '周数';
       el.setAttribute('weeklabel', newWeekLabel);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.weekLabel, newWeekLabel, `New 'weekLabel' not matched`);
       strictEqual(
@@ -516,7 +517,7 @@ describe(getTestName(name), () => {
       strictEqual(getShadowInnerHTML(weekLabelEl), newWeekLabel, `New week label not matched`);
 
       el.setAttribute('weeklabel', '');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.weekLabel, '', `'weekLabel' not reset`);
       strictEqual(
@@ -533,7 +534,7 @@ describe(getTestName(name), () => {
       el.min = date13;
       el.value = date15;
       el.setAttribute('dragratio', '.5');
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
       strictEqual(el.getAttribute('dragratio'), '.5', `'dragratio' attribute not matched`);

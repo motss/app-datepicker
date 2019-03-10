@@ -223,7 +223,7 @@ export const getShadowInnerHTML = (target: HTMLElement) => {
   return root.innerHTML && stripExpressionDelimiters(root.innerHTML!);
 };
 
-export const forceUpdate = async (el: AppDatepickerDialog) => {
+export const forceUpdate = async (el: AppDatepicker|AppDatepickerDialog) => {
   await el.updateComplete;
   /**
    * FIXME(motss): Workaround to ensure child custom elements renders complete.

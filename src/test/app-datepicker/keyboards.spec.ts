@@ -6,6 +6,7 @@ import {
   defaultLocale,
 } from '../test-config';
 import {
+  forceUpdate,
   getShadowInnerHTML,
   getTestName,
   queryInit,
@@ -35,7 +36,7 @@ describe(getTestName(name), () => {
       el.startView = START_VIEW.CALENDAR;
       el.min = date13;
       el.value = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       t = queryInit(el);
     });
@@ -50,7 +51,7 @@ describe(getTestName(name), () => {
 
       const keyboardEventOptions: KeyboardEventOptions = { keyCode: KEYCODES_MAP.ARROW_LEFT };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-14', `New focused date not matched (${el.value})`);
 
@@ -75,11 +76,11 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (Left + first focusable date/ disabled date)`, async () => {
       const tasks = [
-        async () => { el.value = date13; await el.updateComplete; return 0; },
+        async () => { el.value = date13; await forceUpdate(el); return 0; },
         async () => {
           el.value = date15;
           el.disabledDates = '2020-01-14';
-          await el.updateComplete; return 1;
+          await forceUpdate(el); return 1;
         },
       ];
 
@@ -93,7 +94,7 @@ describe(getTestName(name), () => {
 
         const keyboardEventOptions: KeyboardEventOptions = { keyCode: KEYCODES_MAP.ARROW_LEFT };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, '2020-01-13', `New focused date not matched (${el.value})`);
 
@@ -125,7 +126,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.ARROW_RIGHT,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-16', `New focused date not matched (${el.value})`);
 
@@ -151,14 +152,14 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Right + last focusable date/ disabled date)`, async () => {
       el.min = '';
       el.max = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
-        async () => { el.value = '2020-01-15'; await el.updateComplete; return 0; },
+        async () => { el.value = '2020-01-15'; await forceUpdate(el); return 0; },
         async () => {
           el.value = date13;
           el.disabledDates = '2020-01-14';
-          await el.updateComplete;
+          await forceUpdate(el);
           return 1;
         },
       ];
@@ -175,7 +176,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.ARROW_RIGHT,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, '2020-01-15', `New focused date not matched (${el.value})`);
 
@@ -202,7 +203,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Up)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -211,7 +212,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.ARROW_UP,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-15', `New focused date not matched (${el.value})`);
 
@@ -236,12 +237,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (Up + first focusable date/ disabled date)`, async () => {
       el.min = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = date15;
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-01-15',
@@ -253,7 +254,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-01-22';
           el.disabledDates = '2020-01-15';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-01-15',
@@ -276,7 +277,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.ARROW_UP,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -303,7 +304,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Down)`, async () => {
       el.min = date13;
       el.value = date15;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -312,7 +313,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.ARROW_DOWN,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `New focused date not matched (${el.value})`);
 
@@ -338,12 +339,12 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Down + last focusable date/ disabled date)`, async () => {
       el.min = date13;
       el.max = '2020-01-24';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-01-22',
@@ -355,7 +356,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-01-15';
           el.disabledDates = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-01-22',
@@ -378,7 +379,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.ARROW_DOWN,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -405,7 +406,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (PgUp)`, async () => {
       el.min = date13;
       el.value = '2020-02-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -414,7 +415,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.PAGE_UP,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `New focused date not matched (${el.value})`);
 
@@ -439,12 +440,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (PgUp + first focusable date/ disabled date)`, async () => {
       el.min = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-01-22',
@@ -456,7 +457,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-02-22';
           el.disabledDates = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-01-22',
@@ -479,7 +480,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.PAGE_UP,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -506,7 +507,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (PgDown)`, async () => {
       el.min = date13;
       el.value = '2020-01-20';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -515,7 +516,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.PAGE_DOWN,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-02-20', `New focused date not matched (${el.value})`);
 
@@ -541,12 +542,12 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (PgDown + last focusable date/ disabled date)`, async () => {
       el.min = date13;
       el.max = '2020-02-20',
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2020-02-20';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-02-20',
@@ -558,7 +559,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-01-17';
           el.disabledDates = '2020-02-17';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-02-17',
@@ -581,7 +582,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.PAGE_DOWN,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -608,7 +609,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Alt + PgUp)`, async () => {
       el.min = date13;
       el.value = '2021-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -618,7 +619,7 @@ describe(getTestName(name), () => {
         altKey: true,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `New focused date not matched (${el.value})`);
 
@@ -643,12 +644,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (Alt + PgUp + first focusable date/ disabled date)`, async () => {
       el.min = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2021-01-12';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2021-01-12',
@@ -660,7 +661,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2021-02-22';
           el.disabledDates = '2020-02-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-02-22',
@@ -684,7 +685,7 @@ describe(getTestName(name), () => {
           altKey: true,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -711,7 +712,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Alt + PgDown)`, async () => {
       el.max = '2021-01-25';
       el.value = '2020-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -721,7 +722,7 @@ describe(getTestName(name), () => {
         altKey: true,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2021-01-22', `New focused date not matched (${el.value})`);
 
@@ -746,12 +747,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (Alt + PgDown + last focusable date/ disabled date)`, async () => {
       el.max = '2021-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2021-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2021-01-22',
@@ -763,7 +764,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-01-20';
           el.disabledDates = '2021-01-20';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2021-01-20',
@@ -787,7 +788,7 @@ describe(getTestName(name), () => {
           altKey: true,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -814,7 +815,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (Home)`, async () => {
       el.min = date13;
       el.value = date17;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -823,7 +824,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.HOME,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-13', `New focused date not matched (${el.value})`);
 
@@ -848,12 +849,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (Home + first focusable date/ disabled date)`, async () => {
       el.min = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = date13;
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-01-13',
@@ -865,7 +866,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = '2020-01-20';
           el.disabledDates = '2020-01-13';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-01-13',
@@ -888,7 +889,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.HOME,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -915,7 +916,7 @@ describe(getTestName(name), () => {
     it(`focuses date by keyboard (End)`, async () => {
       el.max = '2020-01-22';
       el.value = date13;
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
@@ -924,7 +925,7 @@ describe(getTestName(name), () => {
         keyCode: KEYCODES_MAP.END,
       };
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `New focused date not matched (${el.value})`);
 
@@ -949,12 +950,12 @@ describe(getTestName(name), () => {
 
     it(`focuses date by keyboard (End + last focusable date/ disabled date)`, async () => {
       el.max = '2020-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const tasks = [
         async () => {
           el.value = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 0,
             e: '2020-01-22',
@@ -966,7 +967,7 @@ describe(getTestName(name), () => {
         async () => {
           el.value = date15;
           el.disabledDates = '2020-01-22';
-          await el.updateComplete;
+          await forceUpdate(el);
           return {
             id: 1,
             e: '2020-01-22',
@@ -989,7 +990,7 @@ describe(getTestName(name), () => {
           keyCode: KEYCODES_MAP.END,
         };
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
-        await el.updateComplete;
+        await forceUpdate(el);
 
         strictEqual(el.value, e1, `New focused date not matched (${el.value})`);
 
@@ -1016,13 +1017,13 @@ describe(getTestName(name), () => {
     it(`fires 'datepicker-value-updated' event by keyboard (Enter)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-21', `New focused date not updated (${el.value})`);
 
@@ -1036,20 +1037,20 @@ describe(getTestName(name), () => {
       });
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
-      await el.updateComplete;
+      await forceUpdate(el);
       await valueMatchedFromEvent;
     });
 
     it(`fires 'datepicker-value-updated' event by keyboard (Space)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
-      await el.updateComplete;
+      await forceUpdate(el);
 
       const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
       isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
-      await el.updateComplete;
+      await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-21', `New focused date not updated (${el.value})`);
 
@@ -1063,7 +1064,7 @@ describe(getTestName(name), () => {
       });
 
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });
-      await el.updateComplete;
+      await forceUpdate(el);
       await valueMatchedFromEvent;
     });
   });
