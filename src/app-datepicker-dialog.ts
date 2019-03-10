@@ -112,12 +112,6 @@ export class AppDatepickerDialog extends LitElement {
     ];
   }
 
-  @property({ type: String, reflect: true })
-  public min?: string;
-
-  @property({ type: String, reflect: true })
-  public max?: string;
-
   @property({ type: Number, reflect: true })
   public firstDayOfWeek: number = 0;
 
@@ -127,29 +121,35 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: String, reflect: true })
   public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
 
-  @property({ type: String })
-  public disabledDays: string = '0,6';
-
-  @property({ type: String })
-  public disabledDates?: string;
-
   @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
 
-  @property({ type: String })
-  public locale: string = getResolvedLocale();
-
-  @property({ type: Number })
-  public dragRatio: number = .15;
-
   @property({ type: String, reflect: true })
   public startView: START_VIEW = START_VIEW.CALENDAR;
+
+  @property({ type: String, reflect: true })
+  public min?: string;
+
+  @property({ type: String, reflect: true })
+  public max?: string;
 
   @property({ type: String })
   public value?: string = toFormattedDateString(getResolvedDate());
 
   @property({ type: String })
+  public locale: string = getResolvedLocale();
+
+  @property({ type: String })
+  public disabledDays: string = '';
+
+  @property({ type: String })
+  public disabledDates?: string;
+
+  @property({ type: String })
   public weekLabel: string = '';
+
+  @property({ type: Number })
+  public dragRatio: number = .15;
 
   @property({ type: String })
   public dismissLabel: string = 'cancel';

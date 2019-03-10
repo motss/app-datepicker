@@ -391,18 +391,19 @@ describe(getTestName(name), () => {
 
       const allDisabledDays = getAllDisabledDays();
 
-      isTrue(
-        [
-          ['Jan 4, 2020', 'Jan 04, 2020'],
-          ['Jan 5, 2020', 'Jan 05, 2020'],
-          ['Jan 11, 2020'],
-          ['Jan 12, 2020'],
-          ['Jan 18, 2020'],
-          ['Jan 19, 2020'],
-          ['Jan 25, 2020'],
-          ['Jan 26, 2020'],
-        ].every((n, i) => n.some(o => o === allDisabledDays[i])),
-        `All disabled days not matched`);
+      isTrue(!allDisabledDays.length, `No disabled days on initial render`);
+      // isTrue(
+      //   [
+      //     ['Jan 4, 2020', 'Jan 04, 2020'],
+      //     ['Jan 5, 2020', 'Jan 05, 2020'],
+      //     ['Jan 11, 2020'],
+      //     ['Jan 12, 2020'],
+      //     ['Jan 18, 2020'],
+      //     ['Jan 19, 2020'],
+      //     ['Jan 25, 2020'],
+      //     ['Jan 26, 2020'],
+      //   ].every((n, i) => n.some(o => o === allDisabledDays[i])),
+      //   `All disabled days not matched`);
 
       /**
        * NOTE: Simple testing here instead of a full suite tests with a

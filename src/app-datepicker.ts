@@ -364,6 +364,39 @@ export class AppDatepicker extends LitElement {
     // tslint:enable:max-line-length
   ];
 
+  @property({ type: Number, reflect: true })
+  public firstDayOfWeek: number = 0;
+
+  @property({ type: Boolean, reflect: true })
+  public showWeekNumber: boolean = false;
+
+  @property({ type: String, reflect: true })
+  public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
+
+  @property({ type: Boolean, reflect: true })
+  public landscape: boolean = false;
+
+  @property({ type: String, reflect: true })
+  public get startView() {
+    return this._startView!;
+  }
+  public set startView(val: string) {
+    /**
+     * NOTE: Defaults to `START_VIEW.CALENDAR` when `val` is falsy.
+     */
+    const defaultVal = !val ? START_VIEW.CALENDAR : val;
+
+    /**
+     * NOTE: No-op when `val` is not falsy and not valid accepted values.
+     */
+    if (defaultVal !== START_VIEW.CALENDAR && defaultVal !== START_VIEW.YEAR_LIST) return;
+
+    const oldVal = this._startView;
+
+    this._startView = defaultVal;
+    this.requestUpdate('startView', oldVal);
+  }
+
   @property({ type: String, reflect: true })
   public get min() {
     return toFormattedDateString(this._min!);
@@ -407,44 +440,11 @@ export class AppDatepicker extends LitElement {
     }
   }
 
-  @property({ type: String, reflect: true })
-  public get startView() {
-    return this._startView!;
-  }
-  public set startView(val: string) {
-    /**
-     * NOTE: Defaults to `START_VIEW.CALENDAR` when `val` is falsy.
-     */
-    const defaultVal = !val ? START_VIEW.CALENDAR : val;
-
-    /**
-     * NOTE: No-op when `val` is not falsy and not valid accepted values.
-     */
-    if (defaultVal !== START_VIEW.CALENDAR && defaultVal !== START_VIEW.YEAR_LIST) return;
-
-    const oldVal = this._startView;
-
-    this._startView = defaultVal;
-    this.requestUpdate('startView', oldVal);
-  }
-
-  @property({ type: Number, reflect: true })
-  public firstDayOfWeek: number = 0;
-
-  @property({ type: Boolean, reflect: true })
-  public showWeekNumber: boolean = false;
-
-  @property({ type: String, reflect: true })
-  public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
-
-  @property({ type: Boolean, reflect: true })
-  public landscape: boolean = false;
-
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
   @property({ type: String })
-  public disabledDays: string = '0,6';
+  public disabledDays: string = '';
 
   @property({ type: String })
   public disabledDates: string = '';
@@ -455,14 +455,14 @@ export class AppDatepicker extends LitElement {
   @property({ type: Number })
   public dragRatio: number = .15;
 
-  // @property({ type: String })
-  // public format: string = 'yyyy-MM-dd';
-
   @property({ type: Date })
   private _selectedDate: Date;
 
   @property({ type: Date })
   private _focusedDate: Date;
+
+  @property({ type: String })
+  private _startView?: START_VIEW;
 
   @query('.year-list-view__full-list')
   private _yearViewFullList?: HTMLDivElement;
@@ -481,7 +481,6 @@ export class AppDatepicker extends LitElement {
 
   private _min?: Date;
   private _max?: Date;
-  private _startView?: START_VIEW;
   private _todayDate: Date;
   private _totalDraggableDistance?: number;
   private _dragAnimationDuration: number = 150;
@@ -494,8 +493,6 @@ export class AppDatepicker extends LitElement {
   private _disabledDatesSet?: Set<number>;
   private _calendarTracker?: Tracker;
 
-  // weekdayFormat: String,
-
   public constructor() {
     super();
 
@@ -504,12 +501,11 @@ export class AppDatepicker extends LitElement {
     this._trackingEndFn = this._trackingEndFn.bind(this);
 
     const todayDate = getResolvedDate();
-    const todayDateFullYear = todayDate.getUTCFullYear();
-    const yearList = arrayFilled(2100 - todayDateFullYear + 1).map((_, i) => todayDateFullYear + i);
+    const todayFy = todayDate.getUTCFullYear();
+    const yearList = arrayFilled(2100 - todayFy + 1).map((_, i) => todayFy + i);
     const allFormatters = updateFormatters(this.locale);
     const formattedTodayDate = toFormattedDateString(todayDate);
 
-    this.min = formattedTodayDate;
     this.value = formattedTodayDate;
     this.startView = START_VIEW.CALENDAR;
 
@@ -815,12 +811,8 @@ export class AppDatepicker extends LitElement {
 
   private _updateView(view: START_VIEW) {
     const handleUpdateView = () => {
-      const oldView = this._startView;
+      if (START_VIEW.CALENDAR === view) this._selectedDate = new Date(this._focusedDate);
       this._startView = view;
-
-      view !== START_VIEW.CALENDAR
-        ? this.requestUpdate('_startView', oldView)
-        : this._selectedDate = new Date(this._focusedDate);
     };
 
     return passiveHandler(handleUpdateView);
@@ -1047,3 +1039,4 @@ declare global {
 // FIXED: To add support for labels such week number for better i18n
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
+// FIXME: To fix hardcoded `_yearList` when `min` has no initial value.

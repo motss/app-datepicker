@@ -562,9 +562,9 @@ describe(getTestName(name), () => {
           return {
             id: 1,
             e: '2020-02-17',
-            e1: '2020-02-14',
-            e2: 'Fri, Feb 14',
-            e3: '14',
+            e1: '2020-02-16',
+            e2: 'Sun, Feb 16',
+            e3: '16',
           };
         },
       ];
@@ -664,9 +664,9 @@ describe(getTestName(name), () => {
           return {
             id: 1,
             e: '2020-02-22',
-            e1: '2020-02-24',
-            e2: 'Mon, Feb 24',
-            e3: '24',
+            e1: '2020-02-23',
+            e2: 'Sun, Feb 23',
+            e3: '23',
           };
         },
       ];
