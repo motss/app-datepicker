@@ -143,9 +143,14 @@ export class MyApp extends LitElement {
 | Firefox 62 (w/o native Shadow DOM) | Windows 10 |
 | Firefox 63 (native Shadow DOM support) | Windows 10 |
 
-## API reference
+## API references
 
-_Coming soon!_
+- [AppDatepicker][app-datepicker-api-reference-url]
+- [AppDatepickerDialog][app-datepicker-dialog-api-reference-url]
+
+## Demo
+
+_Coming soon! Stay tuned._
 
 ## Older versions
 
@@ -172,6 +177,8 @@ Meantime, feel free to check the older version out at:
 [3-x-url]: https://github.com/motss/app-datepicker/tree/3.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[app-datepicker-api-reference-url]: /api-references.md#appdatepicker
+[app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
 
 <!-- Browers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png

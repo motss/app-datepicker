@@ -166,13 +166,6 @@ export class AppDatepicker extends LitElement {
     .month-selector-container + .month-selector-container {
       margin: 0 0 0 auto;
     }
-    /* .month-selector-container > paper-icon-button-light {
-      max-width: 56px;
-      max-height: 56px;
-      height: 56px;
-      width: 56px;
-      color: rgba(0, 0, 0, .25);
-    } */
 
     .btn__month-selector {
       padding: calc((56px - 24px) / 2);
@@ -1050,6 +1043,6 @@ declare global {
 // FIXED: To improve date navigation using keyboard. Disabled date are selectable with Left, Right
 //        arrows.
 // FIXED: To add support for labels such week number for better i18n
+// FIXED: To fix hardcoded `_yearList` when `min` has no initial value.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: To fix hardcoded `_yearList` when `min` has no initial value.
