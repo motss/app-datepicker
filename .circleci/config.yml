@@ -13,7 +13,7 @@ version: 2
 jobs:
   node-base: &node-base
     docker:
-      - image: node
+      - image: circleci/node
     steps:
       - run:
           name: Versions
@@ -54,8 +54,8 @@ jobs:
   node-v8-browsers:
     <<: *node-base
     docker:
-      - image: node:8-browsers
+      - image: circleci/node:8-browsers
   node-v10-browsers:
     <<: *node-base
     docker:
-      - image: node:10-browsers
+      - image: circleci/node:10-browsers
