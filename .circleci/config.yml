@@ -15,12 +15,12 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - run:
-          # Refer to https://bit.ly/2JhTB2Y for more info.
-          name: Make me the owner
-          command: |
-            npm set prefix=/home/circleci/npm
-            echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+      # - run:
+      #     # Refer to https://bit.ly/2JhTB2Y for more info.
+      #     name: Make me the owner
+      #     command: |
+      #       npm set prefix=/home/circleci/npm
+      #       echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
       - checkout
       - restore_cache:
           keys:
@@ -30,7 +30,7 @@ jobs:
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
       - run:
           name: Install global dependencies
-          command: npm i -g npm@latest
+          command: npm i -g npm@latest polymer-cli@latest --quiet
       - run:
           name: Install dependencies
           command: |
