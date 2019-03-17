@@ -30,7 +30,7 @@ jobs:
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
       - run:
           name: Install global dependencies
-          command: sudo npm i -g npm@latest wct@latest --quiet
+          command: sudo npm i -g npm@latest web-component-tester@latest --quiet
       - run:
           name: Install dependencies
           command: |
