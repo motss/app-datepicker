@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Test
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:ci -- \
                 -s 'windows 7/internet explorer@11' \
                 -s 'windows 10/microsoftedge@17' \
