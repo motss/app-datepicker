@@ -41,9 +41,5 @@
       "mocha"
     ]
   },
-  "include": [
-    "src/*",
-    "src/test/**/*",
-    "src/demo/**/*"
-  ]
+  "include": ["src/**/*"]
 }

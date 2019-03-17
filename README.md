@@ -18,7 +18,8 @@
 [![Packagephobia][packagephobia-badge]][packagephobia-url]
 [![Bundlephobia][bundlephobia-badge]][bundlephobia-url]
 
-[![Build Status][travis-badge]][travis-url]
+<!-- [![Build Status][travis-badge]][travis-url] -->
+[![CircleCI][circleci-badge]][circleci-url]
 [![Dependency Status][daviddm-badge]][daviddm-url]
 
 [![codebeat badge][codebeat-badge]][codebeat-url]
@@ -207,6 +208,7 @@ Meantime, feel free to check the older version out at:
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
 
 [travis-badge]: https://flat.badgen.net/travis/motss/app-datepicker/master?icon=travis
+[circleci-badge]: https://flat.badgen.net/circleci/github/motss/app-datepicker?icon=circleci
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/app-datepicker
 
 [codebeat-badge]: https://codebeat.co/badges/3a212108-43cd-4a1f-ab2c-fe890ad734b6
@@ -226,6 +228,7 @@ Meantime, feel free to check the older version out at:
 [bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [travis-url]: https://travis-ci.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[circleci-url]: https://circleci.com/gh/motss/app-datepicker/tree/master?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [daviddm-url]: https://david-dm.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker

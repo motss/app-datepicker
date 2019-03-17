@@ -20,5 +20,5 @@
   },
   "suites": ["src/test"],
   "testTimeout": 99000,
-  "verbose": true
+  "verbose": false
 }
