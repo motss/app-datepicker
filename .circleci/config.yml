@@ -42,7 +42,7 @@ jobs:
           name: Test
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:ci --
+              npx -p polymer-cli -- npm run test:ci -- \
                 -s 'Linux/chrome@41';
             else
               npx -p polymer-cli -- npm run test:ci;
