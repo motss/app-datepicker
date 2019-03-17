@@ -19,8 +19,9 @@ jobs:
           # Refer to https://bit.ly/2JhTB2Y for more info.
           name: Make me the owner
           command: |
-            npm set prefix=/home/circleci/npm
-            echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            # npm set prefix=/home/circleci/npm
+            # echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            sudo -s
       - checkout
       - restore_cache:
           keys:
@@ -30,12 +31,12 @@ jobs:
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
       - run:
           name: Install global dependencies
-          command: sudo npm i -g npm@latest polymer-cli@latest --quiet
+          command: sudo npm i -g npm@latest wct@latest --quiet
       - run:
           name: Install dependencies
           command: |
             npm ci --quiet
-            npm i polymer-cli@latest --quiet
+            # npm i polymer-cli@latest --quiet
       - run:
           name: Versions
           command: node -v && npm version && /home/circleci/npm/bin/polymer --version
