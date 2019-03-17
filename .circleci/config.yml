@@ -12,8 +12,8 @@ workflows:
 version: 2
 jobs:
   node-base: &node-base
-    docker:
-      - image: node
+    # docker:
+    #   - image: node
     steps:
       - run:
           name: Versions
@@ -51,11 +51,11 @@ jobs:
           paths:
             - ~/.npm/_cacache
 
-  node-v8:
+  node-v8-browsers:
     <<: *node-base
     docker:
       - image: node:8-browsers
-  node-v10:
+  node-v10-browsers:
     <<: *node-base
     docker:
       - image: node:10-browsers
