@@ -1,0 +1,61 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+workflows:
+  version: 2
+  node-multi-build:
+    jobs:
+      - node-v8-browsers
+      - node-v10-browsers
+
+version: 2
+jobs:
+  node-base: &node-base
+    docker:
+      - image: node
+    steps:
+      - run:
+          name: Versions
+          command: node -v && npm version
+      - checkout
+      - restore_cache:
+          keys:
+            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
+            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
+      - run:
+          name: Install latest NPM
+          command: npm i -g npm@latest polymer-cli@latest --quiet
+      - run:
+          name: Install dependencies
+          command: npm ci --quiet
+      - run:
+          name: Start XVFB
+          command: |
+            export DISPLAY=:99.0
+            sh -e /ect/init.d/xvfb start
+      - run:
+          name: Build
+          command: npm run ts
+      - run:
+          name: Test
+          command: npm run test:ci
+      - save_cache:
+          key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - save_cache:
+          key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm/_cacache
+
+  node-v8:
+    <<: *node-base
+    docker:
+      - image: node:8-browsers
+  node-v10:
+    <<: *node-base
+    docker:
+      - image: node:10-browsers
