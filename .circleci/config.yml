@@ -15,13 +15,12 @@ jobs:
     docker:
       - image: circleci/node
     steps:
-      - run:
-          # Refer to https://bit.ly/2JhTB2Y for more info.
-          name: Make me the owner
-          command: |
-            # npm set prefix=/home/circleci/npm
-            # echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
-            sudo -s
+      # - run:
+      #     # Refer to https://bit.ly/2JhTB2Y for more info.
+      #     name: Make me the owner
+      #     command: |
+      #       npm set prefix=/home/circleci/npm
+      #       echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
       - checkout
       - restore_cache:
           keys:
@@ -39,7 +38,7 @@ jobs:
             # npm i polymer-cli@latest --quiet
       - run:
           name: Versions
-          command: node -v && npm version && /home/circleci/npm/bin/polymer --version
+          command: node -v && npm version && which npm
       - run:
           name: Running X virtual framebuffer
           command: Xvfb :99 -screen 0 1920x1080x24
