@@ -30,7 +30,7 @@ jobs:
           command: npm ci --quiet
       - run:
           name: Versions
-          command: node -v && npm version && which npm && cwd && pwd
+          command: node -v && npm version && which npm && pwd
       - run:
           name: Running X virtual framebuffer
           command: Xvfb :99 -screen 0 1920x1080x24
