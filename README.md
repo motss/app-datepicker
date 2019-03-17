@@ -13,7 +13,6 @@
 [![Node version][node-version-badge]][node-version-url]
 [![MIT License][mit-license-badge]][mit-license-url]
 
-[![jsDelivr downloads][jsdelivr-badge]][jsdelivr-url]
 [![Downloads][downloads-badge]][downloads-url]
 [![Total downloads][total-downloads-badge]][downloads-url]
 [![Packagephobia][packagephobia-badge]][packagephobia-url]
@@ -42,14 +41,16 @@ The following are the list of tools used that makes it shine:
   1. [TypeScript][typescript-url]
   2. [lit-element][lit-element-url]
 
-## Table of contents
+## Table of contents <!-- omit in toc -->
 
-<!-- TOC -->
-
+- [Pre-requisite](#pre-requisite)
+- [Installation](#installation)
+- [How to use](#how-to-use)
+- [Browser compatibility](#browser-compatibility)
+- [API references](#api-references)
+- [Demo](#demo)
 - [Older versions](#older-versions)
 - [License](#license)
-
-<!-- /TOC -->
 
 ## Pre-requisite
 
@@ -124,7 +125,7 @@ export class MyApp extends LitElement {
 
 ## Browser compatibility
 
-`app-datepicker` works in all major browsers (Chrome, Firefox, IE, Edge, Safari, and Opera).
+Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (Chrome, Firefox, IE, Edge, Safari, and Opera).
 
 [Heavily tested](/.travis.yml) on the following browsers:
 
@@ -193,14 +194,13 @@ Meantime, feel free to check the older version out at:
 [promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise?utm_source=github.com&amp;utm_medium=referral
 
 <!-- Badges -->
-[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb
+[follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next?icon=npm
 [lit-element-version-badge]: https://flat.badgen.net/npm/v/lit-element/latest?icon=npm&label=lit-element
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
-[jsdelivr-badge]: https://data.jsdelivr.com/v1/package/npm/app-datepicker/badge?version=next
 [downloads-badge]: https://flat.badgen.net/npm/dm/app-datepicker
 [total-downloads-badge]: https://flat.badgen.net/npm/dt/app-datepicker?label=total%20downloads
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40next
@@ -221,7 +221,6 @@ Meantime, feel free to check the older version out at:
 [node-version-url]: https://nodejs.org/en/download?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
