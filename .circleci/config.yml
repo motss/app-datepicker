@@ -29,11 +29,13 @@ jobs:
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
       - run:
-          name: Install latest NPM
-          command: npm i -g npm@latest polymer-cli@latest --quiet
+          name: Install global dependencies
+          command: npm i -g npm@latest
       - run:
           name: Install dependencies
-          command: npm ci --quiet
+          command: |
+            npm i polymer-cli@latest --quiet
+            npm ci --quiet
       - run:
           name: Versions
           command: node -v && npm version && polymer --version
