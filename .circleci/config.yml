@@ -40,12 +40,9 @@ jobs:
           command: npm run ts
       - run:
           name: Test
-          command: npx -p polymer-cli -- npm run test:ci
-      - run:
-          name: Saucelabs
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:ci --
+              npx -p polymer-cli -- "npm run test:ci --
                 -s 'windows 7/internet explorer@11'
                 -s 'windows 10/microsoftedge@18'
                 -s 'windows 10/microsoftedge@17'
@@ -57,7 +54,9 @@ jobs:
                 -s 'Linux/chrome@41'
                 -s 'windows 10/chrome@70'
                 -s 'windows 10/firefox@62'
-                -s 'windows 10/firefox@63';
+                -s 'windows 10/firefox@63'";
+            else
+              npx -p polymer-cli -- npm run test:ci
             fi
       - save_cache:
           key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
