@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>&lt;app-datepicker&gt; demo</title>
+
+    <!-- <link rel="preconnect" href="https://polyfill.io" crossorigin> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- <link rel="preconnect" href="https://unpkg.com" crossorigin> -->
+
+    <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
+
+    <script type="module">
+      import '../../dist/app-datepicker.js';
+      import '../../dist/app-datepicker-dialog.js';
+      import '../../dist/demo/css-variables-extractor.js';
+
+      const $ = s => document.body.querySelector(s);
+      // const $$ = s => document.body.querySelectorAll(s);
+
+      const inputCheckboxPointerEvent = $('.input-checkbox__pointer-event');
+      const inputCheckboxIntl = $('.input-checkbox__intl');
+      const inputCheckboxWebAnimations = $('.input-checkbox__web-animations');
+
+      inputCheckboxPointerEvent.checked = 'PointerEvent' in self;
+      inputCheckboxIntl.checked = 'Intl' in self && Intl.DateTimeFormat;
+      inputCheckboxWebAnimations.checked =
+        Element.prototype.animate.toString().indexOf('[native code]') >= 0;
+    </script>
+  </head>
+
+  <body>
+    <style>
+      html,
+      body {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f1f1;
+        color: #000;
+        font-family: 'Google Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      h1 {
+        margin: 0;
+        padding: 0 16px;
+      }
+
+      section {
+        max-width: 600px;
+        width: 100%;
+        margin: 16px auto 0;
+      }
+
+      .api-desc {
+        font-size: 14px;
+      }
+
+      .horizontal {
+        display: flex;
+      }
+
+      app-datepicker {
+        border: 1px solid #ddd;
+      }
+    </style>
+
+    <h1>Demo</h1>
+
+    <section>
+      <h2>Required web platform APIs:</h2>
+
+      <p class="api-desc"><i>* Checked if API is natively supported</i></p>
+
+      <div>
+        <label>
+          <input class="input-checkbox__pointer-event" type="checkbox" disabled>
+          <span>PointerEvent</span>
+          <span>/** Polyfill URL */</span>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          <input class="input-checkbox__intl" type="checkbox" disabled>
+          <span>Intl.DateTimeFormat</span>
+          <span>/** Polyfill URL */</span>
+        </label>
+      </div
+      >
+      <div>
+        <label>
+          <input class="input-checkbox__web-animations" type="checkbox" disabled>
+          <span>Web Animations</span>
+          <span>/** Polyfill URL */</span>
+        </label>
+      </div>
+
+    </section>
+
+    <section>
+      <h2>Code snippet generator</h2>
+
+      <div>
+        <h3>&lt;app-datepicker&gt;</h3>
+
+        <div class="horizontal">
+          <css-variables-extractor>
+            <app-datepicker></app-datepicker>
+            <!-- <app-datepicker-dialog></app-datepicker-dialog> -->
+          </css-variables-extractor>
+
+          <div>
+            <div>/** CSS Custom Properties */</div>
+            <div>/** Properties */</div>
+          </div>
+        </div>
+
+        <div>
+          /** Generated code snippet */
+        </div>
+      </div>
+
+    </section>
+
+  </body>
+</html>
