@@ -21,9 +21,6 @@ jobs:
           command: |
             npm set prefix=/home/circleci/npm
             echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
-      - run:
-          name: Versions
-          command: node -v && npm version
       - checkout
       - restore_cache:
           keys:
@@ -37,6 +34,9 @@ jobs:
       - run:
           name: Install dependencies
           command: npm ci --quiet
+      - run:
+          name: Versions
+          command: node -v && npm version && polymer --version
       - run:
           name: Running X virtual framebuffer
           command: Xvfb :99 -screen 0 1920x1080x24
