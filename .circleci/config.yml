@@ -12,8 +12,8 @@ workflows:
 version: 2
 jobs:
   node-base: &node-base
-    # docker:
-    #   - image: node
+    docker:
+      - image: node
     steps:
       - run:
           name: Versions
