@@ -16,6 +16,10 @@ jobs:
       - image: circleci/node
     steps:
       - run:
+        # Refer to https://bit.ly/2JhTB2Y for more info.
+        name: Make me the owner
+        command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+      - run:
           name: Versions
           command: node -v && npm version
       - checkout
