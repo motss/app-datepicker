@@ -4,8 +4,7 @@ import {
   LitElement,
 } from 'lit-element';
 
-function extractCSSVariables(name: string) {
-  const ce = window.customElements.get(name);
+function findAllCSSVariables<T extends HTMLElement>(ce: T): string[] {
   const cleanCss = (ce as any)._styles
     .map((n: any) => n.cssText.replace(/\/\*{1,}.+\*\//gi, ''));
   const find = (s: string[], r: RegExp) => [...s.map((n: any) => n.matchAll(r))
@@ -22,9 +21,14 @@ function extractCSSVariables(name: string) {
   return [...new Set(cvs1.concat(cvs2))].filter(n => !/[;:{}()]/gi.test(n));
 }
 
-@customElement(CSSVariablesExtractor.is)
-export class CSSVariablesExtractor extends LitElement {
-  static get is() { return 'css-variables-extractor'; }
+function findAllPublicProperties<T extends HTMLElement>(ce: T): string[] {
+  const cleanProps = [...(ce as any)._classProperties.keys()].filter(n => !/^_+/.test(n));
+  return cleanProps;
+}
+
+@customElement(CustomElementConfigurator.is)
+export class CustomElementConfigurator extends LitElement {
+  static get is() { return 'custom-element-configurator'; }
 
   private _elements?: HTMLElement[];
 
@@ -51,20 +55,27 @@ export class CSSVariablesExtractor extends LitElement {
 
   private _slotChange() {
     const assignedElements = this._elements!;
-    const cssVariables: Record<string, string[]> = {};
+    const configurables: Record<string, Record<string, string[]>> = {};
 
     for (const ae of assignedElements) {
-      // ae.style.display = 'none';
+      const elName = ae.localName;
+      const el = window.customElements.get(elName) as HTMLElement;
 
-      // console.log(ae);
-      const name = ae.localName;
       console.time('css-var');
-      const cvs = extractCSSVariables(name);
+      const cvs = findAllCSSVariables(el);
       console.timeEnd('css-var');
-      cssVariables[name] = cvs;
+
+      console.time('public-prop');
+      const pp = findAllPublicProperties(el);
+      console.timeEnd('public-prop');
+
+      configurables[elName] = {
+        cssVariables: cvs,
+        publicProperties: pp,
+      };
     }
 
-    console.log(cssVariables);
+    console.log(configurables);
   }
 
   get _slot() {
