@@ -1,6 +1,12 @@
 interface Property {
   key: string;
-  value: string;
+  value: unknown;
+  type?: string;
+}
+
+interface Locale {
+  code: string;
+  name: string;
 }
 
 import {
@@ -10,8 +16,17 @@ import {
   LitElement,
 } from 'lit-element';
 import { nothing } from 'lit-html';
+import { until } from 'lit-html/directives/until';
 
 import { datepickerVariables } from '../common-styles';
+import {
+  getResolvedDate,
+  getResolvedLocale,
+  toFormattedDateString,
+} from '../datepicker-helpers';
+
+import { START_VIEW } from '../app-datepicker';
+import { WEEK_NUMBER_TYPE } from '../calendar';
 
 const notArray = (a: unknown[]) => !Array.isArray(a) || !a.length;
 
@@ -64,16 +79,92 @@ export class AppDatepickerConfigurator extends LitElement {
     },
   ];
 
+  private _publicProps?: Property[] = [
+    {
+      key: 'firstDayOfWeek',
+      value: 0,
+      type: 'number',
+    },
+    {
+      key: 'showWeekNumber',
+      value: false,
+      type: 'boolean',
+    },
+    {
+      key: 'weekNumberType',
+      value: WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+      type: 'string',
+    },
+    {
+      key: 'landscape',
+      value: false,
+      type: 'boolean',
+    },
+    {
+      key: 'startView',
+      value: START_VIEW.CALENDAR,
+      type: 'string',
+    },
+    {
+      key: 'min',
+      value: '',
+      type: 'string',
+    },
+    {
+      key: 'max',
+      value: '',
+      type: 'string',
+    },
+    {
+      key: 'value',
+      value: toFormattedDateString(getResolvedDate()),
+      type: 'string',
+    },
+    {
+      key: 'locale',
+      value: getResolvedLocale(),
+      type: 'string',
+    },
+    {
+      key: 'disabledDays',
+      value: '',
+      type: 'string',
+    },
+    {
+      key: 'disabledDates',
+      value: '',
+      type: 'string',
+    },
+    {
+      key: 'weekLabel',
+      value: '',
+      type: 'string',
+    },
+    {
+      key: 'dragRatio',
+      value: .15,
+      type: 'number',
+    },
+  ];
+
   protected updated() {
     console.log(
       'updated',
-      this._CSSCustomProps
+      this._CSSCustomProps,
+      this._publicProps
     );
 
     const cssCustomProps = this._CSSCustomProps!;
     if (!notArray(cssCustomProps)) {
       cssCustomProps.forEach(({ key, value }) => {
-        this._datepicker.style.setProperty(key, value);
+        this._datepicker.style.setProperty(key, `${value}`);
+      });
+    }
+
+    const publicProps = this._publicProps!;
+    if (!notArray(publicProps)) {
+      publicProps.forEach(({ key, value }) => {
+        (this._datepicker as any)[key] = value;
       });
     }
   }
@@ -89,7 +180,7 @@ export class AppDatepickerConfigurator extends LitElement {
 
       <section class="container__props">
         <div class="container__ccs-custom-props">${this._renderCSSCustomProps()}</div>
-        <div class="container__public-props"></div>
+        <div class="container__public-props">${this._renderPublicProps()}</div>
       </section>
 
       <section class="container__code-snippet">
@@ -121,16 +212,111 @@ export class AppDatepickerConfigurator extends LitElement {
     });
   }
 
+  private _renderPublicProps() {
+    const publicProps = this._publicProps!;
+
+    if (notArray(publicProps)) return nothing;
+
+    return publicProps.map(({ key, value, type }) => {
+      const inputType = type === 'boolean' ? 'checkbox' : 'text';
+
+      if (key === 'firstDayOfWeek') {
+        return html`<div>
+          <label>
+            <span>${key}</span>
+            <input
+              type="number"
+              min="0"
+              max="6"
+              value="${value}"
+              @change="${(ev: Event) =>
+                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+          </label>
+        </div>`;
+      }
+
+      if (key === 'startView') {
+        return html`<div>
+          <label>
+            <span>${key}</span>
+            <select
+              value="${value}"
+              @change="${(ev: Event) =>
+                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+              <option value="${START_VIEW.CALENDAR}">${START_VIEW.CALENDAR}</option>
+              <option value="${START_VIEW.YEAR_LIST}">${START_VIEW.YEAR_LIST}</option>
+            </select>
+          </label>
+        </div>`;
+      }
+
+      if (key === 'weekNumberType') {
+        // tslint:disable: max-line-length
+        return html`<div>
+          <label>
+            <span>${key}</span>
+            <select
+              value="${value}"
+              @change="${(ev: Event) =>
+                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+              <option value="${WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK}">${WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK}</option>
+              <option value="${WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR}">${WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR}</option>
+              <option value="${WEEK_NUMBER_TYPE.FIRST_FULL_WEEK}">${WEEK_NUMBER_TYPE.FIRST_FULL_WEEK}</option>
+            </select>
+          </label>
+        </div>`;
+        // tslint:enable: max-line-length
+      }
+
+      if (key === 'locale') {
+        const fetchLocales = async () => {
+          const r = await fetch('/src/demo/locales.json');
+          const d: Locale[] = await r.json();
+          return d.map(n => html`<option value="${n.code}">${n.name}</option>`);
+        };
+
+        // tslint:disable: max-line-length
+        return html`<div>
+          <label>
+            <span>${key}</span>
+            <select
+              value="${value}"
+              @change="${(ev: Event) =>
+                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">${until(fetchLocales(), nothing)}</select>
+          </label>
+        </div>`;
+        // tslint:enable: max-line-length
+      }
+
+      return html`<div>
+        <label>
+          <span>${key}</span>
+          <input
+            type="${inputType}"
+            value="${value}"
+            @change="${(ev: Event) =>
+              this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+        </label>
+      </div>`;
+    });
+  }
+
   private _updatePropValue(
     name: string,
     key: string,
     target: HTMLInputElement
   ) {
-    const value = target.value;
-    console.log('updatepropvalue', name, key);
+    const value = target.tagName === 'INPUT' && target.type === 'checkbox' ?
+      target.checked : target.value;
+    // console.log('updatepropvalue', name, key, value);
 
     (this as any)[name] = (this as any)[name]!.reduce((p: Property[], n: Property) => {
-      return p.concat(n.key === key ? { key, value } : n);
+      const type = n.type;
+      return p.concat(n.key === key ? {
+        key,
+        type,
+        value: type === 'number' ? parseFloat(value as any) : value,
+      } : n);
     }, [] as Property[]);
     this.requestUpdate(name);
   }
