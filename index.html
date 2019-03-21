@@ -36,6 +36,15 @@
       document.head.appendChild(wa);
     }
 
+    if (!window.fetch) {
+      const wa = document.createElement('script');
+      /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+      wa.src = 'https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js';
+      wa.onload = () => console.info('🌐 Fetch polyfill loaded');
+      wa.onerror = console.error;
+      document.head.appendChild(wa);
+    }
+
   </script>
   <script type="module">
     import '/dist/app-datepicker.js';

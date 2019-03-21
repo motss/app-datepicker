@@ -14,16 +14,23 @@ import {
   customElement,
   html,
   LitElement,
+  query,
 } from 'lit-element';
 import { nothing } from 'lit-html';
 import { until } from 'lit-html/directives/until';
 
+import { AppDatepicker } from '../app-datepicker';
 import { datepickerVariables } from '../common-styles';
 import {
   getResolvedDate,
   getResolvedLocale,
   toFormattedDateString,
 } from '../datepicker-helpers';
+import './clipboard-copy.js';
+import {
+  highlightJsAppTheme,
+  markdownStyling,
+} from './demo-styles';
 
 import { START_VIEW } from '../app-datepicker';
 import { WEEK_NUMBER_TYPE } from '../calendar';
@@ -36,6 +43,8 @@ export class AppDatepickerConfigurator extends LitElement {
 
   public static styles = [
     datepickerVariables,
+    markdownStyling,
+    highlightJsAppTheme,
     css`
     section + section {
       margin: 16px 0 0;
@@ -60,7 +69,10 @@ export class AppDatepickerConfigurator extends LitElement {
     `,
   ];
 
-  private _CSSCustomProps?: Property[] = [
+  @query('app-datepicker')
+  private _datepicker!: AppDatepicker;
+
+  private _CSSCustomProps: Property[] = [
     {
       key: '--app-datepicker-border-top-left-radius',
       value: '8px',
@@ -79,7 +91,7 @@ export class AppDatepickerConfigurator extends LitElement {
     },
   ];
 
-  private _publicProps?: Property[] = [
+  private _publicProps: Property[] = [
     {
       key: 'firstDayOfWeek',
       value: 0,
@@ -170,6 +182,9 @@ export class AppDatepickerConfigurator extends LitElement {
   }
 
   protected render() {
+    const cssCustomProps = this._CSSCustomProps;
+    const publicProps = this._publicProps;
+
     return html`
     <div>
       <h3>&lt;app-datepicker&gt;</h3>
@@ -179,23 +194,19 @@ export class AppDatepickerConfigurator extends LitElement {
       </section>
 
       <section class="container__props">
-        <div class="container__ccs-custom-props">${this._renderCSSCustomProps()}</div>
-        <div class="container__public-props">${this._renderPublicProps()}</div>
+        <div class="container__ccs-custom-props">${this._renderCSSCustomProps(cssCustomProps)}</div>
+        <div class="container__public-props">${this._renderPublicProps(publicProps)}</div>
       </section>
 
       <section class="container__code-snippet">
-        <pre class="code-snippet__style"></pre>
-        <pre class="code-snippet__html-tag"></pre>
+        ${this._renderCSSCustomPropsCode(cssCustomProps)}
+        ${this._renderPublicPropsCode(publicProps)}
       </section>
     </div>
     `;
   }
 
-  private _renderCSSCustomProps() {
-    const cssCustomProps = this._CSSCustomProps!;
-
-    if (notArray(cssCustomProps)) return nothing;
-
+  private _renderCSSCustomProps(cssCustomProps: Property[]) {
     return cssCustomProps.map(({ key, value }) => {
       return html`<div>
         <label>
@@ -212,13 +223,25 @@ export class AppDatepickerConfigurator extends LitElement {
     });
   }
 
-  private _renderPublicProps() {
-    const publicProps = this._publicProps!;
-
-    if (notArray(publicProps)) return nothing;
-
+  private _renderPublicProps(publicProps: Property[]) {
     return publicProps.map(({ key, value, type }) => {
       const inputType = type === 'boolean' ? 'checkbox' : 'text';
+
+      if (key === 'dragRatio') {
+        return html`<div>
+          <label>
+            <span>${key}</span>
+            <input
+              type="number"
+              min="0"
+              max="1"
+              step="0.01"
+              value="${value}"
+              @change="${(ev: Event) =>
+                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+          </label>
+        </div>`;
+      }
 
       if (key === 'firstDayOfWeek') {
         return html`<div>
@@ -321,8 +344,32 @@ export class AppDatepickerConfigurator extends LitElement {
     this.requestUpdate(name);
   }
 
-  get _datepicker() {
-    return this.shadowRoot!.querySelector('app-datepicker')!;
+  private _renderCSSCustomPropsCode(cssCustomProps: Property[]) {
+    return html`
+    <clipboard-copy>
+      <button for="codeCSSCustomProps">Copy</button>
+      <pre id="codeCSSCustomProps" class="code-snippet__style">
+app-datepicker {
+${cssCustomProps.map(({ key, value }) => `  ${key}: ${value};`).join('\n')}
+}</pre>
+    </clipboard-copy>`;
+  }
+
+  private _renderPublicPropsCode(publicProps: Property[]) {
+    return html`
+    <clipboard-copy>
+      <button for="codeHtmlTag">Copy</button>
+      <pre id="codeHtmlTag" class="code-snippet__html-tag">
+&lt;app-datepicker
+${publicProps.map(({ key, value, type }) => {
+  const lcKey = key.toLowerCase();
+  if (type === 'boolean') return value ? `  ${lcKey}` : '';
+  if (type === 'string') return value ? `  ${lcKey}="${value}"` : '';
+  if (type === 'number') return isNaN(value as number) ? '' : `  ${lcKey}="${value}"`;
+  return '';
+}).filter(Boolean).join('\n')}
+&gt;&lt;/app-datepicker&gt;</pre>
+    </clipboard-copy>`;
   }
 
 }

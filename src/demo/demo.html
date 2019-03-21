@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <title>&lt;app-datepicker&gt; demo</title>
 
     <!-- <link rel="preconnect" href="https://polyfill.io" crossorigin> -->
@@ -17,6 +17,35 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
 
+    <script>
+      if (!(Element.prototype.animate)) {
+        const wa = document.createElement('script');
+        wa.src =
+          'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
+        wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+
+      if (!window.Intl) {
+        const wa = document.createElement('script');
+        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+        wa.onload = () => console.info('🌐 Intl polyfill loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+
+      if (!window.fetch) {
+        const wa = document.createElement('script');
+        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        wa.src = 'https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js';
+        wa.onload = () => console.info('🌐 Fetch polyfill loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+
+    </script>
     <script type="module">
       import '../../dist/app-datepicker.js';
       import '../../dist/app-datepicker-dialog.js';
