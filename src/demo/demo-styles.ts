@@ -3,8 +3,10 @@ import { css } from 'lit-element';
 export const markdownStyling = css`
 :not(pre) > code {
   padding: .15rem;
-  background-color: #dfe8f2;
-  color: #00479f;
+  /* background-color: #dfe8f2; */
+  /* color: #00479f; */
+  background-color: var(--app-primary-background-color);
+  color: var(--app-primary-color);
   font-size: .9rem;
   border-radius: .3rem;
 }
@@ -13,8 +15,9 @@ pre,
 pre[class*=language-] {
   margin: 1rem 0;
   padding: 1rem 1.5rem;
-  background-color: #dfe8f2;
-  border-radius: 1rem;
+  /* background-color: #dfe8f2; */
+  background-color: var(--app-primary-background-color);
+  border-radius: .5rem;
   overflow: auto;
 }
 pre[class*=language-],
@@ -38,7 +41,8 @@ code[class*=language-] {
 pre > code,
 code[class*=language-] {
   background-color: inherit;
-  color: #00479f;
+  /* color: #00479f; */
+  color: var(--app-primary-color);
 }
 
 blockquote {

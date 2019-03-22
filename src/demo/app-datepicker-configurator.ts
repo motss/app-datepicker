@@ -9,6 +9,8 @@ interface Locale {
   name: string;
 }
 
+import '@material/mwc-button/mwc-button.js';
+
 import {
   css,
   customElement,
@@ -46,6 +48,11 @@ export class AppDatepickerConfigurator extends LitElement {
     markdownStyling,
     highlightJsAppTheme,
     css`
+    :host {
+      --app-primary-color: #1a73e8;
+      --app-primary-background-color: rgba(207, 216, 220, .45);
+    }
+
     section + section {
       margin: 16px 0 0;
     }
@@ -57,6 +64,7 @@ export class AppDatepickerConfigurator extends LitElement {
 
     .container__props {
       display: flex;
+      justify-content: space-between;
     }
 
     .container__css-custom-props,
@@ -65,6 +73,56 @@ export class AppDatepickerConfigurator extends LitElement {
 
       max-width: 50%;
       width: 100%;
+    }
+    .container__public-props {
+      margin: 0 0 0 16px;
+    }
+
+    .container__prop + .container__prop {
+      margin: 8px 0 0;
+    }
+
+    label {
+      display: flex;
+      align-items: flex-start;
+    }
+    label > span {
+      width: 80%;
+    }
+    label > input,
+    label > select {
+      width: calc(20% - 16px);
+      margin: 0 0 0 16px;
+    }
+    .container__public-props label > span {
+      width: 50%;
+    }
+    .container__public-props label > input,
+    .container__public-props label > select {
+      width: 50%;
+    }
+
+    clipboard-copy {
+      display: flex;
+
+      position: relative;
+    }
+    clipboard-copy > mwc-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+    }
+    clipboard-copy > pre {
+      flex: 1 0 auto;
+
+      margin: 0;
+    }
+
+    app-datepicker {
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                    0 1px 5px 0 rgba(0, 0, 0, 0.12),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.2);
     }
     `,
   ];
@@ -88,6 +146,10 @@ export class AppDatepickerConfigurator extends LitElement {
     {
       key: '--app-datepicker-border-bottom-left-radius',
       value: '8px',
+    },
+    {
+      key: '--app-datepicker-primary-color',
+      value: '#1a73e8',
     },
   ];
 
@@ -185,6 +247,7 @@ export class AppDatepickerConfigurator extends LitElement {
     const cssCustomProps = this._CSSCustomProps;
     const publicProps = this._publicProps;
 
+    // tslint:disable: max-line-length
     return html`
     <div>
       <h3>&lt;app-datepicker&gt;</h3>
@@ -204,11 +267,12 @@ export class AppDatepickerConfigurator extends LitElement {
       </section>
     </div>
     `;
+    // tslint:enable: max-line-length
   }
 
   private _renderCSSCustomProps(cssCustomProps: Property[]) {
     return cssCustomProps.map(({ key, value }) => {
-      return html`<div>
+      return html`<div class="container__prop">
         <label>
           <span>${key}</span>
           <input
@@ -228,7 +292,7 @@ export class AppDatepickerConfigurator extends LitElement {
       const inputType = type === 'boolean' ? 'checkbox' : 'text';
 
       if (key === 'dragRatio') {
-        return html`<div>
+        return html`<div class="container__prop">
           <label>
             <span>${key}</span>
             <input
@@ -244,7 +308,7 @@ export class AppDatepickerConfigurator extends LitElement {
       }
 
       if (key === 'firstDayOfWeek') {
-        return html`<div>
+        return html`<div class="container__prop">
           <label>
             <span>${key}</span>
             <input
@@ -259,7 +323,7 @@ export class AppDatepickerConfigurator extends LitElement {
       }
 
       if (key === 'startView') {
-        return html`<div>
+        return html`<div class="container__prop">
           <label>
             <span>${key}</span>
             <select
@@ -275,7 +339,7 @@ export class AppDatepickerConfigurator extends LitElement {
 
       if (key === 'weekNumberType') {
         // tslint:disable: max-line-length
-        return html`<div>
+        return html`<div class="container__prop">
           <label>
             <span>${key}</span>
             <select
@@ -299,7 +363,7 @@ export class AppDatepickerConfigurator extends LitElement {
         };
 
         // tslint:disable: max-line-length
-        return html`<div>
+        return html`<div class="container__prop">
           <label>
             <span>${key}</span>
             <select
@@ -311,7 +375,7 @@ export class AppDatepickerConfigurator extends LitElement {
         // tslint:enable: max-line-length
       }
 
-      return html`<div>
+      return html`<div class="container__prop">
         <label>
           <span>${key}</span>
           <input
@@ -346,8 +410,9 @@ export class AppDatepickerConfigurator extends LitElement {
 
   private _renderCSSCustomPropsCode(cssCustomProps: Property[]) {
     return html`
+    <h3>CSS Custom Properties</h3>
     <clipboard-copy>
-      <button for="codeCSSCustomProps">Copy</button>
+      <mwc-button for="codeCSSCustomProps">Copy</mwc-button>
       <pre id="codeCSSCustomProps" class="code-snippet__style">
 app-datepicker {
 ${cssCustomProps.map(({ key, value }) => `  ${key}: ${value};`).join('\n')}
@@ -357,8 +422,9 @@ ${cssCustomProps.map(({ key, value }) => `  ${key}: ${value};`).join('\n')}
 
   private _renderPublicPropsCode(publicProps: Property[]) {
     return html`
+    <h3>Public Properties</h3>
     <clipboard-copy>
-      <button for="codeHtmlTag">Copy</button>
+      <mwc-button for="codeHtmlTag">Copy</mwc-button>
       <pre id="codeHtmlTag" class="code-snippet__html-tag">
 &lt;app-datepicker
 ${publicProps.map(({ key, value, type }) => {

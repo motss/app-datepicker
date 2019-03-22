@@ -87,31 +87,58 @@
         box-sizing: border-box;
       }
 
-      h1 {
+      h1,
+      h2 {
         margin: 0;
+        padding: 0;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+
         padding: 0 16px;
       }
 
       section {
-        max-width: 600px;
+        max-width: calc(100vw - 40px * 2);
         width: 100%;
+        margin: 0 auto;
+        padding: 24px 16px;
+        background-color: #fff;
+        border-radius: 12px;
+      }
+      section + section {
         margin: 16px auto 0;
+      }
+      section:first-of-type:not(:last-of-type) {
+        margin: 16px auto 0;
+      }
+      section:first-of-type:last-of-type {
+        margin: 0 auto 40px;
+      }
+      section:last-of-type:not(:first-of-type) {
+        margin: 16px auto 40px;
+      }
+      @media screen and (min-width: 1200px) {
+        section {
+          max-width: calc(1200px - 40px * 2);
+        }
       }
 
       .api-desc {
         font-size: 14px;
       }
 
-      .horizontal {
-        display: flex;
+      input:checked + span + a {
+        display: none;
       }
 
-      app-datepicker {
-        border: 1px solid #ddd;
-      }
     </style>
 
-    <h1>Demo</h1>
+    <header>
+      <h1>Demo</h1>
+    </header>
 
     <section>
       <h2>Required web platform APIs:</h2>
@@ -122,7 +149,10 @@
         <label>
           <input class="input-checkbox__pointer-event" type="checkbox" disabled>
           <span>PointerEvent</span>
-          <span>/** Polyfill URL */</span>
+          <a
+            href="https://unpkg.com/pepjs@latest/"
+            target="_blank"
+            rel="noopener">PointerEvent polyfill</a>
         </label>
       </div>
 
@@ -130,15 +160,21 @@
         <label>
           <input class="input-checkbox__intl" type="checkbox" disabled>
           <span>Intl.DateTimeFormat</span>
-          <span>/** Polyfill URL */</span>
+          <a
+            href="https://unpkg.com/intl@1.2.4/"
+            target="_blank"
+            rel="noopener">Intl polyfill</a>
         </label>
-      </div
-      >
+      </div>
+
       <div>
         <label>
           <input class="input-checkbox__web-animations" type="checkbox" disabled>
           <span>Web Animations</span>
-          <span>/** Polyfill URL */</span>
+          <a
+            href="https://unpkg.com/web-animations-js@latest/"
+            target="_blank"
+            rel="noopener">Web Animations polyfill</a>
         </label>
       </div>
 
