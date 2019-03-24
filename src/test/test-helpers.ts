@@ -393,7 +393,7 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     getDialogConfirmActionButton,
     getDialogDismissActionButton,
 
-    waitForDragAnimationFinished: async () => new Promise(yay => {
+    waitForDragAnimationFinished: async () => new Promise((yay) => {
       const animationFinished = () => {
         yay(elem.requestUpdate());
         elem.removeEventListener('datepicker-animation-finished', animationFinished);
