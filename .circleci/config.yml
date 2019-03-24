@@ -24,21 +24,24 @@ jobs:
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
       - run:
-          name: Install global dependencies
-          command: sudo npm i -g npm@latest
+          name: Install Global Dependencies
+          command: sudo npm i -g npm@latest --quiet
       - run:
-          name: Install dependencies
+          name: Install Dependencies
           command: npm ci --quiet
       - run:
           name: Versions
           command: node -v && npm version && which npm && pwd
       - run:
-          name: Running X virtual framebuffer
+          name: Running X Virtual Framebuffer
           command: Xvfb :99 -screen 0 1920x1080x24
           background: true
       - run:
           name: Build
           command: npm run ts
+      - run:
+          name: Lint
+          command: npm run lint
       - run:
           name: Test
           command: |
