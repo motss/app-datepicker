@@ -21,7 +21,9 @@ import {
 import { nothing } from 'lit-html';
 import { until } from 'lit-html/directives/until';
 
-import { AppDatepicker } from '../app-datepicker';
+import { AppDatepicker, START_VIEW } from '../app-datepicker';
+import { AppDatepickerDialog } from '../app-datepicker-dialog';
+import { WEEK_NUMBER_TYPE } from '../calendar';
 import { datepickerVariables } from '../common-styles';
 import {
   getResolvedDate,
@@ -33,9 +35,6 @@ import {
   highlightJsAppTheme,
   markdownStyling,
 } from './demo-styles';
-
-import { START_VIEW } from '../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../calendar';
 
 const notArray = (a: unknown[]) => !Array.isArray(a) || !a.length;
 
@@ -59,7 +58,10 @@ export class AppDatepickerConfigurator extends LitElement {
 
     .container__element {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+
+      padding: 16px;
     }
 
     .container__props {
@@ -123,6 +125,11 @@ export class AppDatepickerConfigurator extends LitElement {
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
                     0 1px 5px 0 rgba(0, 0, 0, 0.12),
                     0 3px 1px -2px rgba(0, 0, 0, 0.2);
+    }
+
+    mwc-button {
+      margin: 8px 0 0;
+      --mdc-theme-primary: var(--button-primary);
     }
     `,
   ];
@@ -228,17 +235,27 @@ export class AppDatepickerConfigurator extends LitElement {
       this._publicProps
     );
 
-    const cssCustomProps = this._CSSCustomProps!;
+    const datepicker = this._datepicker;
+    const dialog = this._dialog;
+    const cssCustomProps = this._CSSCustomProps;
+    const publicProps = this._publicProps;
+
     if (!notArray(cssCustomProps)) {
       cssCustomProps.forEach(({ key, value }) => {
-        this._datepicker.style.setProperty(key, `${value}`);
+        const valueInString = `${value}`;
+        datepicker.style.setProperty(key, valueInString);
+        dialog.style.setProperty(key, valueInString);
+
+        if (key === '--app-datepicker-primary-color') {
+          this.style.setProperty('--button-primary', valueInString);
+        }
       });
     }
 
-    const publicProps = this._publicProps!;
     if (!notArray(publicProps)) {
       publicProps.forEach(({ key, value }) => {
-        (this._datepicker as any)[key] = value;
+        (datepicker as any)[key] = value;
+        (dialog as any)[key] = value;
       });
     }
   }
@@ -250,15 +267,25 @@ export class AppDatepickerConfigurator extends LitElement {
     // tslint:disable: max-line-length
     return html`
     <div>
-      <h3>&lt;app-datepicker&gt;</h3>
+      <h3>Preview</h3>
 
       <section class="container__element">
         <app-datepicker></app-datepicker>
+
+        <mwc-button @click="${this._openDialog}">Open datepicker dialog</mwc-button>
+        <app-datepicker-dialog class="dialog"></app-datepicker-dialog>
       </section>
 
+      <h3>&lt;app-datepicker&gt; configuration</h3>
       <section class="container__props">
         <div class="container__ccs-custom-props">${this._renderCSSCustomProps(cssCustomProps)}</div>
         <div class="container__public-props">${this._renderPublicProps(publicProps)}</div>
+      </section>
+
+      <h3>&lt;app-datepicker-dialog&gt; configuration</h3>
+      <section class="container__props">
+        <div class="container__ccs-custom-props"></div>
+        <div class="container__public-props"></div>
       </section>
 
       <section class="container__code-snippet">
@@ -436,6 +463,15 @@ ${publicProps.map(({ key, value, type }) => {
 }).filter(Boolean).join('\n')}
 &gt;&lt;/app-datepicker&gt;</pre>
     </clipboard-copy>`;
+  }
+
+  private _openDialog() {
+    const dialog = this._dialog;
+    if (dialog) dialog.open();
+  }
+
+  get _dialog() {
+    return this.shadowRoot!.querySelector('.dialog')! as AppDatepickerDialog;
   }
 
 }
