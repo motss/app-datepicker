@@ -228,6 +228,37 @@ export class AppDatepickerConfigurator extends LitElement {
     },
   ];
 
+  private _CSSCustomPropsForDialog: Property[] = [
+    {
+      key: '--app-datepicker-dialog-z-index',
+      value: 24,
+      type: 'number',
+    },
+    {
+      key: '--app-datepicker-border-radius',
+      value: '8px',
+      type: 'string',
+    },
+  ];
+
+  private _publicPropsForDialog: Property[] = [
+    {
+      key: 'dismissLabel',
+      value: 'cancel',
+      type: 'string',
+    },
+    {
+      key: 'confirmLabel',
+      value: 'ok',
+      type: 'string',
+    },
+    {
+      key: 'noFocusTrap',
+      value: false,
+      type: 'boolean',
+    },
+  ];
+
   protected updated() {
     console.log(
       'updated',
@@ -239,6 +270,8 @@ export class AppDatepickerConfigurator extends LitElement {
     const dialog = this._dialog;
     const cssCustomProps = this._CSSCustomProps;
     const publicProps = this._publicProps;
+    const cssCustomPropsForDialog = this._CSSCustomPropsForDialog;
+    const publicPropsForDialog = this._publicPropsForDialog;
 
     if (!notArray(cssCustomProps)) {
       cssCustomProps.forEach(({ key, value }) => {
@@ -258,11 +291,25 @@ export class AppDatepickerConfigurator extends LitElement {
         (dialog as any)[key] = value;
       });
     }
+
+    if (!notArray(cssCustomPropsForDialog)) {
+      cssCustomPropsForDialog.forEach(({ key, value }) => {
+        dialog.style.setProperty(key, `${value}`);
+      });
+    }
+
+    if (!notArray(publicPropsForDialog)) {
+      publicPropsForDialog.forEach(({ key, value }) => {
+        (dialog as any)[key] = value;
+      });
+    }
   }
 
   protected render() {
     const cssCustomProps = this._CSSCustomProps;
     const publicProps = this._publicProps;
+    const cssCustomPropsForDialog = this._CSSCustomPropsForDialog;
+    const publicPropsForDialog = this._publicPropsForDialog;
 
     // tslint:disable: max-line-length
     return html`
@@ -278,26 +325,41 @@ export class AppDatepickerConfigurator extends LitElement {
 
       <h3>&lt;app-datepicker&gt; configuration</h3>
       <section class="container__props">
-        <div class="container__ccs-custom-props">${this._renderCSSCustomProps(cssCustomProps)}</div>
-        <div class="container__public-props">${this._renderPublicProps(publicProps)}</div>
+        <div class="container__ccs-custom-props">${this._renderCSSCustomProps(cssCustomProps, '_CSSCustomProps')}</div>
+        <div class="container__public-props">${this._renderPublicProps(publicProps, '_publicProps')}</div>
       </section>
 
       <h3>&lt;app-datepicker-dialog&gt; configuration</h3>
       <section class="container__props">
-        <div class="container__ccs-custom-props"></div>
-        <div class="container__public-props"></div>
+        <div class="container__ccs-custom-props">${this._renderCSSCustomProps(cssCustomPropsForDialog, '_CSSCustomPropsForDialog')}</div>
+        <div class="container__public-props">${this._renderPublicProps(publicPropsForDialog, '_publicPropsForDialog')}</div>
       </section>
 
+      <h3>CSS Custom Properties</h3>
       <section class="container__code-snippet">
-        ${this._renderCSSCustomPropsCode(cssCustomProps)}
-        ${this._renderPublicPropsCode(publicProps)}
+        <h4>&lt;app-datepicker&gt;</h4>
+        ${this._renderCSSCustomPropsCode(cssCustomProps, AppDatepicker.is)}
+
+        <h4>&lt;app-datepicker-dialog&gt;</h4>
+        ${this._renderCSSCustomPropsCode(
+          cssCustomProps.filter(n => n.key === '--app-datepicker-primary-color').concat(cssCustomPropsForDialog),
+          AppDatepickerDialog.is)}
+      </section>
+
+      <h3>Public Properties</h3>
+      <section class="container__code-snippet">
+        <h4>&lt;app-datepicker&gt;</h4>
+        ${this._renderPublicPropsCode(publicProps, AppDatepicker.is)}
+
+        <h4>&lt;app-datepicker-dialog&gt;</h4>
+        ${this._renderPublicPropsCode(publicProps.concat(publicPropsForDialog), AppDatepickerDialog.is)}
       </section>
     </div>
     `;
     // tslint:enable: max-line-length
   }
 
-  private _renderCSSCustomProps(cssCustomProps: Property[]) {
+  private _renderCSSCustomProps(cssCustomProps: Property[], propName: string) {
     return cssCustomProps.map(({ key, value }) => {
       return html`<div class="container__prop">
         <label>
@@ -308,13 +370,13 @@ export class AppDatepickerConfigurator extends LitElement {
             min="1"
             max="8"
             @change="${(ev: Event) =>
-              this._updatePropValue('_CSSCustomProps', key, (ev.target as HTMLInputElement))}">
+              this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
         </label>
       </div>`;
     });
   }
 
-  private _renderPublicProps(publicProps: Property[]) {
+  private _renderPublicProps(publicProps: Property[], propName: string) {
     return publicProps.map(({ key, value, type }) => {
       const inputType = type === 'boolean' ? 'checkbox' : 'text';
 
@@ -329,7 +391,7 @@ export class AppDatepickerConfigurator extends LitElement {
               step="0.01"
               value="${value}"
               @change="${(ev: Event) =>
-                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+                this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
           </label>
         </div>`;
       }
@@ -344,7 +406,7 @@ export class AppDatepickerConfigurator extends LitElement {
               max="6"
               value="${value}"
               @change="${(ev: Event) =>
-                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+                this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
           </label>
         </div>`;
       }
@@ -356,7 +418,7 @@ export class AppDatepickerConfigurator extends LitElement {
             <select
               value="${value}"
               @change="${(ev: Event) =>
-                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+                this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
               <option value="${START_VIEW.CALENDAR}">${START_VIEW.CALENDAR}</option>
               <option value="${START_VIEW.YEAR_LIST}">${START_VIEW.YEAR_LIST}</option>
             </select>
@@ -372,7 +434,7 @@ export class AppDatepickerConfigurator extends LitElement {
             <select
               value="${value}"
               @change="${(ev: Event) =>
-                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+                this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
               <option value="${WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK}">${WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK}</option>
               <option value="${WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR}">${WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR}</option>
               <option value="${WEEK_NUMBER_TYPE.FIRST_FULL_WEEK}">${WEEK_NUMBER_TYPE.FIRST_FULL_WEEK}</option>
@@ -396,7 +458,7 @@ export class AppDatepickerConfigurator extends LitElement {
             <select
               value="${value}"
               @change="${(ev: Event) =>
-                this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">${until(fetchLocales(), nothing)}</select>
+                this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">${until(fetchLocales(), nothing)}</select>
           </label>
         </div>`;
         // tslint:enable: max-line-length
@@ -409,7 +471,7 @@ export class AppDatepickerConfigurator extends LitElement {
             type="${inputType}"
             value="${value}"
             @change="${(ev: Event) =>
-              this._updatePropValue('_publicProps', key, (ev.target as HTMLInputElement))}">
+              this._updatePropValue(propName, key, (ev.target as HTMLInputElement))}">
         </label>
       </div>`;
     });
@@ -435,25 +497,24 @@ export class AppDatepickerConfigurator extends LitElement {
     this.requestUpdate(name);
   }
 
-  private _renderCSSCustomPropsCode(cssCustomProps: Property[]) {
+  private _renderCSSCustomPropsCode(cssCustomProps: Property[], tagName: string) {
     return html`
-    <h3>CSS Custom Properties</h3>
     <clipboard-copy>
       <mwc-button for="codeCSSCustomProps">Copy</mwc-button>
       <pre id="codeCSSCustomProps" class="code-snippet__style">
-app-datepicker {
+${tagName} {
 ${cssCustomProps.map(({ key, value }) => `  ${key}: ${value};`).join('\n')}
 }</pre>
     </clipboard-copy>`;
   }
 
-  private _renderPublicPropsCode(publicProps: Property[]) {
+  private _renderPublicPropsCode(publicProps: Property[], tagName: string) {
     return html`
-    <h3>Public Properties</h3>
+
     <clipboard-copy>
       <mwc-button for="codeHtmlTag">Copy</mwc-button>
       <pre id="codeHtmlTag" class="code-snippet__html-tag">
-&lt;app-datepicker
+&lt;${tagName}
 ${publicProps.map(({ key, value, type }) => {
   const lcKey = key.toLowerCase();
   if (type === 'boolean') return value ? `  ${lcKey}` : '';
@@ -461,7 +522,7 @@ ${publicProps.map(({ key, value, type }) => {
   if (type === 'number') return isNaN(value as number) ? '' : `  ${lcKey}="${value}"`;
   return '';
 }).filter(Boolean).join('\n')}
-&gt;&lt;/app-datepicker&gt;</pre>
+&gt;&lt;/${tagName}&gt;</pre>
     </clipboard-copy>`;
   }
 
