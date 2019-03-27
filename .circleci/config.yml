@@ -25,7 +25,7 @@ jobs:
       - restore_cache: *restore-cache-deps
       - run:
           name: Install Global Dependencies
-          command: npm i -g npm@latest --quiet
+          command: sudo npm i -g npm@latest --quiet
       - run:
           name: Install Dependencies
           command: npm ci --quiet
@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Test (Internet Explorer 11)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:ci -- -s 'windows 7/internet explorer@11';
             fi
 
