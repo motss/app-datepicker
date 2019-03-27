@@ -6,9 +6,9 @@ version: 2
 
 aliases:
   - &restore-cache-deps
-      key: dependency-cache-{{ checksum "package.json" }}-2
+      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2
   - &save-cache-deps
-      key: dependency-cache-{{ checksum "package.json" }}-2
+      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2
       paths:
         - node_modules
 
@@ -32,7 +32,7 @@ jobs:
       - save_cache: *save-cache-deps
       - run:
           name: Versions
-          command: node -v 7& npm version && which npm && pwd
+          command: node -v && npm version && which npm && pwd
       - run:
           name: Lint
           command: npm run lint
@@ -62,7 +62,103 @@ jobs:
           name: Test (Internet Explorer 11)
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:ci -- -s 'windows 7/internet explorer@11';
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 7/internet explorer@11';
+            fi
+
+  test_edge_13:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Edge 13)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@13';
+            fi
+
+  test_edge_17:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Edge 17)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@17';
+            fi
+
+  test_safari_9:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Safari 9)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'os x 10.11/safari@9';
+            fi
+
+  test_safari_10_1:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Safari 10.1)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'macos 10.12/safari@10.1';
+            fi
+
+  test_chrome_41:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Chrome 41)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
+            fi
+
+  test_chrome_70:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Chrome 70)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/chrome@70';
+            fi
+
+  test_firefox_62:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Firefox 62)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
+            fi
+
+  test_firefox_63:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Firefox 63)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@63';
             fi
 
 workflows:
@@ -76,72 +172,27 @@ workflows:
       - test_ie_11:
           requires:
             - build
-      # - node-v8-browsers
-      # - node-v10-browsers
-
-# jobs:
-#   node-base: &node-base
-#     docker:
-#       - image: circleci/node
-#     parallelism: 1
-#     steps:
-#       - checkout
-#       - restore_cache:
-#           keys:
-#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
-#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
-#       - run:
-#           name: Install Global Dependencies
-#           command: sudo npm i -g npm@latest --quiet
-#       - run:
-#           name: Install Dependencies
-#           command: npm ci --quiet
-#       - run:
-#           name: Versions
-#           command: node -v && npm version && which npm && pwd
-#       - run:
-#           name: Running X Virtual Framebuffer
-#           command: Xvfb :99 -screen 0 1920x1080x24
-#           background: true
-#       - run:
-#           name: Build
-#           command: npm run ts
-#       - run:
-#           name: Lint
-#           command: npm run lint
-#       - run:
-#           name: Test
-#           command: |
-#             if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-#               npx -p polymer-cli -- npm run test:ci -- \
-#                 -s 'windows 7/internet explorer@11' \
-#                 -s 'windows 10/microsoftedge@17' \
-#                 -s 'windows 10/microsoftedge@13' \
-#                 -s 'os x 10.11/safari@9' \
-#                 -s 'macos 10.12/safari@10.1' \
-#                 -s 'Linux/chrome@41' \
-#                 -s 'windows 10/chrome@70' \
-#                 -s 'windows 10/firefox@62' \
-#                 -s 'windows 10/firefox@63';
-#             else
-#               npx -p polymer-cli -- npm run test:ci;
-#             fi
-#       - save_cache:
-#           key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-#           paths:
-#             - node_modules
-#       - save_cache:
-#           key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-#           paths:
-#             - ~/.npm/_cacache
-
-#   # node-v8-browsers:
-#   #   <<: *node-base
-#   #   docker:
-#   #     - image: circleci/node:8-browsers
-#   node-v10-browsers:
-#     <<: *node-base
-#     docker:
-#       - image: circleci/node:10-browsers
+      - test_edge_13:
+          requires:
+            - build
+      - test_edge_17:
+          requires:
+            - build
+      - test_safari_9:
+          requires:
+            - build
+      - test_safari_10_1:
+          requires:
+            - build
+      - test_chrome_41:
+          requires:
+            - build
+      - test_chrome_70:
+          requires:
+            - build
+      - test_firefox_62:
+          requires:
+            - build
+      - test_firefox_63:
+          requires:
+            - build

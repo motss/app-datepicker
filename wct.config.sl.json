@@ -1,0 +1,7 @@
+{
+  "moduleResolution": "node",
+  "npm": true,
+  "suites": ["src/test"],
+  "testTimeout": 599000,
+  "verbose": false
+}
