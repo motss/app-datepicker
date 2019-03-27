@@ -2,77 +2,146 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-workflows:
-  version: 2
-  node-multi-build:
-    jobs:
-      # - node-v8-browsers
-      - node-v10-browsers
-
 version: 2
+
+aliases:
+  - &restore-cache-deps
+      key: dependency-cache-{{ checksum "package.json" }}-2
+  - &save-cache-deps
+      key: dependency-cache-{{ checksum "package.json" }}-2
+      paths:
+        - node_modules
+
+defaults: &defaults
+  working_directory: ~/app-datepicker
+  docker:
+    - image: circleci/node:10-browsers
+
 jobs:
-  node-base: &node-base
-    docker:
-      - image: circleci/node
-    parallelism: 1
+  build:
+    <<: *defaults
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
-            - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
+      - restore_cache: *restore-cache-deps
       - run:
           name: Install Global Dependencies
-          command: sudo npm i -g npm@latest --quiet
+          command: npm i -g npm@latest --quiet
       - run:
           name: Install Dependencies
           command: npm ci --quiet
+      - save_cache: *save-cache-deps
       - run:
           name: Versions
-          command: node -v && npm version && which npm && pwd
-      - run:
-          name: Running X Virtual Framebuffer
-          command: Xvfb :99 -screen 0 1920x1080x24
-          background: true
-      - run:
-          name: Build
-          command: npm run ts
+          command: node -v 7& npm version && which npm && pwd
       - run:
           name: Lint
           command: npm run lint
       - run:
+          name: Build
+          command: npm run ts
+      - persist_to_workspace:
+          root: ~/app-datepicker
+          paths:
+            - "*"
+
+  test_local:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
           name: Test
+          command: npx -p polymer-cli -- npm run test:ci
+
+  test_ie_11:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Internet Explorer 11)
           command: |
             if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:ci -- \
-                -s 'windows 7/internet explorer@11' \
-                -s 'windows 10/microsoftedge@17' \
-                -s 'windows 10/microsoftedge@13' \
-                -s 'os x 10.11/safari@9' \
-                -s 'macos 10.12/safari@10.1' \
-                -s 'Linux/chrome@41' \
-                -s 'windows 10/chrome@70' \
-                -s 'windows 10/firefox@62' \
-                -s 'windows 10/firefox@63';
-            else
-              npx -p polymer-cli -- npm run test:ci;
+              npx -p polymer-cli -- npm run test:ci -- -s 'windows 7/internet explorer@11';
             fi
-      - save_cache:
-          key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
-      - save_cache:
-          key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm/_cacache
 
-  # node-v8-browsers:
-  #   <<: *node-base
-  #   docker:
-  #     - image: circleci/node:8-browsers
-  node-v10-browsers:
-    <<: *node-base
-    docker:
-      - image: circleci/node:10-browsers
+workflows:
+  version: 2
+  node-multi-build:
+    jobs:
+      - build
+      - test_local:
+          requires:
+            - build
+      - test_ie_11:
+          requires:
+            - build
+      # - node-v8-browsers
+      # - node-v10-browsers
+
+# jobs:
+#   node-base: &node-base
+#     docker:
+#       - image: circleci/node
+#     parallelism: 1
+#     steps:
+#       - checkout
+#       - restore_cache:
+#           keys:
+#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
+#             - v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-master-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}
+#       - run:
+#           name: Install Global Dependencies
+#           command: sudo npm i -g npm@latest --quiet
+#       - run:
+#           name: Install Dependencies
+#           command: npm ci --quiet
+#       - run:
+#           name: Versions
+#           command: node -v && npm version && which npm && pwd
+#       - run:
+#           name: Running X Virtual Framebuffer
+#           command: Xvfb :99 -screen 0 1920x1080x24
+#           background: true
+#       - run:
+#           name: Build
+#           command: npm run ts
+#       - run:
+#           name: Lint
+#           command: npm run lint
+#       - run:
+#           name: Test
+#           command: |
+#             if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
+#               npx -p polymer-cli -- npm run test:ci -- \
+#                 -s 'windows 7/internet explorer@11' \
+#                 -s 'windows 10/microsoftedge@17' \
+#                 -s 'windows 10/microsoftedge@13' \
+#                 -s 'os x 10.11/safari@9' \
+#                 -s 'macos 10.12/safari@10.1' \
+#                 -s 'Linux/chrome@41' \
+#                 -s 'windows 10/chrome@70' \
+#                 -s 'windows 10/firefox@62' \
+#                 -s 'windows 10/firefox@63';
+#             else
+#               npx -p polymer-cli -- npm run test:ci;
+#             fi
+#       - save_cache:
+#           key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-lock-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+#           paths:
+#             - node_modules
+#       - save_cache:
+#           key: v{{ .Environment.CIRCLE_BUILD_NUM }}-npm-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+#           paths:
+#             - ~/.npm/_cacache
+
+#   # node-v8-browsers:
+#   #   <<: *node-base
+#   #   docker:
+#   #     - image: circleci/node:8-browsers
+#   node-v10-browsers:
+#     <<: *node-base
+#     docker:
+#       - image: circleci/node:10-browsers
