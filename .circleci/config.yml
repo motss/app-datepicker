@@ -65,18 +65,6 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 7/internet explorer@11';
             fi
 
-  test_edge_13:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Edge 13)
-          command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@13';
-            fi
-
   test_edge_17:
     <<: *defaults
     steps:
@@ -89,16 +77,16 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@17';
             fi
 
-  test_safari_9:
+  test_edge_13:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Safari 9)
+          name: Test (Edge 13)
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'os x 10.11/safari@9';
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@13';
             fi
 
   test_safari_10_1:
@@ -113,16 +101,16 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'macos 10.12/safari@10.1';
             fi
 
-  test_chrome_41:
+  test_safari_9:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Chrome 41)
+          name: Test (Safari 9)
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
+              npx -p polymer-cli -- npm run test:sl -- -s 'os x 10.11/safari@9';
             fi
 
   test_chrome_70:
@@ -137,16 +125,16 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/chrome@70';
             fi
 
-  test_firefox_62:
+  test_chrome_41:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Firefox 62)
+          name: Test (Chrome 41)
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
+              npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
             fi
 
   test_firefox_63:
@@ -161,6 +149,18 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@63';
             fi
 
+  test_firefox_62:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/app-datepicker
+      - run:
+          name: Test (Firefox 62)
+          command: |
+            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
+            fi
+
 workflows:
   version: 2
   node-multi-build:
@@ -169,34 +169,39 @@ workflows:
       - test_local:
           requires:
             - build
+
       - test_ie_11:
+          requires:
+            - build
+
+      - test_edge_17:
           requires:
             - build
       - test_edge_13:
           requires:
             - build
-      - test_edge_17:
-          requires:
-            - build
-            - test_edge_13
-      - test_safari_9:
-          requires:
-            - build
+            - test_edge_17
+
       - test_safari_10_1:
           requires:
             - build
-            - test_safari_9
-      - test_chrome_41:
+      - test_safari_9:
           requires:
             - build
+            - test_safari_10_1
+
       - test_chrome_70:
           requires:
             - build
-            - test_chrome_41
-      - test_firefox_62:
+      - test_chrome_41:
           requires:
             - build
+            - test_chrome_70
+
       - test_firefox_63:
           requires:
             - build
-            - test_firefox_62
+      - test_firefox_62:
+          requires:
+            - build
+            - test_firefox_63
