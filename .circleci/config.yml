@@ -137,7 +137,7 @@ jobs:
               npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
             fi
 
-  test_firefox_63:
+  test_firefox:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -148,18 +148,24 @@ jobs:
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@63';
             fi
-
-  test_firefox_62:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
       - run:
           name: Test (Firefox 62)
           command: |
             if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
             fi
+
+  # test_firefox_62:
+  #   <<: *defaults
+  #   steps:
+  #     - attach_workspace:
+  #         at: ~/app-datepicker
+  #     - run:
+  #         name: Test (Firefox 62)
+  #         command: |
+  #           if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+  #             npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
+  #           fi
 
 workflows:
   version: 2
@@ -170,38 +176,41 @@ workflows:
           requires:
             - build
 
-      - test_ie_11:
-          requires:
-            - build
+      # - test_ie_11:
+      #     requires:
+      #       - build
 
-      - test_edge_17:
-          requires:
-            - build
-      - test_edge_13:
-          requires:
-            - build
-            - test_edge_17
+      # - test_edge_17:
+      #     requires:
+      #       - build
+      # - test_edge_13:
+      #     requires:
+      #       - build
+      #       - test_edge_17
 
-      - test_safari_10_1:
-          requires:
-            - build
-      - test_safari_9:
-          requires:
-            - build
-            - test_safari_10_1
+      # - test_safari_10_1:
+      #     requires:
+      #       - build
+      # - test_safari_9:
+      #     requires:
+      #       - build
+      #       - test_safari_10_1
 
-      - test_chrome_70:
-          requires:
-            - build
-      - test_chrome_41:
-          requires:
-            - build
-            - test_chrome_70
+      # - test_chrome_70:
+      #     requires:
+      #       - build
+      # - test_chrome_41:
+      #     requires:
+      #       - build
+      #       - test_chrome_70
 
-      - test_firefox_63:
+      - test_firefox:
           requires:
             - build
-      - test_firefox_62:
-          requires:
-            - build
-            - test_firefox_63
+      # - test_firefox_63:
+      #     requires:
+      #       - build
+      # - test_firefox_62:
+      #     requires:
+      #       - build
+      #       - test_firefox_63
