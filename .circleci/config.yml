@@ -61,7 +61,7 @@ jobs:
       - run:
           name: Test (Internet Explorer 11)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 7/internet explorer@11';
             fi
 
@@ -73,7 +73,7 @@ jobs:
       - run:
           name: Test (Edge 17)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@17';
             fi
 
@@ -85,7 +85,7 @@ jobs:
       - run:
           name: Test (Edge 13)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@13';
             fi
 
@@ -97,7 +97,7 @@ jobs:
       - run:
           name: Test (Safari 10.1)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'macos 10.12/safari@10.1';
             fi
 
@@ -109,7 +109,7 @@ jobs:
       - run:
           name: Test (Safari 9)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'os x 10.11/safari@9';
             fi
 
@@ -121,7 +121,7 @@ jobs:
       - run:
           name: Test (Chrome 70)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/chrome@70';
             fi
 
@@ -133,7 +133,7 @@ jobs:
       - run:
           name: Test (Chrome 41)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
             fi
 
@@ -145,7 +145,7 @@ jobs:
       - run:
           name: Test (Firefox 63)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@63';
             fi
 
@@ -157,7 +157,7 @@ jobs:
       - run:
           name: Test (Firefox 62)
           command: |
-            if [ -n "${CIRCLE_PULL_REQUEST}" ]; then
+            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
               npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@62';
             fi
 
