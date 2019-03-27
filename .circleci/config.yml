@@ -178,21 +178,25 @@ workflows:
       - test_edge_17:
           requires:
             - build
+            - test_edge_13
       - test_safari_9:
           requires:
             - build
       - test_safari_10_1:
           requires:
             - build
+            - test_safari_9
       - test_chrome_41:
           requires:
             - build
       - test_chrome_70:
           requires:
             - build
+            - test_chrome_41
       - test_firefox_62:
           requires:
             - build
       - test_firefox_63:
           requires:
             - build
+            - test_firefox_62
