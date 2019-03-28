@@ -74,10 +74,10 @@ export class AppDatepicker extends LitElement {
       /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
       background-color: #fff;
       border-radius:
-        var(--app-datepicker-border-top-left-radius, var(--app-datepicker-border-radius))
-        var(--app-datepicker-border-top-right-radius, var(--app-datepicker-border-radius))
-        var(--app-datepicker-border-bottom-right-radius, var(--app-datepicker-border-radius))
-        var(--app-datepicker-border-bottom-left-radius, var(--app-datepicker-border-radius));
+        var(--app-datepicker-border-top-left-radius, 8px)
+        var(--app-datepicker-border-top-right-radius, 8px)
+        var(--app-datepicker-border-bottom-right-radius, 8px)
+        var(--app-datepicker-border-bottom-left-radius, 8px);
       overflow: hidden;
     }
     :host([landscape]) {
@@ -271,7 +271,7 @@ export class AppDatepicker extends LitElement {
       height: 40px;
       top: 50%;
       left: 50%;
-      background-color: var(--app-datepicker-primary-color);
+      background-color: var(--app-datepicker-primary-color, #1a73e8);
       border-radius: 50%;
       transform: translate3d(-50%, -50%, 0);
       will-change: transform;
@@ -301,7 +301,7 @@ export class AppDatepicker extends LitElement {
       pointer-events: none;
     }
     tr > td.full-calendar__day.day--today {
-      color: var(--app-datepicker-primary-color);
+      color: var(--app-datepicker-primary-color, #1a73e8);
     }
     tr > td.full-calendar__day.day--focused,
     tr > td.full-calendar__day.day--today.day--focused {
@@ -347,7 +347,7 @@ export class AppDatepicker extends LitElement {
       opacity: .05;
     }
     .year-list-view__list-item.year--selected {
-      color: var(--app-datepicker-primary-color);
+      color: var(--app-datepicker-primary-color, #1a73e8);
       font-size: 24px;
       font-weight: 500;
     }

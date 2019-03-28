@@ -27,6 +27,7 @@ export class AppDatepickerDialog extends LitElement {
   static get is() { return 'app-datepicker-dialog'; }
 
   static get styles() {
+    // tslint:disable: max-line-length
     return [
       datepickerVariables,
       css`
@@ -45,6 +46,8 @@ export class AppDatepickerDialog extends LitElement {
         pointer-events: none;
         z-index: var(--app-datepicker-dialog-z-index, 24);
         -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+        --mdc-theme-primary: var(--app-datepicker-primary-color, #1a73e8);
       }
 
       .scrim,
@@ -71,7 +74,7 @@ export class AppDatepickerDialog extends LitElement {
         max-height: 100%;
         background-color: #fff;
         transform: translate3d(-50%, -50%, 0);
-        border-radius: var(--app-datepicker-border-radius);
+        border-radius: var(--app-datepicker-dialog-border-radius, 8px);
         will-change: transform, opacity;
         overflow: hidden;
         visibility: hidden;
@@ -92,7 +95,7 @@ export class AppDatepickerDialog extends LitElement {
         margin: 0;
         padding: 12px;
         background-color: inherit;
-        color: var(--app-datepicker-primary-color);
+        color: var(--app-datepicker-primary-color, #1a73e8);
       }
 
       mwc-button + mwc-button {
@@ -110,6 +113,7 @@ export class AppDatepickerDialog extends LitElement {
       }
       `,
     ];
+    // tslint:enable: max-line-length
   }
 
   @property({ type: Number, reflect: true })
