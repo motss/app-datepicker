@@ -537,8 +537,7 @@ export class AppDatepicker extends LitElement {
      */
     const datepickerBodyContent: import('lit-element').TemplateResult =
       START_VIEW.YEAR_LIST === this._startView ?
-        this._renderDatepickerYearList() :
-        this._renderDatepickerCalendar();
+        this._renderDatepickerYearList() : this._renderDatepickerCalendar();
 
     return html`
     <div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>
@@ -831,6 +830,19 @@ export class AppDatepicker extends LitElement {
       const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
       const initialX = totalDraggableDistance * -1;
       const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
+      const dateDate = this._selectedDate;
+      const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
+      const newSelectedDate = new Date(dateDate.setUTCMonth(newM));
+
+      /**
+       * NOTE: Instead of debouncing/ throttling the animation when switching between
+       * calendar months, this prevents subsequent animation that can cause an issue
+       * where a blank calendar comes into view to be queued by ensuring the new updated
+       * selected date's month always fall between the defined `_min` and `_max` values.
+       * Not only does it prevents the aforementioned issue but also avoid adding too much
+       * delay in between animations. Happy spamming the animations as you wish! 😄🎉
+       */
+      if (newM < this._min!.getUTCMonth() || newM > this._max!.getUTCMonth()) return;
 
       return this._animateCalendar({
         target: calendarViewFullCalendar,
@@ -838,10 +850,7 @@ export class AppDatepicker extends LitElement {
         to: newDx,
         postX: initialX,
         postTask: () => {
-          const dateDate = this._selectedDate;
-          const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
-
-          this._selectedDate = new Date(dateDate.setUTCMonth(newM));
+          this._selectedDate = newSelectedDate;
           return this.updateComplete;
         },
       });
