@@ -40,6 +40,7 @@
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
     "test": "polymer test --skip-selenium-install",
     "test:ci": "polymer test --config-file ./wct.config.ci.json",
+    "test:sl": "polymer test --config-file ./wct.config.sl.json",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm",
     "ts": "rm -rf dist/ && tsc",
     "watch": "npm run ts -- --watch"
