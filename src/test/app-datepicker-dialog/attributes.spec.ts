@@ -62,7 +62,7 @@ describe(getTestName(name), () => {
       el.value = valueVal;
       await forceUpdate(el);
 
-      const firstSelectableDate = t.getSelectableDate('Jan 15, 2020')
+      const firstSelectableDate = t.getSelectableDate('Jan 15, 2020');
       const allDisabledDates = t.getAllDisabledDates();
       const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
       const lastDayBeforeMinDate = allDisabledDates.reduce((p, n) => {

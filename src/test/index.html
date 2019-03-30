@@ -12,9 +12,9 @@
      * Reference: {@link https://bit.ly/2Hdn2AU|tools/config.ts at master · Polymer/tools}
      */
     window.WCT = {
-      mochaOptions: { timeout: 99e3 },
+      mochaOptions: { timeout: 539999 },
       numConcurrentSuites: 4,
-      verbose: true,
+      verbose: false,
     };
     </script>
     <script src="../../node_modules/chai/chai.js"></script>
@@ -26,8 +26,8 @@
     <script>
       WCT.loadSuites([
         'runner.html',
-        'runner.html?wc-shadydom=true',
-        'runner.html?wc-shadydom=true&wc-ce=true',
+        // 'runner.html?wc-shadydom=true',
+        // 'runner.html?wc-shadydom=true&wc-ce=true',
         'runner.html?wc-shadydom=true&wc-ce=true&wc-shimcssproperties=true'
       ]);
     </script>
