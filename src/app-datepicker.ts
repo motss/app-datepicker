@@ -827,12 +827,30 @@ export class AppDatepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarViewFullCalendar = this._calendarViewFullCalendar!;
       const totalDraggableDistance = this._totalDraggableDistance!;
+      const dateDate = this._selectedDate;
+      const minDate = this._min!;
+      const maxDate = this._max!;
+
       const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
       const initialX = totalDraggableDistance * -1;
       const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
-      const dateDate = this._selectedDate;
-      const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
-      const newSelectedDate = new Date(dateDate.setUTCMonth(newM));
+
+      const newSelectedDate = toUTCDate(
+        dateDate.getUTCFullYear(),
+        dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1),
+        1);
+      const newSelectedDateFy = newSelectedDate.getUTCFullYear();
+      const newSelectedDateM = newSelectedDate.getUTCMonth();
+
+      const minDateFy = minDate.getUTCFullYear();
+      const minDateM = minDate.getUTCMonth();
+
+      const maxDateFy = maxDate.getUTCFullYear();
+      const maxDateM = maxDate.getUTCMonth();
+
+      /**
+       * TODO(motss): To add test
+       */
 
       /**
        * NOTE: Instead of debouncing/ throttling the animation when switching between
@@ -842,7 +860,11 @@ export class AppDatepicker extends LitElement {
        * Not only does it prevents the aforementioned issue but also avoid adding too much
        * delay in between animations. Happy spamming the animations as you wish! ðð
        */
-      if (newM < this._min!.getUTCMonth() || newM > this._max!.getUTCMonth()) return;
+      const isLessThanYearAndMonth =
+        newSelectedDateFy <= minDateFy && newSelectedDateM < minDateM;
+      const isMoreThanYearAndMonth =
+        newSelectedDateFy >= maxDateFy && newSelectedDateM > maxDateM;
+      if (isLessThanYearAndMonth || isMoreThanYearAndMonth) return;
 
       return this._animateCalendar({
         target: calendarViewFullCalendar,

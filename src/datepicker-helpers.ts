@@ -111,13 +111,9 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const dateDate = new Date(selectedDate);
   const fy = dateDate.getUTCFullYear();
   const m = dateDate.getUTCMonth();
-  const d = dateDate.getUTCDate();
 
-  return [
-    toUTCDate(fy, m - 1, d),
-    dateDate,
-    toUTCDate(fy, m + 1, d),
-  ];
+  /** TODO(rongsen): To add tests, e.g. 2019-03-31 -> next month -> 2019-04-31 not exist! */
+  return [m - 1, m, m + 1].map(n => toUTCDate(fy, n, 1));
 }
 
 export function toFormattedDateString(date: Date) {
