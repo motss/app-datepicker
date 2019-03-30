@@ -32,7 +32,7 @@ export class ClipboardCopy extends LitElement {
 
   private _copyText() {
     const copyNode = this.querySelector(`#${this._forEl!.getAttribute('for')!}`)!;
-    const selection = getSelection();
+    const selection = getSelection()!;
     const range = document.createRange();
 
     selection.removeAllRanges();

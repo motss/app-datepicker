@@ -26,7 +26,10 @@
     "url": "https://github.com/motss"
   },
   "files": [
-    "dist"
+    "dist/*.d.ts.map",
+    "dist/*.d.ts",
+    "dist/*.js.map",
+    "dist/*.js"
   ],
   "main": "dist/app-datepicker.js",
   "module": "dist/app-datepicker.js",
