@@ -59,13 +59,14 @@ describe(getTestName(name), () => {
       strictEqual(el.getAttribute('role'), 'dialog', `No 'role=dialog' attribute set`);
       strictEqual(
         el.getAttribute('aria-label'), 'datepicker', `No 'aria-label=datepicker' attribute set`);
-      strictEqual(el.getAttribute('aria-modal'), 'true', `No 'aria-modal=true' attribute set`);
-      strictEqual(el.getAttribute('aria-hidden'), 'true', `No 'aria-hidden=true' attribute set`);
+      strictEqual(
+        el.getAttribute('aria-modal'), 'true', `No 'aria-modal=true' attribute set`);
+      strictEqual(
+        el.getAttribute('aria-hidden'), 'true', `No 'aria-hidden=true' attribute set`);
     });
 
     it(`renders with 'locale=en-US'`, () => {
-      const locale = el.locale;
-      strictEqual(locale, 'en-US', `Locale not matched (${locale})`);
+      strictEqual(el.locale, 'en-US', `Locale not matched`);
     });
 
     it(`renders with properties that reflects to attribute`, async () => {
@@ -87,13 +88,13 @@ describe(getTestName(name), () => {
       for (const { attrName, value } of attrs) {
         const attr = el.getAttribute(attrName);
         await forceUpdate(el);
-        strictEqual(attr, value, `'${attr}' attribute not matched (${attr})`);
+        strictEqual(attr, value, `'${attr}' attribute not matched`);
       }
     });
 
     it(`is hidden with 'display: none'`, async () => {
       const cssDisplayVal = getComputedStylePropertyValue(el, 'display');
-      strictEqual(cssDisplayVal, 'none', `'display' not matched (${cssDisplayVal})`);
+      strictEqual(cssDisplayVal, 'none', `'display' CSS property not matched`);
     });
 
   });
@@ -211,27 +212,20 @@ describe(getTestName(name), () => {
       isNotNull(yearListView, 'Year list view not found');
       isAtLeast(allYearListViewItems.length, 1, 'No year list items found');
 
-      const formattedYear = yearFormatter(getResolvedDate());
-
       const firstSelectableYearEl = allYearListViewItems[0];
       const lastSelectableYearEl = allYearListViewItems[allYearListViewItems.length - 1];
 
       isNotNull(firstSelectableYearEl, `No first selectable year found`);
       isNotNull(lastSelectableYearEl, `No last selectable year found`);
 
-      const firstSelectableYearLabel =
-        getShadowInnerHTML(firstSelectableYearEl.querySelector('div')!);
-      const lastSelectableYearLabel =
-        getShadowInnerHTML(lastSelectableYearEl.querySelector('div')!);
-
       strictEqual(
-        firstSelectableYearLabel,
-        formattedYear,
-        `First selectable not matched (${formattedYear})`);
+        getShadowInnerHTML(firstSelectableYearEl.querySelector('div')!),
+        yearFormatter(getResolvedDate()),
+        `First selectable not matched`);
       strictEqual(
-        lastSelectableYearLabel,
+        getShadowInnerHTML(lastSelectableYearEl.querySelector('div')!),
         '2100',
-        `Last selectable not matched (${lastSelectableYearLabel})`);
+        `Last selectable not matched`);
     });
 
     it(`selects, highlights this year`, async () => {
@@ -240,17 +234,15 @@ describe(getTestName(name), () => {
 
       const now = getResolvedDate();
       const fy = now.getFullYear();
-      const formattedYear = yearFormatter(now);
 
       isNotNull(yearSelectedEl, `Selected year not found`);
       isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
       strictEqual((yearSelectedEl as any).year, fy, `'year' property not matched`);
 
-      const selectedYearLabel = getShadowInnerHTML(yearSelectedDivEl);
       strictEqual(
-        selectedYearLabel,
-        formattedYear,
-        `Selected year label not matched (${selectedYearLabel})`);
+        getShadowInnerHTML(yearSelectedDivEl),
+        yearFormatter(now),
+        `Selected year label not matched`);
     });
 
   });
