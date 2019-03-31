@@ -302,6 +302,3 @@ declare global {
     'app-datepicker-dialog': AppDatepickerDialog;
   }
 }
-
-// FIXME: Should `min` set to today's date?
-// TODO: To add tests for action buttons (confirm + dismiss)

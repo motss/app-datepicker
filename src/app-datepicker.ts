@@ -1064,7 +1064,7 @@ declare global {
   }
 
   interface HTMLButtonElement {
-    year: string;
+    year: number;
   }
 }
 

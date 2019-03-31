@@ -166,7 +166,7 @@ describe(getTestName(name), () => {
       const formattedDay = dayFormatter(now);
 
       isTrue(dayTodayEl.isEqualNode(dayFocusedEl), `today's date != focused date`);
-      strictEqual(el.value, toFormattedDateString(now));
+      strictEqual(el.value, toFormattedDateString(now), `'value' not matched`);
       strictEqual(
         dayTodayEl.getAttribute('aria-label'),
         formattedDate,
@@ -237,7 +237,7 @@ describe(getTestName(name), () => {
 
       isNotNull(yearSelectedEl, `Selected year not found`);
       isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
-      strictEqual((yearSelectedEl as any).year, fy, `'year' property not matched`);
+      strictEqual(yearSelectedEl.year, fy, `'year' property not matched`);
 
       strictEqual(
         getShadowInnerHTML(yearSelectedDivEl),

@@ -4,6 +4,8 @@ import { CalendarDays, CalendarWeekdays } from './calendar';
 import { calendarDays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
+  // CTRL = 17,
+  // ALT = 18,
   ESCAPE = 27,
   SHIFT = 16,
   TAB = 9,
@@ -23,23 +25,6 @@ export interface FocusTrap {
 }
 type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
-// export const KEYCODES_MAP = {
-//   // CTRL: 17,
-//   // ALT: 18,
-//   ESCAPE: 27,
-//   SHIFT: 16,
-//   TAB: 9,
-//   ENTER: 13,
-//   SPACE: 32,
-//   PAGE_UP: 33,
-//   PAGE_DOWN: 34,
-//   END: 35,
-//   HOME: 36,
-//   ARROW_LEFT: 37,
-//   ARROW_UP: 38,
-//   ARROW_RIGHT: 39,
-//   ARROW_DOWN: 40,
-// };
 const UP_KEYS = [
   KEYCODES_MAP.ARROW_UP,
   KEYCODES_MAP.PAGE_UP,
