@@ -491,6 +491,7 @@ export class AppDatepicker extends LitElement {
   private _disabledDaysSet?: Set<number>;
   private _disabledDatesSet?: Set<number>;
   private _calendarTracker?: Tracker;
+  private _lastSelectedDate?: Date;
 
   public constructor() {
     super();
@@ -827,7 +828,7 @@ export class AppDatepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarViewFullCalendar = this._calendarViewFullCalendar!;
       const totalDraggableDistance = this._totalDraggableDistance!;
-      const dateDate = this._selectedDate;
+      const dateDate = this._lastSelectedDate || this._selectedDate;
       const minDate = this._min!;
       const maxDate = this._max!;
 
@@ -858,13 +859,21 @@ export class AppDatepicker extends LitElement {
        * where a blank calendar comes into view to be queued by ensuring the new updated
        * selected date's month always fall between the defined `_min` and `_max` values.
        * Not only does it prevents the aforementioned issue but also avoid adding too much
-       * delay in between animations. Happy spamming the animations as you wish! ðð
+       * delay in between animations. Happy spamming the animations as you wish! 😄 🎉
        */
-      const isLessThanYearAndMonth =
-        newSelectedDateFy <= minDateFy && newSelectedDateM < minDateM;
-      const isMoreThanYearAndMonth =
-        newSelectedDateFy >= maxDateFy && newSelectedDateM > maxDateM;
-      if (isLessThanYearAndMonth || isMoreThanYearAndMonth) return;
+      const isLessThanYearAndMonth = newSelectedDateFy < minDateFy ||
+        (newSelectedDateFy <= minDateFy && newSelectedDateM < minDateM);
+      const isMoreThanYearAndMonth = newSelectedDateFy > maxDateFy ||
+        (newSelectedDateFy <= maxDateFy && newSelectedDateM > maxDateM);
+      if (isLessThanYearAndMonth || isMoreThanYearAndMonth) return this.updateComplete;
+
+      /**
+       * NOTE: This improves spamming animations via gestures but relying on another property
+       * to keep track of the last/ latest selected date so that when you spam click on
+       * the navigate next button 3 times, based on the expected mental model and behavior,
+       * the calendar month should switch 3 times, e.g. Jan 2020 -> 3 clicks -> Apr 2020.
+       */
+      this._lastSelectedDate = newSelectedDate;
 
       return this._animateCalendar({
         target: calendarViewFullCalendar,
@@ -872,7 +881,12 @@ export class AppDatepicker extends LitElement {
         to: newDx,
         postX: initialX,
         postTask: () => {
-          this._selectedDate = newSelectedDate;
+          /**
+           * NOTE: We can **ONLY** update `_selectedDate` when animation finishes due to UX.
+           * It will defeat the purpose of animating the calendar month during switching
+           * as calendar month gets updated before the animation kicks in.
+           */
+          this._selectedDate = this._lastSelectedDate!;
           return this.updateComplete;
         },
       });

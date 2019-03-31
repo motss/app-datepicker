@@ -466,6 +466,158 @@ describe(getTestName(name), () => {
           `Focused date label not updated`);
       });
 
+      it(`never shows calendar month that is < 'min'`, async () => {
+        /**
+         * NOTE: This indirectly comprises 2 kind of tests:
+         *
+         * 1. Spam clicks on navigate previous button
+         * 2. New selected date will always be > `min` in terms of calendar month
+         */
+        el.min = date13;
+        el.max = '';
+        el.value = '2020-03-15';
+        await forceUpdate(el);
+
+        const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
+        isNotNull(prevBtnMonthSelectorEl, `Prev month selector button not found`);
+
+        for (let i = 0; i < 3; i += 1) {
+          triggerEvent(prevBtnMonthSelectorEl, 'click');
+        }
+        await t.waitForDragAnimationFinished();
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Sun, Mar 15',
+          `Calendar selector label not matched`);
+
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, 'Calendar label not found');
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
+      });
+
+      it(`never shows calendar month that is > 'max'`, async () => {
+        /**
+         * NOTE: This indirectly comprises 2 kind of tests:
+         *
+         * 1. Spam clicks on navigate next button
+         * 2. New selected date will always be < `max` in terms of calendar month
+         */
+        el.min = '';
+        el.max = '2020-12-13';
+        el.value = '2020-10-15';
+        await forceUpdate(el);
+
+        const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
+        isNotNull(nextBtnMonthSelectorEl, `Next month selector button not found`);
+
+        for (let i = 0; i < 3; i += 1) {
+          triggerEvent(nextBtnMonthSelectorEl, 'click');
+        }
+        await t.waitForDragAnimationFinished();
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Thu, Oct 15',
+          `Calendar selector label not matched`);
+
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, 'Calendar label not found');
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          ['Dec 2020', 'December, 2020', 'December 2020'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
+      });
+
+      it(`show correct calendar month when spam clicks on navigate next button`, async () => {
+        /**
+         * NOTE: This indirectly comprises 2 kind of tests:
+         *
+         * 1. Spam clicks on navigate previous button
+         * 2. New selected date will always be > `min` in terms of calendar month
+         */
+        el.min = date13;
+        el.max = '';
+        el.value = '2020-03-15';
+        await forceUpdate(el);
+
+        const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
+        isNotNull(nextBtnMonthSelectorEl, `Prev month selector button not found`);
+
+        for (let i = 0; i < 13; i += 1) {
+          triggerEvent(nextBtnMonthSelectorEl, 'click');
+        }
+        await t.waitForDragAnimationFinished();
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Sun, Mar 15',
+          `Calendar selector label not matched`);
+
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, 'Calendar label not found');
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          ['Apr 2021', 'April, 2021', 'April 2021'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
+      });
+
+      it(`show correct calendar month when spam clicks on navigate prev button`, async () => {
+        /**
+         * NOTE: This indirectly comprises 2 kind of tests:
+         *
+         * 1. Spam clicks on navigate previous button
+         * 2. New selected date will always be < `max` in terms of calendar month
+         */
+        el.min = '';
+        el.max = '2020-12-13';
+        el.value = '2020-03-15';
+        await forceUpdate(el);
+
+        const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
+        isNotNull(prevBtnMonthSelectorEl, `Prev month selector button not found`);
+
+        for (let i = 0; i < 13; i += 1) {
+          triggerEvent(prevBtnMonthSelectorEl, 'click');
+        }
+        await t.waitForDragAnimationFinished();
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Sun, Mar 15',
+          `Calendar selector label not matched`);
+
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, 'Calendar label not found');
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          ['Mar 2019', 'March, 2019', 'March 2019'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
+      });
+
     });
   });
 });

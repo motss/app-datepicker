@@ -1027,5 +1027,6 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
       await valueMatchedFromEvent;
     });
+
   });
 });
