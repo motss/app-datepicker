@@ -196,12 +196,20 @@ describe(getTestName(name), () => {
         selectNewYearFromYearListView(el, '2025');
         await forceUpdate(el);
 
-        strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2025');
-        strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Tue, Apr 15');
+        strictEqual(
+          getShadowInnerHTML(t.getBtnYearSelector()),
+          '2025',
+          `Year not updated`);
+        strictEqual(
+          getShadowInnerHTML(t.getBtnCalendarSelector()),
+          'Wed, Jan 15',
+          `Focused date should remain unchanged`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(['Apr 2025', 'April, 2025', 'April 2025'].some(n => calendarLabel === n));
+        isTrue(
+          ['Jan 2025', 'January, 2025', 'January 2025'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
       });
 
       it(`goes to next month by dragging/ swiping calendar`, async () => {

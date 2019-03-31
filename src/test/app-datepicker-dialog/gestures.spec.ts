@@ -206,11 +206,11 @@ describe(getTestName(name), () => {
         await forceUpdate(el);
 
         strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2025');
-        strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Tue, Apr 15');
+        strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Wed, Jan 15');
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(['Apr 2025', 'April, 2025', 'April 2025'].some(n => calendarLabel === n));
+        isTrue(['Jan 2025', 'January, 2025', 'January 2025'].some(n => calendarLabel === n));
       });
 
       it(`goes to next month by dragging/ swiping calendar`, async () => {
