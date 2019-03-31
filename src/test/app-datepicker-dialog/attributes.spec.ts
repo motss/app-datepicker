@@ -1,9 +1,6 @@
+import { START_VIEW } from '../../app-datepicker';
 import { AppDatepickerDialog } from '../../app-datepicker-dialog';
-import {
-  getResolvedDate,
-  hasClass,
-  toFormattedDateString,
-} from '../../datepicker-helpers';
+import { WEEK_NUMBER_TYPE } from '../../calendar';
 import {
   date13,
   date15,
@@ -11,23 +8,14 @@ import {
   defaultLocale,
 } from '../test-config';
 import {
-  dragTo,
   forceUpdate,
-  getComputedStylePropertyValue,
-  getShadowInnerHTML,
   getTestName,
   queryInit,
-  setupDragPoint,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
-import { OptionsDragTo } from '../test-helpers';
 
 const {
   isTrue,
   strictEqual,
-  isNotNull,
 } = chai.assert;
 const name = AppDatepickerDialog.is;
 
@@ -42,6 +30,8 @@ describe(getTestName(name), () => {
 
       el.locale = defaultLocale;
       el.startView = START_VIEW.CALENDAR;
+      el.min = date13;
+      el.value = date15;
       await forceUpdate(el);
 
       el.open();
@@ -54,554 +44,187 @@ describe(getTestName(name), () => {
       document.body.removeChild(el);
     });
 
+    it(`renders with predefined properties`, async () => {
+      strictEqual(el.locale, defaultLocale, `'locale' not matched`);
+      strictEqual(el.value, date15, `'value' not matched`);
+
+      strictEqual(el.startView, START_VIEW.CALENDAR, `'startView' not matched`);
+      strictEqual(
+        el.getAttribute('startview'), START_VIEW.CALENDAR, `'startview' attribute not matched`);
+
+      strictEqual(el.min, date13, `'min' not matched`);
+      strictEqual(el.getAttribute('min'), date13, `'min' attribute not matched`);
+    });
+
     it(`renders with correct 'min'`, async () => {
-      const minVal = date15;
-      const valueVal = date17;
-
-      el.setAttribute('min', minVal);
-      el.value = valueVal;
+      const newVal = date15;
+      el.setAttribute('min', newVal);
       await forceUpdate(el);
 
-      const firstSelectableDate = t.getSelectableDate('Jan 15, 2020');
-      const allDisabledDates = t.getAllDisabledDates();
-      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
-      const lastDayBeforeMinDate = allDisabledDates.reduce((p, n) => {
-        const pDay = +p.day;
-        const nDay = +n.day;
+      strictEqual(el.min, newVal, `'min' not updated`);
+      strictEqual(el.getAttribute('min'), newVal, `'min' attribute not set`);
 
-        /**
-         * NOTE: `15` means day of `date15`.
-         */
-        return nDay > pDay && nDay < 15 ? n : p;
-      });
-
-      isNotNull(firstSelectableDate, 'First selectable date not found');
-      isNotNull(lastDayBeforeMinDate, `Last day before 'min' not found`);
-      isNotNull(focusedDate, 'Focused date not found');
-
-      isTrue(!hasClass(firstSelectableDate, 'day--disabled'), 'First selectable is disabled day');
+      strictEqual(t.elem.min, newVal, `datepicker's 'min' not updated`);
       strictEqual(
-        lastDayBeforeMinDate.getAttribute('aria-label'),
-        'Jan 14, 2020',
-        `Last day before 'min' not matched`);
-      strictEqual(
-        focusedDate.getAttribute('aria-label'),
-        'Jan 17, 2020',
-        'Focused date not matched');
-
-      strictEqual(el.min, minVal, `'min' property not matched`);
-      strictEqual(el.value, valueVal, `'value' property not matched`);
-      strictEqual(el.getAttribute('min'), minVal, `'min' attribute not matched`);
-
-      el.value = date13;
-      await forceUpdate(el);
-
-      isTrue(
-        !hasClass(focusedDate, 'day--focused'),
-        `Focused date not matched ('value' < 'min')`);
-      strictEqual(el.value, date13, `New 'value' not matched ('value' < 'min')`);
-
-      el.setAttribute('min', ''); /** Any falsy value, but here only tests empty string */
-      await forceUpdate(el);
-
-      const newFocusedDateWithoutMin = t.getDatepickerBodyCalendarViewDayFocused()!;
-      isNotNull(newFocusedDateWithoutMin, `New focused date not found`);
-      strictEqual(el.min, '', `New 'min' not matched`);
-      strictEqual(el.getAttribute('min'), '', `New 'min' attribute not matched`);
-      strictEqual(
-        newFocusedDateWithoutMin.getAttribute('aria-label'),
-        'Jan 13, 2020',
-        `New focused date not matched with no 'min'`);
+        t.elem.getAttribute('min'), newVal, `datepicker's 'min' attribute not set`);
     });
 
     it(`renders with correct 'max'`, async () => {
-      const maxVal = date15;
-      const valueVal = date13;
-
-      el.setAttribute('max', maxVal);
-      el.value = valueVal;
+      const newVal = date17;
+      el.setAttribute('max', newVal);
       await forceUpdate(el);
 
-      const lastSelectableDate = t.getSelectableDate('Jan 15, 2020');
-      const allDisabledDates = t.getAllDisabledDates();
-      const focusedDate = t.getDatepickerBodyCalendarViewDayFocused()!;
-      const firstDayAfterMaxDate = allDisabledDates.reduceRight((p, n) => {
-        const pDay = +p.day;
-        const nDay = +n.day;
+      strictEqual(el.max, newVal, `'max' not updated`);
+      strictEqual(el.getAttribute('max'), newVal, `'max' attribute not set`);
 
-        /**
-         * NOTE: `15` means day of `date15`.
-         */
-        return nDay < pDay && nDay > 15 ? n : p;
-      });
-
-      isNotNull(lastSelectableDate, 'Last selectable date not found');
-      isNotNull(firstDayAfterMaxDate, `Last day before 'min' not found`);
-      isNotNull(focusedDate, 'Focused date not found');
-
-      isTrue(!hasClass(lastSelectableDate, 'day--disabled'), 'Last selectable is disabled day');
+      strictEqual(t.elem.max, newVal, `datepicker's 'max' not updated`);
       strictEqual(
-        firstDayAfterMaxDate.getAttribute('aria-label'),
-        'Jan 16, 2020',
-        `First day after 'max' not matched`);
-      strictEqual(
-        focusedDate.getAttribute('aria-label'),
-        'Jan 13, 2020',
-        'Focused date not matched');
-
-      strictEqual(el.max, maxVal, `'max' property not matched`);
-      strictEqual(el.value, valueVal, `'value' property not matched`);
-      strictEqual(el.getAttribute('max'), maxVal, `'max' attribute not matched`);
-
-      el.value = date17;
-      await forceUpdate(el);
-
-      isTrue(
-        !hasClass(focusedDate, 'day--focused'),
-        `Focused date not matched ('value' > 'max')`);
-      strictEqual(el.value, date17, `New 'value' not matched ('value' > 'max')`);
-
-      el.setAttribute('max', ''); /** Any falsy value, but here only tests empty string */
-      await forceUpdate(el);
-
-      const newFocusedDateWithoutMax = t.getDatepickerBodyCalendarViewDayFocused()!;
-      isNotNull(newFocusedDateWithoutMax, `New focused date not found`);
-      strictEqual(el.max, '', `New 'max' not matched`);
-      strictEqual(el.getAttribute('max'), '', `New 'max' not matched`);
-      strictEqual(
-        newFocusedDateWithoutMax.getAttribute('aria-label'),
-        'Jan 17, 2020',
-        `New focused date not matched with no 'max'`);
+        t.elem.getAttribute('max'), newVal, `datepicker's 'max' attribute not set`);
     });
 
     it(`renders with correct 'value'`, async () => {
-      const todayDate = getResolvedDate();
-
-      strictEqual(
-        el.value,
-        toFormattedDateString(todayDate),
-        `'value' does not match with today's date`);
-
-      const val = date15;
-
-      /** NOTE: To ensure 'min' is lesser than 'val' */
-      el.min = date13;
-      el.setAttribute('value', val);
+      const newVal = date17;
+      el.setAttribute('value', newVal);
       await forceUpdate(el);
 
-      strictEqual(el.value, val, `New 'value' not matched`);
-      strictEqual(el.getAttribute('value'), val, `New 'value' attribute not matched`);
+      strictEqual(el.value, newVal, `'value' not updated`);
+
+      strictEqual(t.elem.value, newVal, `datepicker's 'value' not updated`);
     });
 
     it(`renders with correct 'startView'`, async () => {
-      /**
-       * NOTE: Not testing initial `startView="yearList"`,
-       * assuming that works if this test passes.
-       */
-      strictEqual(el.startView, START_VIEW.CALENDAR, `Incorrect initial 'startView'`);
-      strictEqual(
-        el.getAttribute('startview'),
-        START_VIEW.CALENDAR,
-        `Incorrect initial 'startview' attribute`);
-
-      /** FIXME: Shady DOM only supports all attributs in lowercase */
-      el.setAttribute('startview', START_VIEW.YEAR_LIST);
+      const newVal = START_VIEW.YEAR_LIST;
+      el.setAttribute('startview', newVal);
       await forceUpdate(el);
 
-      const yearListView = t.getDatepickerBodyYearListView();
-      strictEqual(el.startView, START_VIEW.YEAR_LIST, `New 'startView' not matched`);
+      strictEqual(el.startView, newVal, `'startView' not updated`);
+      strictEqual(el.getAttribute('startview'), newVal, `'startview' attribute not set`);
+
+      strictEqual(t.elem.startView, newVal, `datepicker's 'startView' not updated`);
       strictEqual(
-        el.getAttribute('startview'),
-        START_VIEW.YEAR_LIST,
-        `New 'startview' attribute not matched`);
-      isNotNull(yearListView, `Year list view not found`);
+        t.elem.getAttribute('startview'),
+        newVal,
+        `datepicker's 'startview' attribute not set`);
     });
 
-    it(`renders with correct 'firstDayOfWeek'`, async () => {
-      strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
-
-      /** NOTE: Ensure dates are not disabled during testings */
-      el.min = date13;
-      el.value = date15;
+    it(`renders with correct 'firstdayofweek'`, async () => {
+      const newVal = '1';
+      el.setAttribute('firstdayofweek', newVal);
       await forceUpdate(el);
 
-      const expectedFirstDayInMonthIdx = [
-        4,
-        3,
-        2,
-        1,
-        0,
-        6,
-        5,
-        4,
-        3,
-        2,
-      ];
+      strictEqual(el.firstDayOfWeek, +newVal, `'firstDayOfWeek' not updated`);
+      strictEqual(
+        el.getAttribute('firstdayofweek'),
+        newVal,
+        `'firstdayofweek' attribute not set`);
 
-      for (let i = -1; i < 9; i += 1) {
-        el.setAttribute('firstdayofweek', `${i}`);
-        await forceUpdate(el);
-
-        const fullCalendarDays = t.getAllCalendarDays();
-        const firstDayInMonthIdx = fullCalendarDays.findIndex(n => !hasClass(n, 'day--empty'));
-
-        strictEqual(el.firstDayOfWeek, i, `New 'firstDayOfWeek' (${i}) not matched`);
-        strictEqual(
-          el.getAttribute('firstdayofweek'),
-          `${i}`,
-          `New 'firstdayofweek' attribute (${i}) not matched`);
-        strictEqual(
-          firstDayInMonthIdx,
-          expectedFirstDayInMonthIdx[1 + i],
-          `Week index not matched with new 'firstDayOfWeek' (${i})`);
-      }
+      strictEqual(t.elem.firstDayOfWeek, +newVal, `datepicker's 'firstDayOfWeek' not updated`);
+      strictEqual(
+        t.elem.getAttribute('firstdayofweek'),
+        newVal,
+        `datepicker's 'firstdayofweek' attribute not set`);
     });
 
-    it(`renders with 'showWeekNumber'`, async () => {
-      isTrue(!el.showWeekNumber, `'showWeekNumber' is true`);
-      isTrue(!el.hasAttribute('showweeknumber'), `'showweeknumber' attribute is set`);
-
+    it(`renders with correct 'showweeknumber'`, async () => {
       el.setAttribute('showweeknumber', '');
       await forceUpdate(el);
 
-      const weekdays = t.getAllWeekdays();
-      const weekNumberLabel = weekdays && weekdays[0] && getShadowInnerHTML(weekdays[0]);
+      strictEqual(el.showWeekNumber, true, `'showWeekNumber' not updated`);
+      isTrue(el.hasAttribute('showweeknumber'), `'showweeknumber' attribute not set`);
 
-      strictEqual(weekNumberLabel, 'Wk', `Week number label not found`);
-      isTrue(el.showWeekNumber, `'showWeekNumber' is false`);
-      isTrue(el.hasAttribute('showweeknumber'), `'showweeknumber' attribute is not set`);
+      strictEqual(t.elem.showWeekNumber, true, `datepicker's 'showWeekNumber' not updated`);
+      isTrue(
+        t.elem.hasAttribute('showweeknumber'),
+        `datepicker's 'showweeknumber' attribute not set`);
     });
 
     it(`renders with correct 'weekNumberType'`, async () => {
-      el.min = date13;
-      el.value = date15;
-      el.showWeekNumber = true;
+      const newVal = WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR;
+      el.setAttribute('weeknumbertype', newVal);
       await forceUpdate(el);
 
       strictEqual(
-        el.weekNumberType,
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        `'weekNumberType' not matched`);
+        el.weekNumberType, newVal, `'weekNumberType' not updated`);
       strictEqual(
         el.getAttribute('weeknumbertype'),
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        `'weeknumbertype' attribute not matched`);
+        newVal,
+        `'weeknumbertype' attribute not set`);
 
-      const allWeekNumberTypes = [
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR,
-        WEEK_NUMBER_TYPE.FIRST_FULL_WEEK,
-      ];
-      const expectedWeekdayLabels = [1, 1, 52];
-
-      for (let i = 0; i < 3; i += 1) {
-        const weekNumberType = allWeekNumberTypes[i];
-
-        el.setAttribute('weeknumbertype', weekNumberType);
-        await forceUpdate(el);
-
-        const firstWeekdayLabel = getShadowInnerHTML(t.getFirstWeekdayLabel());
-        strictEqual(
-          el.weekNumberType,
-          weekNumberType,
-          `'weekNumberType' not matched ('${weekNumberType}')`);
-        strictEqual(
-          el.getAttribute('weeknumbertype'),
-          weekNumberType,
-          `'weeknumbertype' attribute not matched ('${weekNumberType}')`);
-        strictEqual(
-          firstWeekdayLabel,
-          `${expectedWeekdayLabels[i]}`,
-          `First weekday label not matched ('${weekNumberType}')`);
-      }
+      strictEqual(
+        t.elem.weekNumberType,
+        newVal,
+        `datepicker's 'weekNumberType' not updated`);
+      strictEqual(
+        t.elem.getAttribute('weeknumbertype'),
+        newVal,
+        `datepicker's 'weeknumbertype' attribute not set`);
     });
 
     it(`renders with correct 'landscape'`, async () => {
-      strictEqual(el.landscape, false, `'landscape' not matched`);
-      strictEqual(
-        getComputedStylePropertyValue(el, 'display'),
-        'block',
-        `Element has no 'display: block'`);
-
       el.setAttribute('landscape', '');
       await forceUpdate(el);
 
-      isTrue(el.landscape, `'landscape' not matched`);
-      isTrue(el.hasAttribute('landscape'), `No 'landscape' attribute set`);
-      strictEqual(
-        getComputedStylePropertyValue(t.elem, 'display'),
-        'flex',
-        `Element has no 'display: flex`);
+      strictEqual(el.landscape, true, `'landscape' not updated`);
+      isTrue(el.hasAttribute('landscape'), `'landscape' attribute not set`);
+
+      strictEqual(t.elem.landscape, true, `datepicker's 'landscape' not updated`);
+      isTrue(t.elem.hasAttribute('landscape'), `datepicker's 'landscape' attribute not set`);
     });
 
-    it(`renders with different 'locale'`, async () => {
-      const getBtnSelectorCalendarInnerHTML =
-        () => getShadowInnerHTML(t.getBtnCalendarSelector());
-      const getCalendarWeekdaysInnerHTML =
-        () => t.getAllWeekdays().map(n => getShadowInnerHTML(n)).join(', ');
-
-      el.min = date13;
-      el.value = date15;
-      el.showWeekNumber = false;
-      el.firstDayOfWeek = 0;
+    it(`renders with correct 'locale'`, async () => {
+      const newVal = 'ja-JP';
+      el.setAttribute('locale', newVal);
       await forceUpdate(el);
 
-      strictEqual(el.locale, defaultLocale, `'locale' not matched`);
-      strictEqual(
-        getBtnSelectorCalendarInnerHTML(),
-        'Wed, Jan 15',
-        `Formatted date in '${defaultLocale}' not matched`);
-      isTrue(
-        [
-          /** Safari 9 with Intl.js polyfill (andyearnshaw/Intl.js#326) */
-          'Sun, Mon, Tue, Wed, Thu, Fri, Sat',
-          'Su, Mo, Tu, We, Th, Fr, Sa', /** IE11 */
-          'S, M, T, W, T, F, S', /** Other browsers */
-        ].some(n => n === getCalendarWeekdaysInnerHTML()),
-        `Formatted weekdays in '${defaultLocale}' not matched`);
+      strictEqual(el.locale, newVal, `'locale' not updated`);
+      strictEqual(el.getAttribute('locale'), newVal, `'locale' attribute not set`);
 
-      const jaJpLocale = 'ja-JP';
-      el.setAttribute('locale', jaJpLocale);
-      await forceUpdate(el);
-
-      strictEqual(el.locale, jaJpLocale, `'locale' not matched ('${jaJpLocale}')`);
-      strictEqual(
-        el.getAttribute('locale'),
-        jaJpLocale,
-        `'locale' attribute not matched ('${jaJpLocale}')`);
-      /**
-       * NOTE: In IE11, there is a whitespace in between. This checks for 2 different kinds of
-       * formatting on different browsers.
-       */
-      isTrue(
-        [
-          '水, 1月15日', /** IE11 on Win7 */
-          '1月15日 (水)', /** IE11 on Win10 */
-          '1月15日(水)', /** Other browsers */
-        ].some(n => n === getBtnSelectorCalendarInnerHTML()),
-        `Formatted date in '${jaJpLocale}' not matched ('${jaJpLocale}')`);
-      strictEqual(
-        getCalendarWeekdaysInnerHTML(),
-        '日, 月, 火, 水, 木, 金, 土',
-        `Formatted weekdays in '${jaJpLocale}' not matched ('${jaJpLocale}')`);
+      strictEqual(t.elem.locale, newVal, `datepicker's 'locale' not updated`);
     });
 
-    it(`renders with different 'disabledDays'`, async () => {
-      const getAllDisabledDays = () =>
-        t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
-
-      el.value = date13;
+    it(`renders with correct 'disabledDays'`, async () => {
+      const newVal = '0,6';
+      el.setAttribute('disableddays', newVal);
       await forceUpdate(el);
 
-      const allDisabledDays = getAllDisabledDays();
+      strictEqual(el.disabledDays, newVal, `'disabledDays' not updated`);
+      strictEqual(el.getAttribute('disableddays'), newVal, `'disableddays' attribute not set`);
 
-      isTrue(!allDisabledDays.length, `No disabled days on initial render`);
-      // isTrue(
-      //   [
-      //     ['Jan 4, 2020', 'Jan 04, 2020'],
-      //     ['Jan 5, 2020', 'Jan 05, 2020'],
-      //     ['Jan 11, 2020'],
-      //     ['Jan 12, 2020'],
-      //     ['Jan 18, 2020'],
-      //     ['Jan 19, 2020'],
-      //     ['Jan 25, 2020'],
-      //     ['Jan 26, 2020'],
-      //   ].every((n, i) => n.some(o => o === allDisabledDays[i])),
-      //   `All disabled days not matched`);
-
-      /**
-       * NOTE: Simple testing here instead of a full suite tests with a
-       * comprehensive combination of disabled days.
-       */
-      el.setAttribute('disableddays', '1,3,5');
-      await forceUpdate(el);
-
-      const allNewDisabledDays = getAllDisabledDays();
-
-      strictEqual(el.disabledDays, '1,3,5', `'disabledDays' not matched`);
-      strictEqual(
-        el.getAttribute('disableddays'),
-        '1,3,5',
-        `'disableddays' attribute not matched`);
-      isTrue(
-        [
-          ['Jan 1, 2020', 'Jan 01, 2020'],
-          ['Jan 3, 2020', 'Jan 03, 2020'],
-          ['Jan 6, 2020', 'Jan 06, 2020'],
-          ['Jan 8, 2020', 'Jan 08, 2020'],
-          ['Jan 10, 2020'],
-          ['Jan 13, 2020'],
-          ['Jan 15, 2020'],
-          ['Jan 17, 2020'],
-          ['Jan 20, 2020'],
-          ['Jan 22, 2020'],
-          ['Jan 24, 2020'],
-          ['Jan 27, 2020'],
-          ['Jan 29, 2020'],
-          ['Jan 31, 2020'],
-        ].every((n, i) => n.some(o => o === allNewDisabledDays[i])),
-        `All new disabled days not matched (disabledDays=1,3,5)`);
-
-      el.setAttribute('disableddays', '');
-      await forceUpdate(el);
-
-      strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
-      strictEqual(el.getAttribute('disableddays'), '', `'disableddays' attribute not reset`);
-      isTrue(
-        getAllDisabledDays().length === 0,
-        `All disabled days not reset`);
+      strictEqual(t.elem.disabledDays, newVal, `datepicker's 'disabledDays' not updated`);
     });
 
-    it(`renders with different 'disabledDates'`, async () => {
-      const getAllDisabledDays = () =>
-        t.getAllDisabledDates().map(n => n.getAttribute('aria-label')!);
-
-      /**
-       * NOTE: It is to ensure not other disabled days on the calendar of the datepicker.
-       */
-      el.value = date13;
-      el.disabledDays = '';
+    it(`renders with correct 'disabledDates'`, async () => {
+      const newVal = '2020-01-20, 2020-01-20T00:00:00.00Z';
+      el.setAttribute('disableddates', newVal);
       await forceUpdate(el);
 
-      strictEqual(el.disabledDays, '', `'disabledDays' not reset`);
-      isTrue(getAllDisabledDays().length === 0, `Disabled days not reset`);
-
-      /**
-       * NOTE: Simple testing here instead of a full suite tests with
-       * a comprehensive combination of disabled dates.
-       */
-      el.setAttribute('disableddates', '2020-01-06, 2020-01-16, 2020-01-23');
-      await forceUpdate(el);
-
-      const allNewDisabledDays = getAllDisabledDays();
-
+      strictEqual(el.disabledDates, newVal, `'disabledDates' not updated`);
       strictEqual(
-        el.disabledDates,
-        '2020-01-06, 2020-01-16, 2020-01-23',
-        `New 'disabledDates' not matched`);
-      strictEqual(
-        el.getAttribute('disableddates'),
-        '2020-01-06, 2020-01-16, 2020-01-23',
-        `New 'disableddates' attribute not matched`);
-      isTrue(
-        [
-          ['Jan 6, 2020', 'Jan 06, 2020'],
-          ['Jan 16, 2020'],
-          ['Jan 23, 2020'],
-        ].every((n, i) => n.some(o => o === allNewDisabledDays[i])),
-        `New disabled dates not matched`);
+        el.getAttribute('disableddates'), newVal, `'disableddates' attribute not set`);
 
-      el.setAttribute('disableddates', '');
-      await forceUpdate(el);
-
-      strictEqual(el.disabledDates, '', `'disabledDates' not reset`);
-      strictEqual(el.getAttribute('disableddates'), '', `'disableddates' attribute not reset`);
-      isTrue(getAllDisabledDays().length === 0, `All disabled dates not reset`);
+      strictEqual(t.elem.disabledDates, newVal, `datepicker's 'disabledDates' not updated`);
     });
 
-    it(`renders with optional 'weekLabel'`, async () => {
-      el.locale = defaultLocale;
-      el.showWeekNumber = true;
+    it(`renders with correct 'weekLabel'`, async () => {
+      const newVal = '周';
+      el.setAttribute('weeklabel', newVal);
       await forceUpdate(el);
 
-      const weekLabelEl = t.getWeekLabel();
-      strictEqual(el.weekLabel, '', `'weekLabel' not matched`);
-      strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not matched`);
+      strictEqual(el.weekLabel, newVal, `'weekLabel' not updated`);
+      strictEqual(el.getAttribute('weeklabel'), newVal, `'weeklabel' attribute not set`);
 
-      const newWeekLabel = '周数';
-      el.setAttribute('weeklabel', newWeekLabel);
-      await forceUpdate(el);
-
-      strictEqual(el.weekLabel, newWeekLabel, `New 'weekLabel' not matched`);
-      strictEqual(
-        el.getAttribute('weeklabel'),
-        newWeekLabel,
-        `New 'weeklabel' attribute not matched`);
-      strictEqual(getShadowInnerHTML(weekLabelEl), newWeekLabel, `New week label not matched`);
-
-      el.setAttribute('weeklabel', '');
-      await forceUpdate(el);
-
-      strictEqual(el.weekLabel, '', `'weekLabel' not reset`);
-      strictEqual(
-        el.getAttribute('weeklabel'),
-        '',
-        `'weeklabel' attribute not reset`);
-      strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not reset`);
+      strictEqual(t.elem.weekLabel, newVal, `datepicker's 'weekLabel' not updated`);
     });
 
-    it(`renders with optional 'dragRatio'`, async () => {
-      strictEqual(el.dragRatio, .15, `Initial 'dragRatio' not matched`);
-      isTrue(!el.hasAttribute('dragratio'), `Initial 'dragratio' attribute set`);
-
-      el.min = date13;
-      el.value = date15;
-      el.setAttribute('dragratio', '.5');
+    it(`renders with correct 'dragRatio'`, async () => {
+      const newVal = .25;
+      el.setAttribute('dragratio', `${newVal}`);
       await forceUpdate(el);
 
-      strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
-      strictEqual(el.getAttribute('dragratio'), '.5', `'dragratio' attribute not matched`);
+      strictEqual(el.dragRatio, newVal, `'dragRatio' not updated`);
+      strictEqual(el.getAttribute('dragratio'), `${newVal}`, `'dragratio' attribute not set`);
 
-      const btnYearSelectorEl = t.getBtnYearSelector();
-      const btnCalendarSelectorEl = t.getBtnCalendarSelector();
-      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
-
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `First year selector text not matched`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `First calendar selector text not matched`);
-
-      const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
-        `First calendar label not matched (${calendarLabel})`);
-
-      const oldStartingPoint = setupDragPoint('left', t.elem);
-      const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
-      const animationTask = t.waitForDragAnimationFinished();
-      await dragTo(calendarViewFullCalendarEl, oldDragOptions);
-      await animationTask;
-
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `Year selector text should not change`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `Calendar selector text should not change`);
-
-      const oldCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
-        `Calendar label should not update (${oldCalendarLabel})`);
-
-      const startingPoint = setupDragPoint('left', t.elem);
-      const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
-      const newAnimationTask = t.waitForDragAnimationFinished();
-      await dragTo(calendarViewFullCalendarEl, dragOptions);
-      await newAnimationTask;
-
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `Year selector text should not change`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `Calendar selector text should not change`);
-
-      const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
-        `New calendar label not updated (${newCalendarLabel})`);
+      strictEqual(t.elem.dragRatio, newVal, `datepicker's 'dragRatio' not updated`);
     });
 
   });
