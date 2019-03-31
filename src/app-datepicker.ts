@@ -891,12 +891,13 @@ export class AppDatepicker extends LitElement {
 
     /**
      * 2 things to do here:
-     *  - Update `_selectedDate` with selected year
+     *  - Update `_selectedDate` and `_focusedDate` with update `year` value of old focused date
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    const selectedYear = new Date(this._selectedDate.setUTCFullYear(+selectedYearEl.year));
-    this._selectedDate = selectedYear;
-    this._focusedDate = new Date(selectedYear);
+    const newFocusedDate = new Date(this._focusedDate!).setUTCFullYear(+selectedYearEl.year);
+
+    this._selectedDate = new Date(newFocusedDate);
+    this._focusedDate = new Date(newFocusedDate);
     this._startView = START_VIEW.CALENDAR;
   }
 
