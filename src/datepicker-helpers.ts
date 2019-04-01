@@ -97,7 +97,6 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const fy = dateDate.getUTCFullYear();
   const m = dateDate.getUTCMonth();
 
-  /** TODO(rongsen): To add tests, e.g. 2019-03-31 -> next month -> 2019-04-31 not exist! */
   return [m - 1, m, m + 1].map(n => toUTCDate(fy, n, 1));
 }
 
@@ -393,9 +392,8 @@ export function computeAllCalendars({
     weekdays,
     calendars: allCalendars.map(n => n && n.calendar),
       // allCalendars.reduce((p, n) => p.concat((n && [n.calendar])), [] as (CalendarDays)[]),
-    disabledDatesSet:
-      new Set(
-        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
+    disabledDatesSet: new Set(allCalendars.reduce((p, n) =>
+      n == null ? p : p.concat(n!.disabledDates), [] as number[])),
   };
 }
 

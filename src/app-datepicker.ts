@@ -850,10 +850,6 @@ export class AppDatepicker extends LitElement {
       const maxDateM = maxDate.getUTCMonth();
 
       /**
-       * TODO(motss): To add test
-       */
-
-      /**
        * NOTE: Instead of debouncing/ throttling the animation when switching between
        * calendar months, this prevents subsequent animation that can cause an issue
        * where a blank calendar comes into view to be queued by ensuring the new updated
@@ -1092,3 +1088,4 @@ declare global {
 // FIXED: To fix hardcoded `_yearList` when `min` has no initial value.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
+// FIXME: PgUp/ PgDown on new date that does not exist should fallback to last day of month.

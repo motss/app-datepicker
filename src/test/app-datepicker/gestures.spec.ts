@@ -466,7 +466,7 @@ describe(getTestName(name), () => {
           `Focused date label not updated`);
       });
 
-      it(`never shows calendar month that is < 'min'`, async () => {
+      it(`does not show calendar month that is < 'min'`, async () => {
         /**
          * NOTE: This indirectly comprises 2 kind of tests:
          *
@@ -504,7 +504,7 @@ describe(getTestName(name), () => {
           `Calendar label not updated (${calendarLabel})`);
       });
 
-      it(`never shows calendar month that is > 'max'`, async () => {
+      it(`does not show calendar month that is > 'max'`, async () => {
         /**
          * NOTE: This indirectly comprises 2 kind of tests:
          *
@@ -580,14 +580,14 @@ describe(getTestName(name), () => {
           `Calendar label not updated (${calendarLabel})`);
       });
 
-      it(`show correct calendar month when spam clicks on navigate prev button`, async () => {
+      it(`shows correct calendar month when spam clicks on navigate prev button`, async () => {
         /**
          * NOTE: This indirectly comprises 2 kind of tests:
          *
          * 1. Spam clicks on navigate previous button
          * 2. New selected date will always be < `max` in terms of calendar month
          */
-        el.min = '';
+        el.min = '2000-01-01';
         el.max = '2020-12-13';
         el.value = '2020-03-15';
         await forceUpdate(el);
@@ -614,8 +614,49 @@ describe(getTestName(name), () => {
         const calendarLabel = getShadowInnerHTML(calendarLabelEl);
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
         isTrue(
-          ['Mar 2019', 'March, 2019', 'March 2019'].some(n => calendarLabel === n),
+          ['Feb 2019', 'February, 2019', 'February 2019'].some(n => calendarLabel === n),
           `Calendar label not updated (${calendarLabel})`);
+      });
+
+      it(`shows the correct calendar month`, async () => {
+        /**
+         * NOTE: This tests `computeThreeCalendarsInARow` to ensure it computes the correct
+         * calendar months for situation like 2019-03-31 -> next month -> 2019-04-31 (not exist!).
+         */
+        el.min = date13;
+        el.max = '';
+        el.value = '2020-01-31';
+        await forceUpdate(el);
+
+        const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
+        isNotNull(nextBtnMonthSelectorEl, `Next month selector button not found`);
+
+        const expected = [
+          ['Feb 2020', 'February, 2020', 'February 2020'],
+          ['Mar 2020', 'March, 2020', 'March 2020'],
+        ];
+        for (let i = 0; i < 2; i += 1) {
+          triggerEvent(nextBtnMonthSelectorEl, 'click');
+          await t.waitForDragAnimationFinished();
+
+          const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+          isNotNull(btnCalendarSelectorEl, 'Calendar selector button not found');
+
+          strictEqual(
+            getShadowInnerHTML(btnCalendarSelectorEl),
+            'Fri, Jan 31',
+            `Calendar selector label not matched`);
+
+          const calendarLabelEl = t.getCalendarLabel();
+          isNotNull(calendarLabelEl, 'Calendar label not found');
+
+          const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+          /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+          isTrue(
+            expected[i].some(n => calendarLabel === n),
+            `Calendar label not updated (${calendarLabel})`);
+        }
+
       });
 
     });
