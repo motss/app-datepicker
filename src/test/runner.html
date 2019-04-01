@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>app-datepicker tests</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.2.5/dist/polyfill.min.js"></script>
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+
+    <script src="https://unpkg.com/@babel/polyfill@latest/dist/polyfill.min.js"></script>
     <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
@@ -30,8 +33,7 @@
 
       if (!(Element.prototype.animate)) {
         const wa = document.createElement('script');
-        wa.src =
-          'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
+        wa.src = 'https://unpkg.com/web-animations-js@latest/web-animations.min.js';
         wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
         wa.onerror = console.error;
         document.head.appendChild(wa);
@@ -39,7 +41,7 @@
 
       if (!window.Intl) {
         const wa = document.createElement('script');
-        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        /** FIXME: Pin package version due to https://bit.ly/2OFNW5P. */
         wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
         wa.onload = () => console.info('🌐 Intl polyfill loaded');
         wa.onerror = console.error;
