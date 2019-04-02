@@ -4,6 +4,8 @@ import { CalendarDays, CalendarWeekdays } from './calendar';
 import { calendarDays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
+  // CTRL = 17,
+  // ALT = 18,
   ESCAPE = 27,
   SHIFT = 16,
   TAB = 9,
@@ -23,23 +25,6 @@ export interface FocusTrap {
 }
 type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
-// export const KEYCODES_MAP = {
-//   // CTRL: 17,
-//   // ALT: 18,
-//   ESCAPE: 27,
-//   SHIFT: 16,
-//   TAB: 9,
-//   ENTER: 13,
-//   SPACE: 32,
-//   PAGE_UP: 33,
-//   PAGE_DOWN: 34,
-//   END: 35,
-//   HOME: 36,
-//   ARROW_LEFT: 37,
-//   ARROW_UP: 38,
-//   ARROW_RIGHT: 39,
-//   ARROW_DOWN: 40,
-// };
 const UP_KEYS = [
   KEYCODES_MAP.ARROW_UP,
   KEYCODES_MAP.PAGE_UP,
@@ -112,7 +97,6 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const fy = dateDate.getUTCFullYear();
   const m = dateDate.getUTCMonth();
 
-  /** TODO(rongsen): To add tests, e.g. 2019-03-31 -> next month -> 2019-04-31 not exist! */
   return [m - 1, m, m + 1].map(n => toUTCDate(fy, n, 1));
 }
 
@@ -408,9 +392,8 @@ export function computeAllCalendars({
     weekdays,
     calendars: allCalendars.map(n => n && n.calendar),
       // allCalendars.reduce((p, n) => p.concat((n && [n.calendar])), [] as (CalendarDays)[]),
-    disabledDatesSet:
-      new Set(
-        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
+    disabledDatesSet: new Set(allCalendars.reduce((p, n) =>
+      n == null ? p : p.concat(n!.disabledDates), [] as number[])),
   };
 }
 

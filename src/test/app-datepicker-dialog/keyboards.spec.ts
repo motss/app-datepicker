@@ -73,25 +73,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-14', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-14', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Tue, Jan 14`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '14',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Left + first focusable date/ disabled date)`, async () => {
@@ -107,8 +105,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const val = await fn();
         if (!val) {
-          strictEqual(el.value, '2020-01-13', `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, '2020-01-13', `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, '2020-01-13', `'value' not updated`);
+          strictEqual(t.elem.value, '2020-01-13', `'value' not updated`);
         }
 
         if (val === 1) {
@@ -123,25 +121,23 @@ describe(getTestName(name), () => {
         await forceUpdate(el);
 
         strictEqual(
-          t.elem.value, '2020-01-13', `New focused date not matched (${t.elem.value})`);
+          t.elem.value, '2020-01-13', `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           `Mon, Jan 13`,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           '13',
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -155,26 +151,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(
-        t.elem.value, '2020-01-16', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-16', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Thu, Jan 16`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '16',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Right + last focusable date/ disabled date)`, async () => {
@@ -195,8 +188,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const val = await fn();
         if (!val) {
-          strictEqual(el.value, '2020-01-15', `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, '2020-01-15', `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, '2020-01-15', `'value' not updated`);
+          strictEqual(t.elem.value, '2020-01-15', `'value' not updated`);
         }
 
         if (val === 1) {
@@ -212,26 +205,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(
-          t.elem.value, '2020-01-15', `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, '2020-01-15', `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           `Wed, Jan 15`,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           '15',
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -250,25 +240,23 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-15', `New focused date not matched (${t.elem.value})`);
+        t.elem.value, '2020-01-15', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Wed, Jan 15`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '15',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Up + first focusable date/ disabled date)`, async () => {
@@ -304,8 +292,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) {
           strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
@@ -320,25 +308,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -356,25 +342,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Wed, Jan 22`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '22',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Down + last focusable date/ disabled date)`, async () => {
@@ -411,8 +395,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value}})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -425,25 +409,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -461,25 +443,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Wed, Jan 22`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '22',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (PgUp + first focusable date/ disabled date)`, async () => {
@@ -515,8 +495,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -529,25 +509,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -565,25 +543,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-02-20', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-02-20', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Thu, Feb 20`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '20',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (PgDown + last focusable date/ disabled date)`, async () => {
@@ -620,8 +596,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -634,25 +610,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -671,25 +645,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Wed, Jan 22`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '22',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Alt + PgUp + first focusable date/ disabled date)`,
@@ -726,8 +698,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -741,25 +713,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -778,25 +748,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2021-01-22', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2021-01-22', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Fri, Jan 22`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '22',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Alt + PgDown + last focusable date/ disabled date)`,
@@ -833,8 +801,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -848,25 +816,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -884,25 +850,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-13', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-13', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Mon, Jan 13`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '13',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (Home + first focusable date/ disabled date)`, async () => {
@@ -938,8 +902,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -952,25 +916,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -988,25 +950,23 @@ describe(getTestName(name), () => {
       triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
-      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched (${t.elem.value})`);
+      strictEqual(t.elem.value, '2020-01-22', `New focused date not matched`);
 
       const btnCalendarSelectorEl = t.getBtnCalendarSelector();
       isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-      const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
       strictEqual(
-        btnCalendarSelectorLabel,
+        getShadowInnerHTML(btnCalendarSelectorEl),
         `Wed, Jan 22`,
-        `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+        `Updated calendar selector label not matched`);
 
       const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-      const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
       strictEqual(
-        newFocusedDateLabel,
+        getShadowInnerHTML(newFocusedDateLabelEl!),
         '22',
-        `New focused label not matched (${newFocusedDateLabel})`);
+        `New focused label not matched`);
     });
 
     it(`focuses date by keyboard (End + last focusable date/ disabled date)`, async () => {
@@ -1042,8 +1002,8 @@ describe(getTestName(name), () => {
       for (const fn of tasks) {
         const { id, e, e1, e2, e3 } = await fn();
         if (!id) {
-          strictEqual(el.value, e, `'value' not updated (${el.value})`);
-          strictEqual(t.elem.value, e, `'value' not updated (${t.elem.value})`);
+          strictEqual(el.value, e, `'value' not updated`);
+          strictEqual(t.elem.value, e, `'value' not updated`);
         }
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
@@ -1056,25 +1016,23 @@ describe(getTestName(name), () => {
         triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
-        strictEqual(t.elem.value, e1, `New focused date not matched (${t.elem.value})`);
+        strictEqual(t.elem.value, e1, `New focused date not matched`);
 
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
 
-        const btnCalendarSelectorLabel = getShadowInnerHTML(btnCalendarSelectorEl);
         strictEqual(
-          btnCalendarSelectorLabel,
+          getShadowInnerHTML(btnCalendarSelectorEl),
           e2,
-          `Updated calendar selector label not matched (${btnCalendarSelectorLabel})`);
+          `Updated calendar selector label not matched`);
 
         const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
-        const newFocusedDateLabel = getShadowInnerHTML(newFocusedDateLabelEl!);
         strictEqual(
-          newFocusedDateLabel,
+          getShadowInnerHTML(newFocusedDateLabelEl!),
           e3,
-          `New focused label not matched (${newFocusedDateLabel})`);
+          `New focused label not matched`);
       }
     });
 
@@ -1091,7 +1049,7 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = ev.detail;
@@ -1100,11 +1058,11 @@ describe(getTestName(name), () => {
         strictEqual(
           el.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1132,20 +1090,20 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = ev.detail;
 
-        strictEqual(value, '2020-01-21', `Updated value from event not matched (${value})`);
+        strictEqual(value, '2020-01-21', `Updated value from event not matched`);
         strictEqual(
           el.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1173,21 +1131,21 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = ev.detail;
         const expectedValue = '2020-01-22';
 
-        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(value, expectedValue, `Updated value from event not matched`);
         strictEqual(
           el.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1222,21 +1180,21 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = (ev as CustomEvent).detail;
         const expectedValue = '2020-01-21';
 
-        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(value, expectedValue, `Updated value from event not matched`);
         strictEqual(
           el.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1270,21 +1228,21 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = ev.detail;
         const expectedValue = '2020-01-22';
 
-        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(value, expectedValue, `Updated value from event not matched`);
         strictEqual(
           el.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1319,21 +1277,21 @@ describe(getTestName(name), () => {
       await forceUpdate(el);
 
       strictEqual(
-        t.elem.value, '2020-01-21', `New focused date not updated (${t.elem.value})`);
+        t.elem.value, '2020-01-21', `New focused date not updated`);
 
       const valueMatchedFromEvent = runTestOnDialogClosed((ev) => {
         const { opened, value } = ev.detail;
         const expectedValue = '2020-01-22';
 
-        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(value, expectedValue, `Updated value from event not matched`);
         strictEqual(
           el.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           '2020-01-21',
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),
@@ -1369,15 +1327,15 @@ describe(getTestName(name), () => {
         const { opened, value } = ev.detail;
         const expectedValue = '2020-01-21';
 
-        strictEqual(value, expectedValue, `Updated value from event not matched (${value})`);
+        strictEqual(value, expectedValue, `Updated value from event not matched`);
         strictEqual(
           el.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${el.value})`);
+          `Datepicker dialog's 'value' not updated`);
         strictEqual(
           t.elem.value,
           expectedValue,
-          `Datepicker dialog's 'value' not updated (${t.elem.value})`);
+          `Datepicker dialog's 'value' not updated`);
         isTrue(!opened, `Datepicker dialog's should be closed`);
         isTrue(
           'none' === getComputedStylePropertyValue(el, 'display'),

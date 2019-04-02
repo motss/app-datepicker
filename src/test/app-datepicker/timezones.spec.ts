@@ -18,19 +18,13 @@ describe(getTestName(name), () => {
 
       const { timezone, dates } = allDateStrings[tz];
 
-      strictEqual(
-        timezone,
-        tz,
-        `Timezone not matched. Expected '${tz}' but received '${timezone}'.`);
+      strictEqual(timezone, tz, `Timezone not matched`);
 
       for (const { date, value } of dates) {
         el.value = date;
         await forceUpdate(el);
 
-        strictEqual(
-          el.value,
-          value,
-          `'value' not updated ('${date}'). Expected '${value}' but found ('${el.value}')`);
+        strictEqual(el.value, value, `'value' not updated ('${date}')`);
       }
     };
 
@@ -51,44 +45,44 @@ describe(getTestName(name), () => {
       document.body.removeChild(el);
     });
 
-    it(`resolves to correct date in different timezones (-12:00)`, async () => runTest('-12:00'));
-    it(`resolves to correct date in different timezones (-11:00)`, async () => runTest('-11:00'));
-    it(`resolves to correct date in different timezones (-10:00)`, async () => runTest('-10:00'));
-    it(`resolves to correct date in different timezones (-09:30)`, async () => runTest('-09:30'));
-    it(`resolves to correct date in different timezones (-09:00)`, async () => runTest('-09:00'));
-    it(`resolves to correct date in different timezones (-08:00)`, async () => runTest('-08:00'));
-    it(`resolves to correct date in different timezones (-07:00)`, async () => runTest('-07:00'));
-    it(`resolves to correct date in different timezones (-06:00)`, async () => runTest('-06:00'));
-    it(`resolves to correct date in different timezones (-05:00)`, async () => runTest('-05:00'));
-    it(`resolves to correct date in different timezones (-04:00)`, async () => runTest('-04:00'));
-    it(`resolves to correct date in different timezones (-03:30)`, async () => runTest('-03:30'));
-    it(`resolves to correct date in different timezones (-03:00)`, async () => runTest('-03:00'));
-    it(`resolves to correct date in different timezones (-02:00)`, async () => runTest('-02:00'));
-    it(`resolves to correct date in different timezones (-01:00)`, async () => runTest('-01:00'));
-    it(`resolves to correct date in different timezones (-00:00)`, async () => runTest('-00:00'));
-    it(`resolves to correct date in different timezones (+00:00)`, async () => runTest('+00:00'));
-    it(`resolves to correct date in different timezones (+01:00)`, async () => runTest('+01:00'));
-    it(`resolves to correct date in different timezones (+02:00)`, async () => runTest('+02:00'));
-    it(`resolves to correct date in different timezones (+03:00)`, async () => runTest('+03:00'));
-    it(`resolves to correct date in different timezones (+03:30)`, async () => runTest('+03:30'));
-    it(`resolves to correct date in different timezones (+04:00)`, async () => runTest('+04:00'));
-    it(`resolves to correct date in different timezones (+04:30)`, async () => runTest('+04:30'));
-    it(`resolves to correct date in different timezones (+05:00)`, async () => runTest('+05:00'));
-    it(`resolves to correct date in different timezones (+05:30)`, async () => runTest('+05:30'));
-    it(`resolves to correct date in different timezones (+06:00)`, async () => runTest('+06:00'));
-    it(`resolves to correct date in different timezones (+06:30)`, async () => runTest('+06:30'));
-    it(`resolves to correct date in different timezones (+07:00)`, async () => runTest('+07:00'));
-    it(`resolves to correct date in different timezones (+08:00)`, async () => runTest('+08:00'));
-    it(`resolves to correct date in different timezones (+08:45)`, async () => runTest('+08:45'));
-    it(`resolves to correct date in different timezones (+09:00)`, async () => runTest('+09:00'));
-    it(`resolves to correct date in different timezones (+09:30)`, async () => runTest('+09:30'));
-    it(`resolves to correct date in different timezones (+10:00)`, async () => runTest('+10:00'));
-    it(`resolves to correct date in different timezones (+10:30)`, async () => runTest('+10:30'));
-    it(`resolves to correct date in different timezones (+11:00)`, async () => runTest('+11:00'));
-    it(`resolves to correct date in different timezones (+12:00)`, async () => runTest('+12:00'));
-    it(`resolves to correct date in different timezones (+12:45)`, async () => runTest('+12:45'));
-    it(`resolves to correct date in different timezones (+13:00)`, async () => runTest('+13:00'));
-    it(`resolves to correct date in different timezones (+14:00)`, async () => runTest('+14:00'));
+    it(`resolves to correct date in different timezones (-12:00)`, () => runTest('-12:00'));
+    it(`resolves to correct date in different timezones (-11:00)`, () => runTest('-11:00'));
+    it(`resolves to correct date in different timezones (-10:00)`, () => runTest('-10:00'));
+    it(`resolves to correct date in different timezones (-09:30)`, () => runTest('-09:30'));
+    it(`resolves to correct date in different timezones (-09:00)`, () => runTest('-09:00'));
+    it(`resolves to correct date in different timezones (-08:00)`, () => runTest('-08:00'));
+    it(`resolves to correct date in different timezones (-07:00)`, () => runTest('-07:00'));
+    it(`resolves to correct date in different timezones (-06:00)`, () => runTest('-06:00'));
+    it(`resolves to correct date in different timezones (-05:00)`, () => runTest('-05:00'));
+    it(`resolves to correct date in different timezones (-04:00)`, () => runTest('-04:00'));
+    it(`resolves to correct date in different timezones (-03:30)`, () => runTest('-03:30'));
+    it(`resolves to correct date in different timezones (-03:00)`, () => runTest('-03:00'));
+    it(`resolves to correct date in different timezones (-02:00)`, () => runTest('-02:00'));
+    it(`resolves to correct date in different timezones (-01:00)`, () => runTest('-01:00'));
+    it(`resolves to correct date in different timezones (-00:00)`, () => runTest('-00:00'));
+    it(`resolves to correct date in different timezones (+00:00)`, () => runTest('+00:00'));
+    it(`resolves to correct date in different timezones (+01:00)`, () => runTest('+01:00'));
+    it(`resolves to correct date in different timezones (+02:00)`, () => runTest('+02:00'));
+    it(`resolves to correct date in different timezones (+03:00)`, () => runTest('+03:00'));
+    it(`resolves to correct date in different timezones (+03:30)`, () => runTest('+03:30'));
+    it(`resolves to correct date in different timezones (+04:00)`, () => runTest('+04:00'));
+    it(`resolves to correct date in different timezones (+04:30)`, () => runTest('+04:30'));
+    it(`resolves to correct date in different timezones (+05:00)`, () => runTest('+05:00'));
+    it(`resolves to correct date in different timezones (+05:30)`, () => runTest('+05:30'));
+    it(`resolves to correct date in different timezones (+06:00)`, () => runTest('+06:00'));
+    it(`resolves to correct date in different timezones (+06:30)`, () => runTest('+06:30'));
+    it(`resolves to correct date in different timezones (+07:00)`, () => runTest('+07:00'));
+    it(`resolves to correct date in different timezones (+08:00)`, () => runTest('+08:00'));
+    it(`resolves to correct date in different timezones (+08:45)`, () => runTest('+08:45'));
+    it(`resolves to correct date in different timezones (+09:00)`, () => runTest('+09:00'));
+    it(`resolves to correct date in different timezones (+09:30)`, () => runTest('+09:30'));
+    it(`resolves to correct date in different timezones (+10:00)`, () => runTest('+10:00'));
+    it(`resolves to correct date in different timezones (+10:30)`, () => runTest('+10:30'));
+    it(`resolves to correct date in different timezones (+11:00)`, () => runTest('+11:00'));
+    it(`resolves to correct date in different timezones (+12:00)`, () => runTest('+12:00'));
+    it(`resolves to correct date in different timezones (+12:45)`, () => runTest('+12:45'));
+    it(`resolves to correct date in different timezones (+13:00)`, () => runTest('+13:00'));
+    it(`resolves to correct date in different timezones (+14:00)`, () => runTest('+14:00'));
 
   });
 });
