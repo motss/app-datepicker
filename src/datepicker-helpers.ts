@@ -569,6 +569,21 @@ export function computeNextFocusedDate({
     }
   }
 
+  /**
+   * NOTE(motss): When updating month and year, check if the value of day exceeds
+   * the total days of the updated date. If true, then focus the last day of the new month.
+   * This also applies to the following cases:
+   *
+   * - `2020-01-31` -> next month -> `2020-02-31` (invalid) -> fallback to `2020-02-29`
+   * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
+   */
+  if (keyCode === KEYCODES_MAP.PAGE_DOWN || keyCode === KEYCODES_MAP.PAGE_UP) {
+    const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getDate();
+    if (d > totalDaysOfMonth) {
+      d = totalDaysOfMonth;
+    }
+  }
+
   /** Get next selectable focused date */
   const newFocusedDate = getNextSelectableDate({
     keyCode,
