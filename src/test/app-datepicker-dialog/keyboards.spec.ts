@@ -1352,6 +1352,260 @@ describe(getTestName(name), () => {
       await updateValueFromEvent;
     });
 
+    it(`focuses last day of month when new date is invalid (PgDown)`, async () => {
+      el.min = '2000-01-01';
+      await forceUpdate(el);
+
+      const tasks = [
+        async () => {
+          el.value = '2020-01-31';
+          await forceUpdate(el);
+          return {
+            id: 0,
+            e: '2020-01-31',
+            e1: '2020-02-29',
+            e2: 'Sat, Feb 29',
+            e3: '29',
+          };
+        },
+        async () => {
+          el.value = '2020-03-31';
+          await forceUpdate(el);
+          return {
+            id: 1,
+            e: '2020-03-31',
+            e1: '2020-04-30',
+            e2: 'Thu, Apr 30',
+            e3: '30',
+          };
+        },
+      ];
+
+      for (const n of tasks) {
+        const { e, e1, e2, e3 } = await n();
+
+        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+        const keyboardEventOptions: KeyboardEventOptions = {
+          keyCode: KEYCODES_MAP.PAGE_DOWN,
+        };
+        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        await forceUpdate(el);
+
+        strictEqual(el.value, e, `Focused date not updated`);
+        strictEqual(t.elem.value, e1, `Datepicker's focused date not updated`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          e2,
+          `Calendar selector label not updated`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        strictEqual(
+          getShadowInnerHTML(newFocusedDateLabelEl!),
+          e3,
+          `Focused label not updated`);
+      }
+
+    });
+
+    it(`focuses last day of month when new date is invalid (Alt + PgDown)`, async () => {
+      el.min = '2000-01-01';
+      await forceUpdate(el);
+
+      const tasks = [
+        async () => {
+          el.value = '2020-02-29';
+          await forceUpdate(el);
+          return {
+            id: 0,
+            e: '2020-02-29',
+            e1: '2021-02-28',
+            e2: 'Sun, Feb 28',
+            e3: '28',
+          };
+        },
+        async () => {
+          el.value = '2020-03-31';
+          await forceUpdate(el);
+          return {
+            id: 1,
+            e: '2020-03-31',
+            e1: '2021-03-31',
+            e2: 'Wed, Mar 31',
+            e3: '31',
+          };
+        },
+      ];
+
+      for (const n of tasks) {
+        const { e, e1, e2, e3 } = await n();
+
+        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+        const keyboardEventOptions: KeyboardEventOptions = {
+          altKey: true,
+          keyCode: KEYCODES_MAP.PAGE_DOWN,
+        };
+        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        await forceUpdate(el);
+
+        strictEqual(el.value, e, `Focused date not updated`);
+        strictEqual(t.elem.value, e1, `Datepicker's focused date not updated`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          e2,
+          `Calendar selector label not updated`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        strictEqual(
+          getShadowInnerHTML(newFocusedDateLabelEl!),
+          e3,
+          `Focused label not updated`);
+      }
+
+    });
+
+    it(`focuses last day of month when new date is invalid (PgUp)`, async () => {
+      el.min = '2000-01-01';
+      await forceUpdate(el);
+
+      const tasks = [
+        async () => {
+          el.value = '2020-03-31';
+          await forceUpdate(el);
+          return {
+            id: 0,
+            e: '2020-03-31',
+            e1: '2020-02-29',
+            e2: 'Sat, Feb 29',
+            e3: '29',
+          };
+        },
+        async () => {
+          el.value = '2020-05-31';
+          await forceUpdate(el);
+          return {
+            id: 1,
+            e: '2020-05-31',
+            e1: '2020-04-30',
+            e2: 'Thu, Apr 30',
+            e3: '30',
+          };
+        },
+      ];
+
+      for (const n of tasks) {
+        const { e, e1, e2, e3 } = await n();
+
+        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+        const keyboardEventOptions: KeyboardEventOptions = {
+          keyCode: KEYCODES_MAP.PAGE_UP,
+        };
+        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        await forceUpdate(el);
+
+        strictEqual(el.value, e, `Focused date not updated`);
+        strictEqual(t.elem.value, e1, `Datepicker's focused date not updated`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          e2,
+          `Calendar selector label not updated`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        strictEqual(
+          getShadowInnerHTML(newFocusedDateLabelEl!),
+          e3,
+          `Focused label not updated`);
+      }
+
+    });
+
+    it(`focuses last day of month when new date is invalid (Alt + PgUp)`, async () => {
+      el.min = '2000-01-01';
+      await forceUpdate(el);
+
+      const tasks = [
+        async () => {
+          el.value = '2020-02-29';
+          await forceUpdate(el);
+          return {
+            id: 0,
+            e: '2020-02-29',
+            e1: '2019-02-28',
+            e2: 'Thu, Feb 28',
+            e3: '28',
+          };
+        },
+        async () => {
+          el.value = '2020-05-31';
+          await forceUpdate(el);
+          return {
+            id: 1,
+            e: '2020-05-31',
+            e1: '2019-05-31',
+            e2: 'Fri, May 31',
+            e3: '31',
+          };
+        },
+      ];
+
+      for (const n of tasks) {
+        const { e, e1, e2, e3 } = await n();
+
+        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+
+        const keyboardEventOptions: KeyboardEventOptions = {
+          altKey: true,
+          keyCode: KEYCODES_MAP.PAGE_UP,
+        };
+        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        await forceUpdate(el);
+
+        strictEqual(el.value, e, `Focused date not updated`);
+        strictEqual(t.elem.value, e1, `Datepicker's focused date not updated`);
+
+        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+        isNotNull(btnCalendarSelectorEl, `Calendar selector not found`);
+
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          e2,
+          `Calendar selector label not updated`);
+
+        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        isNotNull(newFocusedDateLabelEl, `New focused date not found`);
+
+        strictEqual(
+          getShadowInnerHTML(newFocusedDateLabelEl!),
+          e3,
+          `Focused label not updated`);
+      }
+
+    });
+
   });
 
 });
