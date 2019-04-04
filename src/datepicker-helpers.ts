@@ -578,7 +578,7 @@ export function computeNextFocusedDate({
    * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
    */
   if (keyCode === KEYCODES_MAP.PAGE_DOWN || keyCode === KEYCODES_MAP.PAGE_UP) {
-    const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getDate();
+    const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getUTCDate();
     if (d > totalDaysOfMonth) {
       d = totalDaysOfMonth;
     }
