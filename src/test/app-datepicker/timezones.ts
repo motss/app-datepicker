@@ -1,11 +1,3 @@
-interface OptionsToDateString {
-  year: string;
-  month: string;
-  day: string;
-  hour: string;
-  timezone: string;
-}
-
 import { arrayFilled, toFormattedDateString } from '../../datepicker-helpers';
 
 const timezones = [
@@ -50,7 +42,15 @@ const timezones = [
   '+14:00',
 ];
 const hours = arrayFilled(24).map((_, i) => i);
-const toDateString = (options: OptionsToDateString) => {
+
+interface OptionsToDateString {
+  year: string;
+  month: string;
+  day: string;
+  hour: string;
+  timezone: string;
+}
+function toDateString(options: OptionsToDateString) {
   const {
     year,
     month,
@@ -59,7 +59,7 @@ const toDateString = (options: OptionsToDateString) => {
     timezone,
   }: OptionsToDateString = options || {};
   return `${year}-${month}-${day}T${hour}:00:00.000${timezone}`;
-};
+}
 
 // function getNewDateWithTimezone(dateString: string, timezone: string) {
 //   const sign = timezone.slice(0, 1);

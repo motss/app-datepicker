@@ -1,7 +1,5 @@
 import { AppDatepicker } from './app-datepicker';
-import { CalendarDays, CalendarWeekdays } from './calendar';
-
-import { calendarDays, calendarWeekdays } from './calendar';
+import { CalendarDays, calendarDays, CalendarWeekdays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
   // CTRL = 17,
@@ -604,4 +602,15 @@ export function passiveHandler(cb: (...params: any[]) => any) {
 export function toYearList(min: Date, max: Date) {
   const fy = min.getUTCFullYear();
   return arrayFilled(max.getUTCFullYear() - fy + 1).map((_, i) => i + fy);
+}
+
+export function updateYearWithMinMax(date: Date | number, min: Date, max: Date) {
+  const dateTime = typeof date === 'number' ? date : +date;
+  const minTime = +min;
+  const maxTime = +max;
+
+  if (dateTime < minTime) return minTime;
+  if (dateTime > maxTime) return maxTime;
+
+  return date;
 }

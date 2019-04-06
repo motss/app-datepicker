@@ -30,13 +30,14 @@ import {
   property,
   query,
 } from 'lit-element';
-
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  ALL_NAV_KEYS_SET,
   computeAllCalendars,
   computeNextFocusedDate,
   dispatchCustomEvent,
@@ -45,6 +46,7 @@ import {
   getResolvedLocale,
   hasClass,
   isValidDate,
+  KEYCODES_MAP,
   passiveHandler,
   splitString,
   targetScrollTo,
@@ -52,11 +54,9 @@ import {
   toUTCDate,
   toYearList,
   updateFormatters,
+  updateYearWithMinMax,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
-
-import { WEEK_NUMBER_TYPE } from './calendar.js';
-import { ALL_NAV_KEYS_SET, KEYCODES_MAP } from './datepicker-helpers.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -817,7 +817,11 @@ export class AppDatepicker extends LitElement {
 
   private _updateView(view: START_VIEW) {
     const handleUpdateView = () => {
-      if (START_VIEW.CALENDAR === view) this._selectedDate = new Date(this._focusedDate);
+      if (START_VIEW.CALENDAR === view) {
+        this._selectedDate = this._lastSelectedDate =
+          new Date(updateYearWithMinMax(this._focusedDate, this._min!, this._max!));
+      }
+
       this._startView = view;
     };
 
@@ -860,7 +864,7 @@ export class AppDatepicker extends LitElement {
       const isLessThanYearAndMonth = newSelectedDateFy < minDateFy ||
         (newSelectedDateFy <= minDateFy && newSelectedDateM < minDateM);
       const isMoreThanYearAndMonth = newSelectedDateFy > maxDateFy ||
-        (newSelectedDateFy <= maxDateFy && newSelectedDateM > maxDateM);
+        (newSelectedDateFy >= maxDateFy && newSelectedDateM > maxDateM);
       if (isLessThanYearAndMonth || isMoreThanYearAndMonth) return this.updateComplete;
 
       /**
@@ -904,9 +908,10 @@ export class AppDatepicker extends LitElement {
      *  - Update `_selectedDate` and `_focusedDate` with update `year` value of old focused date
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    const newFocusedDate = new Date(this._focusedDate!).setUTCFullYear(+selectedYearEl.year);
+    const newFocusedDate = updateYearWithMinMax(new Date(
+      this._focusedDate!).setUTCFullYear(+selectedYearEl.year), this._min!, this._max!);
 
-    this._selectedDate = new Date(newFocusedDate);
+    this._selectedDate = this._lastSelectedDate = new Date(newFocusedDate);
     this._focusedDate = new Date(newFocusedDate);
     this._startView = START_VIEW.CALENDAR;
   }
@@ -1090,4 +1095,5 @@ declare global {
 // TODO: To support RTL layout.
 // FIXME: PgUp/ PgDown on new date that does not exist should fallback to last day of month.
 // FIXME: Update year should update `_lastSelectedDate`
-// FIXME: showing blank calendar when updating year
+// FIXME: Showing blank calendar when updating year
+// FIXME: Buggy condition check for max date when updating month
