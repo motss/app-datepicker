@@ -1,4 +1,6 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog';
+import { START_VIEW } from '../../app-datepicker';
+import { AppDatepickerDialog, DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
+import { KEYCODES_MAP } from '../../datepicker-helpers';
 import {
   date13,
   date15,
@@ -10,14 +12,10 @@ import {
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
+  KeyboardEventOptions,
   queryInit,
   triggerEvent,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
-import { DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
-import { KEYCODES_MAP } from '../../datepicker-helpers';
-import { KeyboardEventOptions } from '../test-helpers';
 
 const {
   isTrue,

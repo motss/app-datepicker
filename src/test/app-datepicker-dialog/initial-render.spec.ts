@@ -1,5 +1,7 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import '../../app-datepicker.js';
+import { START_VIEW } from '../../app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 import {
   getResolvedDate,
   toFormattedDateString,
@@ -18,9 +20,6 @@ import {
   getTestName,
   queryInit,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 
 const {
   isString,

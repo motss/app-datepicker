@@ -1,4 +1,4 @@
-import { AppDatepicker } from '../../app-datepicker.js';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
 import '../../app-datepicker.js';
 import {
   getResolvedDate,
@@ -17,8 +17,6 @@ import {
   getTestName,
   queryInit,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker.js';
 
 const {
   isString,

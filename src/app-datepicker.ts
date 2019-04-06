@@ -30,13 +30,14 @@ import {
   property,
   query,
 } from 'lit-element';
-
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  ALL_NAV_KEYS_SET,
   computeAllCalendars,
   computeNextFocusedDate,
   dispatchCustomEvent,
@@ -45,6 +46,7 @@ import {
   getResolvedLocale,
   hasClass,
   isValidDate,
+  KEYCODES_MAP,
   passiveHandler,
   splitString,
   targetScrollTo,
@@ -55,9 +57,6 @@ import {
   updateYearWithMinMax,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
-
-import { WEEK_NUMBER_TYPE } from './calendar.js';
-import { ALL_NAV_KEYS_SET, KEYCODES_MAP } from './datepicker-helpers.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {

@@ -1,6 +1,7 @@
 import 'axe-core/axe';
 import { axeReport } from 'pwa-helpers/axe-report';
 
+import { START_VIEW } from '../../app-datepicker';
 import { AppDatepickerDialog } from '../../app-datepicker-dialog';
 import { defaultLocale } from '../test-config';
 import {
@@ -8,8 +9,6 @@ import {
   getTestName,
   queryInit,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
 
 const { isNotNull } = chai.assert;
 const name = AppDatepickerDialog.is;

@@ -1,4 +1,5 @@
-import { AppDatepicker } from '../../app-datepicker';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker';
+import { WEEK_NUMBER_TYPE } from '../../calendar';
 import {
   getResolvedDate,
   hasClass,
@@ -16,13 +17,10 @@ import {
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
+  OptionsDragTo,
   queryInit,
   setupDragPoint,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
-import { OptionsDragTo } from '../test-helpers';
 
 const {
   isTrue,

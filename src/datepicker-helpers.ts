@@ -1,7 +1,5 @@
 import { AppDatepicker } from './app-datepicker';
-import { CalendarDays, CalendarWeekdays } from './calendar';
-
-import { calendarDays, calendarWeekdays } from './calendar';
+import { CalendarDays, calendarDays, CalendarWeekdays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
   // CTRL = 17,

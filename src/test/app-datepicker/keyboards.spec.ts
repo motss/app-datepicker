@@ -1,4 +1,5 @@
-import { AppDatepicker } from '../../app-datepicker';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker';
+import { KEYCODES_MAP } from '../../datepicker-helpers';
 import {
   date13,
   date15,
@@ -9,13 +10,10 @@ import {
   forceUpdate,
   getShadowInnerHTML,
   getTestName,
+  KeyboardEventOptions,
   queryInit,
   triggerEvent,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
-import { KEYCODES_MAP } from '../../datepicker-helpers';
-import { KeyboardEventOptions } from '../test-helpers';
 
 const {
   strictEqual,
