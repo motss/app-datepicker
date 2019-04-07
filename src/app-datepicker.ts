@@ -30,13 +30,14 @@ import {
   property,
   query,
 } from 'lit-element';
-
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
+  ALL_NAV_KEYS_SET,
   computeAllCalendars,
   computeNextFocusedDate,
   dispatchCustomEvent,
@@ -45,6 +46,7 @@ import {
   getResolvedLocale,
   hasClass,
   isValidDate,
+  KEYCODES_MAP,
   passiveHandler,
   splitString,
   targetScrollTo,
@@ -52,11 +54,9 @@ import {
   toUTCDate,
   toYearList,
   updateFormatters,
+  updateYearWithMinMax,
 } from './datepicker-helpers.js';
 import { Tracker } from './tracker.js';
-
-import { WEEK_NUMBER_TYPE } from './calendar.js';
-import { ALL_NAV_KEYS_SET, KEYCODES_MAP } from './datepicker-helpers.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -491,6 +491,7 @@ export class AppDatepicker extends LitElement {
   private _disabledDaysSet?: Set<number>;
   private _disabledDatesSet?: Set<number>;
   private _calendarTracker?: Tracker;
+  private _lastSelectedDate?: Date;
 
   public constructor() {
     super();
@@ -816,7 +817,11 @@ export class AppDatepicker extends LitElement {
 
   private _updateView(view: START_VIEW) {
     const handleUpdateView = () => {
-      if (START_VIEW.CALENDAR === view) this._selectedDate = new Date(this._focusedDate);
+      if (START_VIEW.CALENDAR === view) {
+        this._selectedDate = this._lastSelectedDate =
+          new Date(updateYearWithMinMax(this._focusedDate, this._min!, this._max!));
+      }
+
       this._startView = view;
     };
 
@@ -827,12 +832,26 @@ export class AppDatepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarViewFullCalendar = this._calendarViewFullCalendar!;
       const totalDraggableDistance = this._totalDraggableDistance!;
+      const dateDate = this._lastSelectedDate || this._selectedDate;
+      const minDate = this._min!;
+      const maxDate = this._max!;
+
       const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
       const initialX = totalDraggableDistance * -1;
       const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
-      const dateDate = this._selectedDate;
-      const newM = dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1);
-      const newSelectedDate = new Date(dateDate.setUTCMonth(newM));
+
+      const newSelectedDate = toUTCDate(
+        dateDate.getUTCFullYear(),
+        dateDate.getUTCMonth() + (isPreviousMonth ? -1 : 1),
+        1);
+      const newSelectedDateFy = newSelectedDate.getUTCFullYear();
+      const newSelectedDateM = newSelectedDate.getUTCMonth();
+
+      const minDateFy = minDate.getUTCFullYear();
+      const minDateM = minDate.getUTCMonth();
+
+      const maxDateFy = maxDate.getUTCFullYear();
+      const maxDateM = maxDate.getUTCMonth();
 
       /**
        * NOTE: Instead of debouncing/ throttling the animation when switching between
@@ -840,9 +859,21 @@ export class AppDatepicker extends LitElement {
        * where a blank calendar comes into view to be queued by ensuring the new updated
        * selected date's month always fall between the defined `_min` and `_max` values.
        * Not only does it prevents the aforementioned issue but also avoid adding too much
-       * delay in between animations. Happy spamming the animations as you wish! ðð
+       * delay in between animations. Happy spamming the animations as you wish! 😄 🎉
        */
-      if (newM < this._min!.getUTCMonth() || newM > this._max!.getUTCMonth()) return;
+      const isLessThanYearAndMonth = newSelectedDateFy < minDateFy ||
+        (newSelectedDateFy <= minDateFy && newSelectedDateM < minDateM);
+      const isMoreThanYearAndMonth = newSelectedDateFy > maxDateFy ||
+        (newSelectedDateFy >= maxDateFy && newSelectedDateM > maxDateM);
+      if (isLessThanYearAndMonth || isMoreThanYearAndMonth) return this.updateComplete;
+
+      /**
+       * NOTE: This improves spamming animations via gestures but relying on another property
+       * to keep track of the last/ latest selected date so that when you spam click on
+       * the navigate next button 3 times, based on the expected mental model and behavior,
+       * the calendar month should switch 3 times, e.g. Jan 2020 -> 3 clicks -> Apr 2020.
+       */
+      this._lastSelectedDate = newSelectedDate;
 
       return this._animateCalendar({
         target: calendarViewFullCalendar,
@@ -850,7 +881,12 @@ export class AppDatepicker extends LitElement {
         to: newDx,
         postX: initialX,
         postTask: () => {
-          this._selectedDate = newSelectedDate;
+          /**
+           * NOTE: We can **ONLY** update `_selectedDate` when animation finishes due to UX.
+           * It will defeat the purpose of animating the calendar month during switching
+           * as calendar month gets updated before the animation kicks in.
+           */
+          this._selectedDate = this._lastSelectedDate!;
           return this.updateComplete;
         },
       });
@@ -869,12 +905,14 @@ export class AppDatepicker extends LitElement {
 
     /**
      * 2 things to do here:
-     *  - Update `_selectedDate` with selected year
+     *  - Update `_selectedDate` and `_focusedDate` with update `year` value of old focused date
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
-    const selectedYear = new Date(this._selectedDate.setUTCFullYear(+selectedYearEl.year));
-    this._selectedDate = selectedYear;
-    this._focusedDate = new Date(selectedYear);
+    const newFocusedDate = updateYearWithMinMax(new Date(
+      this._focusedDate!).setUTCFullYear(+selectedYearEl.year), this._min!, this._max!);
+
+    this._selectedDate = this._lastSelectedDate = new Date(newFocusedDate);
+    this._focusedDate = new Date(newFocusedDate);
     this._startView = START_VIEW.CALENDAR;
   }
 
@@ -1041,7 +1079,7 @@ declare global {
   }
 
   interface HTMLButtonElement {
-    year: string;
+    year: number;
   }
 }
 
@@ -1055,3 +1093,7 @@ declare global {
 // FIXED: To fix hardcoded `_yearList` when `min` has no initial value.
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
+// FIXME: PgUp/ PgDown on new date that does not exist should fallback to last day of month.
+// FIXME: Update year should update `_lastSelectedDate`
+// FIXME: Showing blank calendar when updating year
+// FIXME: Buggy condition check for max date when updating month

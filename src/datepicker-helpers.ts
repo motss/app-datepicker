@@ -1,9 +1,9 @@
 import { AppDatepicker } from './app-datepicker';
-import { CalendarDays, CalendarWeekdays } from './calendar';
-
-import { calendarDays, calendarWeekdays } from './calendar';
+import { CalendarDays, calendarDays, CalendarWeekdays, calendarWeekdays } from './calendar';
 
 export const enum KEYCODES_MAP {
+  // CTRL = 17,
+  // ALT = 18,
   ESCAPE = 27,
   SHIFT = 16,
   TAB = 9,
@@ -23,23 +23,6 @@ export interface FocusTrap {
 }
 type SplitStringCb = (n: string, i: number, a: string[]) => number;
 
-// export const KEYCODES_MAP = {
-//   // CTRL: 17,
-//   // ALT: 18,
-//   ESCAPE: 27,
-//   SHIFT: 16,
-//   TAB: 9,
-//   ENTER: 13,
-//   SPACE: 32,
-//   PAGE_UP: 33,
-//   PAGE_DOWN: 34,
-//   END: 35,
-//   HOME: 36,
-//   ARROW_LEFT: 37,
-//   ARROW_UP: 38,
-//   ARROW_RIGHT: 39,
-//   ARROW_DOWN: 40,
-// };
 const UP_KEYS = [
   KEYCODES_MAP.ARROW_UP,
   KEYCODES_MAP.PAGE_UP,
@@ -111,13 +94,8 @@ export function computeThreeCalendarsInARow(selectedDate: Date) {
   const dateDate = new Date(selectedDate);
   const fy = dateDate.getUTCFullYear();
   const m = dateDate.getUTCMonth();
-  const d = dateDate.getUTCDate();
 
-  return [
-    toUTCDate(fy, m - 1, d),
-    dateDate,
-    toUTCDate(fy, m + 1, d),
-  ];
+  return [m - 1, m, m + 1].map(n => toUTCDate(fy, n, 1));
 }
 
 export function toFormattedDateString(date: Date) {
@@ -412,9 +390,8 @@ export function computeAllCalendars({
     weekdays,
     calendars: allCalendars.map(n => n && n.calendar),
       // allCalendars.reduce((p, n) => p.concat((n && [n.calendar])), [] as (CalendarDays)[]),
-    disabledDatesSet:
-      new Set(
-        allCalendars.reduce((p, n) => n == null ? p : p.concat(n!.disabledDates), [] as number[])),
+    disabledDatesSet: new Set(allCalendars.reduce((p, n) =>
+      n == null ? p : p.concat(n!.disabledDates), [] as number[])),
   };
 }
 
@@ -590,6 +567,21 @@ export function computeNextFocusedDate({
     }
   }
 
+  /**
+   * NOTE(motss): When updating month and year, check if the value of day exceeds
+   * the total days of the updated date. If true, then focus the last day of the new month.
+   * This also applies to the following cases:
+   *
+   * - `2020-01-31` -> next month -> `2020-02-31` (invalid) -> fallback to `2020-02-29`
+   * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
+   */
+  if (keyCode === KEYCODES_MAP.PAGE_DOWN || keyCode === KEYCODES_MAP.PAGE_UP) {
+    const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getUTCDate();
+    if (d > totalDaysOfMonth) {
+      d = totalDaysOfMonth;
+    }
+  }
+
   /** Get next selectable focused date */
   const newFocusedDate = getNextSelectableDate({
     keyCode,
@@ -610,4 +602,15 @@ export function passiveHandler(cb: (...params: any[]) => any) {
 export function toYearList(min: Date, max: Date) {
   const fy = min.getUTCFullYear();
   return arrayFilled(max.getUTCFullYear() - fy + 1).map((_, i) => i + fy);
+}
+
+export function updateYearWithMinMax(date: Date | number, min: Date, max: Date) {
+  const dateTime = typeof date === 'number' ? date : +date;
+  const minTime = +min;
+  const maxTime = +max;
+
+  if (dateTime < minTime) return minTime;
+  if (dateTime > maxTime) return maxTime;
+
+  return date;
 }

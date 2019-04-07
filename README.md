@@ -6,6 +6,8 @@
 
 <hr />
 
+<a href="https://www.buymeacoffee.com/RLmMhgXFb" target="_blank" rel="noopener noreferrer"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 20px !important;width: auto !important;" ></a>
+[![tippin.me][tippin-me-badge]][tippin-me-url]
 [![Follow me][follow-me-badge]][follow-me-url]
 
 [![Version][version-badge]][version-url]
@@ -195,6 +197,7 @@ Meantime, feel free to check the older version out at:
 [promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise?utm_source=github.com&amp;utm_medium=referral
 
 <!-- Badges -->
+[tippin-me-badge]: https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@igarshmyb/F0918E
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next?icon=npm
@@ -217,6 +220,7 @@ Meantime, feel free to check the older version out at:
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
 <!-- Links -->
+[tippin-me-url]: https://tippin.me/@igarshmyb
 [follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [version-url]: https://www.npmjs.com/package/app-datepicker/v/next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker

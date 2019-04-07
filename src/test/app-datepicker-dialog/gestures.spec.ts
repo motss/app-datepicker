@@ -1,4 +1,5 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog';
+import { START_VIEW } from '../../app-datepicker';
+import { AppDatepickerDialog, DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
 import {
   date13,
   date15,
@@ -10,15 +11,12 @@ import {
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
+  OptionsDragTo,
   queryInit,
   selectNewYearFromYearListView,
   setupDragPoint,
   triggerEvent,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker';
-import { DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
-import { OptionsDragTo } from '../test-helpers';
 
 const {
   strictEqual,
@@ -60,8 +58,14 @@ describe(getTestName(name), () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
 
-        strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
-        strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
+        strictEqual(
+          getShadowInnerHTML(btnYearSelectorEl),
+          '2020',
+          `Initial year not matched`);
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Wed, Jan 15',
+          `Initial date not matched`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
@@ -73,8 +77,14 @@ describe(getTestName(name), () => {
         triggerEvent(nextBtnMonthSelectorEl, 'click');
         await animationComplete;
 
-        strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
-        strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, Jan 15');
+        strictEqual(
+          getShadowInnerHTML(btnYearSelectorEl),
+          '2020',
+          `Year not updated`);
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Wed, Jan 15',
+          `Date not updated`);
 
         const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
@@ -92,8 +102,14 @@ describe(getTestName(name), () => {
         const btnYearSelectorEl = t.getBtnYearSelector();
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
 
-        strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
-        strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
+        strictEqual(
+          getShadowInnerHTML(btnYearSelectorEl),
+          '2020',
+          `Initial year not matched`);
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Wed, May 13',
+          `Initial date not matched`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         isTrue(
@@ -104,8 +120,14 @@ describe(getTestName(name), () => {
         triggerEvent(prevBtnMonthSelectorEl, 'click');
         await animationComplete;
 
-        strictEqual(getShadowInnerHTML(btnYearSelectorEl), '2020');
-        strictEqual(getShadowInnerHTML(btnCalendarSelectorEl), 'Wed, May 13');
+        strictEqual(
+          getShadowInnerHTML(btnYearSelectorEl),
+          '2020',
+          `Year not updated`);
+        strictEqual(
+          getShadowInnerHTML(btnCalendarSelectorEl),
+          'Wed, May 13',
+          `Date not updated`);
 
         const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
@@ -120,37 +142,32 @@ describe(getTestName(name), () => {
         await forceUpdate(el);
 
         const btnYearSelectorEl = t.getBtnYearSelector();
-        const btnYearSelectorLabel = getShadowInnerHTML(btnYearSelectorEl);
         strictEqual(
-          btnYearSelectorLabel,
+          getShadowInnerHTML(btnYearSelectorEl),
           '2020',
-          `Year selector label not matched (${btnYearSelectorLabel})`);
+          `Year selector label not matched`);
 
         triggerEvent(btnYearSelectorEl, 'click');
         await forceUpdate(el);
 
-        const newSelectedYearLabel = getShadowInnerHTML(
-          t.getYearListViewListItemYearSelectedDiv());
         isNotNull(t.getYearListViewFullList());
         strictEqual(
-          newSelectedYearLabel,
+          getShadowInnerHTML(t.getYearListViewListItemYearSelectedDiv()),
           '2020',
-          `New selected year label not matched (${newSelectedYearLabel})`);
+          `New selected year label not matched`);
 
         triggerEvent(t.getBtnCalendarSelector(), 'click');
         await forceUpdate(el);
 
-        const newBtnYearSelectorLabel = getShadowInnerHTML(t.getBtnYearSelector());
         strictEqual(
-          newBtnYearSelectorLabel,
+          getShadowInnerHTML(t.getBtnYearSelector()),
           '2020',
-          `New year selector label not matched (${newBtnYearSelectorLabel})`);
+          `New year selector label not matched`);
 
-        const newBtnCalendarSelectorLabel = getShadowInnerHTML(t.getBtnCalendarSelector());
         strictEqual(
-          newBtnCalendarSelectorLabel,
+          getShadowInnerHTML(t.getBtnCalendarSelector()),
           'Wed, Jan 15',
-          `New calendar selector label not matched (${newBtnCalendarSelectorLabel})`);
+          `New calendar selector label not matched`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
@@ -178,12 +195,20 @@ describe(getTestName(name), () => {
         triggerEvent(t.getBtnCalendarSelector(), 'click');
         await forceUpdate(el);
 
-        strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2020');
-        strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Wed, Jan 15');
+        strictEqual(
+          getShadowInnerHTML(t.getBtnYearSelector()),
+          '2020',
+          `Year not updated`);
+        strictEqual(
+          getShadowInnerHTML(t.getBtnCalendarSelector()),
+          'Wed, Jan 15',
+          `Date not updated`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n));
+        isTrue(
+          ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+          `New calendar label not matched (${calendarLabel})`);
       });
 
       it(`switches back to calendar view with new selected year`, async () => {
@@ -205,12 +230,20 @@ describe(getTestName(name), () => {
         selectNewYearFromYearListView(t.elem, '2025');
         await forceUpdate(el);
 
-        strictEqual(getShadowInnerHTML(t.getBtnYearSelector()), '2025');
-        strictEqual(getShadowInnerHTML(t.getBtnCalendarSelector()), 'Tue, Apr 15');
+        strictEqual(
+          getShadowInnerHTML(t.getBtnYearSelector()),
+          '2025',
+          `Year not updated`);
+        strictEqual(
+          getShadowInnerHTML(t.getBtnCalendarSelector()),
+          'Wed, Jan 15',
+          `Date not updated`);
 
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
         /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(['Apr 2025', 'April, 2025', 'April 2025'].some(n => calendarLabel === n));
+        isTrue(
+          ['Jan 2025', 'January, 2025', 'January 2025'].some(n => calendarLabel === n),
+          `New calendar label not matched (${calendarLabel})`);
       });
 
       it(`goes to next month by dragging/ swiping calendar`, async () => {
@@ -369,7 +402,8 @@ describe(getTestName(name), () => {
 
         const selectedYearEl = t.getYearListViewListItemYearSelectedDiv();
         isNotNull(selectedYearEl, `Selected year not found`);
-        strictEqual(getShadowInnerHTML(selectedYearEl), '2020', `Selected year label not matched`);
+        strictEqual(
+          getShadowInnerHTML(selectedYearEl), '2020', `Selected year label not matched`);
       });
 
       it(`selects new year by button`, async () => {
@@ -714,6 +748,100 @@ describe(getTestName(name), () => {
         triggerEvent(dialogScrim, 'click');
         await forceUpdate(el);
         await valueMatchedFromEvent;
+      });
+
+      it(`focuses '_min' when updating year from month < that of '_min'`, async () => {
+        const updateYear = async (year: string) => {
+          const btnYearSelector = t.getBtnYearSelector();
+          isNotNull(btnYearSelector, `Year selector not found`);
+
+          triggerEvent(btnYearSelector, 'click');
+          await forceUpdate(el);
+
+          const yearListViewFullList = t.getYearListViewFullList();
+          isNotNull(yearListViewFullList, `Year list view full list not found`);
+
+          selectNewYearFromYearListView(t.elem, year);
+          await forceUpdate(el);
+
+          const btnYearSelectorLabel = getShadowInnerHTML(btnYearSelector);
+          strictEqual(btnYearSelectorLabel, year, `Year selector label not updated`);
+        };
+        const verifyDate = (e: string[], e1: string, e2: string) => {
+          const calendarLabel = t.getCalendarLabel();
+          isNotNull(calendarLabel, `Calendar label not found`);
+
+          const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+          /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+          isTrue(
+            e.some(n => newCalendarLabel === n),
+            `Calendar label not updated (${newCalendarLabel})`);
+
+          const btnCalendarSelector = t.getBtnCalendarSelector();
+          isNotNull(btnCalendarSelector, `Calendar selector not found`);
+          strictEqual(getShadowInnerHTML(btnCalendarSelector), e1);
+
+          const focusedDateDiv = t.getDatepickerBodyCalendarViewDayFocusedDiv()!;
+          isNotNull(focusedDateDiv, `Focused date not found`);
+          strictEqual(
+            getShadowInnerHTML(focusedDateDiv), e2, `New focused not updated`);
+        };
+
+        el.min = '2020-04-13';
+        el.value = '2020-04-25';
+        await forceUpdate(el);
+        await updateYear('2021');
+
+        const btnPrevMonthSelector = t.getBtnPrevMonthSelector();
+        isNotNull(btnPrevMonthSelector, 'Prev month selector button not found');
+
+        for (let i = 0; i < 3; i += 1) {
+          triggerEvent(btnPrevMonthSelector, 'click');
+          await t.waitForDragAnimationFinished();
+        }
+        await forceUpdate(el);
+
+        const selectableDate = t.getSelectableDate('Jan 15, 2021');
+        isNotNull(selectableDate, `Selectable date not found`);
+
+        triggerEvent(selectableDate, 'click');
+        await forceUpdate(el);
+
+        verifyDate(['Jan 2021', 'January, 2021', 'January 2021'], 'Fri, Jan 15', '15');
+
+        await updateYear('2020');
+
+        verifyDate(['Apr 2020', 'April, 2020', 'April 2020'], 'Mon, Apr 13', '13');
+
+      });
+
+      it(`shows the correct calendar month with '_max'`, async () => {
+        /**
+         * NOTE: This tests `_updateMonth` works correctly on condition check for max date.
+         */
+        el.min = '2000-01-15';
+        el.max = '2020-10-15';
+        el.value = '2019-08-13';
+        await forceUpdate(el);
+
+        const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
+        isNotNull(nextBtnMonthSelectorEl, `Next month selector button not found`);
+
+        for (let i = 0; i < 3; i += 1) {
+          triggerEvent(nextBtnMonthSelectorEl, 'click');
+          await t.waitForDragAnimationFinished();
+        }
+        await forceUpdate(el);
+
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, 'Calendar label not found');
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          ['Nov 2019', 'November, 2019', 'November 2019'].some(n => calendarLabel === n),
+          `Calendar label not updated (${calendarLabel})`);
+
       });
 
     });

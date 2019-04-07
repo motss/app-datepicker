@@ -3,19 +3,19 @@ export interface DatepickerDialogClosedDetail {
   value: AppDatepickerDialog['value'];
 }
 
-import { START_VIEW } from './app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from './calendar.js';
-import { FocusTrap, KEYCODES_MAP } from './datepicker-helpers.js';
-
 import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
 
+import { START_VIEW } from './app-datepicker.js';
 import './app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables } from './common-styles.js';
 import {
   dispatchCustomEvent,
+  FocusTrap,
   getResolvedDate,
   getResolvedLocale,
+  KEYCODES_MAP,
   setFocusTrap,
   toFormattedDateString,
 } from './datepicker-helpers.js';
@@ -302,6 +302,3 @@ declare global {
     'app-datepicker-dialog': AppDatepickerDialog;
   }
 }
-
-// FIXME: Should `min` set to today's date?
-// TODO: To add tests for action buttons (confirm + dismiss)

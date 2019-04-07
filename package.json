@@ -1,6 +1,6 @@
 {
   "name": "app-datepicker",
-  "version": "4.0.0-rc.12",
+  "version": "4.0.0-rc.16",
   "description": "A custom datepicker element based on Google's Material Design built from scratch with lit-element",
   "keywords": [
     "cal",
@@ -37,11 +37,11 @@
   "scripts": {
     "build": "npm run ts -- -p tsconfig.prod.json",
     "document": "polymer analyze > analysis.json",
-    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish 'src/**/*.ts*'",
-    "lint:debug": "tslint --project tsconfig.json --config tslint.json --format stylish 'src/**/*.ts*'",
+    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
+    "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
-    "test": "polymer test --skip-selenium-install",
+    "test": "npm run lint && polymer test --skip-selenium-install",
     "test:ci": "polymer test --config-file ./wct.config.ci.json",
     "test:sl": "polymer test --config-file ./wct.config.sl.json",
     "testkeep": "polymer test -p --expanded --module-resolution=node --npm",

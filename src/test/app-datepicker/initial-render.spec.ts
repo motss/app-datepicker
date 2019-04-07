@@ -1,4 +1,4 @@
-import { AppDatepicker } from '../../app-datepicker.js';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
 import '../../app-datepicker.js';
 import {
   getResolvedDate,
@@ -17,8 +17,6 @@ import {
   getTestName,
   queryInit,
 } from '../test-helpers';
-
-import { START_VIEW } from '../../app-datepicker.js';
 
 const {
   isString,
@@ -52,7 +50,6 @@ describe(getTestName(name), () => {
 
       it(`renders with 'en-US' locale (calendar)`, () => {
         const locale = el.locale;
-
         strictEqual(locale, 'en-US', `Locale not matched`);
       });
 
@@ -102,7 +99,7 @@ describe(getTestName(name), () => {
         const formattedDay = dayFormatter(now);
 
         isTrue(dayTodayEl.isEqualNode(dayFocusedEl), `today's date != focused date`);
-        strictEqual(el.value, toFormattedDateString(now));
+        strictEqual(el.value, toFormattedDateString(now), `'value' not matched`);
         strictEqual(
           dayTodayEl.getAttribute('aria-label'),
           formattedDate,
@@ -137,7 +134,6 @@ describe(getTestName(name), () => {
 
       it(`renders with 'en-US' locale (year list)`, async () => {
         const locale = el.locale;
-
         strictEqual(locale, 'en-US', `Locale not matched`);
       });
 
@@ -158,19 +154,14 @@ describe(getTestName(name), () => {
         isNotNull(firstSelectableYearEl, `No first selectable year found`);
         isNotNull(lastSelectableYearEl, `No last selectable year found`);
 
-        const firstSelectableYearLabel =
-          getShadowInnerHTML(firstSelectableYearEl.querySelector('div')!);
-        const lastSelectableYearLabel =
-          getShadowInnerHTML(lastSelectableYearEl.querySelector('div')!);
-
         strictEqual(
-          firstSelectableYearLabel,
+          getShadowInnerHTML(firstSelectableYearEl.querySelector('div')!),
           formattedYear,
-          `First selectable not matched (${formattedYear})`);
+          `First selectable not matched`);
         strictEqual(
-          lastSelectableYearLabel,
+          getShadowInnerHTML(lastSelectableYearEl.querySelector('div')!),
           '2100',
-          `Last selectable not matched (${lastSelectableYearLabel})`);
+          `Last selectable not matched`);
       });
 
       it(`selects, highlights this year`, async () => {
@@ -183,13 +174,12 @@ describe(getTestName(name), () => {
 
         isNotNull(yearSelectedEl, `Selected year not found`);
         isNotNull(yearSelectedDivEl, `Selected year's 'div' not found`);
-        strictEqual((yearSelectedEl as any).year, fy, `'year' property not matched`);
+        strictEqual(yearSelectedEl.year, fy, `'year' property not matched`);
 
-        const selectedYearLabel = getShadowInnerHTML(yearSelectedDivEl);
         strictEqual(
-          selectedYearLabel,
+          getShadowInnerHTML(yearSelectedDivEl),
           formattedYear,
-          `Selected year label not matched (${selectedYearLabel})`);
+          `Selected year label not matched`);
       });
 
     });
