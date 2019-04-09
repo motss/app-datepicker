@@ -491,6 +491,7 @@ export class AppDatepicker extends LitElement {
   private _disabledDatesSet?: Set<number>;
   private _calendarTracker?: Tracker;
   private _lastSelectedDate?: Date;
+  private _dragging: boolean = false;
 
   public constructor() {
     super();
@@ -911,6 +912,7 @@ export class AppDatepicker extends LitElement {
      *  - Update `_selectedDate` and `_focusedDate` with update `year` value of old focused date
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
+
     const newFocusedDate = updateYearWithMinMax(new Date(
       this._focusedDate!).setUTCFullYear(+selectedYearEl.year), this._min!, this._max!);
 
@@ -921,6 +923,8 @@ export class AppDatepicker extends LitElement {
 
   @eventOptions({ passive: true })
   private _updateFocusedDate(ev: MouseEvent) {
+    if (this._dragging) return;
+
     const selectedDayEl = findShadowTarget(
       ev,
       (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableCellElement;
@@ -958,6 +962,7 @@ export class AppDatepicker extends LitElement {
     const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
     const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
 
+    this._dragging = true;
     this._calendarViewFullCalendar!.style.transform = `translate3d(${newX}px, 0, 0)`;
   }
 
@@ -998,6 +1003,7 @@ export class AppDatepicker extends LitElement {
         if (!shouldReset) {
           const dateDate = new Date(this._selectedDate);
           const m = dateDate.getUTCMonth();
+
           this._selectedDate = this._lastSelectedDate =
             new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
         }
@@ -1005,6 +1011,7 @@ export class AppDatepicker extends LitElement {
         const trackableEl = this._calendarViewFullCalendar!;
         trackableEl.style.width = trackableEl.style.minWidth = '';
 
+        this._dragging = false;
         return this.updateComplete;
       },
     });
@@ -1106,3 +1113,5 @@ declare global {
 // TODO: To support RTL layout.
 // FIXME: Gestures are broken on landscape mode.
 // FIXME: `landscape` attribute breaks layout.
+// FIXME: Do not update focused date while dragging/ swiping calendar
+// FIXME: app-datepicker's initial-render.spec.ts fails for unknown reason
