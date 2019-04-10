@@ -624,5 +624,5 @@ export function makeNumberPrecise(num: number) {
    * * Chrome 70 - use 3 decimals
    *
    */
-  return (num - Math.floor(num)) > 0 ? num.toFixed(3) : num;
+  return (num - Math.floor(num)) > 0 ? +num.toFixed(3) : num;
 }
