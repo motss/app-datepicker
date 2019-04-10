@@ -29,15 +29,19 @@ describe(getTestName(name), () => {
     const runTestOnDialogClosed =
       (cb: (ev: CustomEvent<DatepickerDialogClosedDetail>) => void) =>
         new Promise((yay, nah) => {
-          el.addEventListener('datepicker-dialog-closed', async (ev) => {
+          const bcb = async (ev: Event) => {
             try {
               await forceUpdate(el);
               cb(ev as CustomEvent);
               yay();
             } catch (e) {
               nah(e);
+            } finally {
+              el.removeEventListener('datepicker-dialog-closed', bcb);
             }
-          }, { once: true });
+          };
+
+          el.addEventListener('datepicker-dialog-closed', bcb, { once: true });
         });
 
     let el: AppDatepickerDialog;
