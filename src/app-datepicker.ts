@@ -47,6 +47,7 @@ import {
   hasClass,
   isValidDate,
   KEYCODES_MAP,
+  makeNumberPrecise,
   passiveHandler,
   splitString,
   targetScrollTo,
@@ -620,7 +621,8 @@ export class AppDatepicker extends LitElement {
       const totalDraggableDistance =
         this._datepickerBodyCalendarView!.getBoundingClientRect().width;
 
-      dragEl.style.transform = `translate3d(${totalDraggableDistance * -1}px, 0, 0)`;
+      dragEl.style.transform =
+        `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
       this._totalDraggableDistance = totalDraggableDistance;
     }
 
@@ -963,13 +965,14 @@ export class AppDatepicker extends LitElement {
     const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
 
     this._dragging = true;
-    this._calendarViewFullCalendar!.style.transform = `translate3d(${newX}px, 0, 0)`;
+    this._calendarViewFullCalendar!.style.transform =
+      `translate3d(${makeNumberPrecise(newX)}px, 0, 0)`;
   }
 
   private _animateCalendar({ target, from, to, postX, postTask }: ParamsAnimateCalendar) {
     return new Promise(yay => (target.animate([
-      { transform: `translate3d(${from}px, 0, 0)` },
-      { transform: `translate3d(${to}px, 0, 0)` },
+      { transform: `translate3d(${makeNumberPrecise(from)}px, 0, 0)` },
+      { transform: `translate3d(${makeNumberPrecise(to)}px, 0, 0)` },
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
@@ -977,7 +980,7 @@ export class AppDatepicker extends LitElement {
     })).onfinish = yay)
       .then(postTask)
       .then(() => {
-        target.style.transform = `translate3d(${postX}px, 0, 0)`;
+        target.style.transform = `translate3d(${makeNumberPrecise(postX)}px, 0, 0)`;
         return this.updateComplete;
       })
       .then(() => dispatchCustomEvent(this, 'datepicker-animation-finished'));
