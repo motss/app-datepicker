@@ -1,4 +1,5 @@
 import { AppDatepicker, START_VIEW } from '../../app-datepicker';
+import { makeNumberPrecise } from '../../datepicker-helpers';
 import {
   date13,
   date15,
@@ -875,7 +876,7 @@ describe(getTestName(name), () => {
       it(`updates full calendar's position when 'landscape' changes`, async () => {
         const getComputedWidth = (elem: HTMLElement) => {
           const width = elem.getBoundingClientRect().width;
-          return width.toFixed((width - Math.floor(width)) > 0 ? 3 : 0);
+          return makeNumberPrecise(width);
         };
 
         isTrue(el.landscape, `'landscape' not matched`);
