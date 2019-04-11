@@ -1,5 +1,6 @@
 import { START_VIEW } from '../../app-datepicker';
 import { AppDatepickerDialog, DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
+import { makeNumberPrecise } from '../../datepicker-helpers';
 import {
   date13,
   date15,
@@ -845,5 +846,162 @@ describe(getTestName(name), () => {
       });
 
     });
+
+    describe('landscape', () => {
+      let el: AppDatepickerDialog;
+      let t: ReturnType<typeof queryInit>;
+
+      const testCalendarLabel = (testName: string, e: string[]) => {
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, `Calendar label ${testName} not found`);
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          e.some(n => calendarLabel === n),
+          `Calendar label ${testName} not ${
+            testName === '1' ? 'matched' : 'updated'} (${calendarLabel})`);
+      };
+      const dragCalendar = async (
+        testName: string,
+        dir: 'left' | 'right',
+        dx: number,
+        times: number
+      ) => {
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(
+          calendarViewFullCalendarEl, `Calendar view full calendar ${testName} not found`);
+
+        for (let i = 0; i < times; i += 1) {
+          const startingPoint = setupDragPoint(dir, t.elem);
+          const dragOptions: OptionsDragTo = { ...startingPoint, dx };
+          await dragTo(calendarViewFullCalendarEl, dragOptions);
+          await t.waitForDragAnimationFinished();
+        }
+        await forceUpdate(el);
+      };
+
+      beforeEach(async () => {
+        el = document.createElement(name) as AppDatepickerDialog;
+        document.body.appendChild(el);
+
+        el.locale = defaultLocale;
+        el.startView = START_VIEW.CALENDAR;
+        el.min = date13;
+        el.value = date15;
+        el.landscape = true;
+        await forceUpdate(el);
+
+        el.open();
+        await forceUpdate(el);
+
+        t = queryInit(el);
+      });
+
+      afterEach(() => {
+        document.body.removeChild(el);
+      });
+
+      it(`updates calendar correctly`, async () => {
+        const goNextMonth = async (testName: string, times: number) => {
+          const btnNextMonthSelectorEl = t.getBtnNextMonthSelector();
+          isNotNull(btnNextMonthSelectorEl, `Next month button ${testName} not found`);
+
+          for (let i = 0; i < times; i += 1) {
+            triggerEvent(btnNextMonthSelectorEl, 'click');
+            await t.waitForDragAnimationFinished();
+          }
+          await forceUpdate(el);
+        };
+        const goPrevMonth = async (testName: string, times: number) => {
+          const btnPrevMonthSelectorEl = t.getBtnPrevMonthSelector();
+          isNotNull(btnPrevMonthSelectorEl, `Next month button ${testName} not found`);
+
+          for (let i = 0; i < times; i += 1) {
+            triggerEvent(btnPrevMonthSelectorEl, 'click');
+            await t.waitForDragAnimationFinished();
+          }
+          await forceUpdate(el);
+        };
+        const goYearListView = async (testName: string) => {
+          const btnYearSelectorEl = t.getBtnYearSelector();
+          isNotNull(btnYearSelectorEl, `Year selector ${testName} not found`);
+
+          triggerEvent(btnYearSelectorEl, 'click');
+          await forceUpdate(el);
+        };
+
+        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+        await goYearListView('1');
+
+        selectNewYearFromYearListView(t.elem, '2021');
+        await forceUpdate(el);
+
+        testCalendarLabel('2', ['Jan 2021', 'January, 2021', 'January 2021']);
+        await goNextMonth('1', 3);
+
+        testCalendarLabel('3', ['Apr 2021', 'April, 2021', 'April 2021']);
+        await dragCalendar('1', 'right', 60, 2);
+
+        testCalendarLabel('4', ['Feb 2021', 'February, 2021', 'February 2021']);
+        await goYearListView('2');
+
+        selectNewYearFromYearListView(t.elem, '2020');
+        await forceUpdate(el);
+
+        testCalendarLabel('5', ['Jan 2020', 'January, 2020', 'January 2020']);
+        await goNextMonth('2', 2);
+        testCalendarLabel('6', ['Mar 2020', 'March, 2020', 'March 2020']);
+
+        await goPrevMonth('1', 2);
+        testCalendarLabel('7', ['Jan 2020', 'January, 2020', 'January 2020']);
+      });
+
+      it(`resets 'style' attribute when dragging ends`, async () => {
+        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+        await dragCalendar('1', 'left', -60, 2);
+        testCalendarLabel('2', ['Mar 2020', 'March, 2020', 'March 2020']);
+
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+
+        isNotNull(calendarViewFullCalendarEl, `Calendar view full calendar not found`);
+        strictEqual(calendarViewFullCalendarEl.style.minWidth, '', `'minWidth' not reset`);
+        strictEqual(calendarViewFullCalendarEl.style.width, '', `'width' not reset`);
+      });
+
+      it(`updates full calendar's position when 'landscape' changes`, async () => {
+        const getComputedWidth = (elem: HTMLElement) => {
+          const width = elem.getBoundingClientRect().width;
+          return makeNumberPrecise(width);
+        };
+
+        isTrue(el.landscape, `'landscape' not matched`);
+        isTrue(el.hasAttribute('landscape'), `'landscape' attribute not set`);
+
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view full calendar not found`);
+
+        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
+        isNotNull(datepickerBodyCalendarViewEl, `Datepicker body calendar view not found`);
+
+        strictEqual(
+          calendarViewFullCalendarEl.style.transform,
+          `translate3d(-${getComputedWidth(datepickerBodyCalendarViewEl)}px, 0px, 0px)`,
+          `CSS 'transform' not matched`);
+
+        el.landscape = false;
+        await forceUpdate(el);
+
+        isTrue(!el.landscape, `'landscape' not updated`);
+        isTrue(!el.hasAttribute('landscape'), `'landscape' attribute not reset`);
+
+        strictEqual(
+          calendarViewFullCalendarEl.style.transform,
+          `translate3d(-${getComputedWidth(datepickerBodyCalendarViewEl)}px, 0px, 0px)`,
+          `CSS 'transform' not updated`);
+      });
+
+    });
+
   });
 });
