@@ -55,13 +55,13 @@
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.13.2",
-    "@webcomponents/webcomponentsjs": "^2.2.7",
+    "@webcomponents/webcomponentsjs": "^2.2.8",
     "axe-core": "^3.2.2",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "pwa-helpers": "^0.9.1",
     "tslint": "^5.15.0",
-    "typescript": "^3.4.1",
+    "typescript": "^3.4.3",
     "wct-mocha": "^1.0.0"
   },
   "engines": {
