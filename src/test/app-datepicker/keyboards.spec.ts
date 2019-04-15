@@ -44,11 +44,11 @@ describe(getTestName(name), () => {
     });
 
     it(`focuses date (Left)`, async () => {
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = { keyCode: KEYCODES_MAP.ARROW_LEFT };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-14', `Focused date not updated`);
@@ -85,11 +85,11 @@ describe(getTestName(name), () => {
         if (!val) strictEqual(el.value, '2020-01-13', `'value' not updated`);
         if (val === 1) strictEqual(el.disabledDates, '2020-01-14', `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = { keyCode: KEYCODES_MAP.ARROW_LEFT };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, '2020-01-13', `Focused date not updated`);
@@ -113,13 +113,13 @@ describe(getTestName(name), () => {
     });
 
     it(`focuses date (Right)`, async () => {
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.ARROW_RIGHT,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-16', `Focused date not updated`);
@@ -161,13 +161,13 @@ describe(getTestName(name), () => {
         if (!val) strictEqual(el.value, '2020-01-15', `'value' not updated`);
         if (val === 1) strictEqual(el.disabledDates, '2020-01-14', `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.ARROW_RIGHT,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, '2020-01-15', `Focused date not updated`);
@@ -195,13 +195,13 @@ describe(getTestName(name), () => {
       el.value = '2020-01-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.ARROW_UP,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-15', `Focused date not updated`);
@@ -258,13 +258,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.ARROW_UP,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -292,13 +292,13 @@ describe(getTestName(name), () => {
       el.value = date15;
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendar = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendar, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.ARROW_DOWN,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendar, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `Focused date not updated`);
@@ -356,13 +356,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.ARROW_DOWN,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -390,13 +390,13 @@ describe(getTestName(name), () => {
       el.value = '2020-02-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.PAGE_UP,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `Focused date not updated`);
@@ -453,13 +453,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_UP,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -487,13 +487,13 @@ describe(getTestName(name), () => {
       el.value = '2020-01-20';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.PAGE_DOWN,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-02-20', `Focused date not updated`);
@@ -551,13 +551,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_DOWN,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -585,14 +585,14 @@ describe(getTestName(name), () => {
       el.value = '2021-01-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.PAGE_UP,
         altKey: true,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `Focused date not updated`);
@@ -649,14 +649,14 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_UP,
           altKey: true,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -684,14 +684,14 @@ describe(getTestName(name), () => {
       el.value = '2020-01-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.PAGE_DOWN,
         altKey: true,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2021-01-22', `Focused date not updated`);
@@ -748,14 +748,14 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_DOWN,
           altKey: true,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -783,13 +783,13 @@ describe(getTestName(name), () => {
       el.value = date17;
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.HOME,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-13', `Focused date not updated`);
@@ -846,13 +846,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.HOME,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -880,13 +880,13 @@ describe(getTestName(name), () => {
       el.value = date13;
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
       const keyboardEventOptions: KeyboardEventOptions = {
         keyCode: KEYCODES_MAP.END,
       };
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-22', `Focused date not updated`);
@@ -943,13 +943,13 @@ describe(getTestName(name), () => {
         if (!id) strictEqual(el.value, e, `'value' not updated`);
         if (id === 1) strictEqual(el.disabledDates, e, `'disabledDates' not updated`);
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.END,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e1, `Focused date not updated`);
@@ -977,10 +977,10 @@ describe(getTestName(name), () => {
       el.value = '2020-01-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-21', `Focused date not updated`);
@@ -994,7 +994,7 @@ describe(getTestName(name), () => {
         }, { once: true });
       });
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
       await forceUpdate(el);
       await valueMatchedFromEvent;
     });
@@ -1004,10 +1004,10 @@ describe(getTestName(name), () => {
       el.value = '2020-01-22';
       await forceUpdate(el);
 
-      const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-      isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.ARROW_LEFT });
       await forceUpdate(el);
 
       strictEqual(el.value, '2020-01-21', `Focused date not updated`);
@@ -1021,7 +1021,7 @@ describe(getTestName(name), () => {
         }, { once: true });
       });
 
-      triggerEvent(datepickerBodyCalendarViewEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });
+      triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });
       await forceUpdate(el);
       await valueMatchedFromEvent;
     });
@@ -1056,13 +1056,13 @@ describe(getTestName(name), () => {
       for (const n of tasks) {
         const { e, e1, e2 } = await n();
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_DOWN,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e, `Focused date not updated`);
@@ -1116,14 +1116,14 @@ describe(getTestName(name), () => {
       for (const n of tasks) {
         const { e, e1, e2 } = await n();
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           altKey: true,
           keyCode: KEYCODES_MAP.PAGE_DOWN,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e, `Focused date not updated`);
@@ -1177,13 +1177,13 @@ describe(getTestName(name), () => {
       for (const n of tasks) {
         const { e, e1, e2 } = await n();
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           keyCode: KEYCODES_MAP.PAGE_UP,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e, `Focused date not updated`);
@@ -1237,14 +1237,14 @@ describe(getTestName(name), () => {
       for (const n of tasks) {
         const { e, e1, e2 } = await n();
 
-        const datepickerBodyCalendarViewEl = t.getDatepickerBodyCalendarView();
-        isNotNull(datepickerBodyCalendarViewEl, `Calendar view not found`);
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(calendarViewFullCalendarEl, `Calendar view not found`);
 
         const keyboardEventOptions: KeyboardEventOptions = {
           altKey: true,
           keyCode: KEYCODES_MAP.PAGE_UP,
         };
-        triggerEvent(datepickerBodyCalendarViewEl, 'keyup', keyboardEventOptions);
+        triggerEvent(calendarViewFullCalendarEl, 'keyup', keyboardEventOptions);
         await forceUpdate(el);
 
         strictEqual(el.value, e, `Focused date not updated`);

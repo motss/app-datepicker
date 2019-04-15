@@ -2,7 +2,13 @@ type Omit<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 type ClassProperties<T> = {
   [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
 };
-type ParamUpdatedChanged = ClassProperties<Omit<Omit<AppDatepicker, HTMLElement>, LitElement>>;
+interface ParamUpdatedChanged extends ClassProperties<
+  Omit<Omit<AppDatepicker, HTMLElement>, LitElement>
+> {
+  _selectedDate: Date;
+  _focusedDate: Date;
+  _startView: START_VIEW;
+}
 
 interface ParamsAnimateCalendar {
   target: HTMLElement;
@@ -47,6 +53,7 @@ import {
   hasClass,
   isValidDate,
   KEYCODES_MAP,
+  makeNumberPrecise,
   passiveHandler,
   splitString,
   targetScrollTo,
@@ -484,7 +491,6 @@ export class AppDatepicker extends LitElement {
   private _maxDate?: Date;
   private _dragAnimationDuration: number = 150;
   private _yearList: number[];
-  private _hasCalendarSetup: boolean = false;
   private _hasNativeElementAnimate: boolean =
     Element.prototype.animate.toString().indexOf('[native code]') >= 0;
   private _formatters?: import('./datepicker-helpers').Formatters;
@@ -492,6 +498,7 @@ export class AppDatepicker extends LitElement {
   private _disabledDatesSet?: Set<number>;
   private _calendarTracker?: Tracker;
   private _lastSelectedDate?: Date;
+  private _dragging: boolean = false;
 
   public constructor() {
     super();
@@ -524,7 +531,10 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE: This could run before `_calendarTracker` is ready.
      */
-    if (this._calendarTracker) this._calendarTracker.disconnect();
+    if (this._calendarTracker) {
+      this._calendarTracker.disconnect();
+      this._calendarTracker = void 0;
+    }
   }
 
   protected render() {
@@ -563,63 +573,78 @@ export class AppDatepicker extends LitElement {
 
     const startView = this._startView;
 
-    if (START_VIEW.YEAR_LIST === startView) {
-      const selectedYearScrollTop =
-        48 * (this._selectedDate.getUTCFullYear() - this._min!.getUTCFullYear() - 2);
+    if (changed.has('_startView') || changed.has('startView')) {
+      if (START_VIEW.YEAR_LIST === startView) {
+        const selectedYearScrollTop =
+          48 * (this._selectedDate.getUTCFullYear() - this._min!.getUTCFullYear() - 2);
 
-      targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
-      return;
+        targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
+      }
+
+      if (START_VIEW.CALENDAR === startView) {
+        let started = false;
+        let dx = 0;
+        let abortDragIfHasMinDate = false;
+        let abortDragIfHasMaxDate = false;
+
+        const dragEl = this._calendarViewFullCalendar!;
+
+        if (!this._calendarTracker) {
+          const handlers: import('./tracker').TrackerHandlers = {
+            down: () => {
+              if (started) return;
+              this._trackingStartFn();
+              started = true;
+            },
+            move: (changedPointer, oldPointer) => {
+              if (!started) return;
+
+              dx += changedPointer.x - oldPointer.x;
+              abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
+              abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
+
+              if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
+
+              this._trackingMoveFn(dx);
+            },
+            up: (changedPointer, oldPointer) => {
+              if (!started) return;
+              if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
+                abortDragIfHasMaxDate = false;
+                abortDragIfHasMinDate = false;
+                dx = 0;
+                return;
+              }
+
+              dx += changedPointer.x - oldPointer.x;
+              this._trackingEndFn(dx);
+              dx = 0;
+              started = false;
+            },
+          };
+
+          this._calendarTracker = new Tracker(dragEl!, handlers);
+        }
+
+        this._updateCalendarPos(dragEl);
+      }
     }
 
-    const shouldTriggerCalendarLayout = changed.has('landscape') || !this._hasCalendarSetup;
-
-    if (START_VIEW.CALENDAR === startView && shouldTriggerCalendarLayout) {
-      const dragEl = this._calendarViewFullCalendar!;
-      const totalDraggableDistance =
-        this._datepickerBodyCalendarView!.getBoundingClientRect().width;
-      let started = false;
-      let dx = 0;
-      let abortDragIfHasMinDate = false;
-      let abortDragIfHasMaxDate = false;
-
-      const handlers: import('./tracker').TrackerHandlers = {
-        down: () => {
-          if (started) return;
-          this._trackingStartFn();
-          started = true;
-        },
-        move: (changedPointer, oldPointer) => {
-          if (!started) return;
-
-          dx += changedPointer.x - oldPointer.x;
-          abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
-          abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
-
-          if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
-
-          this._trackingMoveFn(dx);
-        },
-        up: (changedPointer, oldPointer) => {
-          if (!started) return;
-          if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
-            abortDragIfHasMaxDate = false;
-            abortDragIfHasMinDate = false;
-            dx = 0;
-            return;
-          }
-
-          dx += changedPointer.x - oldPointer.x;
-          this._trackingEndFn(dx);
-          dx = 0;
-          started = false;
-        },
-      };
-      this._calendarTracker = new Tracker(dragEl!, handlers);
-
-      dragEl.style.transform = `translate3d(${totalDraggableDistance * -1}px, 0, 0)`;
-      this._totalDraggableDistance = totalDraggableDistance;
-      this._hasCalendarSetup = true;
+    if (changed.has('landscape')) {
+      if (START_VIEW.CALENDAR === startView) {
+        this._updateCalendarPos(this._calendarViewFullCalendar!);
+      }
     }
+
+  }
+
+  private _updateCalendarPos(dragEl: HTMLElement) {
+    const totalDraggableDistance =
+      this._datepickerBodyCalendarView!.getBoundingClientRect().width;
+
+    dragEl.style.transform =
+      `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
+    this._totalDraggableDistance = totalDraggableDistance;
   }
 
   private _renderHeaderSelectorButton() {
@@ -777,7 +802,10 @@ export class AppDatepicker extends LitElement {
       'has-max-date': hasMaxDate,
     });
     const calendarViewFullCalendarContent =
-      html`<div class="${calendarViewFullCalendarContentCls}">${calendarsContent}</div>`;
+      html`<div
+        class="${calendarViewFullCalendarContentCls}"
+        tabindex="0"
+        @keyup="${this._updateMonthWithKeyboard}">${calendarsContent}</div>`;
 
     /** NOTE: Updates disabled dates and days with computed Sets. */
     this._disabledDatesSet = disabledDatesSet;
@@ -787,11 +815,7 @@ export class AppDatepicker extends LitElement {
      * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
      */
     return html`
-    <div
-      class="datepicker-body__calendar-view"
-      tabindex="0"
-      @keyup="${this._updateMonthWithKeyboard}"
-    >
+    <div class="datepicker-body__calendar-view">
       <div class="calendar-view__month-selector">
         <div class="month-selector-container">${hasMinDate ? null : html`
           <button
@@ -908,6 +932,7 @@ export class AppDatepicker extends LitElement {
      *  - Update `_selectedDate` and `_focusedDate` with update `year` value of old focused date
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
+
     const newFocusedDate = updateYearWithMinMax(new Date(
       this._focusedDate!).setUTCFullYear(+selectedYearEl.year), this._min!, this._max!);
 
@@ -918,6 +943,8 @@ export class AppDatepicker extends LitElement {
 
   @eventOptions({ passive: true })
   private _updateFocusedDate(ev: MouseEvent) {
+    if (this._dragging) return;
+
     const selectedDayEl = findShadowTarget(
       ev,
       (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableCellElement;
@@ -955,13 +982,15 @@ export class AppDatepicker extends LitElement {
     const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
     const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
 
-    this._calendarViewFullCalendar!.style.transform = `translate3d(${newX}px, 0, 0)`;
+    this._dragging = true;
+    this._calendarViewFullCalendar!.style.transform =
+      `translate3d(${makeNumberPrecise(newX)}px, 0, 0)`;
   }
 
   private _animateCalendar({ target, from, to, postX, postTask }: ParamsAnimateCalendar) {
     return new Promise(yay => (target.animate([
-      { transform: `translate3d(${from}px, 0, 0)` },
-      { transform: `translate3d(${to}px, 0, 0)` },
+      { transform: `translate3d(${makeNumberPrecise(from)}px, 0, 0)` },
+      { transform: `translate3d(${makeNumberPrecise(to)}px, 0, 0)` },
     ], {
       duration: this._dragAnimationDuration,
       easing: 'cubic-bezier(0, 0, .4, 1)',
@@ -969,7 +998,7 @@ export class AppDatepicker extends LitElement {
     })).onfinish = yay)
       .then(postTask)
       .then(() => {
-        target.style.transform = `translate3d(${postX}px, 0, 0)`;
+        target.style.transform = `translate3d(${makeNumberPrecise(postX)}px, 0, 0)`;
         return this.updateComplete;
       })
       .then(() => dispatchCustomEvent(this, 'datepicker-animation-finished'));
@@ -995,9 +1024,15 @@ export class AppDatepicker extends LitElement {
         if (!shouldReset) {
           const dateDate = new Date(this._selectedDate);
           const m = dateDate.getUTCMonth();
-          this._selectedDate = new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
+
+          this._selectedDate = this._lastSelectedDate =
+            new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
         }
 
+        const trackableEl = this._calendarViewFullCalendar!;
+        trackableEl.style.width = trackableEl.style.minWidth = '';
+
+        this._dragging = false;
         return this.updateComplete;
       },
     });
@@ -1091,9 +1126,13 @@ declare global {
 //        arrows.
 // FIXED: To add support for labels such week number for better i18n
 // FIXED: To fix hardcoded `_yearList` when `min` has no initial value.
+// FIXED: PgUp/ PgDown on new date that does not exist should fallback to last day of month.
+// FIXED: Update year should update `_lastSelectedDate`
+// FIXED: Showing blank calendar when updating year
+// FIXED: Buggy condition check for max date when updating month
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: PgUp/ PgDown on new date that does not exist should fallback to last day of month.
-// FIXME: Update year should update `_lastSelectedDate`
-// FIXME: Showing blank calendar when updating year
-// FIXME: Buggy condition check for max date when updating month
+// FIXME: Gestures are broken on landscape mode.
+// FIXME: `landscape` attribute breaks layout.
+// FIXME: Do not update focused date while dragging/ swiping calendar
+// FIXME: app-datepicker's initial-render.spec.ts fails for unknown reason

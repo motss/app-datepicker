@@ -305,10 +305,11 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
       elem, '.year-list-view__list-item.year--selected > div');
 
   const getCalendarViewFullCalendar = () =>
-    shadowQuery<typeof elem, HTMLDivElement>(elem, '.calendar-view__full-calendar');
+    shadowQuery<typeof elem, HTMLDivElement>(
+      elem, '.calendar-view__full-calendar[tabindex="0"]');
 
   const getDatepickerBodyCalendarView = () =>
-    shadowQuery(elem, '.datepicker-body__calendar-view[tabindex="0"]');
+    shadowQuery(elem, '.datepicker-body__calendar-view');
 
   const getDatepickerBodyYearListView = () =>
     shadowQuery(elem, '.datepicker-body__year-list-view');
@@ -393,7 +394,9 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     getDialogConfirmActionButton,
     getDialogDismissActionButton,
 
-    waitForDragAnimationFinished: async () => new Promise((yay) => {
+    waitForDragAnimationFinished: async () => new Promise((yay, nah) => {
+      setTimeout(() => nah('datepicker animation takes too long to finish'), 10e3);
+
       const animationFinished = () => {
         yay(elem.requestUpdate());
         elem.removeEventListener('datepicker-animation-finished', animationFinished);

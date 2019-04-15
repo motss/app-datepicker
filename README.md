@@ -130,19 +130,16 @@ export class MyApp extends LitElement {
 
 Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (Chrome, Firefox, IE, Edge, Safari, and Opera).
 
-[Heavily tested](/.travis.yml) on the following browsers:
+[Heavily tested](/.circleci/config.yml) on the following browsers:
 
 | Name | OS |
 | --- | --- |
 | Internet Explorer 11 | Windows 7 |
 | Edge 13 | Windows 10 |
 | Edge 17 | Windows 10 |
-| Edge 18 | Windows 10 |
 | Safari 9 | Mac OS X 10.11 |
 | Safari 10.1 | Mac OS 10.12 |
-| Safari 11.1 | Mac OS 10.13 |
-| Safari 12 | Mac OS 10.13 |
-| Chrome 41 (used by Googlebot) | Linux |
+| Chrome 41 (Googlebot) | Linux |
 | Chrome 70 | Windows 10 |
 | Firefox 62 (w/o native Shadow DOM) | Windows 10 |
 | Firefox 63 (native Shadow DOM support) | Windows 10 |
