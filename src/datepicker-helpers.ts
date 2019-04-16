@@ -393,9 +393,9 @@ export function computeAllCalendars({
     /** NOTE(motss): By right, the middle calendar should not be null */
     disabledDaysSet: allCalendars[1]!.disabledDaysSet,
     disabledDatesSet: allCalendars.reduce((p, n) => {
-      if (n == null || n.disabledDaysSet == null) return p;
+      if (n == null || n.disabledDatesSet == null) return p;
 
-      for (const o of n.disabledDaysSet) {
+      for (const o of n.disabledDatesSet) {
         p.add(o);
       }
 
