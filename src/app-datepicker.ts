@@ -55,7 +55,6 @@ import {
   KEYCODES_MAP,
   makeNumberPrecise,
   passiveHandler,
-  splitString,
   targetScrollTo,
   toFormattedDateString,
   toUTCDate,
@@ -701,15 +700,16 @@ export class AppDatepicker extends LitElement {
     const disabledDays = this.disabledDays;
     const showWeekNumber = this.showWeekNumber;
     const focusedDate = this._focusedDate;
+    const firstDayOfWeek = this.firstDayOfWeek;
     const todayDate = getResolvedDate();
 
     let hasMinDate = false;
     let hasMaxDate = false;
 
-    const { calendars, disabledDatesSet, weekdays } = computeAllCalendars({
+    const { calendars, disabledDaysSet, disabledDatesSet, weekdays } = computeAllCalendars({
       disabledDays,
+      firstDayOfWeek,
       disabledDates: this.disabledDates,
-      firstDayOfWeek: this.firstDayOfWeek,
       selectedDate: this._selectedDate,
       showWeekNumber: this.showWeekNumber,
       weekNumberType: this.weekNumberType,
@@ -809,7 +809,7 @@ export class AppDatepicker extends LitElement {
 
     /** NOTE: Updates disabled dates and days with computed Sets. */
     this._disabledDatesSet = disabledDatesSet;
-    this._disabledDaysSet = new Set(splitString(this.disabledDays, Number));
+    this._disabledDaysSet = disabledDaysSet;
 
     /**
      * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
@@ -1130,9 +1130,10 @@ declare global {
 // FIXED: Update year should update `_lastSelectedDate`
 // FIXED: Showing blank calendar when updating year
 // FIXED: Buggy condition check for max date when updating month
+// FIXED: Gestures are broken on landscape mode.
+// FIXED: `landscape` attribute breaks layout.
+// FIXED: Do not update focused date while dragging/ swiping calendar
+// FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: Gestures are broken on landscape mode.
-// FIXME: `landscape` attribute breaks layout.
-// FIXME: Do not update focused date while dragging/ swiping calendar
-// FIXME: app-datepicker's initial-render.spec.ts fails for unknown reason
+// FIXME: `disabledDays` is broken with `firstDayofWeek`

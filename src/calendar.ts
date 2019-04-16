@@ -116,7 +116,8 @@ interface CalendarDay {
 }
 export interface CalendarDays {
   calendar: CalendarDay[][];
-  disabledDates: number[];
+  disabledDatesSet: Set<number>;
+  disabledDaysSet: Set<number>;
 }
 export function calendarDays({
   firstDayOfWeek,
@@ -158,10 +159,11 @@ export function calendarDays({
   const firstWeekday = normalizeWeekday(preFirstWeekday);
   const totalCol = showWeekNumber ? 8 : 7;
   const firstWeekdayWithWeekNumberOffset = firstWeekday + (showWeekNumber ? 1 : 0);
-  const allCalendarRows: CalendarDay[][] = [];
-  const allDisabledDates: number[] = disabledDatesList;
+  const calendar: CalendarDay[][] = [];
   const minTime = +min;
   const maxTime = +max;
+  const disabledDatesSet: Set<number> = new Set(disabledDatesList);
+  const disabledDaysSet: Set<number> = new Set(disabledDaysList);
 
   let calendarRow: CalendarDay[] = [];
   let day = 1;
@@ -178,7 +180,7 @@ export function calendarDays({
     if (col >= totalCol) {
       col = 0;
       row += 1;
-      allCalendarRows.push(calendarRow);
+      calendar.push(calendarRow);
       calendarRow = [];
     }
 
@@ -219,11 +221,11 @@ export function calendarDays({
     const dTime = +d;
     const fullDate = d.toJSON();
     const isDisabledDay =
-      disabledDaysList.some(ndd => ndd === col) ||
-      disabledDatesList.some(ndd => ndd === dTime) ||
+      disabledDaysSet.has(col) ||
+      disabledDatesSet.has(dTime) ||
       (dTime < minTime || dTime > maxTime);
 
-    if (isDisabledDay) allDisabledDates.push(+d);
+    if (isDisabledDay) disabledDatesSet.add(+d);
 
     calendarRow.push({
       fullDate,
@@ -233,14 +235,10 @@ export function calendarDays({
       id: fullDate,
       disabled: isDisabledDay,
     } as CalendarDay);
-    // calendarRow.push(day);
     day += 1;
 
     if (day > totalDays) calendarFilled = true;
   }
 
-  return {
-    calendar: allCalendarRows,
-    disabledDates: allDisabledDates,
-  };
+  return { calendar, disabledDatesSet, disabledDaysSet };
 }
