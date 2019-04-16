@@ -1,144 +1,198 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <title>&lt;app-datepicker&gt; demo</title>
 
-<head>
-  <title>app-datepicker</title>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <!-- <link rel="preconnect" href="https://polyfill.io" crossorigin> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- <link rel="preconnect" href="https://unpkg.com" crossorigin> -->
 
-  <link rel="preconnect" href="https://polyfill.io" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-  <!-- <script type="module" src="/node_modules/@polymer/iron-component-page/iron-component-page.js"></script> -->
-  <script src="https://cdn.jsdelivr.net/npm/@babel/polyfill@7.2.5/dist/polyfill.min.js"></script>
-  <script src="/node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
-  <script>
-    if (!(Element.prototype.animate)) {
-      const wa = document.createElement('script');
-      wa.src =
-        'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
-      wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
-      wa.onerror = console.error;
-      document.head.appendChild(wa);
-    }
+    <script>
+      if (!(Element.prototype.animate)) {
+        const wa = document.createElement('script');
+        wa.src =
+          'https://cdn.jsdelivr.net/npm/web-animations-js@latest/web-animations-next-lite.min.js';
+        wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
 
-    if (!window.Intl) {
-      const wa = document.createElement('script');
-      /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
-      wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
-      wa.onload = () => console.info('🌐 Intl polyfill loaded');
-      wa.onerror = console.error;
-      document.head.appendChild(wa);
-    }
+      if (!window.Intl) {
+        const wa = document.createElement('script');
+        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+        wa.onload = () => console.info('🌐 Intl polyfill loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
 
-  </script>
-  <script type="module">
-    import '/dist/app-datepicker.js';
-    import '/dist/app-datepicker-dialog.js';
+      if (!window.fetch) {
+        const wa = document.createElement('script');
+        /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+        wa.src = 'https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js';
+        wa.onload = () => console.info('🌐 Fetch polyfill loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
 
-    const datepickerDialogEl = document.body.querySelector('app-datepicker-dialog');
-    const buttonEl = document.body.querySelector('mwc-button');
-    const inputEl = document.body.querySelector('input[type="text"]');
+    </script>
+    <script type="module">
+      import '/dist/app-datepicker.js';
+      import '/dist/app-datepicker-dialog.js';
+      import '/dist/demo/app-datepicker-configurator.js';
 
-    const peEl = document.body.querySelector('pre > input[type="checkbox"]');
-    peEl.checked = 'PointerEvent' in window;
+      const $ = s => document.body.querySelector(s);
+      // const $$ = s => document.body.querySelectorAll(s);
 
-    buttonEl.addEventListener('click', () => {
-      datepickerDialogEl.open();
-    });
+      const inputCheckboxPointerEvent = $('.input-checkbox__pointer-event');
+      const inputCheckboxIntl = $('.input-checkbox__intl');
+      const inputCheckboxWebAnimations = $('.input-checkbox__web-animations');
 
-    datepickerDialogEl.addEventListener('datepicker-dialog-opened', (ev) => {
-      const { value } = ev.detail || {};
-      inputEl.value = value;
-      document.body.style.overflow = 'hidden';
-    });
-    datepickerDialogEl.addEventListener('datepicker-dialog-closed', (ev) => {
-      const { value } = ev.detail || {};
-      inputEl.value = value;
-      document.body.style.overflow = '';
-    });
-    datepickerDialogEl.addEventListener('datepicker-dialog-first-updated', (ev) => {
-      const { value } = ev.detail || {};
-      inputEl.value = value;
-    });
+      inputCheckboxPointerEvent.checked = 'PointerEvent' in self;
+      inputCheckboxIntl.checked = 'Intl' in self && Intl.DateTimeFormat;
+      inputCheckboxWebAnimations.checked =
+        Element.prototype.animate.toString().indexOf('[native code]') >= 0;
+    </script>
+  </head>
 
-  </script>
-</head>
+  <body>
+    <style>
+      html,
+      body {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f1f1;
+        color: #000;
+        font-family: 'Google Sans', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+      }
 
-<body>
-  <!-- Note: if the main element for this repository doesn't
-        match the folder name, add a src="&lt;main-component&gt;.html" attribute,
-        where &lt;main-component&gt;.html" is a file that imports all of the
-        components you want documented. -->
-  <!-- <iron-component-page></iron-component-page> -->
-  <style>
-    html,
-    body {
-      position: relative;
-      width: 100%;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      background-color: #f1f1f1;
-      color: #000;
-      font-family: 'Google Sans', sans-serif;
-      font-size: 16px;
-      line-height: 1.5;
-      box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
-    }
+      * {
+        box-sizing: border-box;
+      }
 
-    * {
-      box-sizing: border-box;
-    }
+      h1,
+      h2 {
+        margin: 0;
+        padding: 0;
+      }
 
-    h1 {
-      margin: 0;
-      padding: 0 16px;
-    }
+      header {
+        display: flex;
+        align-items: center;
 
-    section {
-      max-width: 600px;
-      width: 100%;
-      margin: 16px auto 0;
-    }
+        padding: 0 16px;
+      }
 
-    app-datepicker {
-      border: 1px solid #ddd;
-    }
-  </style>
+      section {
+        max-width: calc(100vw - 40px * 2);
+        width: 100%;
+        margin: 0 auto;
+        padding: 24px 16px;
+        background-color: #fff;
+        border-radius: 12px;
+      }
+      section + section {
+        margin: 16px auto 0;
+      }
+      section:first-of-type:not(:last-of-type) {
+        margin: 16px auto 0;
+      }
+      section:first-of-type:last-of-type {
+        margin: 0 auto 40px;
+      }
+      section:last-of-type:not(:first-of-type) {
+        margin: 16px auto 40px;
+      }
+      @media screen and (min-width: 1200px) {
+        section {
+          max-width: calc(1200px - 40px * 2);
+        }
+      }
 
-  <header>
-    <h1>app-datepicker</h1>
-  </header>
+      .api-desc {
+        font-size: 14px;
+      }
 
-  <main>
+      input:checked + span + a {
+        display: none;
+      }
+
+      .calendar-render-time {
+        font-size: 14px;
+      }
+
+    </style>
+
+    <header>
+      <h1>Demo</h1>
+    </header>
+
     <section>
-      <div class="calendar-render-time"></div>
-      <pre>PointerEvent: <input type="checkbox" disabled></pre>
-      <!-- <app-datepicker showWeekNumber landscape></app-datepicker> -->
-      <!-- <app-datepicker landscape></app-datepicker> -->
-      <!-- <app-datepicker showWeekNumber></app-datepicker> -->
-      <!-- <app-datepicker></app-datepicker> -->
-      <!-- <app-datepicker startView="year"></app-datepicker> -->
-      <!-- <test-rerender></test-rerender> -->
+      <h2>Required web platform APIs:</h2>
 
-      <label for="selectedDate">
-        <span id="selectedDate">Selected date</span>
-        <input type="text" disabled>
-      </label>
+      <p class="api-desc"><i>* Checked if API is natively supported</i></p>
 
-      <app-datepicker></app-datepicker>
+      <div>
+        <label>
+          <input class="input-checkbox__pointer-event" type="checkbox" disabled>
+          <span>PointerEvent</span>
+          <a
+            href="https://unpkg.com/pepjs@latest/"
+            target="_blank"
+            rel="noopener">PointerEvent polyfill</a>
+        </label>
+      </div>
 
-      <mwc-button>Select date</mwc-button>
-      <app-datepicker-dialog></app-datepicker-dialog>
+      <div>
+        <label>
+          <input class="input-checkbox__intl" type="checkbox" disabled>
+          <span>Intl.DateTimeFormat</span>
+          <a
+            href="https://unpkg.com/intl@1.2.4/"
+            target="_blank"
+            rel="noopener">Intl polyfill</a>
+        </label>
+      </div>
+
+      <div>
+        <label>
+          <input class="input-checkbox__web-animations" type="checkbox" disabled>
+          <span>Web Animations</span>
+          <a
+            href="https://unpkg.com/web-animations-js@latest/"
+            target="_blank"
+            rel="noopener">Web Animations polyfill</a>
+        </label>
+      </div>
+
     </section>
-  </main>
-</body>
 
+    <section>
+      <h2>Code snippet generator</h2>
+
+      <div>
+        <i class="calendar-render-time"></i>
+        <app-datepicker-configurator></app-datepicker-configurator>
+      </div>
+
+    </section>
+
+  </body>
 </html>

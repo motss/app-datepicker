@@ -1,0 +1,201 @@
+type PropertyValueType = typeof String | typeof Number | typeof Boolean;
+interface PropertyValue {
+  property: string;
+  value: unknown;
+  type?: PropertyValueType;
+}
+
+import {
+  customElement,
+  html,
+  LitElement,
+} from 'lit-element';
+import { nothing } from 'lit-html';
+
+const notArray = (a: unknown[]) => !Array.isArray(a) || !a.length;
+
+function findAllCSSVariables<T extends HTMLElement>(ce: T): PropertyValue[] {
+  const cleanCss = (ce as any)._styles
+    .map((n: any) => n.cssText.replace(/\/\*{1,}.+\*\//gi, ''));
+  const find = (s: string[], r: RegExp) => [...s.map((n: any) => n.matchAll(r))
+    .reduce((p: Set<string>, n: string) => {
+      for (const [, o] of n) p.add(o);
+      return p;
+    }, new Set())];
+  const cvs1 = find(cleanCss, /var\((--.+?)(?:,\s.+?)?\)/gi);
+  const cvs2 = find(cleanCss, /(--.+?)\:\s.+\;/gi);
+  const merged = [...new Set(cvs1.concat(cvs2))].filter(n => !/[;:{}()]/gi.test(n));
+
+  return merged.map(n => ({ property: n, value: '' }));
+}
+
+function findAllPublicProperties<T extends HTMLElement>(ce: T): PropertyValue[] {
+  const classProperties = (ce as any)._classProperties;
+  const publicProps: PropertyValue[] = [];
+
+  for (const [k, v] of classProperties) {
+    if (!/^_+/.test(k)) {
+      publicProps.push({ property: k, value: v.type(''), type: v.type });
+    }
+  }
+
+  return publicProps;
+}
+
+@customElement(CustomElementConfigurator.is)
+export class CustomElementConfigurator extends LitElement {
+  static get is() { return 'custom-element-configurator'; }
+
+  private _element?: HTMLElement;
+  private _elementName?: string;
+  private _CSSCustomProps?: PropertyValue[];
+  private _publicProps?: PropertyValue[];
+
+  protected render() {
+    // tslint:disable: max-line-length
+    return html`
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .container {
+        display: flex;
+      }
+
+      /* .container__configurator {} */
+
+    </style>
+
+    <div class="container">
+      <div>
+        <h2>${this._elementName}</h2>
+
+        <slot @slotchange="${this._slotChange}"></slot>
+      </div>
+
+      <div class="container__configurator">
+        <div class="configurator__css-custom-props">${this._renderCSSCustomProps()}</div>
+
+        <div class="configurator__public-props">${this._renderPublicProps()}</div>
+      </div>
+    </div>
+    `;
+    // tslint:enable: max-line-length
+  }
+
+  protected updated() {
+    if (this._element == null) {
+      const assignedElement =
+        this._slot.assignedNodes().filter(n => 1 === n.nodeType) as HTMLElement[];
+      this._element = assignedElement[0];
+    }
+
+    console.log(
+      'updated',
+      this._CSSCustomProps,
+      this._publicProps
+    );
+  }
+
+  private _slotChange() {
+    const assignedElement = this._element!;
+    const elName = assignedElement.localName;
+    const el = window.customElements.get(elName) as HTMLElement;
+
+    console.time('css-var');
+    const cvs = findAllCSSVariables(el);
+    console.timeEnd('css-var');
+
+    console.time('public-prop');
+    const pp = findAllPublicProperties(el);
+    console.timeEnd('public-prop');
+
+    console.log('slotchange', cvs, pp);
+    this._elementName = elName;
+    this._CSSCustomProps = cvs;
+    this._publicProps = pp;
+    this.requestUpdate();
+  }
+
+  private _renderCSSCustomProps() {
+    const cssProps = this._CSSCustomProps!;
+
+    if (notArray(cssProps)) return nothing;
+
+    return cssProps.map(({ property, value }) => {
+      // tslint:disable: max-line-length
+      return html`<div>
+        <label>
+          <span>${property}: ${value}</span>
+          <input
+            type="color"
+            @change="${(ev: Event) =>
+              this._updatePropValue(
+                '_CSSCustomProps',
+                property,
+                (ev.target as HTMLInputElement))}">
+        </label>
+      </div>`;
+      // tslint:enable: max-line-length
+    });
+  }
+
+  private _renderPublicProps() {
+    const publicProps = this._publicProps!;
+
+    if (notArray(publicProps)) return nothing;
+
+    const inputType = (t: PropertyValueType) => {
+      switch (typeof(t())) {
+        case 'number': return 'number';
+        case 'boolean': return 'checkbox';
+        case 'string':
+        default:
+          return 'text';
+      }
+    };
+
+    return publicProps.map(({ property, value, type }) => {
+      const it = inputType(type!);
+
+      // tslint:disable: max-line-length
+      return html`<div>
+        <label>
+          <span>${property}: ${value}</span>
+          <input type="${it}" min="0" @change="${(ev: Event) =>
+            this._updatePropValue(
+              '_publicProps',
+              property,
+              (ev.target as HTMLInputElement),
+              type)}">
+        </label>
+      </div>`;
+      // tslint:enable: max-line-length
+    });
+  }
+
+  private _updatePropValue(
+    name: string,
+    property: string,
+    target: HTMLInputElement,
+    type?: PropertyValueType
+  ) {
+    const val = typeof(type!()) === 'boolean' ? target.checked : target.value;
+
+    console.log('updatepropvalue', name, property, val);
+    (this as any)[name] = (this as any)[name]!.reduce((p: PropertyValue[], n: PropertyValue) => {
+      return p.concat(n.property === property ? { type, property, value: val } : n);
+    }, [] as PropertyValue[]);
+    this.requestUpdate(name);
+  }
+
+  get _slot() {
+    return this.shadowRoot!.querySelector('slot')!;
+  }
+}

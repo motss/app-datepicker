@@ -3,12 +3,14 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "inlineSources": true,
     "newLine": "LF",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": false,
+    "sourceMap": true,
     "strict": true,
 
     "lib": [
@@ -26,6 +28,7 @@
     "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
+    "declarationMap": true,
     "declarationDir": "dist",
     "plugins": [
       {
