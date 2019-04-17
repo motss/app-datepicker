@@ -598,5 +598,49 @@ describe(getTestName(name), () => {
         `New calendar label not updated (${newCalendarLabel})`);
     });
 
+    it(`renders with different 'firstDayofWeek' and 'disabledDays'`, async () => {
+      strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
+      strictEqual(el.disabledDays, '', `'disabledDays' not matched`);
+
+      el.value = date17;
+      el.min = '2020-01-01';
+      el.disabledDates = '';
+      el.setAttribute('disableddays', '1,3');
+      await forceUpdate(el);
+
+      strictEqual(el.value, date17, `'min' not updated`);
+      strictEqual(el.min, '2020-01-01', `'min' not updated`);
+      strictEqual(el.disabledDates, '', `'disabledDates' not updated`);
+      strictEqual(el.disabledDays, '1,3', `'disabledDays' not updated`);
+
+      const focusedDateEl = t.getDatepickerBodyCalendarViewDayFocusedDiv()!;
+      isNotNull(focusedDateEl, `Focused date not found`);
+
+      const focusedDate = getShadowInnerHTML(focusedDateEl);
+      strictEqual(focusedDate, '17', `Focused date not matched`);
+
+      const calendarLabelEl = t.getCalendarLabel();
+      isNotNull(calendarLabelEl, `Calendar label not found`);
+
+      const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+      isTrue(
+        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+        `Calendar label not updated (${calendarLabel})`);
+
+      for (let i = 0; i < 7; i += 1) {
+        el.setAttribute('firstdayofweek', `${i}`);
+        await forceUpdate(el);
+
+        const allDisabledDaysEl = t.getAllDisabledDates();
+        const allDisabledDays = allDisabledDaysEl.map(
+          n => (n.textContent || '').replace(/(\s|\r?\n)/gi, ''));
+        strictEqual(
+          allDisabledDays.join(','),
+          '1,6,8,13,15,20,22,27,29',
+          `Disabled dates not matched`);
+      }
+
+    });
+
   });
 });
