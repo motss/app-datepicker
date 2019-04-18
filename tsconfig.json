@@ -44,5 +44,5 @@
       "mocha"
     ]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*.ts"]
 }

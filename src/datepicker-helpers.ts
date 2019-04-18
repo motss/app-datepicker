@@ -317,6 +317,7 @@ export interface AllCalendars {
   weekdays: CalendarWeekdays[];
   calendars: (CalendarDays['calendar'] | null)[];
   disabledDatesSet: Set<number>;
+  disabledDaysSet: Set<number>;
 }
 export function computeAllCalendars({
   disabledDays,
@@ -361,9 +362,7 @@ export function computeAllCalendars({
      *  - last day of the month < `minTime` - entire month should be disabled
      *  - first day of the month > `maxTime` - entire month should be disabled
      */
-    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
-      return null;
-    }
+    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) return null;
 
     return calendarDays({
       firstDayOfWeek,
@@ -373,7 +372,9 @@ export function computeAllCalendars({
       min,
       selectedDate: n,
       disabledDatesList: splitString(disabledDates, o => +getResolvedDate(o)),
-      disabledDaysList: splitString(disabledDays, o => (showWeekNumber ? 1 : 0) + +(o)),
+      disabledDaysList: splitString(
+        disabledDays,
+        o => (showWeekNumber ? 1 : 0) + toShiftedDisabledDay(firstDayOfWeek, +o)),
       idOffset: idx * 10,
 
       dayFormatter: dayFormatterFn,
@@ -389,9 +390,17 @@ export function computeAllCalendars({
   return {
     weekdays,
     calendars: allCalendars.map(n => n && n.calendar),
-      // allCalendars.reduce((p, n) => p.concat((n && [n.calendar])), [] as (CalendarDays)[]),
-    disabledDatesSet: new Set(allCalendars.reduce((p, n) =>
-      n == null ? p : p.concat(n!.disabledDates), [] as number[])),
+    /** NOTE(motss): By right, the middle calendar should not be null */
+    disabledDaysSet: allCalendars[1]!.disabledDaysSet,
+    disabledDatesSet: allCalendars.reduce((p, n) => {
+      if (n == null || n.disabledDatesSet == null) return p;
+
+      for (const o of n.disabledDatesSet) {
+        p.add(o);
+      }
+
+      return p;
+    }, new Set()),
   };
 }
 
@@ -625,4 +634,9 @@ export function makeNumberPrecise(num: number) {
    *
    */
   return (num - Math.floor(num)) > 0 ? +num.toFixed(3) : num;
+}
+
+export function toShiftedDisabledDay(firstDayOfWeek: number, disabledDay: number) {
+  const day = disabledDay - firstDayOfWeek;
+  return day < 0 ? 7 + day : day;
 }
