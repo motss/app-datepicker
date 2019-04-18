@@ -57,8 +57,8 @@ The following are the list of tools used that makes it shine:
 
 ## Pre-requisite
 
-- [Node.js][node-js-url] >= 10.13.0
-- [NPM][npm-url] >= 5.5.1 ([NPM][npm-url] comes with [Node.js][node-js-url] so there is no need to install separately.)
+- [Node.js][node-js-url] >= 8.16.0
+- [NPM][npm-url] >= 6.4.1 ([NPM][npm-url] comes with [Node.js][node-js-url] so there is no need to install separately.)
 - [lit-element][lit-element-url] >= 2.0.1
 - [TypeScript][typescript-url] >= 3.3.3
 
@@ -139,9 +139,9 @@ Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (C
 | Edge 17 | Windows 10 |
 | Safari 9 | Mac OS X 10.11 |
 | Safari 10.1 | Mac OS 10.12 |
-| Chrome 41 (Googlebot) | Linux |
-| Chrome 70 | Windows 10 |
-| Firefox 62 (w/o native Shadow DOM) | Windows 10 |
+| Chrome 41 ([WRE][wre-url]) | Linux |
+| Chrome 69 ([WRE 2019][wre-2019-url]) | Windows 10 |
+| Firefox 62 (w/o native Shadow DOM) | Linux |
 | Firefox 63 (native Shadow DOM support) | Windows 10 |
 
 ## API references
@@ -180,6 +180,8 @@ Meantime, feel free to check the older version out at:
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [app-datepicker-api-reference-url]: /api-references.md#appdatepicker
 [app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
+[wre-url]: https://developers.google.com/search/docs/guides/rendering
+[wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 
 <!-- Browers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
