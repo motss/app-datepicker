@@ -141,7 +141,7 @@ Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (C
 | Safari 10.1 | Mac OS 10.12 |
 | Chrome 41 ([WRE][wre-url]) | Linux |
 | Chrome 69 ([WRE 2019][wre-2019-url]) | Windows 10 |
-| Firefox 62 (w/o native Shadow DOM) | Linux |
+| Firefox 62 (w/o native Shadow DOM) | macOS Mojave (10.14) |
 | Firefox 63 (native Shadow DOM support) | Windows 10 |
 
 ## API references
