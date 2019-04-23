@@ -9,7 +9,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
 

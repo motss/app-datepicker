@@ -1134,6 +1134,8 @@ declare global {
 // FIXED: `landscape` attribute breaks layout.
 // FIXED: Do not update focused date while dragging/ swiping calendar
 // FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
+// FIXED: `disabledDays` is broken with `firstDayofWeek`
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: `disabledDays` is broken with `firstDayofWeek`
+// FIXME: When a new property is set, it re-renders the calendar to last focused date but
+//        never updates the selected date
