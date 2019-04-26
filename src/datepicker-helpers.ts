@@ -387,20 +387,25 @@ export function computeAllCalendars({
     cltEl.textContent = `Rendering calendar takes ${clt < 1 ? '< 1' : clt.toFixed(2)} ms`;
   }
 
+  const disabledSets = allCalendars.reduce((p, n) => {
+    if (n != null) {
+      /**
+       * NOTE(motss): `value` can be null since there is no strict checking on the property that
+       * depends on `min` and `max`. Also not so keen on adding too much checking on various
+       * properties, as such, `allCalendars` might contain an array of `null`.
+       */
+      if (n.disabledDaysSet) p.days = n.disabledDaysSet;
+      if (n.disabledDatesSet) for (const o of n.disabledDatesSet) p.dates.add(o);
+    }
+
+    return p;
+  }, { dates: new Set<number>(), days: new Set<number>() });
+
   return {
     weekdays,
     calendars: allCalendars.map(n => n && n.calendar),
-    /** NOTE(motss): By right, the middle calendar should not be null */
-    disabledDaysSet: allCalendars[1]!.disabledDaysSet,
-    disabledDatesSet: allCalendars.reduce((p, n) => {
-      if (n == null || n.disabledDatesSet == null) return p;
-
-      for (const o of n.disabledDatesSet) {
-        p.add(o);
-      }
-
-      return p;
-    }, new Set()),
+    disabledDatesSet: disabledSets.dates,
+    disabledDaysSet: disabledSets.days,
   };
 }
 

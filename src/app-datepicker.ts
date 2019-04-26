@@ -553,21 +553,62 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const firstFocusableElement = this._startView === START_VIEW.CALENDAR ?
-      this._buttonSelectorYear :
-      this._yearViewListItem;
+    const isCalendarView = START_VIEW.CALENDAR === this._startView;
+    const dragEl = this._calendarViewFullCalendar!;
+    const firstFocusableElement = isCalendarView ?
+      this._buttonSelectorYear : this._yearViewListItem;
+
+    let started = false;
+    let dx = 0;
+    let abortDragIfHasMinDate = false;
+    let abortDragIfHasMaxDate = false;
+
+    const handlers: import('./tracker').TrackerHandlers = {
+      down: () => {
+        if (started) return;
+        this._trackingStartFn();
+        started = true;
+      },
+      move: (changedPointer, oldPointer) => {
+        if (!started) return;
+
+        dx += changedPointer.x - oldPointer.x;
+        abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
+        abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
+
+        if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
+
+        this._trackingMoveFn(dx);
+      },
+      up: (changedPointer, oldPointer) => {
+        if (!started) return;
+        if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
+          abortDragIfHasMaxDate = false;
+          abortDragIfHasMinDate = false;
+          dx = 0;
+          return;
+        }
+
+        dx += changedPointer.x - oldPointer.x;
+        this._trackingEndFn(dx);
+        dx = 0;
+        started = false;
+      },
+    };
+
+    this._calendarTracker = new Tracker(dragEl!, handlers);
 
     dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
 
   protected updated(changed: Map<keyof ParamUpdatedChanged, unknown>) {
+    const startView = this._startView;
+
     if (changed.has('min') || changed.has('max')) {
       this._yearList = toYearList(this._min!, this._max!);
-      this.requestUpdate('_yearList');
-      return;
-    }
 
-    const startView = this._startView;
+      if (START_VIEW.YEAR_LIST === startView) this.requestUpdate('_yearList');
+    }
 
     if (changed.has('_startView') || changed.has('startView')) {
       if (START_VIEW.YEAR_LIST === startView) {
@@ -576,78 +617,15 @@ export class AppDatepicker extends LitElement {
 
         targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
       }
-
-      if (START_VIEW.CALENDAR === startView) {
-        let started = false;
-        let dx = 0;
-        let abortDragIfHasMinDate = false;
-        let abortDragIfHasMaxDate = false;
-
-        const dragEl = this._calendarViewFullCalendar!;
-
-        if (!this._calendarTracker) {
-          const handlers: import('./tracker').TrackerHandlers = {
-            down: () => {
-              if (started) return;
-              this._trackingStartFn();
-              started = true;
-            },
-            move: (changedPointer, oldPointer) => {
-              if (!started) return;
-
-              dx += changedPointer.x - oldPointer.x;
-              abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
-              abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
-
-              if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
-
-              this._trackingMoveFn(dx);
-            },
-            up: (changedPointer, oldPointer) => {
-              if (!started) return;
-              if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
-                abortDragIfHasMaxDate = false;
-                abortDragIfHasMinDate = false;
-                dx = 0;
-                return;
-              }
-
-              dx += changedPointer.x - oldPointer.x;
-              this._trackingEndFn(dx);
-              dx = 0;
-              started = false;
-            },
-          };
-
-          this._calendarTracker = new Tracker(dragEl!, handlers);
-        }
-
-        this._updateCalendarPos(dragEl);
-      }
     }
 
-    if (changed.has('landscape')) {
-      if (START_VIEW.CALENDAR === startView) {
-        this._updateCalendarPos(this._calendarViewFullCalendar!);
-      }
-    }
+    /** NOTE(motss): Always update calendar position */
+    const totalDraggableDistance =
+      this._datepickerBodyCalendarView!.getBoundingClientRect().width;
 
-  }
-
-  private _updateCalendarPos(dragEl: HTMLElement) {
-    /**
-     * NOTE(motss): For unknown reason, Chromium based browsers requires `updateComplete` to be
-     * called before getting the dimensions when the element is being slotted into another element
-     * via the `<slot>` element.
-     */
-    this.updateComplete.then(() => {
-      const totalDraggableDistance =
-        this._datepickerBodyCalendarView!.getBoundingClientRect().width;
-
-      dragEl.style.transform =
-        `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
-      this._totalDraggableDistance = totalDraggableDistance;
-    });
+    this._calendarViewFullCalendar!.style.transform =
+      `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
+    this._totalDraggableDistance = totalDraggableDistance;
   }
 
   private _renderHeaderSelectorButton() {
@@ -1143,3 +1121,4 @@ declare global {
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // FIXME: Replace Web Animations for better support for animations on older browsers.
+// FIXME: Add test for custom events
