@@ -1003,5 +1003,123 @@ describe(getTestName(name), () => {
 
     });
 
+    describe('multiple properties/ attributes', () => {
+      let el: AppDatepickerDialog;
+      let t: ReturnType<typeof queryInit>;
+
+      const testCalendarLabel = (testName: string, e: string[]) => {
+        const calendarLabelEl = t.getCalendarLabel();
+        isNotNull(calendarLabelEl, `Calendar label ${testName} not found`);
+
+        const calendarLabel = getShadowInnerHTML(calendarLabelEl);
+        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+        isTrue(
+          e.some(n => calendarLabel === n),
+          `Calendar label ${testName} not ${
+            testName === '1' ? 'matched' : 'updated'} (${calendarLabel})`);
+      };
+      const dragCalendar = async (
+        testName: string,
+        dir: 'left' | 'right',
+        dx: number,
+        times: number
+      ) => {
+        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+        isNotNull(
+          calendarViewFullCalendarEl, `Calendar view full calendar ${testName} not found`);
+
+        for (let i = 0; i < times; i += 1) {
+          const startingPoint = setupDragPoint(dir, t.elem);
+          const dragOptions: OptionsDragTo = { ...startingPoint, dx };
+          await dragTo(calendarViewFullCalendarEl, dragOptions);
+          await t.waitForDragAnimationFinished();
+        }
+        await forceUpdate(el);
+      };
+      const goNextMonth = async (testName: string, times: number) => {
+        const btnNextMonthSelectorEl = t.getBtnNextMonthSelector();
+        isNotNull(btnNextMonthSelectorEl, `Next month button ${testName} not found`);
+
+        for (let i = 0; i < times; i += 1) {
+          triggerEvent(btnNextMonthSelectorEl, 'click');
+          await t.waitForDragAnimationFinished();
+        }
+        await forceUpdate(el);
+      };
+
+      beforeEach(async () => {
+        el = document.createElement(name) as AppDatepickerDialog;
+        document.body.appendChild(el);
+
+        el.locale = defaultLocale;
+        el.startView = START_VIEW.CALENDAR;
+        el.min = date13;
+        el.value = date15;
+        await forceUpdate(el);
+
+        el.open();
+        await forceUpdate(el);
+
+        t = queryInit(el);
+      });
+
+      afterEach(() => {
+        document.body.removeChild(el);
+      });
+
+      it(`resets calendar when updating 'value' and 'firstDayOfWeek'`, async () => {
+        strictEqual(el.value, '2020-01-15', `'value' not matched`);
+        strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
+        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+
+        await goNextMonth('1', 1);
+        await dragCalendar('1', 'left', -60, 2);
+        await forceUpdate(el);
+
+        testCalendarLabel('2', ['Apr 2020', 'April, 2020', 'April 2020']);
+
+        el.firstDayOfWeek = 2;
+        el.value = date13;
+        await forceUpdate(el);
+
+        strictEqual(t.elem.firstDayOfWeek, 2, `'firstDayOfWeek' not updated`);
+        strictEqual(t.elem.value, '2020-01-13', `'value' not updated`);
+        testCalendarLabel('3', ['Jan 2020', 'January, 2020', 'January 2020']);
+
+        await goNextMonth('2', 2);
+        await forceUpdate(el);
+
+        testCalendarLabel('4', ['Mar 2020', 'March, 2020', 'March 2020']);
+      });
+
+      it(`resets calendar when 'value' and 'firstdayofweek' attributes are set`, async () => {
+        strictEqual(el.value, '2020-01-15', `'value' not matched`);
+        strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
+        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+
+        await goNextMonth('1', 1);
+        await dragCalendar('1', 'left', -60, 2);
+        await forceUpdate(el);
+
+        testCalendarLabel('2', ['Apr 2020', 'April, 2020', 'April 2020']);
+
+        el.setAttribute('firstdayofweek', '2');
+        el.setAttribute('value', date13);
+        await forceUpdate(el);
+
+        strictEqual(el.firstDayOfWeek, 2, `'firstDayOfWeek' not updated`);
+        strictEqual(el.value, '2020-01-13', `'value' not updated`);
+        strictEqual(t.elem.firstDayOfWeek, 2, `Datepicker's 'firstDayOfWeek' not updated`);
+        strictEqual(t.elem.value, '2020-01-13', `Datepicker's 'value' not updated`);
+        testCalendarLabel('3', ['Jan 2020', 'January, 2020', 'January 2020']);
+
+        await goNextMonth('2', 2);
+        await forceUpdate(el);
+
+        testCalendarLabel('4', ['Mar 2020', 'March, 2020', 'March 2020']);
+      });
+
+    });
+
   });
 });

@@ -429,16 +429,13 @@ export class AppDatepicker extends LitElement {
     return toFormattedDateString(this._focusedDate);
   }
   public set value(val: string) {
-    const oldVal = this.value;
     const valDate = getResolvedDate(val);
 
     if (isValidDate(val, valDate)) {
       this._focusedDate = new Date(valDate);
-      this._selectedDate = new Date(valDate);
+      this._selectedDate = this._lastSelectedDate = new Date(valDate);
       // this.valueAsDate = newDate;
       // this.valueAsNumber = +newDate;
-
-      this.requestUpdate('value', oldVal);
     }
   }
 
@@ -638,12 +635,19 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateCalendarPos(dragEl: HTMLElement) {
-    const totalDraggableDistance =
-      this._datepickerBodyCalendarView!.getBoundingClientRect().width;
+    /**
+     * NOTE(motss): For unknown reason, Chromium based browsers requires `updateComplete` to be
+     * called before getting the dimensions when the element is being slotted into another element
+     * via the `<slot>` element.
+     */
+    this.updateComplete.then(() => {
+      const totalDraggableDistance =
+        this._datepickerBodyCalendarView!.getBoundingClientRect().width;
 
-    dragEl.style.transform =
-      `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
-    this._totalDraggableDistance = totalDraggableDistance;
+      dragEl.style.transform =
+        `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
+      this._totalDraggableDistance = totalDraggableDistance;
+    });
   }
 
   private _renderHeaderSelectorButton() {
@@ -750,15 +754,14 @@ export class AppDatepicker extends LitElement {
           }
 
           const curTime = +new Date(fullDate!);
-          const isDisabledDay = disabled;
 
           if (formattedDate == null) formattedDate = longMonthYearFormatter(curTime);
 
           const tdClass = classMap({
             'full-calendar__day': true,
-            'day--disabled': isDisabledDay,
+            'day--disabled': disabled,
             'day--today': +todayDate === curTime,
-            'day--focused': !isDisabledDay && +focusedDate === curTime,
+            'day--focused': !disabled && +focusedDate === curTime,
           });
 
           return html`
@@ -1135,7 +1138,8 @@ declare global {
 // FIXED: Do not update focused date while dragging/ swiping calendar
 // FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
 // FIXED: `disabledDays` is broken with `firstDayofWeek`
+// FIXED: When a new property is set, it re-renders the calendar to last focused date but
+//        never updates the selected date
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: When a new property is set, it re-renders the calendar to last focused date but
-//        never updates the selected date
+// FIXME: Replace Web Animations for better support for animations on older browsers.

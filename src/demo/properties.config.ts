@@ -1,7 +1,8 @@
+type PropertyValue = import('@reallyland/really-code-configurator').PropertyValue;
+
 import { START_VIEW } from '../app-datepicker';
 import { WEEK_NUMBER_TYPE } from '../calendar';
 import { getResolvedDate, getResolvedLocale, toFormattedDateString } from '../datepicker-helpers';
-import { PropertyValue } from './code-configurator';
 import { locales } from './locales';
 
 const properties: PropertyValue[] = [
