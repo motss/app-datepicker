@@ -3,12 +3,15 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
     "inlineSources": true,
+    "listEmittedFiles": true,
     "newLine": "LF",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
@@ -30,19 +33,11 @@
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "dist",
-    "plugins": [
-      {
-        "name": "typescript-lit-html-plugin",
-        "tags": [
-          "html",
-          "svg"
-        ]
-      }
-    ],
     "types": [
       "chai",
       "mocha"
     ]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"]
 }
