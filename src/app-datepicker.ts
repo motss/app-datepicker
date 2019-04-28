@@ -553,50 +553,8 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const isCalendarView = START_VIEW.CALENDAR === this._startView;
-    const dragEl = this._calendarViewFullCalendar!;
-    const firstFocusableElement = isCalendarView ?
+    const firstFocusableElement = START_VIEW.CALENDAR === this._startView ?
       this._buttonSelectorYear : this._yearViewListItem;
-
-    let started = false;
-    let dx = 0;
-    let abortDragIfHasMinDate = false;
-    let abortDragIfHasMaxDate = false;
-
-    const handlers: import('./tracker').TrackerHandlers = {
-      down: () => {
-        if (started) return;
-        this._trackingStartFn();
-        started = true;
-      },
-      move: (changedPointer, oldPointer) => {
-        if (!started) return;
-
-        dx += changedPointer.x - oldPointer.x;
-        abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
-        abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
-
-        if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
-
-        this._trackingMoveFn(dx);
-      },
-      up: (changedPointer, oldPointer) => {
-        if (!started) return;
-        if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
-          abortDragIfHasMaxDate = false;
-          abortDragIfHasMinDate = false;
-          dx = 0;
-          return;
-        }
-
-        dx += changedPointer.x - oldPointer.x;
-        this._trackingEndFn(dx);
-        dx = 0;
-        started = false;
-      },
-    };
-
-    this._calendarTracker = new Tracker(dragEl!, handlers);
 
     dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
   }
@@ -619,13 +577,65 @@ export class AppDatepicker extends LitElement {
       }
     }
 
-    /** NOTE(motss): Always update calendar position */
-    const totalDraggableDistance =
-      this._datepickerBodyCalendarView!.getBoundingClientRect().width;
+    /**
+     * NOTE(motss): A datepicker could start with a year list view. In a year view list, there is
+     * no calendar rendered on screen. Therefore the tracker setup should not be setup until a
+     * calendar view is selected. This also applies to updating draggable/ swipeable calendar's
+     * position.
+     */
+    if (START_VIEW.CALENDAR === startView) {
+      const dragEl = this._calendarViewFullCalendar!;
 
-    this._calendarViewFullCalendar!.style.transform =
-      `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
-    this._totalDraggableDistance = totalDraggableDistance;
+      if (!this._calendarTracker) {
+        let started = false;
+        let dx = 0;
+        let abortDragIfHasMinDate = false;
+        let abortDragIfHasMaxDate = false;
+
+        const handlers: import('./tracker').TrackerHandlers = {
+          down: () => {
+            if (started) return;
+            this._trackingStartFn();
+            started = true;
+          },
+          move: (changedPointer, oldPointer) => {
+            if (!started) return;
+
+            dx += changedPointer.x - oldPointer.x;
+            abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
+            abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
+
+            if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
+
+            this._trackingMoveFn(dx);
+          },
+          up: (changedPointer, oldPointer) => {
+            if (!started) return;
+            if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
+              abortDragIfHasMaxDate = false;
+              abortDragIfHasMinDate = false;
+              dx = 0;
+              return;
+            }
+
+            dx += changedPointer.x - oldPointer.x;
+            this._trackingEndFn(dx);
+            dx = 0;
+            started = false;
+          },
+        };
+
+        this._calendarTracker = new Tracker(dragEl, handlers);
+      }
+
+      /** NOTE(motss): Always update calendar position */
+      const totalDraggableDistance =
+        this._datepickerBodyCalendarView!.getBoundingClientRect().width;
+
+      this._calendarViewFullCalendar!.style.transform =
+        `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
+      this._totalDraggableDistance = totalDraggableDistance;
+    }
   }
 
   private _renderHeaderSelectorButton() {

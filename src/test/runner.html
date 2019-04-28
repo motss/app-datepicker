@@ -9,7 +9,7 @@
     <link rel="dns-prefetch" href="https://unpkg.com">
 
     <script src="https://unpkg.com/@babel/polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="../../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@latest/webcomponents-loader.js"></script>
     <script src="../../node_modules/chai/chai.js"></script>
     <script src="../../node_modules/mocha/mocha.js"></script>
     <script src="../../node_modules/wct-mocha/wct-mocha.js"></script>
@@ -25,7 +25,7 @@
       if (!isES6ClassSupported()) {
         const cea = document.createElement('script');
         cea.src =
-          '/node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js';
+          'https://unpkg.com/@webcomponents/webcomponentsjs@latest/custom-elements-es5-adapter.js';
         cea.onload = () => console.info('⚒ CE ES5 adapter loaded');
         cea.onerror = console.error;
         document.head.appendChild(cea);

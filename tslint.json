@@ -1,6 +1,6 @@
 {
   "extends": [
-    "@messageflow/tslint-config"
+    "@reallyland/tslint-config"
   ],
   "rules": {}
 }
