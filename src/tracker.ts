@@ -53,7 +53,6 @@ export class Tracker {
 
   private _startPointer: ResolvedPointer | null = null;
   private _started: boolean = false;
-  // private readonly _element: HTMLElement;
   private readonly _down: DownCallback;
   private readonly _move: UpdateCallback;
   private readonly _up: UpdateCallback;
