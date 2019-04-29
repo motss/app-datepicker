@@ -30,9 +30,9 @@ _None_
 
 | Event | Description |
 | --- | --- |
-| `datepicker-first-updated` | Fires when datepicker first renders. Returns `{ firstFocusableElemet }` where `firstFocusableElement` is of type [HTMLElement][htmlelement-mdn-url]. |
+| `datepicker-first-updated` | Fires when datepicker first renders. Returns `{ firstFocusableElement, value }` where `firstFocusableElement` is of type [HTMLElement][htmlelement-mdn-url] and `value` is of type [string][string-mdn-url], e.g. `{ firstFocusableElement: <HTMLElement>, value: '2020-02-02' }`. |
 | `datepicker-animation-finished` | Fires when drag animation finishes during the switch between calendars. Returns no value. |
-| `datepicker-value-updated` | Fires when datepicker updates its `value` via keyboard input. |
+| `datepicker-keyboard-selected` | Fires when datepicker updates its `value` via keyboard input (Enter or Space key). Returns `{ value }` where `value` is of type [string][string-mdn-url], e.g. `{ value: '2020-02-02' }`. |
 
 ### Custom properties
 
@@ -82,12 +82,12 @@ ___
 
 | Event | Inherited | Description |
 | --- | --- | --- |
-| `datepicker-first-updated` | [AppDatepicker][app-datepicker-url] | Fires when datepicker first renders. Returns `{ firstFocusableElemet }` where `firstFocusableElement` is of type [HTMLElement][htmlelement-mdn-url]. |
+| `datepicker-first-updated` | [AppDatepicker][app-datepicker-url] | Fires when datepicker first renders. Returns `{ firstFocusableElement, value }` where `firstFocusableElement` is of type [HTMLElement][htmlelement-mdn-url] and `value` is of type [string][string-mdn-url], e.g. `{ firstFocusableElement: <HTMLElement>, value: '2020-02-02' }`. |
 | `datepicker-animation-finished` | [AppDatepicker][app-datepicker-url] | Fires when drag animation finishes during the switch between calendars. Returns no value. |
-| `datepicker-value-updated` | [AppDatepicker][app-datepicker-url] | Fires when datepicker updates its `value` via keyboard input. |
-| `datepicker-dialog-first-updated` | | Fires when datepicker dialog first renders. Returns `{ value }` where `value` is of type String, e.g. `{ value: '2020-02-02' }`. |
-| `datepicker-dialog-opened` | | Fires when datepicker dialog opens. Returns `{ opened, value }` where `opened` is of type Boolean and `value` is of type String, e.g. `{ opened: true, value: '2020-02-02' }`. |
-| `datepicker-dialog-closed` | | Fires when datepicker dialog closes. Returns `{ opened, value }` where `opened` is of type Boolean and `value` is of type String, e.g. `{ opened: false, value: '2020-02-02' }`. |
+| `datepicker-keyboard-selected` | [AppDatepicker][app-datepicker-url] | Fires when datepicker updates its `value` via keyboard input (Enter or Space key). Returns `{ value }` where `value` is of type [string][string-mdn-url], e.g. `{ value: '2020-02-02' }`. |
+| `datepicker-dialog-first-updated` | | Fires when datepicker dialog first renders. Returns `{ value }` where `value` is of type [string][string-mdn-url], e.g. `{ value: '2020-02-02' }`. |
+| `datepicker-dialog-opened` | | Fires when datepicker dialog opens. Returns `{ firstFocusableElement, opened, value }` where they are of type [HTMLElement][htmlelement-mdn-url], type [boolean][boolean-mdn-url], and type [string][string-mdn-url] respectively, e.g. `{ firstFocusableElement: <HTMLElement>, opened: true, value: '2020-02-02' }`. |
+| `datepicker-dialog-closed` | | Fires when datepicker dialog closes. Returns `{ opened, value }` where `opened` is of type [boolean][boolean-mdn-url] and `value` is of type [string][string-mdn-url], e.g. `{ opened: false, value: '2020-02-02' }`. |
 
 ### Custom properties
 
@@ -108,3 +108,5 @@ ___
 
 <!-- MDN -->
 [htmlelement-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
+[boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String

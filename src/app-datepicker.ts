@@ -10,6 +10,13 @@ interface ParamUpdatedChanged extends ClassProperties<
   _startView: START_VIEW;
 }
 
+export interface DatepickerValueUpdatedEvent {
+  value: AppDatepicker['value'];
+}
+export interface DatepickerFirstUpdatedEvent extends DatepickerValueUpdatedEvent {
+  firstFocusableElement: HTMLElement;
+}
+
 interface ParamsAnimateCalendar {
   target: HTMLElement;
   from: number;
@@ -553,10 +560,11 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const firstFocusableElement = START_VIEW.CALENDAR === this._startView ?
-      this._buttonSelectorYear : this._yearViewListItem;
+    const firstFocusableElement = (START_VIEW.CALENDAR === this._startView ?
+      this._buttonSelectorYear : this._yearViewListItem)!;
 
-    dispatchCustomEvent(this, 'datepicker-first-updated', { firstFocusableElement });
+    dispatchCustomEvent<DatepickerFirstUpdatedEvent>(
+      this, 'datepicker-first-updated', { firstFocusableElement, value: this.value });
   }
 
   protected updated(changed: Map<keyof ParamUpdatedChanged, unknown>) {
@@ -796,7 +804,7 @@ export class AppDatepicker extends LitElement {
       html`<div
         class="${calendarViewFullCalendarContentCls}"
         tabindex="0"
-        @keyup="${this._updateMonthWithKeyboard}">${calendarsContent}</div>`;
+        @keyup="${this._updateFocusedDateWithKeyboard}">${calendarsContent}</div>`;
 
     /** NOTE: Updates disabled dates and days with computed Sets. */
     this._disabledDatesSet = disabledDatesSet;
@@ -1052,12 +1060,13 @@ export class AppDatepicker extends LitElement {
   //  date textbox associated with the datepicker
   // Enter / Space Fill the date textbox with the selected date then close the datepicker widget.
   @eventOptions({ passive: true })
-  private _updateMonthWithKeyboard(ev: KeyboardEvent) {
+  private _updateFocusedDateWithKeyboard(ev: KeyboardEvent) {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip updating and fire an event to notify of updated focused date. */
     if (KEYCODES_MAP.ENTER === keyCode || KEYCODES_MAP.SPACE === keyCode) {
-      dispatchCustomEvent(this, 'datepicker-value-updated', { value: this.value });
+      dispatchCustomEvent<DatepickerValueUpdatedEvent>(
+        this, 'datepicker-keyboard-selected', { value: this.value });
       return;
     }
 
@@ -1106,6 +1115,14 @@ declare global {
 
   interface HTMLButtonElement {
     year: number;
+  }
+
+  interface HTMLElementEventMap {
+    'datepicker-first-updated':
+      CustomEvent<DatepickerFirstUpdatedEvent>;
+    'datepicker-animation-finished':
+      CustomEvent<undefined>;
+    'datepicker-keyboard-selected': CustomEvent<DatepickerValueUpdatedEvent>;
   }
 }
 
