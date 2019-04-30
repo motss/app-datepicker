@@ -1,5 +1,5 @@
 import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog, DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
+import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog';
 import { makeNumberPrecise } from '../../datepicker-helpers';
 import {
   date13,
@@ -445,7 +445,7 @@ describe(getTestName(name), () => {
 
     describe('focusing new date by gestures', () => {
       const runTestOnDialogClosed =
-        (cb: (ev: CustomEvent<DatepickerDialogClosedDetail>) => void) =>
+        (cb: (ev: CustomEvent<DatepickerDialogClosedEvent>) => void) =>
           new Promise((yay, nah) => {
             el.addEventListener('datepicker-dialog-closed', async (ev) => {
               try {

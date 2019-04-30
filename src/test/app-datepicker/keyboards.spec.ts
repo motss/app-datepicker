@@ -26,6 +26,12 @@ describe(getTestName(name), () => {
     let el: AppDatepicker;
     let t: ReturnType<typeof queryInit>;
 
+    const runCustomEventDispatcherTimer = (eventName: string, timeout: number = 10e3) => {
+      return setTimeout(() => {
+        throw new Error(`Custom event '${eventName}' takes too long to be dispatched`);
+      }, timeout);
+    };
+
     beforeEach(async () => {
       el = document.createElement(name) as AppDatepicker;
       document.body.appendChild(el);
@@ -972,7 +978,7 @@ describe(getTestName(name), () => {
       }
     });
 
-    it(`fires 'datepicker-value-updated' event (Enter)`, async () => {
+    it(`fires 'datepicker-keyboard-selected' event (Enter)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
       await forceUpdate(el);
@@ -985,13 +991,22 @@ describe(getTestName(name), () => {
 
       strictEqual(el.value, '2020-01-21', `Focused date not updated`);
 
-      const valueMatchedFromEvent = new Promise((yay) => {
-        el.addEventListener('datepicker-value-updated', (ev) => {
-          const { value } = (ev as CustomEvent).detail;
+      const eventName = 'datepicker-keyboard-selected';
+      const valueMatchedFromEvent = new Promise((yay, nah) => {
+        let timer = -1;
+        try {
+          el.addEventListener('datepicker-keyboard-selected', (ev) => {
+            clearTimeout(timer);
 
-          strictEqual(value, '2020-01-21', `Updated value from event not matched`);
-          yay();
-        }, { once: true });
+            const { value } = (ev as CustomEvent).detail;
+
+            strictEqual(value, '2020-01-21', `Updated value from event not matched`);
+            yay();
+          }, { once: true });
+          timer = runCustomEventDispatcherTimer(eventName);
+        } catch (e) {
+          nah(e);
+        }
       });
 
       triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.ENTER });
@@ -999,7 +1014,7 @@ describe(getTestName(name), () => {
       await valueMatchedFromEvent;
     });
 
-    it(`fires 'datepicker-value-updated' event (Space)`, async () => {
+    it(`fires 'datepicker-keyboard-selected' event (Space)`, async () => {
       el.min = date13;
       el.value = '2020-01-22';
       await forceUpdate(el);
@@ -1012,13 +1027,22 @@ describe(getTestName(name), () => {
 
       strictEqual(el.value, '2020-01-21', `Focused date not updated`);
 
-      const valueMatchedFromEvent = new Promise((yay) => {
-        el.addEventListener('datepicker-value-updated', (ev) => {
-          const { value } = (ev as CustomEvent).detail;
+      const eventName = 'datepicker-keyboard-selected';
+      const valueMatchedFromEvent = new Promise((yay, nah) => {
+        let timer = -1;
+        try {
+          el.addEventListener('datepicker-keyboard-selected', (ev) => {
+            clearTimeout(timer);
 
-          strictEqual(value, '2020-01-21', `Updated value from event not matched`);
-          yay();
-        }, { once: true });
+            const { value } = (ev as CustomEvent).detail;
+
+            strictEqual(value, '2020-01-21', `Updated value from event not matched`);
+            yay();
+          }, { once: true });
+          timer = runCustomEventDispatcherTimer(eventName);
+        } catch (e) {
+          nah(e);
+        }
       });
 
       triggerEvent(calendarViewFullCalendarEl, 'keyup', { keyCode: KEYCODES_MAP.SPACE });

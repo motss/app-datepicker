@@ -1,5 +1,5 @@
 import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog, DatepickerDialogClosedDetail } from '../../app-datepicker-dialog';
+import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog';
 import { KEYCODES_MAP } from '../../datepicker-helpers';
 import {
   date13,
@@ -27,7 +27,7 @@ const name = AppDatepickerDialog.is;
 describe(getTestName(name), () => {
   describe('keyboards', () => {
     const runTestOnDialogClosed =
-      (cb: (ev: CustomEvent<DatepickerDialogClosedDetail>) => void) =>
+      (cb: (ev: CustomEvent<DatepickerDialogClosedEvent>) => void) =>
         new Promise((yay, nah) => {
           const bcb = async (ev: Event) => {
             try {
