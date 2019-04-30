@@ -54,11 +54,10 @@
     "lit-html": "^1.0.0"
   },
   "devDependencies": {
-    "@reallyland/really-code-configurator": "^0.1.0",
+    "@reallyland/really-code-configurator": "^0.2.0",
     "@reallyland/tslint-config": "^1.0.0",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.8",
     "axe-core": "^3.2.2",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
