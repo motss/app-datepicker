@@ -32,11 +32,7 @@
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
-    "declarationDir": "dist",
-    "types": [
-      "chai",
-      "mocha"
-    ]
+    "declarationDir": "dist"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist"]

@@ -9,13 +9,14 @@
       "browserOptions": {
         "chrome": [
           "disable-gpu",
-          "headless",
-          "window-size=1920,1080"
+          "headless"
         ]
       }
     }
   },
   "suites": ["src/test"],
   "testTimeout": 539999,
-  "verbose": false
+  "verbose": true,
+  "expanded": true,
+  "compile": "auto"
 }
