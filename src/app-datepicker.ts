@@ -957,7 +957,7 @@ export class AppDatepicker extends LitElement {
         'weekday-label',
       ].some(n => hasClass(selectedDayEl, n))) return;
 
-    this._focusedDate = new Date(this._selectedDate.setUTCDate(+selectedDayEl.day!));
+    this._focusedDate = new Date(selectedDayEl.fullDate);
   }
 
   private _trackingStartFn() {
@@ -1111,6 +1111,7 @@ declare global {
 
   interface HTMLTableCellElement {
     day: string;
+    fullDate: string;
   }
 
   interface HTMLButtonElement {
@@ -1144,8 +1145,8 @@ declare global {
 // FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
 // FIXED: `disabledDays` is broken with `firstDayofWeek`
 // FIXED: When a new property is set, it re-renders the calendar to last focused date but
+// FIXED: Add test for custom events
 //        never updates the selected date
 // TODO: To suppport `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // FIXME: Replace Web Animations for better support for animations on older browsers.
-// FIXME: Add test for custom events

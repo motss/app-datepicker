@@ -1016,6 +1016,30 @@ describe(getTestName(name), () => {
         testCalendarLabel('4', ['Mar 2020', 'March, 2020', 'March 2020']);
       });
 
+      it(`focuses new date when 'locale' is set`, async () => {
+        strictEqual(el.value, '2020-01-15', `'value' not matched`);
+        strictEqual(el.locale, defaultLocale, `'locale' not matched`);
+
+        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+
+        const focusedDayDivEl = t.getDatepickerBodyCalendarViewDayFocusedDiv()!;
+        isNotNull(focusedDayDivEl, `Focused day div not found`);
+        strictEqual(getShadowInnerHTML(focusedDayDivEl), '15');
+
+        el.locale = 'ja-JP';
+        await forceUpdate(el);
+
+        const selectableDateEl = t.getSelectableDate('2020年1月24日');
+        isNotNull(selectableDateEl, `Selectable date not found`);
+
+        triggerEvent(selectableDateEl, 'click');
+        await forceUpdate(el);
+
+        const focusedDayDivEl2 = t.getDatepickerBodyCalendarViewDayFocusedDiv()!;
+        isNotNull(focusedDayDivEl2, `Updated focused day div not found`);
+        strictEqual(getShadowInnerHTML(focusedDayDivEl2), '24日');
+      });
+
     });
 
   });
