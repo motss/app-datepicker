@@ -2,13 +2,13 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 
 aliases:
   - &restore-cache-deps
-      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2
+      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2.1
   - &save-cache-deps
-      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2
+      key: dependency-cache-{{ .Environment.CIRCLE_BRANCH }}-{{ checksum "package.json" }}-2.1
       paths:
         - node_modules
 
@@ -23,6 +23,16 @@ jobs:
     steps:
       - checkout
       - restore_cache: *restore-cache-deps
+      - run:
+          name: Git Log
+          command: |
+            if [ -z "$(git describe --exact-match HEAD)" ]; then
+              echo "Not tagged commit"
+            fi
+
+            if [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              echo "No tag/ version in commit message"
+            fi
       - run:
           name: Install Global Dependencies
           command: sudo npm i -g npm@latest --quiet
@@ -51,7 +61,7 @@ jobs:
           at: ~/app-datepicker
       - run:
           name: Test
-          command: npx -p polymer-cli -- npm run test:ci
+          command: npx -p web-component-tester -- npm run test:ci
 
   test_ie_11:
     <<: *defaults
@@ -61,109 +71,61 @@ jobs:
       - run:
           name: Test (Internet Explorer 11)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 7/internet explorer@11';
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 7/internet explorer@11';
             fi
 
-  test_edge_17:
+  test_edge:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Edge 17)
+          name: Test (Edge 17, 13)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@17';
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@13';
             fi
 
-  test_edge_13:
+  test_safari:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Edge 13)
+          name: Test (Safari 10.1, 9)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/microsoftedge@13';
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npx -p web-component-tester -- npm run test:sl -- -s 'macos 10.12/safari@10.1' -s 'os x 10.11/safari@9';
             fi
 
-  test_safari_10_1:
+  test_chrome:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Safari 10.1)
+          name: Test (Chrome 69, 41)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'macos 10.12/safari@10.1';
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/chrome@69' -s 'Linux/chrome@41';
             fi
 
-  test_safari_9:
+  test_firefox:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Safari 9)
+          name: Test (Firefox 63, 62)
           command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'os x 10.11/safari@9';
-            fi
-
-  test_chrome_69:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Chrome 69)
-          command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/chrome@69';
-            fi
-
-  test_chrome_41:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Chrome 41)
-          command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'Linux/chrome@41';
-            fi
-
-  test_firefox_63:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Firefox 63)
-          command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'windows 10/firefox@63';
-            fi
-
-  test_firefox_62:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Firefox 62)
-          command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
-              npx -p polymer-cli -- npm run test:sl -- -s 'macos 10.14/firefox@62';
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/firefox@63' -s 'macos 10.14/firefox@62';
             fi
 
 workflows:
   version: 2
-  node-multi-build:
+  multi-build-n-test:
     jobs:
       - build
       - test_local:
@@ -174,34 +136,18 @@ workflows:
           requires:
             - build
 
-      - test_edge_17:
+      - test_edge:
           requires:
             - build
-      - test_edge_13:
-          requires:
-            - build
-            - test_edge_17
 
-      - test_safari_10_1:
+      - test_safari:
           requires:
             - build
-      - test_safari_9:
-          requires:
-            - build
-            - test_safari_10_1
 
-      - test_chrome_69:
+      - test_chrome:
           requires:
             - build
-      - test_chrome_41:
-          requires:
-            - build
-            - test_chrome_69
 
-      - test_firefox_63:
+      - test_firefox:
           requires:
             - build
-      - test_firefox_62:
-          requires:
-            - build
-            - test_firefox_63
