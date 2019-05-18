@@ -42,9 +42,9 @@
     "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
     "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
-    "test": "npm run lint && polymer test --skip-selenium-install --config-file wct.config.json",
-    "test:ci": "polymer test --config-file ./wct.config.ci.json",
-    "test:sl": "polymer test --config-file ./wct.config.sl.json",
+    "test": "npm run lint && wct --skip-selenium-install --config-file wct.config.json",
+    "test:ci": "wct --config-file ./wct.config.ci.json",
+    "test:sl": "wct --config-file ./wct.config.sl.json",
     "ts": "rm -rf dist/ && tsc",
     "watch": "npm run ts -- --watch"
   },
