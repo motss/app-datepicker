@@ -63,19 +63,7 @@ jobs:
           name: Test
           command: npx -p web-component-tester -- npm run test:ci
 
-  test_ie_11:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/app-datepicker
-      - run:
-          name: Test (Internet Explorer 11)
-          command: |
-            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-              npx -p web-component-tester -- npm run test:sl -- -s 'windows 7/internet explorer@11';
-            fi
-
-  test_edge:
+  test_edge_ie:
     <<: *defaults
     steps:
       - attach_workspace:
@@ -84,7 +72,7 @@ jobs:
           name: Test (Edge 17, 13)
           command: |
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@13';
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@13' -s 'windows 10/internet explorer@11';
             fi
 
   test_safari:
@@ -132,11 +120,7 @@ workflows:
           requires:
             - build
 
-      - test_ie_11:
-          requires:
-            - build
-
-      - test_edge:
+      - test_edge_ie:
           requires:
             - build
 
