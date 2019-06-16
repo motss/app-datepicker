@@ -148,7 +148,7 @@ Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (C
 
 ## Demo
 
-[Demo with code configurator powered by Glitch][]
+[Configurable demo powered by CodeSandbox]
 
 ## Older versions
 
@@ -179,7 +179,7 @@ Meantime, feel free to check the older version out at:
 [app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
-[Demo with code configurator powered by Glitch]: https://demo-app-datepicker.glitch.me
+[Configurable demo powered by CodeSandbox]: https://pvzdl.sse.codesandbox.io
 
 <!-- Browers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
