@@ -63,16 +63,20 @@ jobs:
           name: Test
           command: npx -p web-component-tester -- npm run test:ci
 
+  # According to the resources below, Edge 15 is the oldest supported MS Edge.
+  # https://en.wikipedia.org/wiki/Microsoft_Edge
+  # https://reports.adduplex.com/#/r/2019-04
+  # https://en.wikipedia.org/wiki/Windows_10_version_history
   test_edge_ie:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/app-datepicker
       - run:
-          name: Test (Edge 17, 13)
+          name: Test (Edge 17, 15, Internet Explorer 11)
           command: |
             if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@13' -s 'windows 10/internet explorer@11';
+              npx -p web-component-tester -- npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@15' -s 'windows 10/internet explorer@11';
             fi
 
   test_safari:
