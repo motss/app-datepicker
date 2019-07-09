@@ -59,12 +59,12 @@
     "@reallyland/tslint-config": "^1.1.0",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.7",
-    "axe-core": "^3.2.2",
+    "axe-core": "^3.3.0",
     "chai": "^4.2.0",
-    "mocha": "^5.2.0",
+    "mocha": "^6.1.4",
     "pwa-helpers": "^0.9.1",
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.2",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3",
     "wct-mocha": "^1.0.1"
   },
   "engines": {
