@@ -45,14 +45,14 @@ The following are the list of tools used that makes it shine:
 
 ## Table of contents <!-- omit in toc -->
 
-- [Pre-requisite](#pre-requisite)
-- [Installation](#installation)
-- [How to use](#how-to-use)
-- [Browser compatibility](#browser-compatibility)
-- [API references](#api-references)
-- [Demo](#demo)
-- [Older versions](#older-versions)
-- [License](#license)
+- [Pre-requisite](#Pre-requisite)
+- [Installation](#Installation)
+- [How to use](#How-to-use)
+- [Browser compatibility](#Browser-compatibility)
+- [API references](#API-references)
+- [Demo](#Demo)
+- [Older versions](#Older-versions)
+- [License](#License)
 
 ## Pre-requisite
 
@@ -75,6 +75,47 @@ The following are the list of tools used that makes it shine:
   2. [unpkg (ESM)][unpkg-url]
 
 ## How to use
+
+**Polyfills**
+
+Please make sure you have all these features available on the browsers you are supporting. If no, please consider polyfilling in order to run the datepicker element.
+
+* [Array.prototype.find]
+* [Intl.DateTimeFormat]
+* [Web Animations]
+
+The following snippet shows a simple script used in the demo to load polyfills via feature detection on different browsers:
+
+```html
+<script>
+  if (null == Array.prototype.find) {
+    Object.defineProperty(Array.prototype, 'find', {
+      value: function arrayFind(cb) {
+        const filtered = this.filter(cb);
+        return !filtered.length ? void 0 : filtered[0];
+      }
+    });
+  }
+
+  if (!window.Intl) {
+    const wa = document.createElement('script');
+    /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+    wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+    wa.onload = () => console.info('🌐 Intl polyfill loaded');
+    wa.onerror = console.error;
+    document.head.appendChild(wa);
+  }
+
+  if (!(Element.prototype.animate)) {
+    const wa = document.createElement('script');
+    wa.src = 'https://unpkg.com/web-animations-js@latest/web-animations.min.js';
+    wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+    wa.onerror = console.error;
+    document.head.appendChild(wa);
+  }
+
+</script>
+```
 
 **my-app.ts**
 
@@ -180,6 +221,9 @@ Meantime, feel free to check the older version out at:
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [Configurable demo powered by CodeSandbox]: https://pvzdl.sse.codesandbox.io
+[Web Animations]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
+[Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
+[Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 
 <!-- Browers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png

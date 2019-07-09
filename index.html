@@ -17,7 +17,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700">
 
     <script>
-      if (!(Element.prototype.animate)) {
+      var hasWebAnimations = 'animate' in Element.prototype;
+      var hasIntl = 'Intl' in window;
+      var hasArrayFind = 'find' in Array.prototype;
+
+      if (!hasWebAnimations) {
         const wa = document.createElement('script');
         wa.src = 'https://unpkg.com/web-animations-js@latest/web-animations.min.js';
         wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
@@ -25,7 +29,7 @@
         document.head.appendChild(wa);
       }
 
-      if (!window.Intl) {
+      if (!hasIntl) {
         const wa = document.createElement('script');
         /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
         wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
@@ -42,6 +46,15 @@
         document.head.appendChild(wa);
       }
 
+      if (!hasArrayFind) {
+        Object.defineProperty(Array.prototype, 'find', {
+          value: function arrayFind(cb) {
+            const filtered = this.filter(cb);
+            return !filtered.length ? void 0 : filtered[0];
+          }
+        });
+      }
+
     </script>
 
     <script type="module">
@@ -53,7 +66,8 @@
 
       const $ = s => document.body.querySelector(s);
 
-      const inputCheckboxPointerEvent = $('.input-checkbox__pointer-event');
+      // const inputCheckboxPointerEvent = $('.input-checkbox__pointer-event');
+      const inputCheckboxArrayFind = $('.input-checkbox__array-find');
       const inputCheckboxIntl = $('.input-checkbox__intl');
       const inputCheckboxWebAnimations = $('.input-checkbox__web-animations');
       const configuratorDatepickerEl = $('.configurator--datepicker');
@@ -61,10 +75,11 @@
       const openBtnEl = $('.open-btn');
       const datepickerDialogEl = $('.datepicker-dialog');
 
-      inputCheckboxPointerEvent.checked = 'PointerEvent' in self;
-      inputCheckboxIntl.checked = 'Intl' in self && Intl.DateTimeFormat;
-      inputCheckboxWebAnimations.checked =
-        Element.prototype.animate.toString().indexOf('[native code]') >= 0;
+      // inputCheckboxPointerEvent.checked = 'PointerEvent' in self;
+      inputCheckboxArrayFind.checked = hasArrayFind;
+      inputCheckboxIntl.checked = hasIntl;
+      inputCheckboxWebAnimations.checked = hasWebAnimations;
+        // Element.prototype.animate.toString().indexOf('[native code]') >= 0;
 
       configuratorDatepickerEl.properties = properties;
       configuratorDatepickerEl.cssProperties = cssProperties;
@@ -192,7 +207,7 @@
 
       <p class="api-desc"><i>* Checked if API is natively supported</i></p>
 
-      <div>
+      <!-- <div>
         <label>
           <input class="input-checkbox__pointer-event" type="checkbox" disabled>
           <span>PointerEvent</span>
@@ -200,6 +215,17 @@
             href="https://unpkg.com/pepjs@latest/"
             target="_blank"
             rel="noopener">PointerEvent polyfill</a>
+        </label>
+      </div> -->
+
+      <div>
+        <label>
+          <input class="input-checkbox__array-find" type="checkbox" disabled>
+          <span>Array.prototype.find</span>
+          <a
+            href="https://bit.ly/2LHkXiN"
+            target="_blank"
+            rel="noopener">Array.prototype.find polyfill</a>
         </label>
       </div>
 
