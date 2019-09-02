@@ -49,22 +49,22 @@
     "watch": "npm run ts -- --watch"
   },
   "dependencies": {
-    "@material/mwc-button": "^0.6.0",
-    "lit-element": "^2.2.0",
-    "lit-html": "^1.1.1"
+    "@material/mwc-button": "^0.7.1",
+    "lit-element": "^2.2.1",
+    "lit-html": "^1.1.2"
   },
   "devDependencies": {
-    "@reallyland/really-code-configurator": "^0.3.0",
+    "@reallyland/really-code-configurator": "^0.4.1",
     "@reallyland/tsconfig": "^1.0.0",
-    "@reallyland/tslint-config": "^1.1.0",
-    "@types/chai": "^4.1.7",
+    "@reallyland/tslint-config": "^1.1.1",
+    "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
-    "axe-core": "^3.3.0",
+    "axe-core": "^3.3.2",
     "chai": "^4.2.0",
-    "mocha": "^6.1.4",
+    "mocha": "^6.2.0",
     "pwa-helpers": "^0.9.1",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3",
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.2",
     "wct-mocha": "^1.0.1"
   },
   "engines": {
