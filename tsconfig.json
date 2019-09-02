@@ -6,5 +6,5 @@
     "declarationDir": "dist"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["dist"]
+  "exclude": ["node_modules", "dist"]
 }

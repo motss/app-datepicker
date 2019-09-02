@@ -45,7 +45,7 @@
     "test": "npm run lint && wct --skip-selenium-install --config-file wct.config.json",
     "test:ci": "wct --config-file ./wct.config.ci.json",
     "test:sl": "wct --config-file ./wct.config.sl.json",
-    "ts": "rm -rf dist/ && tsc",
+    "ts": "shx rm -rf dist/ && tsc",
     "watch": "npm run ts -- --watch"
   },
   "dependencies": {
@@ -54,7 +54,7 @@
     "lit-html": "^1.1.2"
   },
   "devDependencies": {
-    "@reallyland/really-code-configurator": "^0.4.1",
+    "@reallyland/really-code-configurator": "^0.5.1",
     "@reallyland/tsconfig": "^1.0.0",
     "@reallyland/tslint-config": "^1.1.1",
     "@types/chai": "^4.2.0",
@@ -63,6 +63,7 @@
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
     "pwa-helpers": "^0.9.1",
+    "shx": "^0.3.2",
     "tslint": "^5.19.0",
     "typescript": "^3.6.2",
     "wct-mocha": "^1.0.1"
