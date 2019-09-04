@@ -57,7 +57,7 @@
     "@reallyland/really-code-configurator": "^0.5.1",
     "@reallyland/tsconfig": "^1.0.0",
     "@reallyland/tslint-config": "^1.1.1",
-    "@types/chai": "^4.2.0",
+    "@types/chai": "^4.2.1",
     "@types/mocha": "^5.2.7",
     "axe-core": "^3.3.0",
     "chai": "^4.2.0",
