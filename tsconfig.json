@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "declarationDir": "dist"
+    "declarationDir": "dist",
+    "importHelpers": true,
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
