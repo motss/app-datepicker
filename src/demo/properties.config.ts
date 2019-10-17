@@ -1,4 +1,4 @@
-type PropertyValue = import('@reallyland/really-code-configurator').PropertyValue;
+import { PropertyValue } from '@reallyland/really-elements/dist/code-configurator/code-configurator.js';
 
 import { START_VIEW } from '../app-datepicker';
 import { WEEK_NUMBER_TYPE } from '../calendar';
