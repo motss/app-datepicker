@@ -592,9 +592,12 @@ export class AppDatepicker extends LitElement {
      * position.
      */
     if (START_VIEW.CALENDAR === startView) {
-      const dragEl = this._calendarViewFullCalendar!;
+      const calendarViewFullCalendar = this._calendarViewFullCalendar;
+      const dragEl = calendarViewFullCalendar ?
+        calendarViewFullCalendar :
+        this.shadowRoot!.querySelector<HTMLDivElement>('.calendar-view__full-calendar');
 
-      if (!this._calendarTracker) {
+      if (dragEl && !this._calendarTracker) {
         let started = false;
         let dx = 0;
         let abortDragIfHasMinDate = false;

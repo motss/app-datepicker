@@ -1,9 +1,13 @@
 import { PropertyValue } from '@reallyland/really-elements/dist/code-configurator/code-configurator.js';
 
-import { START_VIEW } from '../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../calendar';
-import { getResolvedDate, getResolvedLocale, toFormattedDateString } from '../datepicker-helpers';
-import { locales } from './locales';
+import { START_VIEW } from '../app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from '../calendar.js';
+import {
+  getResolvedDate,
+  getResolvedLocale,
+  toFormattedDateString,
+} from '../datepicker-helpers.js';
+import { locales } from './locales.js';
 
 const properties: PropertyValue[] = [
   {
