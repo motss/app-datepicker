@@ -446,6 +446,14 @@ export class AppDatepicker extends LitElement {
     }
   }
 
+  public get datepickerBodyCalendarView() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
+  }
+
+  public get calendarViewFullCalendar() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.calendar-view__full-calendar');
+  }
+
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
@@ -472,12 +480,6 @@ export class AppDatepicker extends LitElement {
 
   @query('.year-list-view__full-list')
   private _yearViewFullList?: HTMLDivElement;
-
-  @query('.datepicker-body__calendar-view')
-  private _datepickerBodyCalendarView?: HTMLDivElement;
-
-  @query('.calendar-view__full-calendar')
-  private _calendarViewFullCalendar?: HTMLDivElement;
 
   @query('.btn__year-selector')
   private _buttonSelectorYear?: HTMLButtonElement;
@@ -592,12 +594,12 @@ export class AppDatepicker extends LitElement {
      * position.
      */
     if (START_VIEW.CALENDAR === startView) {
-      const calendarViewFullCalendar = this._calendarViewFullCalendar;
-      const dragEl = calendarViewFullCalendar ?
-        calendarViewFullCalendar :
-        this.shadowRoot!.querySelector<HTMLDivElement>('.calendar-view__full-calendar');
+      const dragEl = this.calendarViewFullCalendar;
+      const datepickerBodyCalendarView = this.datepickerBodyCalendarView;
 
-      if (dragEl && !this._calendarTracker) {
+      if (null == dragEl || null == datepickerBodyCalendarView) return;
+
+      if (!this._calendarTracker) {
         let started = false;
         let dx = 0;
         let abortDragIfHasMinDate = false;
@@ -641,9 +643,9 @@ export class AppDatepicker extends LitElement {
 
       /** NOTE(motss): Always update calendar position */
       const totalDraggableDistance =
-        this._datepickerBodyCalendarView!.getBoundingClientRect().width;
+        datepickerBodyCalendarView!.getBoundingClientRect().width;
 
-      this._calendarViewFullCalendar!.style.transform =
+      this.calendarViewFullCalendar!.style.transform =
         `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
       this._totalDraggableDistance = totalDraggableDistance;
     }
@@ -856,7 +858,10 @@ export class AppDatepicker extends LitElement {
 
   private _updateMonth(updateType: string) {
     const handleUpdateMonth = () => {
-      const calendarViewFullCalendar = this._calendarViewFullCalendar!;
+      const calendarViewFullCalendar = this.calendarViewFullCalendar;
+
+      if (null ==  calendarViewFullCalendar) return;
+
       const totalDraggableDistance = this._totalDraggableDistance!;
       const dateDate = this._lastSelectedDate || this._selectedDate;
       const minDate = this._min!;
@@ -964,19 +969,22 @@ export class AppDatepicker extends LitElement {
   }
 
   private _trackingStartFn() {
-    const trackableEl = this._calendarViewFullCalendar!;
-    const trackableElWidth = trackableEl.getBoundingClientRect().width;
+    const trackableEl = this.calendarViewFullCalendar;
 
-    /**
-     * NOTE(motss): Perf tips - By setting fixed width for the following containers,
-     * it drastically minimizes layout and painting during tracking even on slow
-     * devices:-
-     *
-     *  - `.calendar-view__full-calender`
-     *  - `.datepicker-body__calendar-view`
-     */
-    trackableEl.style.width = trackableEl.style.minWidth = `${trackableElWidth}px`;
-    this._totalDraggableDistance = trackableElWidth / 3;
+    if (trackableEl) {
+      const trackableElWidth = trackableEl.getBoundingClientRect().width;
+
+      /**
+       * NOTE(motss): Perf tips - By setting fixed width for the following containers,
+       * it drastically minimizes layout and painting during tracking even on slow
+       * devices:-
+       *
+       *  - `.calendar-view__full-calender`
+       *  - `.datepicker-body__calendar-view`
+       */
+      trackableEl.style.width = trackableEl.style.minWidth = `${trackableElWidth}px`;
+      this._totalDraggableDistance = trackableElWidth / 3;
+    }
   }
 
   private _trackingMoveFn(dx: number) {
@@ -985,8 +993,11 @@ export class AppDatepicker extends LitElement {
     const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
 
     this._dragging = true;
-    this._calendarViewFullCalendar!.style.transform =
+
+    if (this.calendarViewFullCalendar) {
+      this.calendarViewFullCalendar.style.transform =
       `translate3d(${makeNumberPrecise(newX)}px, 0, 0)`;
+    }
   }
 
   private _animateCalendar({ target, from, to, postX, postTask }: ParamsAnimateCalendar) {
@@ -1006,6 +1017,10 @@ export class AppDatepicker extends LitElement {
       .then(() => dispatchCustomEvent(this, 'datepicker-animation-finished'));
   }
   private _trackingEndFn(dx: number) {
+    const calendarViewFullCalendar = this.calendarViewFullCalendar;
+
+    if (null == calendarViewFullCalendar) return;
+
     const totalDraggableDistance = this._totalDraggableDistance!;
     const isPositive = dx > 0;
     const absDx = Math.abs(dx);
@@ -1018,7 +1033,7 @@ export class AppDatepicker extends LitElement {
     const shouldReset = absDx < totalDraggableDistance * this.dragRatio;
 
     return this._animateCalendar({
-      target: this._calendarViewFullCalendar!,
+      target: calendarViewFullCalendar,
       from: newX,
       to: shouldReset ? initialX : totalDraggableDistance! * (isPositive ? 0 : -2),
       postX: initialX,
@@ -1031,7 +1046,7 @@ export class AppDatepicker extends LitElement {
             new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
         }
 
-        const trackableEl = this._calendarViewFullCalendar!;
+        const trackableEl = calendarViewFullCalendar;
         trackableEl.style.width = trackableEl.style.minWidth = '';
 
         this._dragging = false;
