@@ -49,20 +49,20 @@
     "watch": "npm run ts -- --watch"
   },
   "dependencies": {
-    "@material/mwc-button": "^0.8.0",
+    "@material/mwc-button": "^0.10.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@reallyland/really-elements": "^0.1.0",
+    "@reallyland/really-elements": "^0.1.1",
     "@reallyland/tsconfig": "^1.0.0",
     "@reallyland/tslint-config": "^1.1.1",
     "@types/chai": "^4.2.3",
     "@types/mocha": "^5.2.7",
     "axe-core": "3.3.0",
     "chai": "^4.2.0",
-    "mocha": "^6.2.1",
+    "mocha": "^6.2.2",
     "pwa-helpers": "^0.9.1",
     "shx": "^0.3.2",
     "tslint": "^5.20.0",
