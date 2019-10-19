@@ -45,14 +45,14 @@ The following are the list of tools used that makes it shine:
 
 ## Table of contents <!-- omit in toc -->
 
-- [Pre-requisite](#Pre-requisite)
-- [Installation](#Installation)
-- [How to use](#How-to-use)
-- [Browser compatibility](#Browser-compatibility)
-- [API references](#API-references)
-- [Demo](#Demo)
-- [Older versions](#Older-versions)
-- [License](#License)
+- [Pre-requisite](#pre-requisite)
+- [Installation](#installation)
+- [How to use](#how-to-use)
+- [Browser compatibility](#browser-compatibility)
+- [API references](#api-references)
+- [Demo](#demo)
+- [Older versions](#older-versions)
+- [License](#license)
 
 ## Pre-requisite
 
@@ -189,7 +189,7 @@ Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (C
 
 ## Demo
 
-[Configurable demo powered by CodeSandbox]
+[Configurable demo powered by Glitch]
 
 ## Older versions
 
@@ -220,7 +220,7 @@ Meantime, feel free to check the older version out at:
 [app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
-[Configurable demo powered by CodeSandbox]: https://pvzdl.sse.codesandbox.io
+[Configurable demo powered by Glitch]: https://demo-app-datepicker.glitch.me
 [Web Animations]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
