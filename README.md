@@ -189,7 +189,7 @@ Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (C
 
 ## Demo
 
-[Configurable demo powered by Glitch]
+[Configurable demo powered by Firebase]
 
 ## Older versions
 
@@ -203,27 +203,27 @@ Meantime, feel free to check the older version out at:
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
 
 <!-- References -->
-[node-js-url]: https://nodejs.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[npm-url]: https://www.npmjs.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[node-releases-url]: https://nodejs.org/en/download/releases?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[typescript-url]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[unpkg-url]: https://unpkg.com/app-datepicker@next/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [2-x-url]: https://github.com/motss/app-datepicker/tree/2.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [3-x-url]: https://github.com/motss/app-datepicker/tree/3.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [app-datepicker-api-reference-url]: /api-references.md#appdatepicker
 [app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
-[wre-url]: https://developers.google.com/search/docs/guides/rendering
-[wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
-[Configurable demo powered by Glitch]: https://demo-app-datepicker.glitch.me
-[Web Animations]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
-[Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+[Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker/app-datepicker.html
+[Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[node-js-url]: https://nodejs.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[node-releases-url]: https://nodejs.org/en/download/releases?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[npm-url]: https://www.npmjs.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[typescript-url]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[unpkg-url]: https://unpkg.com/app-datepicker@next/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[Web Animations]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
+[web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
+[wre-url]: https://developers.google.com/search/docs/guides/rendering
 
 <!-- Browers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
