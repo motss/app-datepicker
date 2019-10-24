@@ -1,4 +1,4 @@
-import { arrayFilled, toFormattedDateString } from '../../datepicker-helpers';
+import { arrayFilled, toFormattedDateString } from '../../datepicker-helpers.js';
 
 const timezones = [
   '-12:00',

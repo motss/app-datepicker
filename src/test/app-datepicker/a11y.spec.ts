@@ -1,9 +1,9 @@
 import 'axe-core/axe.min.js';
 import { axeReport } from 'pwa-helpers/axe-report.js';
 
-import { AppDatepicker, START_VIEW } from '../../app-datepicker';
-import { defaultLocale } from '../test-config';
-import { forceUpdate, getTestName, queryInit } from '../test-helpers';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { defaultLocale } from '../test-config.js';
+import { forceUpdate, getTestName, queryInit } from '../test-helpers.js';
 
 const { isNotNull } = chai.assert;
 const name = AppDatepicker.is;

@@ -19,7 +19,7 @@ import {
   getShadowInnerHTML,
   getTestName,
   queryInit,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   isString,

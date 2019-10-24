@@ -1,16 +1,16 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 import {
   getResolvedDate,
   hasClass,
   toFormattedDateString,
-} from '../../datepicker-helpers';
+} from '../../datepicker-helpers.js';
 import {
   date13,
   date15,
   date17,
   defaultLocale,
-} from '../test-config';
+} from '../test-config.js';
 import {
   dragTo,
   forceUpdate,
@@ -20,7 +20,7 @@ import {
   OptionsDragTo,
   queryInit,
   setupDragPoint,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   isTrue,

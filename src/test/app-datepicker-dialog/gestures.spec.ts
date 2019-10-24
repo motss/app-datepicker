@@ -1,11 +1,11 @@
-import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog';
-import { makeNumberPrecise } from '../../datepicker-helpers';
+import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog.js';
+import { START_VIEW } from '../../app-datepicker.js';
+import { makeNumberPrecise } from '../../datepicker-helpers.js';
 import {
   date13,
   date15,
   defaultLocale,
-} from '../test-config';
+} from '../test-config.js';
 import {
   dragTo,
   forceUpdate,
@@ -17,7 +17,7 @@ import {
   selectNewYearFromYearListView,
   setupDragPoint,
   triggerEvent,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   strictEqual,

@@ -13,7 +13,7 @@ import {
   KeyboardEventOptions,
   queryInit,
   triggerEvent,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   isTrue,

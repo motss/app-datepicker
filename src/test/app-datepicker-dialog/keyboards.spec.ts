@@ -1,12 +1,12 @@
-import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog';
-import { KEYCODES_MAP } from '../../datepicker-helpers';
+import { AppDatepickerDialog, DatepickerDialogClosedEvent } from '../../app-datepicker-dialog.js';
+import { START_VIEW } from '../../app-datepicker.js';
+import { KEYCODES_MAP } from '../../datepicker-helpers.js';
 import {
   date13,
   date15,
   date17,
   defaultLocale,
-} from '../test-config';
+} from '../test-config.js';
 import {
   forceUpdate,
   getComputedStylePropertyValue,
@@ -15,7 +15,7 @@ import {
   KeyboardEventOptions,
   queryInit,
   triggerEvent,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   isTrue,

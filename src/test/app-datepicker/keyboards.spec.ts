@@ -1,11 +1,11 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker';
-import { KEYCODES_MAP } from '../../datepicker-helpers';
+import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { KEYCODES_MAP } from '../../datepicker-helpers.js';
 import {
   date13,
   date15,
   date17,
   defaultLocale,
-} from '../test-config';
+} from '../test-config.js';
 import {
   forceUpdate,
   getShadowInnerHTML,
@@ -13,7 +13,7 @@ import {
   KeyboardEventOptions,
   queryInit,
   triggerEvent,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   strictEqual,

@@ -1,17 +1,17 @@
-import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog } from '../../app-datepicker-dialog';
-import { WEEK_NUMBER_TYPE } from '../../calendar';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import { START_VIEW } from '../../app-datepicker.js';
+import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 import {
   date13,
   date15,
   date17,
   defaultLocale,
-} from '../test-config';
+} from '../test-config.js';
 import {
   forceUpdate,
   getTestName,
   queryInit,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const {
   isTrue,

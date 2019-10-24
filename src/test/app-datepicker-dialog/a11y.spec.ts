@@ -1,14 +1,14 @@
 import 'axe-core/axe.min.js';
-import { axeReport } from 'pwa-helpers/axe-report';
+import { axeReport } from 'pwa-helpers/axe-report.js';
 
-import { START_VIEW } from '../../app-datepicker';
-import { AppDatepickerDialog } from '../../app-datepicker-dialog';
-import { defaultLocale } from '../test-config';
+import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import { START_VIEW } from '../../app-datepicker.js';
+import { defaultLocale } from '../test-config.js';
 import {
   forceUpdate,
   getTestName,
   queryInit,
-} from '../test-helpers';
+} from '../test-helpers.js';
 
 const { isNotNull } = chai.assert;
 const name = AppDatepickerDialog.is;
