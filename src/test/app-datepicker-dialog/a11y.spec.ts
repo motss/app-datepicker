@@ -1,3 +1,4 @@
+import 'axe-core/axe.min.js';
 import { axeReport } from 'pwa-helpers/axe-report.js';
 
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
