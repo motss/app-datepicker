@@ -37,6 +37,7 @@
   "typings": "dist/app-datepicker.d.ts",
   "scripts": {
     "build": "npm run ts -- -p tsconfig.prod.json",
+    "clean": "shx rm -rf dist/",
     "document": "polymer analyze > dist/analysis.json",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
@@ -47,6 +48,11 @@
     "test:sl": "wct --config-file ./wct.config.sl.json",
     "ts": "shx rm -rf dist/ && tsc",
     "watch": "npm run ts -- --watch"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run ts && npm run clean"
+    }
   },
   "dependencies": {
     "@material/mwc-button": "^0.10.0",
@@ -62,6 +68,7 @@
     "@types/mocha": "^5.2.7",
     "axe-core": "3.3.0",
     "chai": "^4.2.0",
+    "husky": "^3.0.9",
     "mocha": "^6.2.2",
     "pwa-helpers": "^0.9.1",
     "shx": "^0.3.2",
