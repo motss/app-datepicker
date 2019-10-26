@@ -42,7 +42,7 @@
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
-    "serve": "polymer serve . --port 4343 --npm --module-resolution=node",
+    "serve": "polymer serve . --npm --module-resolution=node",
     "test": "npm run lint && wct --skip-selenium-install --config-file wct.config.json",
     "test:ci": "wct --config-file ./wct.config.ci.json",
     "test:sl": "wct --config-file ./wct.config.sl.json",
@@ -61,7 +61,7 @@
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@reallyland/really-elements": "^0.1.1",
+    "@reallyland/really-elements": "^0.2.4",
     "@reallyland/tsconfig": "^1.0.0",
     "@reallyland/tslint-config": "^1.1.1",
     "@types/chai": "^4.2.4",

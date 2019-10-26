@@ -85,7 +85,8 @@ export class AppDatepicker extends LitElement {
       width: 300px;
       /** NOTE: Magic number as 16:9 aspect ratio does not look good */
       /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
-      background-color: #fff;
+      background-color: var(--app-datepicker-bg-color, #fff);
+      color: var(--app-datepicker-color, #000);
       border-radius:
         var(--app-datepicker-border-top-left-radius, 8px)
         var(--app-datepicker-border-top-right-radius, 8px)
@@ -102,11 +103,11 @@ export class AppDatepicker extends LitElement {
     }
 
     .datepicker-header + .datepicker-body {
-      border-top: 1px solid #ddd;
+      border-top: 1px solid var(--app-datepicker-separator-color, #ddd);
     }
     :host([landscape]) > .datepicker-header + .datepicker-body {
       border-top: none;
-      border-left: 1px solid #ddd;
+      border-left: 1px solid var(--app-datepicker-separator-color, #ddd);
     }
 
     .datepicker-header {
@@ -124,7 +125,7 @@ export class AppDatepicker extends LitElement {
 
     .btn__year-selector,
     .btn__calendar-selector {
-      color: rgba(0, 0, 0, .55);
+      color: var(--app-datepicker-selector-color, rgba(0, 0, 0, .55));
       cursor: pointer;
       /* outline: none; */
     }
@@ -188,8 +189,8 @@ export class AppDatepicker extends LitElement {
         */
       line-height: 0;
     }
-    .btn__month-selector:hover {
-      cursor: pointer;
+    .btn__month-selector > svg {
+      fill: currentColor;
     }
 
     .calendar-view__full-calendar {
@@ -217,7 +218,7 @@ export class AppDatepicker extends LitElement {
 
     .calendar-weekdays > th,
     td.weekday-label {
-      color: rgba(0, 0, 0, .55);
+      color: var(--app-datepicker-weekday-color, rgba(0, 0, 0, .55));
       font-weight: 400;
     }
 
@@ -284,7 +285,7 @@ export class AppDatepicker extends LitElement {
       height: 40px;
       top: 50%;
       left: 50%;
-      background-color: var(--app-datepicker-primary-color, #1a73e8);
+      background-color: var(--app-datepicker-accent-color, #1a73e8);
       border-radius: 50%;
       transform: translate3d(-50%, -50%, 0);
       will-change: transform;
@@ -293,9 +294,6 @@ export class AppDatepicker extends LitElement {
     }
     tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
       opacity: 1;
-    }
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
-      opacity: .15;
     }
     tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
       cursor: pointer;
@@ -314,11 +312,11 @@ export class AppDatepicker extends LitElement {
       pointer-events: none;
     }
     tr > td.full-calendar__day.day--today {
-      color: var(--app-datepicker-primary-color, #1a73e8);
+      color: var(--app-datepicker-accent-color, #1a73e8);
     }
     tr > td.full-calendar__day.day--focused,
     tr > td.full-calendar__day.day--today.day--focused {
-      color: #fff;
+      color: var(--app-datepicker-focused-day-color, #fff);
     }
     tr > td.full-calendar__day.day--empty,
     tr > td.full-calendar__day.weekday-label,
@@ -326,7 +324,7 @@ export class AppDatepicker extends LitElement {
       pointer-events: none;
     }
     tr > td.full-calendar__day.day--disabled:not(.day--today) {
-      color: rgba(0, 0, 0, .35);
+      color: var(--app-datepicker-disabled-day-color, rgba(0, 0, 0, .35));
     }
 
     .year-list-view__list-item {
@@ -338,9 +336,6 @@ export class AppDatepicker extends LitElement {
       /* will-change: opacity; */
       /* outline: none; */
     }
-    .year-list-view__list-item:hover {
-      cursor: pointer;
-    }
     .year-list-view__list-item > div {
       z-index: 1;
     }
@@ -351,18 +346,30 @@ export class AppDatepicker extends LitElement {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: #000;
+      background-color: var(--app-datepicker-bg-color, #000);
       opacity: 0;
       pointer-events: none;
     }
-    .year-list-view__list-item:focus::after,
-    .year-list-view__list-item:hover::after {
+    .year-list-view__list-item:focus::after {
       opacity: .05;
     }
     .year-list-view__list-item.year--selected {
-      color: var(--app-datepicker-primary-color, #1a73e8);
+      color: var(--app-datepicker-accent-color, #1a73e8);
       font-size: 24px;
       font-weight: 500;
+    }
+
+    @media (any-hover: hover) {
+      .btn__month-selector:hover,
+      .year-list-view__list-item:hover {
+        cursor: pointer;
+      }
+      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
+        opacity: .15;
+      }
+      .year-list-view__list-item:hover::after {
+        opacity: .05;
+      }
     }
     `,
     // tslint:enable:max-line-length
