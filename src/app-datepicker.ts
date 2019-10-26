@@ -256,11 +256,10 @@ export class AppDatepicker extends LitElement {
     }
 
     tr > th,
-    tr > td {
+    .full-calendar__day {
       position: relative;
       min-height: 40px;
       height: 40px;
-      padding: 8px 0;
     }
 
     /**
@@ -273,11 +272,11 @@ export class AppDatepicker extends LitElement {
       * painting at the expense of memory consumption as many cells in a table has been promoted
       * a its own layer.
       */
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
+    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
       will-change: transform;
     }
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after,
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
+    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after,
+    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
       content: '';
       display: block;
       position: absolute;
@@ -292,38 +291,39 @@ export class AppDatepicker extends LitElement {
       opacity: 0;
       pointer-events: none;
     }
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
+    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
       opacity: 1;
     }
-    tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
+    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
       cursor: pointer;
       pointer-events: auto;
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     }
-    tr > td.full-calendar__day.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after,
-    tr > td.full-calendar__day.day--today.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
+    .full-calendar__day.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after,
+    .full-calendar__day.day--today.day--focused:not(.day--empty):not(.day--disabled):not(.weekday-label)::after {
       opacity: 1;
     }
 
-    tr > td.full-calendar__day > .calendar-day {
+    .full-calendar__day > .calendar-day {
+      display: inline-block;
       position: relative;
       color: currentColor;
       z-index: 1;
       pointer-events: none;
     }
-    tr > td.full-calendar__day.day--today {
+    .full-calendar__day.day--today {
       color: var(--app-datepicker-accent-color, #1a73e8);
     }
-    tr > td.full-calendar__day.day--focused,
-    tr > td.full-calendar__day.day--today.day--focused {
+    .full-calendar__day.day--focused,
+    .full-calendar__day.day--today.day--focused {
       color: var(--app-datepicker-focused-day-color, #fff);
     }
-    tr > td.full-calendar__day.day--empty,
-    tr > td.full-calendar__day.weekday-label,
-    tr > td.full-calendar__day.day--disabled > .calendar-day {
+    .full-calendar__day.day--empty,
+    .full-calendar__day.weekday-label,
+    .full-calendar__day.day--disabled > .calendar-day {
       pointer-events: none;
     }
-    tr > td.full-calendar__day.day--disabled:not(.day--today) {
+    .full-calendar__day.day--disabled:not(.day--today) {
       color: var(--app-datepicker-disabled-day-color, rgba(0, 0, 0, .35));
     }
 
@@ -364,7 +364,7 @@ export class AppDatepicker extends LitElement {
       .year-list-view__list-item:hover {
         cursor: pointer;
       }
-      tr > td.full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
+      .full-calendar__day:not(.day--empty):not(.day--disabled):not(.day--focused):not(.weekday-label):hover::after {
         opacity: .15;
       }
       .year-list-view__list-item:hover::after {
@@ -778,7 +778,7 @@ export class AppDatepicker extends LitElement {
             aria-label="${label}"
             .fullDate="${fullDate}"
             .day="${value}">
-            <div class="calendar-day">${value}</div>
+            <button class="calendar-day" tabindex="-1">${value}</button>
           </td>
           `;
         });
