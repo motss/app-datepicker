@@ -67,7 +67,7 @@ describe(getTestName(name), () => {
         `Tue, Jan 14`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -108,7 +108,7 @@ describe(getTestName(name), () => {
           `Mon, Jan 13`,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -138,7 +138,7 @@ describe(getTestName(name), () => {
         `Thu, Jan 16`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -186,7 +186,7 @@ describe(getTestName(name), () => {
           `Wed, Jan 15`,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -220,7 +220,7 @@ describe(getTestName(name), () => {
         `Wed, Jan 15`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -283,7 +283,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -317,7 +317,7 @@ describe(getTestName(name), () => {
         `Wed, Jan 22`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -381,7 +381,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -415,7 +415,7 @@ describe(getTestName(name), () => {
         `Wed, Jan 22`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -478,7 +478,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -512,7 +512,7 @@ describe(getTestName(name), () => {
         `Thu, Feb 20`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -576,7 +576,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -611,7 +611,7 @@ describe(getTestName(name), () => {
         `Wed, Jan 22`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -675,7 +675,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -710,7 +710,7 @@ describe(getTestName(name), () => {
         `Fri, Jan 22`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -774,7 +774,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -808,7 +808,7 @@ describe(getTestName(name), () => {
         `Mon, Jan 13`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -871,7 +871,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -905,7 +905,7 @@ describe(getTestName(name), () => {
         `Wed, Jan 22`,
         `Calendar selector label not updated`);
 
-      const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+      const newFocusedDateLabelEl = t.getFocusedCalendarDay();
       isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
       strictEqual(
@@ -968,7 +968,7 @@ describe(getTestName(name), () => {
           e2,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -1099,7 +1099,7 @@ describe(getTestName(name), () => {
           e1,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -1160,7 +1160,7 @@ describe(getTestName(name), () => {
           e1,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -1220,7 +1220,7 @@ describe(getTestName(name), () => {
           e1,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(
@@ -1281,7 +1281,7 @@ describe(getTestName(name), () => {
           e1,
           `Calendar selector label not updated`);
 
-        const newFocusedDateLabelEl = t.getDatepickerBodyCalendarViewDayFocusedDiv();
+        const newFocusedDateLabelEl = t.getFocusedCalendarDay();
         isNotNull(newFocusedDateLabelEl, `New focused date not found`);
 
         strictEqual(

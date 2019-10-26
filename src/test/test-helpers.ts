@@ -320,11 +320,11 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
         `.full-calendar__day:not(.day--disabled)${
           !label ? '' : `[aria-label="${label}"]`}`);
 
-  const getDatepickerBodyCalendarViewDayDiv = (label?: string) =>
+  const getCalendarDay = (label?: string) =>
     shadowQuery(elem, '.calendar-container:nth-of-type(2)')
       .querySelector<HTMLTableCellElement>(
         `.full-calendar__day:not(.day--disabled)${
-          !label ? '' : `[aria-label="${label}"]`} > div`);
+          !label ? '' : `[aria-label="${label}"]`} > .calendar-day`);
 
   const getDatepickerBodyCalendarViewDayFocused = (label?: string) =>
     shadowQuery(elem, '.calendar-container:nth-of-type(2)')
@@ -332,11 +332,11 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
         `.full-calendar__day:not(.day--disabled)${
           !label ? '' : `[aria-label="${label}"]`}.day--focused`);
 
-  const getDatepickerBodyCalendarViewDayFocusedDiv = (label?: string) =>
+  const getFocusedCalendarDay = (label?: string) =>
     shadowQuery(elem, '.calendar-container:nth-of-type(2)')
       .querySelector<HTMLTableCellElement>(
         `.full-calendar__day:not(.day--disabled)${
-          !label ? '' : `[aria-label="${label}"]`}.day--focused > div`);
+          !label ? '' : `[aria-label="${label}"]`}.day--focused > .calendar-day`);
 
   const getDialogScrim = () =>
     shadowQuery<typeof el, HTMLDivElement>(el, '.scrim');
@@ -384,9 +384,9 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     getDatepickerBodyCalendarView,
     getDatepickerBodyYearListView,
     getDatepickerBodyCalendarViewDay,
-    getDatepickerBodyCalendarViewDayDiv,
+    getCalendarDay,
     getDatepickerBodyCalendarViewDayFocused,
-    getDatepickerBodyCalendarViewDayFocusedDiv,
+    getFocusedCalendarDay,
 
     getDialogScrim,
     getDialogActionsContainer,

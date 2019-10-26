@@ -613,7 +613,7 @@ describe(getTestName(name), () => {
       strictEqual(el.disabledDates, '', `'disabledDates' not updated`);
       strictEqual(el.disabledDays, '1,3', `'disabledDays' not updated`);
 
-      const focusedDateEl = t.getDatepickerBodyCalendarViewDayFocusedDiv()!;
+      const focusedDateEl = t.getFocusedCalendarDay()!;
       isNotNull(focusedDateEl, `Focused date not found`);
 
       const focusedDate = getShadowInnerHTML(focusedDateEl);
