@@ -51,8 +51,6 @@ export class AppDatepickerDialog extends LitElement {
         pointer-events: none;
         z-index: var(--app-datepicker-dialog-z-index, 24);
         -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-        --mdc-theme-primary: var(--app-datepicker-primary-color, #1a73e8);
       }
 
       .scrim,
@@ -66,7 +64,7 @@ export class AppDatepickerDialog extends LitElement {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, .25);
+        background-color: var(--app-datepicker-dialog-scrim-bg-color, rgba(0, 0, 0, .55));
         visibility: hidden;
         z-index: 22;
       }
@@ -77,7 +75,7 @@ export class AppDatepickerDialog extends LitElement {
         left: 50%;
         max-width: 100%;
         max-height: 100%;
-        background-color: #fff;
+        background-color: var(--app-datepicker-bg-color, #fff);
         transform: translate3d(-50%, -50%, 0);
         border-radius: var(--app-datepicker-dialog-border-radius, 8px);
         will-change: transform, opacity;
@@ -85,6 +83,9 @@ export class AppDatepickerDialog extends LitElement {
         visibility: hidden;
         opacity: 0;
         z-index: 23;
+        box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+                    0 9px 46px 8px rgba(0, 0, 0, 0.12),
+                    0 11px 15px -7px rgba(0, 0, 0, 0.4);
       }
 
       .datepicker {
@@ -100,7 +101,7 @@ export class AppDatepickerDialog extends LitElement {
         margin: 0;
         padding: 12px;
         background-color: inherit;
-        color: var(--app-datepicker-primary-color, #1a73e8);
+        --mdc-theme-primary: var(--app-datepicker-accent-color, #1a73e8);
       }
 
       mwc-button + mwc-button {

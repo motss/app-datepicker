@@ -63,6 +63,21 @@
       import { properties, cssProperties, propertiesDialog, cssPropertiesDialog } from '/dist/demo/properties.config.js';
 
       const $ = s => document.body.querySelector(s);
+      const darkThemeMq = matchMedia('(prefers-color-scheme: dark)');
+      const updateCssPropertiesWithTheme = (matches, props) => {
+        return matches ?
+          props.map((n) => {
+            if (n.name === '--app-datepicker-bg-color') return { name: n.name, value: '#000' };
+            if (n.name === '--app-datepicker-color') return { name: n.name, value: '#f5f5f5' };
+            if (n.name === '--app-datepicker-disabled-day-color') return { name: n.name, value: 'rgba(255, 255, 255, .35)' };
+            if (n.name === '--app-datepicker-focused-day-color') return { name: n.name, value: '#000' };
+            if (n.name === '--app-datepicker-selector-color') return { name: n.name, value: 'rgba(255, 255, 255, .55)' };
+            if (n.name === '--app-datepicker-separator-color') return { name: n.name, value: '#000' };
+            if (n.name === '--app-datepicker-weekday-color') return { name: n.name, value: 'rgba(255, 255, 255, .55)' };
+            return n;
+          }) :
+          props;
+      };
 
       // const inputCheckboxPointerEvent = $('.input-checkbox__pointer-event');
       const inputCheckboxArrayFind = $('.input-checkbox__array-find');
@@ -80,10 +95,21 @@
         // Element.prototype.animate.toString().indexOf('[native code]') >= 0;
 
       configuratorDatepickerEl.properties = properties;
-      configuratorDatepickerEl.cssProperties = cssProperties;
-
       configuratorDatepickerDialogEl.properties = propertiesDialog;
-      configuratorDatepickerDialogEl.cssProperties = cssPropertiesDialog;
+
+      configuratorDatepickerEl.cssProperties =
+        updateCssPropertiesWithTheme(darkThemeMq.matches, cssProperties);
+      configuratorDatepickerDialogEl.cssProperties =
+        updateCssPropertiesWithTheme(darkThemeMq.matches, cssPropertiesDialog);
+
+      darkThemeMq.addListener((ev) => {
+        const matches = ev.matches;
+
+        configuratorDatepickerEl.cssProperties =
+          updateCssPropertiesWithTheme(matches, cssProperties);
+        configuratorDatepickerDialogEl.cssProperties =
+          updateCssPropertiesWithTheme(matches, cssPropertiesDialog)
+      });
 
       openBtnEl.addEventListener('click', () => {
         datepickerDialogEl.open();
@@ -184,6 +210,19 @@
 
       .open-btn {
         --mdc-theme-primary: #1a73e8;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        app-datepicker,
+        app-datepicker-dialog {
+          --app-datepicker-bg-color: #000;
+          --app-datepicker-color: #f5f5f5;
+          --app-datepicker-disabled-day-color: rgba(255, 255, 255, .35);
+          --app-datepicker-focused-day-color: #000;
+          --app-datepicker-selector-color: rgba(255, 255, 255, .55);
+          --app-datepicker-separator-color: #000;
+          --app-datepicker-weekday-color: rgba(255, 255, 255, .55);
+        }
       }
 
     </style>

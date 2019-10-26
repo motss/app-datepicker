@@ -120,8 +120,36 @@ const cssProperties: PropertyValue[] = [
     value: '8px',
   },
   {
-    name: '--app-datepicker-primary-color',
+    name: '--app-datepicker-accent-color',
     value: '#1a73e8',
+  },
+  {
+    name: '--app-datepicker-bg-color',
+    value: '#fff',
+  },
+  {
+    name: '--app-datepicker-color',
+    value: '#000',
+  },
+  {
+    name: '--app-datepicker-disabled-day-color',
+    value: 'rgba(0, 0, 0, .35)',
+  },
+  {
+    name: '--app-datepicker-focused-day-color',
+    value: '#fff',
+  },
+  {
+    name: '--app-datepicker-selector-color',
+    value: 'rgba(0, 0, 0, .55)',
+  },
+  {
+    name: '--app-datepicker-separator-color',
+    value: '#ddd',
+  },
+  {
+    name: '--app-datepicker-weekday-color',
+    value: 'rgba(0, 0, 0, .55)',
   },
 ];
 
@@ -151,8 +179,12 @@ const cssPropertiesDialog: PropertyValue[] = [
     value: '24',
   },
   {
-    name: '--app-datepicker-border-radius',
+    name: '--app-datepicker-dialog-border-radius',
     value: '8px',
+  },
+  {
+    name: '--app-datepicker-dialog-scrim-bg-color',
+    value: 'rgba(0, 0, 0, .55)',
   },
 ];
 
