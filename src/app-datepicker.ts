@@ -17,14 +17,6 @@ export interface DatepickerFirstUpdatedEvent extends DatepickerValueUpdatedEvent
   firstFocusableElement: HTMLElement;
 }
 
-interface ParamsAnimateCalendar {
-  target: HTMLElement;
-  from: number;
-  to: number;
-  postX: number;
-  postTask: () => Promise<unknown>;
-}
-
 export const enum START_VIEW {
   CALENDAR = 'calendar',
   YEAR_LIST = 'yearList',
@@ -60,7 +52,6 @@ import {
   hasClass,
   isValidDate,
   KEYCODES_MAP,
-  makeNumberPrecise,
   passiveHandler,
   targetScrollTo,
   toFormattedDateString,
@@ -69,7 +60,6 @@ import {
   updateFormatters,
   updateYearWithMinMax,
 } from './datepicker-helpers.js';
-import { Tracker } from './tracker.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -200,7 +190,8 @@ export class AppDatepicker extends LitElement {
       position: relative;
       width: calc(100% * 3);
       padding: 0 0 16px;
-      will-change: transform;
+      transform: translate3d(-300px, 0, 0);
+      /* will-change: transform; */
       /**
         * NOTE: Required for Pointer Events API to work on touch devices.
         * Native \`pan-y\` action will be fired by the browsers since we only care about the
@@ -220,11 +211,14 @@ export class AppDatepicker extends LitElement {
     td.weekday-label {
       color: var(--app-datepicker-weekday-color, rgba(0, 0, 0, .55));
       font-weight: 400;
+      will-change: transform;
     }
 
     .calendar-container {
       max-width: calc(100% / 3);
       width: calc(100% / 3);
+      /* max-width: 100%;
+      width: 100%; */
     }
 
     .calendar-label,
@@ -255,7 +249,7 @@ export class AppDatepicker extends LitElement {
       text-align: center;
     }
 
-    tr > th,
+    .calendar-weekdays > th,
     .full-calendar__day {
       position: relative;
       min-height: 40px;
@@ -498,26 +492,16 @@ export class AppDatepicker extends LitElement {
   private _max?: Date;
   private __hasMin?: boolean = false;
   private __hasMax?: boolean = false;
-  private _totalDraggableDistance?: number;
   private _todayDate?: Date;
   private _maxDate?: Date;
-  private _dragAnimationDuration: number = 150;
   private _yearList: number[];
-  private _hasNativeElementAnimate: boolean =
-    Element.prototype.animate.toString().indexOf('[native code]') >= 0;
   private _formatters?: import('./datepicker-helpers').Formatters;
   private _disabledDaysSet?: Set<number>;
   private _disabledDatesSet?: Set<number>;
-  private _calendarTracker?: Tracker;
   private _lastSelectedDate?: Date;
-  private _dragging: boolean = false;
 
   public constructor() {
     super();
-
-    this._trackingStartFn = this._trackingStartFn.bind(this);
-    this._trackingMoveFn = this._trackingMoveFn.bind(this);
-    this._trackingEndFn = this._trackingEndFn.bind(this);
 
     const todayDate = getResolvedDate();
     const allFormatters = updateFormatters(this.locale);
@@ -535,18 +519,6 @@ export class AppDatepicker extends LitElement {
     this._selectedDate = new Date(todayDate);
     this._focusedDate = new Date(todayDate);
     this._formatters = allFormatters;
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-
-    /**
-     * NOTE: This could run before `_calendarTracker` is ready.
-     */
-    if (this._calendarTracker) {
-      this._calendarTracker.disconnect();
-      this._calendarTracker = void 0;
-    }
   }
 
   protected render() {
@@ -594,68 +566,6 @@ export class AppDatepicker extends LitElement {
       }
     }
 
-    /**
-     * NOTE(motss): A datepicker could start with a year list view. In a year view list, there is
-     * no calendar rendered on screen. Therefore the tracker setup should not be setup until a
-     * calendar view is selected. This also applies to updating draggable/ swipeable calendar's
-     * position.
-     */
-    if (START_VIEW.CALENDAR === startView) {
-      const dragEl = this.calendarViewFullCalendar;
-      const datepickerBodyCalendarView = this.datepickerBodyCalendarView;
-
-      if (null == dragEl || null == datepickerBodyCalendarView) return;
-
-      if (!this._calendarTracker) {
-        let started = false;
-        let dx = 0;
-        let abortDragIfHasMinDate = false;
-        let abortDragIfHasMaxDate = false;
-
-        const handlers: import('./tracker').TrackerHandlers = {
-          down: () => {
-            if (started) return;
-            this._trackingStartFn();
-            started = true;
-          },
-          move: (changedPointer, oldPointer) => {
-            if (!started) return;
-
-            dx += changedPointer.x - oldPointer.x;
-            abortDragIfHasMinDate = dx > 0 && hasClass(dragEl, 'has-min-date');
-            abortDragIfHasMaxDate = dx < 0 && hasClass(dragEl, 'has-max-date');
-
-            if (abortDragIfHasMaxDate || abortDragIfHasMinDate) return;
-
-            this._trackingMoveFn(dx);
-          },
-          up: (changedPointer, oldPointer) => {
-            if (!started) return;
-            if (abortDragIfHasMaxDate || abortDragIfHasMinDate) {
-              abortDragIfHasMaxDate = false;
-              abortDragIfHasMinDate = false;
-              dx = 0;
-              return;
-            }
-
-            dx += changedPointer.x - oldPointer.x;
-            this._trackingEndFn(dx);
-            dx = 0;
-            started = false;
-          },
-        };
-
-        this._calendarTracker = new Tracker(dragEl, handlers);
-      }
-
-      /** NOTE(motss): Always update calendar position */
-      const totalDraggableDistance =
-        datepickerBodyCalendarView!.getBoundingClientRect().width;
-
-      this.calendarViewFullCalendar!.style.transform =
-        `translate3d(${makeNumberPrecise(totalDraggableDistance * -1)}px, 0, 0)`;
-      this._totalDraggableDistance = totalDraggableDistance;
-    }
   }
 
   private _renderHeaderSelectorButton() {
@@ -744,6 +654,8 @@ export class AppDatepicker extends LitElement {
         return html`<div class="calendar-container"></div>`;
       }
 
+      if (i === 0 || i === 2) return html`<div class="calendar-container"></div>`;
+
       let formattedDate: string | null = null;
 
       const tbodyContent = daysInMonth.map((n) => {
@@ -778,7 +690,7 @@ export class AppDatepicker extends LitElement {
             aria-label="${label}"
             .fullDate="${fullDate}"
             .day="${value}">
-            <button class="calendar-day" tabindex="-1">${value}</button>
+            <div class="calendar-day">${value}</div>
           </td>
           `;
         });
@@ -867,16 +779,13 @@ export class AppDatepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarViewFullCalendar = this.calendarViewFullCalendar;
 
-      if (null ==  calendarViewFullCalendar) return;
+      if (null ==  calendarViewFullCalendar) return this.updateComplete;
 
-      const totalDraggableDistance = this._totalDraggableDistance!;
       const dateDate = this._lastSelectedDate || this._selectedDate;
       const minDate = this._min!;
       const maxDate = this._max!;
 
       const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
-      const initialX = totalDraggableDistance * -1;
-      const newDx = totalDraggableDistance * (isPreviousMonth ? 0 : -2);
 
       const newSelectedDate = toUTCDate(
         dateDate.getUTCFullYear(),
@@ -912,22 +821,9 @@ export class AppDatepicker extends LitElement {
        * the calendar month should switch 3 times, e.g. Jan 2020 -> 3 clicks -> Apr 2020.
        */
       this._lastSelectedDate = newSelectedDate;
+      this._selectedDate = this._lastSelectedDate!;
 
-      return this._animateCalendar({
-        target: calendarViewFullCalendar,
-        from: initialX,
-        to: newDx,
-        postX: initialX,
-        postTask: () => {
-          /**
-           * NOTE: We can **ONLY** update `_selectedDate` when animation finishes due to UX.
-           * It will defeat the purpose of animating the calendar month during switching
-           * as calendar month gets updated before the animation kicks in.
-           */
-          this._selectedDate = this._lastSelectedDate!;
-          return this.updateComplete;
-        },
-      });
+      return this.updateComplete;
     };
 
     return passiveHandler(handleUpdateMonth);
@@ -957,8 +853,6 @@ export class AppDatepicker extends LitElement {
 
   @eventOptions({ passive: true })
   private _updateFocusedDate(ev: MouseEvent) {
-    if (this._dragging) return;
-
     const selectedDayEl = findShadowTarget(
       ev,
       (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableCellElement;
@@ -973,93 +867,6 @@ export class AppDatepicker extends LitElement {
       ].some(n => hasClass(selectedDayEl, n))) return;
 
     this._focusedDate = new Date(selectedDayEl.fullDate);
-  }
-
-  private _trackingStartFn() {
-    const trackableEl = this.calendarViewFullCalendar;
-
-    if (trackableEl) {
-      const trackableElWidth = trackableEl.getBoundingClientRect().width;
-
-      /**
-       * NOTE(motss): Perf tips - By setting fixed width for the following containers,
-       * it drastically minimizes layout and painting during tracking even on slow
-       * devices:-
-       *
-       *  - `.calendar-view__full-calender`
-       *  - `.datepicker-body__calendar-view`
-       */
-      trackableEl.style.width = trackableEl.style.minWidth = `${trackableElWidth}px`;
-      this._totalDraggableDistance = trackableElWidth / 3;
-    }
-  }
-
-  private _trackingMoveFn(dx: number) {
-    const totalDraggableDistance = this._totalDraggableDistance!;
-    const clamped = Math.min(totalDraggableDistance, Math.abs(dx));
-    const newX = totalDraggableDistance! * -1 + (clamped * (dx > 0 ? 1 : -1));
-
-    this._dragging = true;
-
-    if (this.calendarViewFullCalendar) {
-      this.calendarViewFullCalendar.style.transform =
-      `translate3d(${makeNumberPrecise(newX)}px, 0, 0)`;
-    }
-  }
-
-  private _animateCalendar({ target, from, to, postX, postTask }: ParamsAnimateCalendar) {
-    return new Promise(yay => (target.animate([
-      { transform: `translate3d(${makeNumberPrecise(from)}px, 0, 0)` },
-      { transform: `translate3d(${makeNumberPrecise(to)}px, 0, 0)` },
-    ], {
-      duration: this._dragAnimationDuration,
-      easing: 'cubic-bezier(0, 0, .4, 1)',
-      fill: this._hasNativeElementAnimate ? 'none' : 'both',
-    })).onfinish = yay)
-      .then(postTask)
-      .then(() => {
-        target.style.transform = `translate3d(${makeNumberPrecise(postX)}px, 0, 0)`;
-        return this.updateComplete;
-      })
-      .then(() => dispatchCustomEvent(this, 'datepicker-animation-finished'));
-  }
-  private _trackingEndFn(dx: number) {
-    const calendarViewFullCalendar = this.calendarViewFullCalendar;
-
-    if (null == calendarViewFullCalendar) return;
-
-    const totalDraggableDistance = this._totalDraggableDistance!;
-    const isPositive = dx > 0;
-    const absDx = Math.abs(dx);
-    const clamped = Math.min(totalDraggableDistance, absDx);
-    const initialX = totalDraggableDistance * -1;
-    const newX = totalDraggableDistance * -1 + (clamped * (isPositive ? 1 : -1));
-    /**
-     * NOTE(motss): If dragged distance < `dragRatio`, reset calendar position.
-     */
-    const shouldReset = absDx < totalDraggableDistance * this.dragRatio;
-
-    return this._animateCalendar({
-      target: calendarViewFullCalendar,
-      from: newX,
-      to: shouldReset ? initialX : totalDraggableDistance! * (isPositive ? 0 : -2),
-      postX: initialX,
-      postTask: () => {
-        if (!shouldReset) {
-          const dateDate = new Date(this._selectedDate);
-          const m = dateDate.getUTCMonth();
-
-          this._selectedDate = this._lastSelectedDate =
-            new Date(dateDate.setUTCMonth(m + (isPositive ? -1 : 1)));
-        }
-
-        const trackableEl = calendarViewFullCalendar;
-        trackableEl.style.width = trackableEl.style.minWidth = '';
-
-        this._dragging = false;
-        return this.updateComplete;
-      },
-    });
   }
 
   // Left Move focus to the previous day. Will move to the last day of the previous month,
@@ -1146,8 +953,6 @@ declare global {
   interface HTMLElementEventMap {
     'datepicker-first-updated':
       CustomEvent<DatepickerFirstUpdatedEvent>;
-    'datepicker-animation-finished':
-      CustomEvent<undefined>;
     'datepicker-keyboard-selected': CustomEvent<DatepickerValueUpdatedEvent>;
   }
 }

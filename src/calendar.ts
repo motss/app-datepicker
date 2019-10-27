@@ -154,6 +154,7 @@ export function calendarDays({
   //                     1        5 - 6 < 0 ? 6 : 5 - 6;
   const fy = selectedDate.getUTCFullYear();
   const selectedMonth = selectedDate.getUTCMonth();
+
   const totalDays = toUTCDate(fy, selectedMonth + 1, 0).getUTCDate();
   const preFirstWeekday = toUTCDate(fy, selectedMonth, 1).getUTCDay() - firstDayOfWeek;
   const firstWeekday = normalizeWeekday(preFirstWeekday);
