@@ -104,11 +104,15 @@ const properties: PropertyValue[] = [
 
 const cssProperties: PropertyValue[] = [
   {
-    name: '--app-dateicker-border-top-left-radius',
-    value: '8px',
+    name: '--app-datepicker-accent-color',
+    value: '#1a73e8',
   },
   {
-    name: '--app-datepicker-border-top-right-radius',
+    name: '--app-datepicker-bg-color',
+    value: '#fff',
+  },
+  {
+    name: '--app-datepicker-border-bottom-left-radius',
     value: '8px',
   },
   {
@@ -116,16 +120,12 @@ const cssProperties: PropertyValue[] = [
     value: '8px',
   },
   {
-    name: '--app-datepicker-border-bottom-left-radius',
+    name: '--app-dateicker-border-top-left-radius',
     value: '8px',
   },
   {
-    name: '--app-datepicker-accent-color',
-    value: '#1a73e8',
-  },
-  {
-    name: '--app-datepicker-bg-color',
-    value: '#fff',
+    name: '--app-datepicker-border-top-right-radius',
+    value: '8px',
   },
   {
     name: '--app-datepicker-color',
@@ -175,16 +175,16 @@ const propertiesDialog: PropertyValue[] = [
 const cssPropertiesDialog: PropertyValue[] = [
   ...cssProperties,
   {
-    name: '--app-datepicker-dialog-z-index',
-    value: '24',
-  },
-  {
     name: '--app-datepicker-dialog-border-radius',
     value: '8px',
   },
   {
     name: '--app-datepicker-dialog-scrim-bg-color',
     value: 'rgba(0, 0, 0, .55)',
+  },
+  {
+    name: '--app-datepicker-dialog-z-index',
+    value: '24',
   },
 ];
 

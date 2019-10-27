@@ -82,7 +82,6 @@ Please make sure you have all these features available on the browsers you are s
 
 * [Array.prototype.find]
 * [Intl.DateTimeFormat]
-* [Web Animations]
 
 The following snippet shows a simple script used in the demo to load polyfills via feature detection on different browsers:
 
@@ -220,7 +219,6 @@ Meantime, feel free to check the older version out at:
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [typescript-url]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [unpkg-url]: https://unpkg.com/app-datepicker@next/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[Web Animations]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API
 [web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
