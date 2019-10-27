@@ -50,92 +50,92 @@ describe(getTestName(name), () => {
         document.body.removeChild(el);
       });
 
-      it(`goes to next month`, async () => {
-        el.min = date13;
-        el.value = date15;
-        await forceUpdate(el);
+      // it(`goes to next month`, async () => {
+      //   el.min = date13;
+      //   el.value = date15;
+      //   await forceUpdate(el);
 
-        const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
-        const btnYearSelectorEl = t.getBtnYearSelector();
-        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+      //   const nextBtnMonthSelectorEl = t.getBtnNextMonthSelector();
+      //   const btnYearSelectorEl = t.getBtnYearSelector();
+      //   const btnCalendarSelectorEl = t.getBtnCalendarSelector();
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Initial year not matched`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, Jan 15',
-          `Initial date not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Initial year not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, Jan 15',
+      //     `Initial date not matched`);
 
-        const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
-          `Calendar label not matched (${calendarLabel})`);
+      //   const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+      //     `Calendar label not matched (${calendarLabel})`);
 
-        const animationComplete = t.waitForDragAnimationFinished();
-        triggerEvent(nextBtnMonthSelectorEl, 'click');
-        await animationComplete;
+      //   const animationComplete = t.waitForDragAnimationFinished();
+      //   triggerEvent(nextBtnMonthSelectorEl, 'click');
+      //   await animationComplete;
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Year not updated`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, Jan 15',
-          `Date not updated`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Year not updated`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, Jan 15',
+      //     `Date not updated`);
 
-        const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
-          `Calendar label not updated (${newCalendarLabel})`);
-      });
+      //   const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+      //     `Calendar label not updated (${newCalendarLabel})`);
+      // });
 
-      it(`goes to previous month`, async () => {
-        el.min = date13;
-        el.value = '2020-05-13';
-        await forceUpdate(el);
+      // it(`goes to previous month`, async () => {
+      //   el.min = date13;
+      //   el.value = '2020-05-13';
+      //   await forceUpdate(el);
 
-        const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
-        const btnYearSelectorEl = t.getBtnYearSelector();
-        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+      //   const prevBtnMonthSelectorEl = t.getBtnPrevMonthSelector();
+      //   const btnYearSelectorEl = t.getBtnYearSelector();
+      //   const btnCalendarSelectorEl = t.getBtnCalendarSelector();
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Initial year not matched`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, May 13',
-          `Initial date not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Initial year not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, May 13',
+      //     `Initial date not matched`);
 
-        const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        isTrue(
-          ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
-          `Calendar label not matched (${calendarLabel})`);
+      //   const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   isTrue(
+      //     ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
+      //     `Calendar label not matched (${calendarLabel})`);
 
-        const animationComplete = t.waitForDragAnimationFinished();
-        triggerEvent(prevBtnMonthSelectorEl, 'click');
-        await animationComplete;
+      //   const animationComplete = t.waitForDragAnimationFinished();
+      //   triggerEvent(prevBtnMonthSelectorEl, 'click');
+      //   await animationComplete;
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Year not updated`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, May 13',
-          `Date not updated`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Year not updated`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, May 13',
+      //     `Date not updated`);
 
-        const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n),
-          `Calendar label not updated (${newCalendarLabel})`);
-      });
+      //   const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n),
+      //     `Calendar label not updated (${newCalendarLabel})`);
+      // });
 
       it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
         el.min = date13;
@@ -247,96 +247,96 @@ describe(getTestName(name), () => {
           `New calendar label not matched (${calendarLabel})`);
       });
 
-      it(`goes to next month by dragging/ swiping calendar`, async () => {
-        el.min = date13;
-        el.value = date15;
-        await forceUpdate(el);
+      // it(`goes to next month by dragging/ swiping calendar`, async () => {
+      //   el.min = date13;
+      //   el.value = date15;
+      //   await forceUpdate(el);
 
-        const btnYearSelectorEl = t.getBtnYearSelector();
-        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
-        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      //   const btnYearSelectorEl = t.getBtnYearSelector();
+      //   const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+      //   const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `First year selector text not matched`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, Jan 15',
-          `First calendar selector text not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `First year selector text not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, Jan 15',
+      //     `First calendar selector text not matched`);
 
-        const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
-          `First calendar label not matched (${calendarLabel})`);
+      //   const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+      //     `First calendar label not matched (${calendarLabel})`);
 
-        const startingPoint = setupDragPoint('left', t.elem);
-        const dragOptions: OptionsDragTo = { ...startingPoint, dx: -50 };
-        const animationComplete = t.waitForDragAnimationFinished();
-        await dragTo(calendarViewFullCalendarEl, dragOptions);
-        await animationComplete;
+      //   const startingPoint = setupDragPoint('left', t.elem);
+      //   const dragOptions: OptionsDragTo = { ...startingPoint, dx: -50 };
+      //   const animationComplete = t.waitForDragAnimationFinished();
+      //   await dragTo(calendarViewFullCalendarEl, dragOptions);
+      //   await animationComplete;
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Year selector text should not change`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, Jan 15',
-          `Calendar selector text should not change`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Year selector text should not change`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, Jan 15',
+      //     `Calendar selector text should not change`);
 
-        const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
-          `New calendar label not updated (${newCalendarLabel})`);
-      });
+      //   const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+      //     `New calendar label not updated (${newCalendarLabel})`);
+      // });
 
-      it(`goes to previous month by dragging/ swiping calendar`, async () => {
-        el.min = date13;
-        el.value = '2020-05-13';
-        await forceUpdate(el);
+      // it(`goes to previous month by dragging/ swiping calendar`, async () => {
+      //   el.min = date13;
+      //   el.value = '2020-05-13';
+      //   await forceUpdate(el);
 
-        const btnYearSelectorEl = t.getBtnYearSelector();
-        const btnCalendarSelectorEl = t.getBtnCalendarSelector();
-        const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+      //   const btnYearSelectorEl = t.getBtnYearSelector();
+      //   const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+      //   const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `First year selector text not matched`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, May 13',
-          `First calendar selector text not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `First year selector text not matched`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, May 13',
+      //     `First calendar selector text not matched`);
 
-        const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        isTrue(
-          ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
-          `First calendar label not matched (${calendarLabel})`);
+      //   const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   isTrue(
+      //     ['May, 2020', 'May 2020'].some(n => calendarLabel === n),
+      //     `First calendar label not matched (${calendarLabel})`);
 
-        const startingPoint = setupDragPoint('right', t.elem);
-        const dragOptions: OptionsDragTo = { ...startingPoint, dx: 50 };
-        const animationComplete = t.waitForDragAnimationFinished();
-        await dragTo(calendarViewFullCalendarEl, dragOptions);
-        await animationComplete;
+      //   const startingPoint = setupDragPoint('right', t.elem);
+      //   const dragOptions: OptionsDragTo = { ...startingPoint, dx: 50 };
+      //   const animationComplete = t.waitForDragAnimationFinished();
+      //   await dragTo(calendarViewFullCalendarEl, dragOptions);
+      //   await animationComplete;
 
-        strictEqual(
-          getShadowInnerHTML(btnYearSelectorEl),
-          '2020',
-          `Year selector text should not change`);
-        strictEqual(
-          getShadowInnerHTML(btnCalendarSelectorEl),
-          'Wed, May 13',
-          `Calendar selector text should not change`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnYearSelectorEl),
+      //     '2020',
+      //     `Year selector text should not change`);
+      //   strictEqual(
+      //     getShadowInnerHTML(btnCalendarSelectorEl),
+      //     'Wed, May 13',
+      //     `Calendar selector text should not change`);
 
-        const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-        /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-        isTrue(
-          ['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n),
-          `New calendar label not updated (${newCalendarLabel})`);
-      });
+      //   const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+      //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+      //   isTrue(
+      //     ['Apr 2020', 'April, 2020', 'April 2020'].some(n => newCalendarLabel === n),
+      //     `New calendar label not updated (${newCalendarLabel})`);
+      // });
 
     });
 

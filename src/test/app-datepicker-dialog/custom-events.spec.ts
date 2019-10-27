@@ -134,16 +134,16 @@ describe(getTestName(name), () => {
           `Calendar label ${testName} not ${
             testName === '1' ? 'matched' : 'updated'} (${calendarLabel})`);
       };
-      const goNextMonth = async (testName: string, times: number) => {
-        const btnNextMonthSelectorEl = t.getBtnNextMonthSelector();
-        isNotNull(btnNextMonthSelectorEl, `Next month button ${testName} not found`);
+      // const goNextMonth = async (testName: string, times: number) => {
+      //   const btnNextMonthSelectorEl = t.getBtnNextMonthSelector();
+      //   isNotNull(btnNextMonthSelectorEl, `Next month button ${testName} not found`);
 
-        for (let i = 0; i < times; i += 1) {
-          triggerEvent(btnNextMonthSelectorEl, 'click');
-          await t.waitForDragAnimationFinished();
-        }
-        await forceUpdate(el);
-      };
+      //   for (let i = 0; i < times; i += 1) {
+      //     triggerEvent(btnNextMonthSelectorEl, 'click');
+      //     await t.waitForDragAnimationFinished();
+      //   }
+      //   await forceUpdate(el);
+      // };
       const testBtnCalendarSelector = (testName: string, e: string) => {
         const btnCalendarSelectorEl = t.getBtnCalendarSelector();
         isNotNull(btnCalendarSelectorEl, `Calendar selector button ${testName} not found`);
@@ -166,35 +166,35 @@ describe(getTestName(name), () => {
         document.body.removeChild(el);
       });
 
-      it(`dispatches 'datepicker-animation-finished'`, async () => {
-        el.value = date13;
-        await forceUpdate(el);
+      // it(`dispatches 'datepicker-animation-finished'`, async () => {
+      //   el.value = date13;
+      //   await forceUpdate(el);
 
-        el.open();
-        await forceUpdate(el);
+      //   el.open();
+      //   await forceUpdate(el);
 
-        t = queryInit(el);
+      //   t = queryInit(el);
 
-        const eventName = 'datepicker-animation-finished';
-        const didTestPass = new Promise((yay, nah) => {
-          let timer = -1;
-          try {
-            el.addEventListener('datepicker-animation-finished', () => {
-              clearTimeout(timer);
-              yay(true);
-            });
-            timer = runCustomEventDispatcherTimer(eventName);
-          } catch (e) {
-            nah(e);
-          }
-        });
+      //   const eventName = 'datepicker-animation-finished';
+      //   const didTestPass = new Promise((yay, nah) => {
+      //     let timer = -1;
+      //     try {
+      //       el.addEventListener('datepicker-animation-finished', () => {
+      //         clearTimeout(timer);
+      //         yay(true);
+      //       });
+      //       timer = runCustomEventDispatcherTimer(eventName);
+      //     } catch (e) {
+      //       nah(e);
+      //     }
+      //   });
 
-        testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
-        await goNextMonth('1', 2);
+      //   testCalendarLabel('1', ['Jan 2020', 'January, 2020', 'January 2020']);
+      //   await goNextMonth('1', 2);
 
-        isTrue(await didTestPass, `'${eventName}' does not dispatch`);
-        testCalendarLabel('1', ['Mar 2020', 'March, 2020', 'March 2020']);
-      });
+      //   isTrue(await didTestPass, `'${eventName}' does not dispatch`);
+      //   testCalendarLabel('1', ['Mar 2020', 'March, 2020', 'March 2020']);
+      // });
 
       it(`dispatches 'datepicker-keyboard-selected'`, async () => {
         el.min = '2020-01-01';

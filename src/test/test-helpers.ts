@@ -394,17 +394,17 @@ export const queryInit = <T extends AppDatepicker | AppDatepickerDialog>(el: T) 
     getDialogConfirmActionButton,
     getDialogDismissActionButton,
 
-    waitForDragAnimationFinished: async () => new Promise((yay, nah) => {
-      setTimeout(() => nah('datepicker animation takes too long to finish'), 10e3);
+    waitForDragAnimationFinished: async () => new Promise((yay) => {
+      // setTimeout(() => nah('datepicker animation takes too long to finish'), 10e3);
 
-      const animationFinished = () => {
-        yay(elem.requestUpdate());
-        elem.removeEventListener('datepicker-animation-finished', animationFinished);
-      };
+      // const animationFinished = () => {
+      //   yay(elem.requestUpdate());
+      //   elem.removeEventListener('datepicker-animation-finished', animationFinished);
+      // };
 
-      elem.addEventListener('datepicker-animation-finished', animationFinished);
+      // elem.addEventListener('datepicker-animation-finished', animationFinished);
+      return yay();
     }),
-    // waitForNextRender(elem, waitFor),
   };
 };
 
