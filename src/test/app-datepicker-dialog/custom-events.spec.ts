@@ -232,7 +232,8 @@ describe(getTestName(name), () => {
           Array.isArray(allCalendarTables) && allCalendarTables.length > 0,
           `No calendar table found`);
 
-        const focusedCalendarTableEl = allCalendarTables[1];
+        // const focusedCalendarTableEl = allCalendarTables[1];
+        const focusedCalendarTableEl = allCalendarTables[0];
         isNotNull(focusedCalendarTableEl, `Focused calendar table is null`);
 
         for (let i = 0; i < 2; i += 1) {

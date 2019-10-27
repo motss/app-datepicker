@@ -95,11 +95,11 @@ const properties: PropertyValue[] = [
     value: 'Wk',
     type: 'string',
   },
-  {
-    name: 'dragRatio',
-    value: .15,
-    type: 'number',
-  },
+  // {
+  //   name: 'dragRatio',
+  //   value: .15,
+  //   type: 'number',
+  // },
 ];
 
 const cssProperties: PropertyValue[] = [

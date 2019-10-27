@@ -158,8 +158,8 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: String })
   public weekLabel: string = '';
 
-  @property({ type: Number })
-  public dragRatio: number = .15;
+  // @property({ type: Number })
+  // public dragRatio: number = .15;
 
   @property({ type: String })
   public dismissLabel: string = 'cancel';
@@ -260,6 +260,7 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   protected render() {
+    // .dragRatio="${this.dragRatio}"
     return html`
     <div class="scrim" @click="${this.close}"></div>
 
@@ -274,7 +275,6 @@ export class AppDatepickerDialog extends LitElement {
       .disabledDates="${this.disabledDates}"
       .landscape="${this.landscape}"
       .locale="${this.locale}"
-      .dragRatio="${this.dragRatio}"
       .startView="${this.startView}"
       .value="${this.value}"
       .weekLabel="${this.weekLabel}"

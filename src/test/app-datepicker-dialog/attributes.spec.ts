@@ -216,16 +216,16 @@ describe(getTestName(name), () => {
       strictEqual(t.elem.weekLabel, newVal, `datepicker's 'weekLabel' not updated`);
     });
 
-    it(`renders with correct 'dragRatio'`, async () => {
-      const newVal = .25;
-      el.setAttribute('dragratio', `${newVal}`);
-      await forceUpdate(el);
+    // it(`renders with correct 'dragRatio'`, async () => {
+    //   const newVal = .25;
+    //   el.setAttribute('dragratio', `${newVal}`);
+    //   await forceUpdate(el);
 
-      strictEqual(el.dragRatio, newVal, `'dragRatio' not updated`);
-      strictEqual(el.getAttribute('dragratio'), `${newVal}`, `'dragratio' attribute not set`);
+    //   strictEqual(el.dragRatio, newVal, `'dragRatio' not updated`);
+    //   strictEqual(el.getAttribute('dragratio'), `${newVal}`, `'dragratio' attribute not set`);
 
-      strictEqual(t.elem.dragRatio, newVal, `datepicker's 'dragRatio' not updated`);
-    });
+    //   strictEqual(t.elem.dragRatio, newVal, `datepicker's 'dragRatio' not updated`);
+    // });
 
   });
 });

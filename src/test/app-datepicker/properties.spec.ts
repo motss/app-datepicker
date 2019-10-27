@@ -12,14 +12,14 @@ import {
   defaultLocale,
 } from '../test-config.js';
 import {
-  dragTo,
+  // dragTo,
   forceUpdate,
   getComputedStylePropertyValue,
   getShadowInnerHTML,
   getTestName,
-  OptionsDragTo,
+  // OptionsDragTo,
   queryInit,
-  setupDragPoint,
+  // setupDragPoint,
 } from '../test-helpers.js';
 
 const {
@@ -508,77 +508,77 @@ describe(getTestName(name), () => {
       strictEqual(getShadowInnerHTML(weekLabelEl), 'Wk', `Week label not reset`);
     });
 
-    it(`renders with optional 'dragRatio'`, async () => {
-      strictEqual(el.dragRatio, .15, `Initial 'dragRatio' not matched`);
+    // it(`renders with optional 'dragRatio'`, async () => {
+    //   strictEqual(el.dragRatio, .15, `Initial 'dragRatio' not matched`);
 
-      el.min = date13;
-      el.value = date15;
-      el.dragRatio = .5;
-      await forceUpdate(el);
+    //   el.min = date13;
+    //   el.value = date15;
+    //   el.dragRatio = .5;
+    //   await forceUpdate(el);
 
-      strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
+    //   strictEqual(el.dragRatio, .5, `'dragRatio' not matched`);
 
-      const btnYearSelectorEl = t.getBtnYearSelector();
-      const btnCalendarSelectorEl = t.getBtnCalendarSelector();
-      const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
+    //   const btnYearSelectorEl = t.getBtnYearSelector();
+    //   const btnCalendarSelectorEl = t.getBtnCalendarSelector();
+    //   const calendarViewFullCalendarEl = t.getCalendarViewFullCalendar();
 
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `First year selector text not matched`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `First calendar selector text not matched`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnYearSelectorEl),
+    //     '2020',
+    //     `First year selector text not matched`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnCalendarSelectorEl),
+    //     'Wed, Jan 15',
+    //     `First calendar selector text not matched`);
 
-      const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
-        `First calendar label not matched (${calendarLabel})`);
+    //   const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+    //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+    //   isTrue(
+    //     ['Jan 2020', 'January, 2020', 'January 2020'].some(n => calendarLabel === n),
+    //     `First calendar label not matched (${calendarLabel})`);
 
-      const oldStartingPoint = setupDragPoint('left', el);
-      const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
-      await dragTo(calendarViewFullCalendarEl, oldDragOptions);
-      await t.waitForDragAnimationFinished();
+    //   const oldStartingPoint = setupDragPoint('left', el);
+    //   const oldDragOptions: OptionsDragTo = { ...oldStartingPoint, dx: -50 };
+    //   await dragTo(calendarViewFullCalendarEl, oldDragOptions);
+    //   await t.waitForDragAnimationFinished();
 
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `Year selector text should not change`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `Calendar selector text should not change`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnYearSelectorEl),
+    //     '2020',
+    //     `Year selector text should not change`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnCalendarSelectorEl),
+    //     'Wed, Jan 15',
+    //     `Calendar selector text should not change`);
 
-      const oldCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
-        `Calendar label should not update (${oldCalendarLabel})`);
+    //   const oldCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+    //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+    //   isTrue(
+    //     ['Jan 2020', 'January, 2020', 'January 2020'].some(n => oldCalendarLabel === n),
+    //     `Calendar label should not update (${oldCalendarLabel})`);
 
-      const startingPoint = setupDragPoint('left', el);
-      const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
-      await dragTo(calendarViewFullCalendarEl, dragOptions);
-      await t.waitForDragAnimationFinished();
+    //   const startingPoint = setupDragPoint('left', el);
+    //   const dragOptions: OptionsDragTo = { ...startingPoint, dx: -160 };
+    //   await dragTo(calendarViewFullCalendarEl, dragOptions);
+    //   await t.waitForDragAnimationFinished();
 
-      strictEqual(
-        getShadowInnerHTML(btnYearSelectorEl),
-        '2020',
-        `Year selector text should not change`);
-      strictEqual(
-        getShadowInnerHTML(btnCalendarSelectorEl),
-        'Wed, Jan 15',
-        `Calendar selector text should not change`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnYearSelectorEl),
+    //     '2020',
+    //     `Year selector text should not change`);
+    //   strictEqual(
+    //     getShadowInnerHTML(btnCalendarSelectorEl),
+    //     'Wed, Jan 15',
+    //     `Calendar selector text should not change`);
 
-      const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
-      /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
-      isTrue(
-        ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
-        `Calendar label not updated (${newCalendarLabel})`);
-    });
+    //   const newCalendarLabel = getShadowInnerHTML(t.getCalendarLabel());
+    //   /** NOTE: [(Safari 9), (Win10 IE 11), (Others)] */
+    //   isTrue(
+    //     ['Feb 2020', 'February, 2020', 'February 2020'].some(n => newCalendarLabel === n),
+    //     `Calendar label not updated (${newCalendarLabel})`);
+    // });
 
-    it(`renders with different 'firstDayofWeek' and 'disabledDays'`, async () => {
+    it(`renders with different 'firstDayOfWeek' and 'disabledDays'`, async () => {
       strictEqual(el.firstDayOfWeek, 0, `'firstDayOfWeek' not matched`);
       strictEqual(el.disabledDays, '', `'disabledDays' not matched`);
 

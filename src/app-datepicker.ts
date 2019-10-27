@@ -190,7 +190,7 @@ export class AppDatepicker extends LitElement {
       position: relative;
       width: calc(100% * 3);
       padding: 0 0 16px;
-      transform: translate3d(-300px, 0, 0);
+      transform: translate3d(-33%, 0, 0);
       /* will-change: transform; */
       /**
         * NOTE: Required for Pointer Events API to work on touch devices.
@@ -467,8 +467,8 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public weekLabel: string = '';
 
-  @property({ type: Number })
-  public dragRatio: number = .15;
+  // @property({ type: Number })
+  // public dragRatio: number = .15;
 
   @property({ type: Date })
   private _selectedDate: Date;
