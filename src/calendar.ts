@@ -115,9 +115,10 @@ interface CalendarDay {
   disabled: boolean;
 }
 export interface CalendarDays {
-  calendar: CalendarDay[][];
-  disabledDatesSet: Set<number>;
-  disabledDaysSet: Set<number>;
+  key: string;
+  calendar: CalendarDay[][] | null;
+  disabledDatesSet: Set<number> | null;
+  disabledDaysSet: Set<number> | null;
 }
 export function calendarDays({
   firstDayOfWeek,
@@ -241,5 +242,10 @@ export function calendarDays({
     if (day > totalDays) calendarFilled = true;
   }
 
-  return { calendar, disabledDatesSet, disabledDaysSet };
+  return {
+    calendar,
+    disabledDatesSet,
+    disabledDaysSet,
+    key: toUTCDate(fy, selectedMonth, 1).toJSON(),
+  };
 }

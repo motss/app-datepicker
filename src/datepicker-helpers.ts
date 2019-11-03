@@ -315,7 +315,7 @@ interface ParamsComputeAllCalendars {
 }
 export interface AllCalendars {
   weekdays: CalendarWeekdays[];
-  calendars: (CalendarDays['calendar'] | null)[];
+  calendars: Pick<CalendarDays, 'key' | 'calendar'>[];
   disabledDatesSet: Set<number>;
   disabledDaysSet: Set<number>;
 }
@@ -346,7 +346,7 @@ export function computeAllCalendars({
     longWeekdayFormatter: longWeekdayFormatterFn,
     narrowWeekdayFormatter: narrowWeekdayFormatterFn,
   });
-  const allCalendars = computeThreeCalendarsInARow(selectedDate).map((n, idx) => {
+  const allCalendars = computeThreeCalendarsInARow(selectedDate).map<CalendarDays>((n, idx) => {
     const nFy = n.getUTCFullYear();
     const nM = n.getUTCMonth();
     const firstDayOfMonthTime = +toUTCDate(nFy, nM, 1);
@@ -362,7 +362,14 @@ export function computeAllCalendars({
      *  - last day of the month < `minTime` - entire month should be disabled
      *  - first day of the month > `maxTime` - entire month should be disabled
      */
-    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) return null;
+    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
+      return {
+        key: toUTCDate(nFy, nM, 1).toJSON(),
+        calendar: null,
+        disabledDatesSet: null,
+        disabledDaysSet: null,
+      } as CalendarDays;
+    }
 
     return calendarDays({
       firstDayOfWeek,
@@ -403,7 +410,7 @@ export function computeAllCalendars({
 
   return {
     weekdays,
-    calendars: allCalendars.map(n => n && n.calendar),
+    calendars: allCalendars.map(({ calendar, key }) => ({ calendar, key })),
     disabledDatesSet: disabledSets.dates,
     disabledDaysSet: disabledSets.days,
   };
