@@ -1,11 +1,6 @@
 import { AppDatepicker } from './app-datepicker.js';
 import { DateTimeFormatter, toUTCDate } from './datepicker-helpers.js';
-
-export const enum WEEK_NUMBER_TYPE {
-  FIRST_4_DAY_WEEK = 'first-4-day-week',
-  FIRST_DAY_OF_YEAR = 'first-day-of-year',
-  FIRST_FULL_WEEK = 'first-full-week',
-}
+import { WeekNumberType } from './typings.js';
 
 function normalizeWeekday(weekday: number) {
   if (weekday >= 0 && weekday < 7) return weekday;
@@ -15,18 +10,18 @@ function normalizeWeekday(weekday: number) {
   return (weekdayOffset + weekday) % 7;
 }
 
-function getFixedDateForWeekNumber(weekNumberType: string, date: Date) {
+function getFixedDateForWeekNumber(weekNumberType: WeekNumberType, date: Date) {
   const wd = date.getUTCDay();
   const fy = date.getUTCFullYear();
   const m = date.getUTCMonth();
   const d = date.getUTCDate();
 
   switch (weekNumberType) {
-    case WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK:
+    case 'first-4-day-week':
       return toUTCDate(fy, m, d - wd + 3);
-    case WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR:
+    case 'first-day-of-year':
       return toUTCDate(fy, m, d - wd + 6);
-    case WEEK_NUMBER_TYPE.FIRST_FULL_WEEK:
+    case 'first-full-week':
       return toUTCDate(fy, m, d - wd);
     default:
       return date;
@@ -44,7 +39,7 @@ interface WeekNumber {
   fixedDate: Date;
   weekNumber: number;
 }
-function computeWeekNumber(weekNumberType: string, date: Date): WeekNumber {
+function computeWeekNumber(weekNumberType: WeekNumberType, date: Date): WeekNumber {
   const fixedNow = getFixedDateForWeekNumber(weekNumberType, date);
   const firstDayOfYear = toUTCDate(fixedNow.getUTCFullYear(), 0, 1);
   const wk = Math.ceil(((+fixedNow - +firstDayOfYear) / 864e5 + 1) / 7);

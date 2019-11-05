@@ -1,12 +1,11 @@
 import { PropertyValue } from '@reallyland/really-elements/dist/code-configurator/code-configurator.js';
 
-import { START_VIEW } from '../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../calendar.js';
 import {
   getResolvedDate,
   getResolvedLocale,
   toFormattedDateString,
 } from '../datepicker-helpers.js';
+import { StartView, WeekNumberType } from '../typings.js';
 import { locales } from './locales.js';
 
 const properties: PropertyValue[] = [
@@ -22,22 +21,15 @@ const properties: PropertyValue[] = [
   },
   {
     name: 'weekNumberType',
-    value: WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+    value: 'first-4-day-week' as WeekNumberType,
     type: 'string',
-    options: [
-      {
-        label: WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        value: WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-      },
-      {
-        label: WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR,
-        value: WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR,
-      },
-      {
-        label: WEEK_NUMBER_TYPE.FIRST_FULL_WEEK,
-        value: WEEK_NUMBER_TYPE.FIRST_FULL_WEEK,
-      },
-    ],
+    options: ([
+      'first-4-day-week',
+      'first-day-of-year',
+      'first-full-week',
+    ] as WeekNumberType[]).map((n) => {
+      return { label: n, value: n };
+    }),
   },
   {
     name: 'landscape',
@@ -46,18 +38,14 @@ const properties: PropertyValue[] = [
   },
   {
     name: 'startView',
-    value: START_VIEW.CALENDAR,
+    value: 'calendar' as StartView,
     type: 'string',
-    options: [
-      {
-        label: START_VIEW.CALENDAR,
-        value: START_VIEW.CALENDAR,
-      },
-      {
-        label: START_VIEW.YEAR_LIST,
-        value: START_VIEW.YEAR_LIST,
-      },
-    ],
+    options: ([
+      'calendar',
+      'yearList',
+    ] as StartView[]).map((n) => {
+      return { label: n, value: n };
+    }),
   },
   {
     name: 'min',

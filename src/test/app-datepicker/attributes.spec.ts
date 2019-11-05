@@ -1,10 +1,10 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import {
   getResolvedDate,
   hasClass,
   toFormattedDateString,
 } from '../../datepicker-helpers.js';
+import { StartView, WeekNumberType } from '../../typings.js';
 import {
   date13,
   date15,
@@ -30,6 +30,9 @@ const {
 const name = AppDatepicker.is;
 
 describe(getTestName(name), () => {
+  const startViewCalendar: StartView = 'calendar';
+  const startViewYearList: StartView = 'yearList';
+
   describe('attributes', () => {
     let el: AppDatepicker;
     let t: ReturnType<typeof queryInit>;
@@ -37,7 +40,7 @@ describe(getTestName(name), () => {
     beforeEach(async () => {
       el = document.createElement(name) as AppDatepicker;
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = startViewCalendar;
 
       document.body.appendChild(el);
       t = queryInit(el);
@@ -194,21 +197,21 @@ describe(getTestName(name), () => {
        * NOTE: Not testing initial `startView="yearList"`,
        * assuming that works if this test passes.
        */
-      strictEqual(el.startView, START_VIEW.CALENDAR, `Incorrect initial 'startView'`);
+      strictEqual(el.startView, startViewCalendar, `Incorrect initial 'startView'`);
       strictEqual(
         el.getAttribute('startview'),
-        START_VIEW.CALENDAR,
+        startViewCalendar,
         `Incorrect initial 'startview' attribute`);
 
       /** FIXME: Shady DOM only supports all attributs in lowercase */
-      el.setAttribute('startview', START_VIEW.YEAR_LIST);
+      el.setAttribute('startview', startViewYearList);
       await forceUpdate(el);
 
       const yearListView = t.getDatepickerBodyYearListView();
-      strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+      strictEqual(el.startView, startViewYearList, `'startView' not updated`);
       strictEqual(
         el.getAttribute('startview'),
-        START_VIEW.YEAR_LIST,
+        startViewYearList,
         `'startview' attribute not updated`);
       isNotNull(yearListView, `Year list view not found`);
     });
@@ -274,19 +277,19 @@ describe(getTestName(name), () => {
       el.showWeekNumber = true;
       await forceUpdate(el);
 
-      strictEqual(
+      strictEqual<WeekNumberType>(
         el.weekNumberType,
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+        'first-4-day-week',
         `'weekNumberType' not matched`);
-      strictEqual(
-        el.getAttribute('weeknumbertype'),
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+      strictEqual<WeekNumberType>(
+        el.getAttribute('weeknumbertype') as WeekNumberType,
+        'first-4-day-week',
         `'weeknumbertype' attribute not matched`);
 
-      const allWeekNumberTypes = [
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR,
-        WEEK_NUMBER_TYPE.FIRST_FULL_WEEK,
+      const allWeekNumberTypes: WeekNumberType[] = [
+        'first-4-day-week',
+        'first-day-of-year',
+        'first-full-week',
       ];
       const expectedWeekdayLabels = [1, 1, 52];
 

@@ -1,11 +1,10 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import '../../app-datepicker.js';
-import { START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
 import {
   getResolvedDate,
   toFormattedDateString,
 } from '../../datepicker-helpers.js';
+import { StartView, WeekNumberType } from '../../typings.js';
 import {
   dateFormatter,
   dayFormatter,
@@ -76,11 +75,11 @@ describe(getTestName(name), () => {
         },
         {
           attrName: 'weeknumbertype',
-          value: WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+          value: 'first-4-day-week' as WeekNumberType,
         },
         {
           attrName: 'startview',
-          value: START_VIEW.CALENDAR,
+          value: 'calendar' as StartView,
         },
       ];
 
@@ -189,7 +188,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.YEAR_LIST;
+      el.startView = 'yearList';
       await forceUpdate(el);
 
       el.open();
@@ -255,7 +254,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.YEAR_LIST;
+      el.startView = 'yearList';
       await forceUpdate(el);
 
       el.open();

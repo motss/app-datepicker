@@ -1,4 +1,4 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import '../../app-datepicker.js';
 import {
   getResolvedDate,
@@ -122,7 +122,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.YEAR_LIST;
+        el.startView = 'yearList';
         await forceUpdate(el);
 
         t = queryInit(el);

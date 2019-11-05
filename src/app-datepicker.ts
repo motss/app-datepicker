@@ -1,13 +1,12 @@
-type Omit<T, U> = Pick<T, Exclude<keyof T, keyof U>>;
 type ClassProperties<T> = {
   [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
 };
 interface ParamUpdatedChanged extends ClassProperties<
-  Omit<Omit<AppDatepicker, HTMLElement>, LitElement>
+  Omit<Omit<AppDatepicker, keyof HTMLElement>, keyof LitElement>
 > {
   _selectedDate: Date;
   _focusedDate: Date;
-  _startView: START_VIEW;
+  _startView: StartView;
 }
 
 export interface DatepickerValueUpdatedEvent {
@@ -15,15 +14,6 @@ export interface DatepickerValueUpdatedEvent {
 }
 export interface DatepickerFirstUpdatedEvent extends DatepickerValueUpdatedEvent {
   firstFocusableElement: HTMLElement;
-}
-
-export const enum START_VIEW {
-  CALENDAR = 'calendar',
-  YEAR_LIST = 'yearList',
-}
-export const enum MONTH_UPDATE_TYPE {
-  PREVIOUS = 'previous',
-  NEXT = 'next',
 }
 
 import {
@@ -40,7 +30,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
-import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import {
   ALL_NAV_KEYS_SET,
@@ -64,6 +53,7 @@ import {
 } from './datepicker-helpers.js';
 import { waitForNextFrame } from './helpers/wait-for-next-frame.js';
 import { Tracker, TrackerHandlers } from './tracker.js';
+import { MonthUpdateType, StartView, WeekNumberType } from './typings.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -380,7 +370,7 @@ export class AppDatepicker extends LitElement {
   public showWeekNumber: boolean = false;
 
   @property({ type: String, reflect: true })
-  public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
+  public weekNumberType: WeekNumberType = 'first-4-day-week';
 
   @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
@@ -389,16 +379,16 @@ export class AppDatepicker extends LitElement {
   public get startView() {
     return this._startView!;
   }
-  public set startView(val: string) {
+  public set startView(val: StartView) {
     /**
      * NOTE: Defaults to `START_VIEW.CALENDAR` when `val` is falsy.
      */
-    const defaultVal = !val ? START_VIEW.CALENDAR : val;
+    const defaultVal: StartView = !val ? 'calendar' : val;
 
     /**
      * NOTE: No-op when `val` is not falsy and not valid accepted values.
      */
-    if (defaultVal !== START_VIEW.CALENDAR && defaultVal !== START_VIEW.YEAR_LIST) return;
+    if (defaultVal !== 'calendar' && defaultVal !== 'yearList') return;
 
     const oldVal = this._startView;
 
@@ -481,7 +471,7 @@ export class AppDatepicker extends LitElement {
   private _focusedDate: Date;
 
   @property({ type: String })
-  private _startView?: START_VIEW;
+  private _startView?: StartView;
 
   @query('.year-list-view__full-list')
   private _yearViewFullList?: HTMLDivElement;
@@ -519,7 +509,7 @@ export class AppDatepicker extends LitElement {
     const max = getResolvedDate('2100-12-31');
 
     this.value = formattedTodayDate;
-    this.startView = START_VIEW.CALENDAR;
+    this.startView = 'calendar';
 
     this._min = new Date(todayDate);
     this._max = new Date(max);
@@ -550,7 +540,7 @@ export class AppDatepicker extends LitElement {
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
     const datepickerBodyContent: import('lit-element').TemplateResult =
-      START_VIEW.YEAR_LIST === this._startView ?
+      'yearList' === this._startView ?
         this._renderDatepickerYearList() : this._renderDatepickerCalendar();
 
     return html`
@@ -560,7 +550,7 @@ export class AppDatepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    const firstFocusableElement = (START_VIEW.CALENDAR === this._startView ?
+    const firstFocusableElement = ('calendar' === this._startView ?
       this._buttonSelectorYear : this._yearViewListItem)!;
 
     dispatchCustomEvent<DatepickerFirstUpdatedEvent>(
@@ -573,18 +563,18 @@ export class AppDatepicker extends LitElement {
     if (changed.has('min') || changed.has('max')) {
       this._yearList = toYearList(this._min!, this._max!);
 
-      if (START_VIEW.YEAR_LIST === startView) this.requestUpdate('_yearList');
+      if ('yearList' === startView) this.requestUpdate('_yearList');
     }
 
     if (changed.has('_startView') || changed.has('startView')) {
-      if (START_VIEW.YEAR_LIST === startView) {
+      if ('yearList' === startView) {
         const selectedYearScrollTop =
           48 * (this._selectedDate.getUTCFullYear() - this._min!.getUTCFullYear() - 2);
 
         targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
       }
 
-      if (START_VIEW.CALENDAR === startView && null == this._tracker) {
+      if ('calendar' === startView && null == this._tracker) {
         const calendarsContainer = this.calendarsContainer;
         let abortDragWhenMinDate = false;
         let abortDragWhenMaxDate = false;
@@ -673,7 +663,7 @@ export class AppDatepicker extends LitElement {
 
   private _renderHeaderSelectorButton() {
     const { yearFormatter, dateFormatter } = this._formatters!;
-    const isCalendarView = this.startView === START_VIEW.CALENDAR;
+    const isCalendarView = this.startView === 'calendar';
     const focusedDate = this._focusedDate;
     const formattedDate = dateFormatter(focusedDate);
     const formatterFy = yearFormatter(focusedDate);
@@ -681,14 +671,14 @@ export class AppDatepicker extends LitElement {
     return html`
     <button
       class="${classMap({ 'btn__year-selector': true, selected: !isCalendarView })}"
-      data-view="${START_VIEW.YEAR_LIST}"
-      @click="${this._updateView(START_VIEW.YEAR_LIST)}">${formatterFy}</button>
+      data-view="${'yearList' as StartView}"
+      @click="${this._updateView('yearList')}">${formatterFy}</button>
 
     <div class="datepicker-toolbar">
       <button
         class="${classMap({ 'btn__calendar-selector': true, selected: isCalendarView })}"
-        data-view="${START_VIEW.CALENDAR}"
-        @click="${this._updateView(START_VIEW.CALENDAR)}">${formattedDate}</button>
+        data-view="${'calendar' as StartView}"
+        @click="${this._updateView('calendar')}">${formattedDate}</button>
     </div>
     `;
   }
@@ -819,7 +809,7 @@ export class AppDatepicker extends LitElement {
           <button
             class="btn__month-selector"
             aria-label="Previous month"
-            @click="${this._updateMonth(MONTH_UPDATE_TYPE.PREVIOUS)}"
+            @click="${this._updateMonth('previous')}"
           >${iconChevronLeft}</button>
         `}</div>
 
@@ -827,7 +817,7 @@ export class AppDatepicker extends LitElement {
           <button
             class="btn__month-selector"
             aria-label="Next month"
-            @click="${this._updateMonth(MONTH_UPDATE_TYPE.NEXT)}"
+            @click="${this._updateMonth('next')}"
           >${iconChevronRight}</button>
         `}</div>
       </div>
@@ -859,7 +849,7 @@ export class AppDatepicker extends LitElement {
       const dx = this._dx;
 
       if (Math.abs(dx) > 35) {
-        const updateType = dx < 0 ? MONTH_UPDATE_TYPE.NEXT : MONTH_UPDATE_TYPE.PREVIOUS;
+        const updateType: MonthUpdateType = dx < 0 ? 'next' : 'previous';
         this._updateMonth(updateType).handleEvent();
       }
 
@@ -871,9 +861,9 @@ export class AppDatepicker extends LitElement {
     }
   }
 
-  private _updateView(view: START_VIEW) {
+  private _updateView(view: StartView) {
     const handleUpdateView = () => {
-      if (START_VIEW.CALENDAR === view) {
+      if ('calendar' === view) {
         this._selectedDate = this._lastSelectedDate =
           new Date(updateYearWithMinMax(this._focusedDate, this._min!, this._max!));
       }
@@ -884,7 +874,7 @@ export class AppDatepicker extends LitElement {
     return passiveHandler(handleUpdateView);
   }
 
-  private _updateMonth(updateType: string) {
+  private _updateMonth(updateType: MonthUpdateType) {
     const handleUpdateMonth = () => {
       const calendarsContainer = this.calendarsContainer;
 
@@ -894,7 +884,7 @@ export class AppDatepicker extends LitElement {
       const minDate = this._min!;
       const maxDate = this._max!;
 
-      const isPreviousMonth = updateType === MONTH_UPDATE_TYPE.PREVIOUS;
+      const isPreviousMonth = updateType === 'previous';
 
       const newSelectedDate = toUTCDate(
         dateDate.getUTCFullYear(),
@@ -957,7 +947,7 @@ export class AppDatepicker extends LitElement {
 
     this._selectedDate = this._lastSelectedDate = new Date(newFocusedDate);
     this._focusedDate = new Date(newFocusedDate);
-    this._startView = START_VIEW.CALENDAR;
+    this._startView = 'calendar';
   }
 
   private _updateFocusedDate(ev: MouseEvent) {
@@ -1081,10 +1071,10 @@ declare global {
 // FIXED: `landscape` attribute breaks layout.
 // FIXED: Do not update focused date while dragging/ swiping calendar
 // FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
-// FIXED: `disabledDays` is broken with `firstDayofWeek`
+// FIXED: `disabledDays` is broken with `firstDayOfWeek`
 // FIXED: When a new property is set, it re-renders the calendar to last focused date but
 // FIXED: Add test for custom events
 //        never updates the selected date
-// TODO: To suppport `valueAsDate` and `valueAsNumber`.
+// TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // FIXME: Replace Web Animations for better support for animations on older browsers.

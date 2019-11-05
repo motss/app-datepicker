@@ -1,4 +1,4 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import { date13, date15, defaultLocale } from '../test-config.js';
 import { forceUpdate, getTestName } from '../test-helpers.js';
 import { getAllDateStrings } from './timezones.js';
@@ -33,7 +33,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = 'calendar';
       el.min = date13;
       el.value = date15;
       await forceUpdate(el);

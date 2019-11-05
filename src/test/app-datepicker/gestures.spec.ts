@@ -1,5 +1,6 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import { makeNumberPrecise } from '../../datepicker-helpers.js';
+import { StartView } from '../../typings.js';
 import {
   date13,
   date15,
@@ -35,7 +36,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.CALENDAR;
+        el.startView = 'calendar';
         await forceUpdate(el);
 
         t = queryInit(el);
@@ -114,7 +115,7 @@ describe(getTestName(name), () => {
       //     `Calendar label not updated (${newCalendarLabel})`);
       // });
 
-      it(`switches to ${START_VIEW.YEAR_LIST} view`, async () => {
+      it(`switches to ${'yearList' as StartView} view`, async () => {
         el.min = date13;
         el.value = date15;
         await forceUpdate(el);
@@ -317,7 +318,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.CALENDAR;
+        el.startView = 'calendar';
         el.min = date13;
         el.value = date15;
         await forceUpdate(el);
@@ -332,10 +333,10 @@ describe(getTestName(name), () => {
       it(`navigates to year list by button`, async () => {
         const calendarLabel = getShadowInnerHTML(t.getCalendarLabel());
 
-        strictEqual(
+        strictEqual<StartView>(
           el.startView,
-          START_VIEW.CALENDAR,
-          `Initial 'startView' is not ${START_VIEW.CALENDAR}`);
+          'calendar',
+          `Initial 'startView' is not ${'calendar' as StartView}`);
         strictEqual(
           getShadowInnerHTML(t.getBtnYearSelector()),
           '2020',
@@ -350,7 +351,7 @@ describe(getTestName(name), () => {
         triggerEvent(btnYearSelectorEl, 'click');
         await forceUpdate(el);
 
-        strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+        strictEqual<StartView>(el.startView, 'yearList', `'startView' not updated`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
         isNotNull(t.getYearListViewFullList(), `Year list view should render`);
 
@@ -366,7 +367,7 @@ describe(getTestName(name), () => {
         triggerEvent(btnYearSelectorEl, 'click');
         await forceUpdate(el);
 
-        strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
+        strictEqual<StartView>(el.startView, 'yearList', `'startView' not updated`);
         isTrue(t.getCalendarLabel() == null, `No calendar should render`);
         isNotNull(t.getYearListViewFullList(), `Year list view should render`);
 
@@ -376,7 +377,7 @@ describe(getTestName(name), () => {
         const newBtnYearSelectorEl = t.getBtnYearSelector();
 
         isNotNull(newBtnYearSelectorEl, `Year selector button not found`);
-        strictEqual(el.startView, START_VIEW.CALENDAR, `Calendar should render`);
+        strictEqual<StartView>(el.startView, 'calendar', `Calendar should render`);
         strictEqual(
           getShadowInnerHTML(newBtnYearSelectorEl),
           '2025',
@@ -394,7 +395,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.CALENDAR;
+        el.startView = 'calendar';
         el.min = date13;
         el.value = date15;
         await forceUpdate(el);
@@ -793,7 +794,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.CALENDAR;
+        el.startView = 'calendar';
         el.min = date13;
         el.value = date15;
         el.landscape = true;
@@ -956,7 +957,7 @@ describe(getTestName(name), () => {
         document.body.appendChild(el);
 
         el.locale = defaultLocale;
-        el.startView = START_VIEW.CALENDAR;
+        el.startView = 'calendar';
         el.min = date13;
         el.value = date15;
         await forceUpdate(el);

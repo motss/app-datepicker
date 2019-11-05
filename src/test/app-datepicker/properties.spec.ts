@@ -1,10 +1,10 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import {
   getResolvedDate,
   hasClass,
   toFormattedDateString,
 } from '../../datepicker-helpers.js';
+import { StartView, WeekNumberType } from '../../typings.js';
 import {
   date13,
   date15,
@@ -39,7 +39,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = 'calendar';
       await forceUpdate(el);
 
       t = queryInit(el);
@@ -192,21 +192,21 @@ describe(getTestName(name), () => {
        * NOTE: Not testing initial `startView="yearList"`,
        * assuming that works if this test passes.
        */
-      strictEqual(el.startView, START_VIEW.CALENDAR, `Incorrect initial 'startView'`);
-      strictEqual(
-        el.getAttribute('startview'),
-        START_VIEW.CALENDAR,
+      strictEqual<StartView>(el.startView, 'calendar', `Incorrect initial 'startView'`);
+      strictEqual<StartView>(
+        el.getAttribute('startview') as StartView,
+        'calendar',
         `Incorrect initial 'startview' attribute`);
 
-      el.startView = START_VIEW.YEAR_LIST;
+      el.startView = 'yearList';
       await forceUpdate(el);
 
       const yearListView = t.getDatepickerBodyYearListView();
 
-      strictEqual(el.startView, START_VIEW.YEAR_LIST, `'startView' not updated`);
-      strictEqual(
-        el.getAttribute('startview'),
-        START_VIEW.YEAR_LIST,
+      strictEqual<StartView>(el.startView, 'yearList', `'startView' not updated`);
+      strictEqual<StartView>(
+        el.getAttribute('startview') as StartView,
+        'yearList',
         `'startview' attribute not updated`);
       isNotNull(yearListView, `Year list view not found`);
     });
@@ -276,19 +276,19 @@ describe(getTestName(name), () => {
       el.showWeekNumber = true;
       await forceUpdate(el);
 
-      strictEqual(
+      strictEqual<WeekNumberType>(
         el.weekNumberType,
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+        'first-4-day-week',
         `'weekNumberType' not matched`);
-      strictEqual(
-        el.getAttribute('weeknumbertype'),
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
+      strictEqual<WeekNumberType>(
+        el.getAttribute('weeknumbertype') as WeekNumberType,
+        'first-4-day-week',
         `'weeknumbertype' attribute not matched`);
 
-      const allWeekNumberTypes = [
-        WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK,
-        WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR,
-        WEEK_NUMBER_TYPE.FIRST_FULL_WEEK,
+      const allWeekNumberTypes: WeekNumberType[] = [
+        'first-4-day-week',
+        'first-day-of-year',
+        'first-full-week',
       ];
       const expectedWeekdayLabels = [1, 1, 52];
 

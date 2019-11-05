@@ -1,4 +1,4 @@
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import { KEYCODES_MAP } from '../../datepicker-helpers.js';
 import {
   date13,
@@ -37,7 +37,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = 'calendar';
       el.min = date13;
       el.value = date15;
       await forceUpdate(el);

@@ -1,6 +1,5 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { START_VIEW } from '../../app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from '../../calendar.js';
+import { StartView, WeekNumberType } from '../../typings.js';
 import {
   date13,
   date15,
@@ -29,7 +28,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = 'calendar';
       el.min = date13;
       el.value = date15;
       await forceUpdate(el);
@@ -48,9 +47,9 @@ describe(getTestName(name), () => {
       strictEqual(el.locale, defaultLocale, `'locale' not matched`);
       strictEqual(el.value, date15, `'value' not matched`);
 
-      strictEqual(el.startView, START_VIEW.CALENDAR, `'startView' not matched`);
-      strictEqual(
-        el.getAttribute('startview'), START_VIEW.CALENDAR, `'startview' attribute not matched`);
+      strictEqual<StartView>(el.startView, 'calendar', `'startView' not matched`);
+      strictEqual<StartView>(
+        el.getAttribute('startview') as StartView, 'calendar', `'startview' attribute not matched`);
 
       strictEqual(el.min, date13, `'min' not matched`);
       strictEqual(el.getAttribute('min'), date13, `'min' attribute not matched`);
@@ -90,19 +89,19 @@ describe(getTestName(name), () => {
     });
 
     it(`renders with correct 'startView'`, async () => {
-      const newVal = START_VIEW.YEAR_LIST;
-      el.startView = newVal;
+      const expected: StartView = 'yearList';
+      el.startView = expected;
       await forceUpdate(el);
 
-      strictEqual(el.startView, newVal, `'startView' not updated`);
+      strictEqual(el.startView, expected, `'startView' not updated`);
       strictEqual(
-        el.getAttribute('startview'), newVal, `'startview' attribute not set`);
+        el.getAttribute('startview'), expected, `'startview' attribute not set`);
 
       strictEqual(
-        t.elem.startView, newVal, `datepicker's 'startView' not updated`);
+        t.elem.startView, expected, `datepicker's 'startView' not updated`);
       strictEqual(
         t.elem.getAttribute('startview'),
-        newVal,
+        expected,
         `datepicker's 'startview' attribute not set`);
     });
 
@@ -139,24 +138,24 @@ describe(getTestName(name), () => {
     });
 
     it(`renders with correct 'weekNumberType'`, async () => {
-      const newVal = WEEK_NUMBER_TYPE.FIRST_DAY_OF_YEAR;
-      el.weekNumberType = newVal;
+      const expected: WeekNumberType = 'first-day-of-year';
+      el.weekNumberType = expected;
       await forceUpdate(el);
 
       strictEqual(
-        el.weekNumberType, newVal, `'weekNumberType' not updated`);
+        el.weekNumberType, expected, `'weekNumberType' not updated`);
       strictEqual(
         el.getAttribute('weeknumbertype'),
-        newVal,
+        expected,
         `'weeknumbertype' attribute not set`);
 
       strictEqual(
         t.elem.weekNumberType,
-        newVal,
+        expected,
         `datepicker's 'weekNumberType' not updated`);
       strictEqual(
         t.elem.getAttribute('weeknumbertype'),
-        newVal,
+        expected,
         `datepicker's 'weeknumbertype' attribute not set`);
     });
 

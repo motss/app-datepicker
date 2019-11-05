@@ -1,7 +1,7 @@
 import 'axe-core/axe.min.js';
 import { axeReport } from 'pwa-helpers/axe-report.js';
 
-import { AppDatepicker, START_VIEW } from '../../app-datepicker.js';
+import { AppDatepicker } from '../../app-datepicker.js';
 import { defaultLocale } from '../test-config.js';
 import { forceUpdate, getTestName, queryInit } from '../test-helpers.js';
 
@@ -18,7 +18,7 @@ describe(getTestName(name), () => {
       document.body.appendChild(el);
 
       el.locale = defaultLocale;
-      el.startView = START_VIEW.CALENDAR;
+      el.startView = 'calendar';
       await forceUpdate(el);
 
       t = queryInit(el);
@@ -28,9 +28,9 @@ describe(getTestName(name), () => {
       document.body.removeChild(el);
     });
 
-    it(`is accesible (calendar view)`, async () => axeReport(el));
-    it(`is accesible (year list view)`, async () => {
-      el.startView = START_VIEW.YEAR_LIST;
+    it(`is accessible (calendar view)`, async () => axeReport(el));
+    it(`is accessible (year list view)`, async () => {
+      el.startView = 'yearList';
       await forceUpdate(el);
 
       const yearListViewFullListEl = t.getYearListViewFullList();

@@ -10,10 +10,8 @@ import { css, customElement, html, LitElement, property, query } from 'lit-eleme
 import {
   DatepickerFirstUpdatedEvent,
   DatepickerValueUpdatedEvent,
-  START_VIEW,
 } from './app-datepicker.js';
 import './app-datepicker.js';
-import { WEEK_NUMBER_TYPE } from './calendar.js';
 import { datepickerVariables } from './common-styles.js';
 import {
   dispatchCustomEvent,
@@ -24,6 +22,7 @@ import {
   setFocusTrap,
   toFormattedDateString,
 } from './datepicker-helpers.js';
+import { StartView, WeekNumberType } from './typings.js';
 
 const opts: KeyframeAnimationOptions = { duration: 100 };
 
@@ -129,13 +128,13 @@ export class AppDatepickerDialog extends LitElement {
   public showWeekNumber: boolean = false;
 
   @property({ type: String, reflect: true })
-  public weekNumberType: WEEK_NUMBER_TYPE = WEEK_NUMBER_TYPE.FIRST_4_DAY_WEEK;
+  public weekNumberType: WeekNumberType = 'first-4-day-week';
 
   @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
 
   @property({ type: String, reflect: true })
-  public startView: START_VIEW = START_VIEW.CALENDAR;
+  public startView: StartView = 'calendar';
 
   @property({ type: String, reflect: true })
   public min?: string;
