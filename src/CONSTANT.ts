@@ -1,0 +1,25 @@
+import { KEYCODES_MAP } from './custom_typings.js';
+
+export const INTL_DATE_TIME_FORMAT = Intl && Intl.DateTimeFormat;
+
+const UP_KEYS = [
+  KEYCODES_MAP.ARROW_UP,
+  KEYCODES_MAP.PAGE_UP,
+  KEYCODES_MAP.HOME,
+];
+const DOWN_KEYS = [
+  KEYCODES_MAP.ARROW_DOWN,
+  KEYCODES_MAP.PAGE_DOWN,
+  KEYCODES_MAP.END,
+];
+
+export const PREV_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_LEFT, ...UP_KEYS]);
+export const NEXT_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_RIGHT, ...DOWN_KEYS]);
+export const NEXT_DAY_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_RIGHT, ...UP_KEYS]);
+export const PREV_DAY_KEYCODES_SET = new Set([KEYCODES_MAP.ARROW_LEFT, ...DOWN_KEYS]);
+export const ALL_NAV_KEYS_SET = new Set([
+  KEYCODES_MAP.ARROW_LEFT,
+  KEYCODES_MAP.ARROW_RIGHT,
+  ...UP_KEYS,
+  ...DOWN_KEYS,
+]);

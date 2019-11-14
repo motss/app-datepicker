@@ -8,21 +8,18 @@ import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
 
 import {
+  AppDatepicker,
   DatepickerFirstUpdatedEvent,
   DatepickerValueUpdatedEvent,
 } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import {
-  dispatchCustomEvent,
-  FocusTrap,
-  getResolvedDate,
-  getResolvedLocale,
-  KEYCODES_MAP,
-  setFocusTrap,
-  toFormattedDateString,
-} from './datepicker-helpers.js';
-import { StartView, WeekNumberType } from './typings.js';
+import { FocusTrap, KEYCODES_MAP, StartView, WeekNumberType } from './custom_typings.js';
+import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
+import { getResolvedDate } from './helpers/get-resolved-date.js';
+import { getResolvedLocale } from './helpers/get-resolved-locale.js';
+import { setFocusTrap } from './helpers/set-focus-trap.js';
+import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
 
 const opts: KeyframeAnimationOptions = { duration: 100 };
 
@@ -176,7 +173,7 @@ export class AppDatepickerDialog extends LitElement {
   private _contentContainer?: HTMLDivElement;
 
   @query('.datepicker')
-  private _datepicker?: import('./app-datepicker').AppDatepicker;
+  private _datepicker?: AppDatepicker;
 
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm?: HTMLElement;

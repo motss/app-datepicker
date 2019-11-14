@@ -29,31 +29,30 @@ import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 
+import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
-import {
-  ALL_NAV_KEYS_SET,
-  computeAllCalendars,
-  computeNextFocusedDate,
-  dispatchCustomEvent,
-  findShadowTarget,
-  getResolvedDate,
-  getResolvedLocale,
-  hasClass,
-  isValidDate,
-  KEYCODES_MAP,
-  makeNumberPrecise,
-  passiveHandler,
-  targetScrollTo,
-  toFormattedDateString,
-  toUTCDate,
-  toYearList,
-  updateFormatters,
-  updateYearWithMinMax,
-} from './datepicker-helpers.js';
+import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
+import { Formatters, KEYCODES_MAP, MonthUpdateType, StartView } from './custom_typings.js';
+import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
+import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
+import { findShadowTarget } from './helpers/find-shadow-target.js';
+import { getFormatters } from './helpers/get-formatters.js';
+import { getMultiCalendars } from './helpers/get-multi-calendars.js';
+import { getResolvedDate } from './helpers/get-resolved-date.js';
+import { getResolvedLocale } from './helpers/get-resolved-locale.js';
+import { hasClass } from './helpers/has-class.js';
+import { isValidDate } from './helpers/is-valid-date.js';
+import { makeNumberPrecise } from './helpers/make-number-precise.js';
+import { passiveHandler } from './helpers/passive-handler.js';
+import { splitString } from './helpers/split-string.js';
+import { targetScrollTo } from './helpers/target-scroll-to.js';
+import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
+import { toYearList } from './helpers/to-year-list.js';
+import { updateYearWithMinMax } from './helpers/update-year-with-min-max.js';
 import { waitForNextFrame } from './helpers/wait-for-next-frame.js';
 import { Tracker, TrackerHandlers } from './tracker.js';
-import { MonthUpdateType, StartView, WeekNumberType } from './typings.js';
 
 @customElement(AppDatepicker.is)
 export class AppDatepicker extends LitElement {
@@ -489,9 +488,9 @@ export class AppDatepicker extends LitElement {
   private _todayDate?: Date;
   private _maxDate?: Date;
   private _yearList: number[];
-  private _formatters?: import('./datepicker-helpers').Formatters;
-  private _disabledDaysSet?: Set<number>;
-  private _disabledDatesSet?: Set<number>;
+  private _formatters?: Formatters;
+  private _disabledDaysSet: Set<number> | null = new Set();
+  private _disabledDatesSet: Set<number> | null = new Set();
   private _lastSelectedDate?: Date;
   private _isPointerDown: boolean = false;
   private _swiping: boolean = false;
@@ -504,7 +503,7 @@ export class AppDatepicker extends LitElement {
     super();
 
     const todayDate = getResolvedDate();
-    const allFormatters = updateFormatters(this.locale);
+    const allFormatters = getFormatters(this.locale);
     const formattedTodayDate = toFormattedDateString(todayDate);
     const max = getResolvedDate('2100-12-31');
 
@@ -534,7 +533,7 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE: Update `_formatters` when `locale` changes.
      */
-    if (this._formatters!.locale !== this.locale) this._formatters = updateFormatters(this.locale);
+    if (this._formatters!.locale !== this.locale) this._formatters = getFormatters(this.locale);
 
     /**
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
@@ -662,11 +661,11 @@ export class AppDatepicker extends LitElement {
   }
 
   private _renderHeaderSelectorButton() {
-    const { yearFormatter, dateFormatter } = this._formatters!;
+    const { yearFormat, dateFormat } = this._formatters!;
     const isCalendarView = this.startView === 'calendar';
     const focusedDate = this._focusedDate;
-    const formattedDate = dateFormatter(focusedDate);
-    const formatterFy = yearFormatter(focusedDate);
+    const formattedDate = dateFormat(focusedDate);
+    const formatterFy = yearFormat(focusedDate);
 
     return html`
     <button
@@ -684,7 +683,7 @@ export class AppDatepicker extends LitElement {
   }
 
   private _renderDatepickerYearList() {
-    const { yearFormatter } = this._formatters!;
+    const { yearFormat } = this._formatters!;
     const focusedDateFy = this._focusedDate.getUTCFullYear();
 
     return html`
@@ -697,7 +696,7 @@ export class AppDatepicker extends LitElement {
             'year--selected': focusedDateFy === n,
           })}"
           .year="${n}">
-          <div>${yearFormatter(toUTCDate(n, 0, 1))}</div>
+          <div>${yearFormat(toUTCDate(n, 0, 1))}</div>
         </button>`)
       }</div>
     </div>
@@ -706,33 +705,35 @@ export class AppDatepicker extends LitElement {
 
   private _renderDatepickerCalendar() {
     const {
-      longMonthYearFormatter,
-      dayFormatter,
-      fullDateFormatter,
-      longWeekdayFormatter,
-      narrowWeekdayFormatter,
+      longMonthYearFormat,
+      dayFormat,
+      fullDateFormat,
+      longWeekdayFormat,
+      narrowWeekdayFormat,
     } = this._formatters!;
-    const disabledDays = this.disabledDays;
+    const disabledDays = splitString(this.disabledDays, Number);
+    const disabledDates = splitString(this.disabledDates, getResolvedDate);
     const showWeekNumber = this.showWeekNumber;
     const focusedDate = this._focusedDate;
     const firstDayOfWeek = this.firstDayOfWeek;
     const todayDate = getResolvedDate();
 
-    const { calendars, disabledDaysSet, disabledDatesSet, weekdays } = computeAllCalendars({
-      disabledDays,
+    const { calendars, disabledDaysSet, disabledDatesSet, weekdays } = getMultiCalendars({
+      dayFormat,
+      fullDateFormat,
+      longWeekdayFormat,
+      narrowWeekdayFormat,
       firstDayOfWeek,
-      disabledDates: this.disabledDates,
+
+      disabledDays,
+      disabledDates,
+      locale: this.locale,
       selectedDate: this._selectedDate,
       showWeekNumber: this.showWeekNumber,
       weekNumberType: this.weekNumberType,
       max: this._max!,
       min: this._min!,
       weekLabel: this.weekLabel,
-
-      dayFormatterFn: dayFormatter,
-      fullDateFormatterFn: fullDateFormatter,
-      longWeekdayFormatterFn: longWeekdayFormatter,
-      narrowWeekdayFormatterFn: narrowWeekdayFormatter,
     });
     const hasMinDate = null == calendars[0].calendar;
     const hasMaxDate = null == calendars[2].calendar;
@@ -745,7 +746,7 @@ export class AppDatepicker extends LitElement {
 
       return html`
       <div class="calendar-container">
-        <div class="calendar-label">${longMonthYearFormatter(new Date(key))}</div>
+        <div class="calendar-label">${longMonthYearFormat(new Date(key))}</div>
 
         <table class="calendar-table">
           <thead>

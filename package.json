@@ -58,22 +58,24 @@
     "@material/mwc-button": "^0.10.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
+    "nodemod": "^2.2.2",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@reallyland/really-elements": "^0.2.4",
     "@reallyland/tsconfig": "^1.0.0",
     "@reallyland/tslint-config": "^1.1.1",
-    "@types/chai": "^4.2.4",
+    "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
     "axe-core": "3.3.0",
     "chai": "^4.2.0",
+    "esm": "^3.2.25",
     "husky": "^3.0.9",
     "mocha": "^6.2.2",
     "pwa-helpers": "^0.9.1",
     "shx": "^0.3.2",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.4",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2",
     "wct-mocha": "^1.0.1"
   },
   "engines": {
