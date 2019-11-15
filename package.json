@@ -47,23 +47,24 @@
     "test:ci": "wct --config-file ./wct.config.ci.json",
     "test:sl": "wct --config-file ./wct.config.sl.json",
     "ts": "shx rm -rf dist/ && tsc",
+    "upgrade": "npm outdated --dev; npm update --dev; npm audit fix",
     "watch": "npm run ts -- --watch"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run ts && npm run clean"
+      "pre-commit": "npm run lint && npm run ts -- --noEmit && npm run clean"
     }
   },
   "dependencies": {
     "@material/mwc-button": "^0.10.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
-    "nodemod": "^2.2.2",
+    "nodemod": "^2.2.3",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@reallyland/really-elements": "^0.2.4",
-    "@reallyland/tsconfig": "^1.0.0",
+    "@reallyland/tsconfig": "^1.0.1",
     "@reallyland/tslint-config": "^1.1.1",
     "@types/chai": "^4.2.5",
     "@types/mocha": "^5.2.7",
