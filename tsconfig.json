@@ -4,8 +4,14 @@
     "rootDir": "src",
     "outDir": "dist",
     "declarationDir": "dist",
-    "target": "es2020"
+    "target": "es2020",
+    "sourceMap": false,
+    "inlineSources": false
   },
-  "include": ["src/*.ts", "src/helpers/*.ts"],
+  "include": [
+    "src/*.ts",
+    "src/demo/*.ts",
+    "src/helpers/*.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

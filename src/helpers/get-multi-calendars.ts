@@ -59,9 +59,9 @@ export function getMultiCalendars(
     showWeekNumber,
     weekLabel,
   });
-  const key = [
+  const getKey = (date: Date) => [
     locale,
-    selectedDate.toJSON(),
+    date.toJSON(),
     disabledDates?.join('_'),
     disabledDays?.join('_'),
     firstDayOfWeek,
@@ -75,8 +75,9 @@ export function getMultiCalendars(
   const ify = selectedDate.getUTCFullYear();
   const im = selectedDate.getUTCMonth();
   const calendarsList = [-1, 0, 1].map<MultiCalendar>((n) => {
-    const firstDayOfMonthTime = +toUTCDate(ify, im + n, 1);
+    const firstDayOfMonth = toUTCDate(ify, im + n, 1);
     const lastDayOfMonthTime = +toUTCDate(ify, im + n + 1, 0);
+    const key = getKey(firstDayOfMonth);
 
     /**
      * NOTE: Return `null` when one of the followings fulfills:-
@@ -88,7 +89,7 @@ export function getMultiCalendars(
      *  - last day of the month < `minTime` - entire month should be disabled
      *  - first day of the month > `maxTime` - entire month should be disabled
      */
-    if (lastDayOfMonthTime < minTime || firstDayOfMonthTime > maxTime) {
+    if (lastDayOfMonthTime < minTime || +firstDayOfMonth > maxTime) {
       return {
         key,
 
@@ -102,7 +103,6 @@ export function getMultiCalendars(
       dayFormat,
       fullDateFormat,
       locale,
-      selectedDate,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -111,6 +111,7 @@ export function getMultiCalendars(
       showWeekNumber,
       weekLabel,
       weekNumberType,
+      selectedDate: firstDayOfMonth,
     });
 
     return { ...calendarDays, key };
@@ -131,14 +132,14 @@ export function getMultiCalendars(
       if (disabledDatesSet) {
         for (const o of disabledDatesSet) p.disabledDatesSet?.add(o);
       }
-
-      p.calendars.push(rest);
     }
+
+    p.calendars.push(rest);
 
     return p;
   }, {
-    key,
     weekdays,
+    key: getKey(selectedDate),
 
     calendars: [],
     disabledDatesSet: new Set(),

@@ -739,14 +739,14 @@ export class AppDatepicker extends LitElement {
     const hasMaxDate = null == calendars[2].calendar;
 
     const weekdaysContent = weekdays.map(o => html`<th aria-label="${o.label}">${o.value}</th>`);
-    const calendarsContent = repeat(calendars, n => n.key, ({ calendar, key }) => {
+    const calendarsContent = repeat(calendars, n => n.key, ({ calendar }) => {
       if (calendar == null) {
         return html`<div class="calendar-container"></div>`;
       }
 
       return html`
       <div class="calendar-container">
-        <div class="calendar-label">${longMonthYearFormat(new Date(key))}</div>
+        <div class="calendar-label">${longMonthYearFormat(new Date(calendar[1][0].fullDate!))}</div>
 
         <table class="calendar-table">
           <thead>

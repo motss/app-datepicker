@@ -1,11 +1,10 @@
 import { PropertyValue } from '@reallyland/really-elements/dist/code-configurator/code-configurator.js';
 
-import {
-  getResolvedDate,
-  getResolvedLocale,
-  toFormattedDateString,
-} from '../datepicker-helpers.js';
-import { StartView, WeekNumberType } from '../typings.js';
+import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import { StartView } from '../custom_typings.js';
+import { getResolvedDate } from '../helpers/get-resolved-date.js';
+import { getResolvedLocale } from '../helpers/get-resolved-locale.js';
+import { toFormattedDateString } from '../helpers/to-formatted-date-string.js';
 import { locales } from './locales.js';
 
 const properties: PropertyValue[] = [
