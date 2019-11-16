@@ -746,7 +746,7 @@ export class AppDatepicker extends LitElement {
 
       return html`
       <div class="calendar-container">
-        <div class="calendar-label">${longMonthYearFormat(new Date(calendar[1][0].fullDate!))}</div>
+        <div class="calendar-label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
 
         <table class="calendar-table">
           <thead>
@@ -1004,7 +1004,6 @@ export class AppDatepicker extends LitElement {
     /** NOTE: Skip for TAB key and other non-related keys */
     if (keyCode === KEYCODES_MAP.TAB || !ALL_NAV_KEYS_SET.has(keyCode)) return;
 
-    console.time('compute-next-focused-date');
     const selectedDate = this._selectedDate;
     const nextFocusedDate = computeNextFocusedDate({
       keyCode,
@@ -1017,7 +1016,6 @@ export class AppDatepicker extends LitElement {
       maxTime: +this._max!,
       minTime: +this._min!,
     });
-    console.timeEnd('compute-next-focused-date');
 
     const nextFocusedDateFy = nextFocusedDate.getUTCFullYear();
     const nextFocusedDateM = nextFocusedDate.getUTCMonth();

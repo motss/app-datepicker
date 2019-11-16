@@ -1,5 +1,3 @@
-import { arrayFilled, toFormattedDateString } from '../../datepicker-helpers.js';
-
 const timezones = [
   '-12:00',
   '-11:00',
@@ -41,7 +39,7 @@ const timezones = [
   '+13:00',
   '+14:00',
 ];
-const hours = arrayFilled(24).map((_, i) => i);
+const hours = Array.from(Array(24), (_, i) => i);
 
 interface OptionsToDateString {
   year: string;
