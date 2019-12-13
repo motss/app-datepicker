@@ -1,9 +1,0 @@
-{
-  "moduleResolution": "node",
-  "npm": true,
-  "suites": ["src/test"],
-  "testTimeout": 539999,
-  "verbose": false,
-  "expanded": true,
-  "compile": "auto"
-}
