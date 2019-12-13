@@ -1,4 +1,4 @@
-import { FocusTrap, KEYCODES_MAP } from '../custom_typings.js';
+import { FocusTrap, KEY_CODES_MAP } from '../custom_typings.js';
 import { findShadowTarget } from './find-shadow-target.js';
 
 export function setFocusTrap(
@@ -9,7 +9,7 @@ export function setFocusTrap(
 
   const [firstEl, lastEl] = focusableElements;
   const keydownCallback = (ev: KeyboardEvent) => {
-    const isTabKey = ev.keyCode === KEYCODES_MAP.TAB;
+    const isTabKey = ev.keyCode === KEY_CODES_MAP.TAB;
     const isShiftTabKey = ev.shiftKey && isTabKey;
 
     if (!isTabKey && !isShiftTabKey) return;

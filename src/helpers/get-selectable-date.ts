@@ -1,5 +1,5 @@
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
-import { NEXT_DAY_KEYCODES_SET, PREV_DAY_KEYCODES_SET } from '../CONSTANT.js';
+import { NEXT_DAY_KEY_CODES_SET, PREV_DAY_KEY_CODES_SET } from '../CONSTANT.js';
 
 interface ParamsGetNextSelectableDate {
   keyCode: KeyboardEvent['keyCode'];
@@ -39,8 +39,8 @@ export function getNextSelectableDate({
   let d = selectableFocusedDate.getUTCDate();
 
   while (isDisabledDay) {
-    if (isLessThanMinTime || (!isMoreThanMaxTime && NEXT_DAY_KEYCODES_SET.has(keyCode))) d += 1;
-    if (isMoreThanMaxTime || (!isLessThanMinTime && PREV_DAY_KEYCODES_SET.has(keyCode))) d -= 1;
+    if (isLessThanMinTime || (!isMoreThanMaxTime && NEXT_DAY_KEY_CODES_SET.has(keyCode))) d += 1;
+    if (isMoreThanMaxTime || (!isLessThanMinTime && PREV_DAY_KEY_CODES_SET.has(keyCode))) d -= 1;
 
     selectableFocusedDate = toUTCDate(fy, m, d);
     selectableFocusedDateTime = +selectableFocusedDate;

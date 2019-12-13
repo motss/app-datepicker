@@ -25,7 +25,7 @@ export interface Formatters {
   locale: string;
 }
 
-export const enum KEYCODES_MAP {
+export const enum KEY_CODES_MAP {
   // CTRL = 17,
   // ALT = 18,
   ESCAPE = 27,
@@ -44,5 +44,5 @@ export const enum KEYCODES_MAP {
 }
 
 export interface FocusTrap {
-  disconnect: () => void;
+  disconnect(): void;
 }

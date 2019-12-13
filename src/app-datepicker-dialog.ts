@@ -14,7 +14,7 @@ import {
 } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import { FocusTrap, KEYCODES_MAP, StartView, WeekNumberType } from './custom_typings.js';
+import { FocusTrap, KEY_CODES_MAP, StartView, WeekNumberType } from './custom_typings.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
 import { getResolvedLocale } from './helpers/get-resolved-locale.js';
@@ -249,7 +249,7 @@ export class AppDatepickerDialog extends LitElement {
     this.setAttribute('aria-modal', 'true');
     this.setAttribute('aria-hidden', 'true');
     this.addEventListener('keyup', (ev: KeyboardEvent) => {
-      if (ev.keyCode === KEYCODES_MAP.ESCAPE) this.close();
+      if (ev.keyCode === KEY_CODES_MAP.ESCAPE) this.close();
     });
 
     dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
