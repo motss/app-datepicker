@@ -15,6 +15,7 @@
 # folders
 coverage*/
 dist*/
+log*/
 node_modules/
 
 # Do not ignore
