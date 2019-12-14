@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>app-datepicker tests</title>
+
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+
+    <!-- <script src="https://unpkg.com/@babel/polyfill@latest/dist/polyfill.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/@webcomponents/webcomponentsjs@latest/webcomponents-loader.js"></script> -->
+
+    <script>
+      const isES6ClassSupported = () => {
+        'use strict';
+        try { eval('class Foo {}'); }
+        catch (e) { return false; }
+        return true;
+      };
+      if (!isES6ClassSupported()) {
+        const cea = document.createElement('script');
+        cea.src =
+          'https://unpkg.com/@webcomponents/webcomponentsjs@latest/custom-elements-es5-adapter.js';
+        cea.onload = () => console.info('⚒ CE ES5 adapter loaded');
+        cea.onerror = console.error;
+        document.head.appendChild(cea);
+      }
+      if (!(Element.prototype.animate)) {
+        const wa = document.createElement('script');
+        wa.src = 'https://unpkg.com/web-animations-js@latest/web-animations.min.js';
+        wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+      if (!window.Intl) {
+        const wa = document.createElement('script');
+        /** FIXME: Pin package version due to https://bit.ly/2OFNW5P. */
+        wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+        wa.onload = () => console.info('🌐 Intl polyfill loaded');
+        wa.onerror = console.error;
+        document.head.appendChild(wa);
+      }
+    </script>
+
+    <script type="module">
+      import '/dist/app-datepicker.js';
+    </script>
+  </head>
+</html>

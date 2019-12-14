@@ -1,4 +1,4 @@
-import { WdioConfig } from './custom_typings';
+import { WdioConfig } from './custom_typings.js';
 
 export const config: WdioConfig = {
   runner: 'local',
@@ -28,6 +28,7 @@ export const config: WdioConfig = {
           '--headless',
         ],
       },
+      maxInstances: 5,
     },
   ],
   logLevel: 'error',

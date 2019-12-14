@@ -33,7 +33,7 @@ interface MochaFramework {
   framework: 'mocha';
   mochaOpts: {
     ui: 'bdd' | 'tdd';
-    timeout: number;
+    timeout?: number;
   };
 }
 interface JasmineFramework {
