@@ -3,6 +3,5 @@
   "compilerOptions": {
     "importHelpers": true
   },
-  "include": ["src/*"],
-  "exclude": ["src/test/**/*", "src/demo/**/*", "dist"]
+  "include": ["src/*.ts"]
 }

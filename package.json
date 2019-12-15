@@ -36,21 +36,23 @@
   "module": "dist/app-datepicker.js",
   "typings": "dist/app-datepicker.d.ts",
   "scripts": {
+    "build:test": "npm run ts -- -p tsconfig.test.json && tsc -p tsconfig.prod.json",
     "build": "npm run ts -- -p tsconfig.prod.json",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png",
     "document": "polymer analyze > dist/analysis.json",
+    "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
-    "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
     "serve": "es-dev-server --port 3000 --node-resolve",
-    "test": "node ./run-tests.js --config-file ./dist/tests/wdio.config.js",
-    "test:dev": "npm run build:test && npm t && npm run test:sl:dev",
-    "test:sl": "node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
+    "test:dev:all": "npm run build:test && npm t && npm run test:sl:dev",
+    "test:dev": "npm run build:test && npm t",
     "test:sl:dev": "env-cmd -f ./.env npm run test:sl",
+    "test:sl": "node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
+    "test": "node ./run-tests.js --config-file ./dist/tests/wdio.config.js",
     "ts": "npm run clean && npm run lint && tsc",
+    "tsc": "tsc",
     "upgrade": "npm outdated --dev && npm update --dev && npm audit fix",
-    "watch": "npm run ts -- --watch",
-    "build:test": "npm run ts -- -p tsconfig.test.json && tsc"
+    "watch": "npm run ts -- --watch"
   },
   "husky": {
     "hooks": {
@@ -84,7 +86,8 @@
     "pwa-helpers": "^0.9.1",
     "shx": "^0.3.2",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.3",
+    "webdriverio": "^5.16.15"
   },
   "engines": {
     "node": ">= 8.16.0",

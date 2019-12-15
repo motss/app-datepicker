@@ -1,7 +1,8 @@
-import { strictEqual } from 'assert';
+import { strictEqual  } from 'assert';
 
 import { AppDatepicker } from '../../app-datepicker.js';
 import { cleanHtml } from '../helpers/clean-html.js';
+import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
 
@@ -68,7 +69,10 @@ describe('attributes', () => {
 
     const focusedDate = await el.shadow$('.day--focused');
     const focusedDateContent = await cleanHtml(focusedDate);
+    const minVal = await getProp<string>('app-datepicker', 'min');
 
+    strictEqual(minVal, '2020-01-15');
+    strictEqual(await el.getAttribute('min'), '2020-01-15');
     strictEqual(lastDisabledDateContent, prettyHtml`
     <td class="full-calendar__day day--disabled" aria-label="Jan 14, 2020">
       <div class="calendar-day">14</div>
@@ -77,6 +81,66 @@ describe('attributes', () => {
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 17, 2020">
       <div class="calendar-day">17</div>
+    </td>
+    `);
+  });
+
+  it(`renders with defined 'max'`, async () => {
+    const el = await queryEl('app-datepicker', async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
+
+      n.value = '2020-01-15';
+      n.min = '2000-01-01';
+      n.setAttribute('max', '2020-01-17');
+      await n.updateComplete;
+
+      done();
+    });
+
+    const disabledDates = await el.shadow$$('.day--disabled');
+    const firstDisabledDate = disabledDates[0];
+    const firstDisabledDateContent = await cleanHtml(firstDisabledDate);
+
+    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDateContent = await cleanHtml(focusedDate);
+    const maxVal = await getProp<string>('app-datepicker', 'max');
+
+    strictEqual(maxVal, '2020-01-17');
+    strictEqual(await el.getAttribute('max'), '2020-01-17');
+    strictEqual(firstDisabledDateContent, prettyHtml`
+    <td class="full-calendar__day day--disabled" aria-label="Jan 18, 2020">
+      <div class="calendar-day">18</div>
+    </td>
+    `);
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+      <div class="calendar-day">15</div>
+    </td>
+    `);
+  });
+
+  it(`renders with defined 'value'`, async () => {
+    const el = await queryEl('app-datepicker', async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
+
+      n.min = '2000-01-01';
+      n.max = '2020-12-31';
+      n.setAttribute('value', '2020-01-15');
+      await n.updateComplete;
+
+      done();
+    });
+
+    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDateContent = await cleanHtml(focusedDate);
+    const valueVal = await getProp<string>('app-datepicker', 'value');
+    const valueAttr = await el.getAttribute('value');
+
+    strictEqual(valueVal, '2020-01-15');
+    strictEqual(valueAttr, '2020-01-15');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+      <div class="calendar-day">15</div>
     </td>
     `);
   });
