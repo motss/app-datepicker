@@ -39,6 +39,7 @@ async function runWdio(configPath) {
 }
 
 function readArg(argName) {
+  const args = process.argv;
   const configFileIdx = process.argv.findIndex(n => n === argName);
 
   if (configFileIdx < 0 || configFileIdx === args.length - 1) {
