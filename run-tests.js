@@ -26,18 +26,6 @@ function toHumanTime(timestamp) {
   return `${to3Dp(timestamp / (1e3 * 60 * 60 * 24))}`;
 }
 
-async function runWdio(configPath) {
-  try {
-    const wdio = new Launcher(configPath);
-    const code = await wdio.run();
-
-    process.exit(code);
-  } catch (err) {
-    console.error('WebDriverIO failed to start the tests', err);
-    process.exit(1);
-  }
-}
-
 function readArg(argName) {
   const args = process.argv;
   const configFileIdx = process.argv.findIndex(n => n === argName);
@@ -112,7 +100,9 @@ async function main() {
     'SIGINT', // Ctrl or Cmd + C
   ].forEach(n => process.on(n, gracefulShutdown));
 
-  await runWdio(readArg('--config-file'));
+  const wdio = new Launcher(readArg('--config-file'));
+
+  await wdio.run();
 
   debug(`Completed. Closing server...`);
 
@@ -123,4 +113,3 @@ main().catch((err) => {
   console.error('Fail to run tests', err);
   process.exit(1);
 });
-
