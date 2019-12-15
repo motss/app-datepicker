@@ -119,5 +119,8 @@ async function main() {
   gracefulShutdown();
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  console.error('Fail to run tests', err);
+  process.exit(1);
+});
 
