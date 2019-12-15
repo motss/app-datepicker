@@ -1,11 +1,8 @@
-// interface BaseBrowserCapability {
-//   browserVersion: string;
-// }
-
 interface ChromeCapability {
   browserName: 'chrome';
   'goog:chromeOptions': {
     args: string[];
+    w3c?: boolean;
   };
 }
 interface FirefoxCapability {
@@ -18,16 +15,50 @@ interface SafariCapability {
   browserName: 'safari';
 }
 
+interface EdgeCapability {
+  browserName: 'microsoftedge';
+}
+
 type BrowsersCapability =
   | ChromeCapability
   | FirefoxCapability
-  | SafariCapability;
+  | SafariCapability
+  | EdgeCapability;
 
 interface BaseCapability extends Partial<Pick<WdioConfig, 'specs'>> {
   maxInstances?: number;
 }
 
 export type Capability = BaseCapability & BrowsersCapability;
+
+interface SauceLabsBrowserCapability {
+  browserVersion: string;
+  platformName: string;
+  'sauce:options': SauceLabsOptions;
+}
+
+export interface SauceLabsOptions {
+  build: string;
+  logName: string;
+  screenResolution: string;
+  seleniumVersion: string;
+}
+
+interface SauceLabsChromeCapability extends SauceLabsBrowserCapability, Omit<ChromeCapability, 'browserName'> {
+  browserName: 'googlechrome';
+}
+
+type SauceLabsFirefoxCapability = SauceLabsBrowserCapability & FirefoxCapability;
+
+type SauceLabsSafariCapability = SauceLabsBrowserCapability & SafariCapability;
+
+type SauceLabsEdgeCapability = SauceLabsBrowserCapability & EdgeCapability;
+
+export type SauceLabsCapability =
+  | SauceLabsChromeCapability
+  | SauceLabsFirefoxCapability
+  | SauceLabsSafariCapability
+  | SauceLabsEdgeCapability;
 
 interface MochaFramework {
   framework: 'mocha';
@@ -90,7 +121,6 @@ export type ReportersConfig = [Reporters, Record<string, unknown>];
 
 interface BaseConfig {
   runner: 'local';
-  capabilities: Capability[];
   hostname?: string;
   port?: number;
   path?: string;
@@ -132,6 +162,7 @@ interface SeleniumArgs {
   drivers: Record<'chrome' | 'firefox', SeleniumArgsDrivers>;
 }
 interface SeleniumConfig extends BaseConfig {
+  capabilities: Capability[];
   services: ['selenium-standalone'];
   seleniumLogs: 'logs',
   seleniumInstallArgs?: SeleniumArgs;
@@ -143,7 +174,9 @@ interface SauceLabsConfig extends BaseConfig {
   user?: string;
   key?: string;
   region?: 'us' | 'eu';
-  capabilities: any[];
+  sauceConnect?: boolean;
+  sauceConnectOpts: Record<'user' | 'accessKey', string>;
+  capabilities: SauceLabsCapability[];
 }
 
 type Config = SeleniumConfig | SauceLabsConfig;
