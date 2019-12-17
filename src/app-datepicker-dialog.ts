@@ -152,7 +152,7 @@ export class AppDatepickerDialog extends LitElement {
   public disabledDates?: string;
 
   @property({ type: String })
-  public weekLabel: string = '';
+  public weekLabel: string = 'Wk';
 
   // @property({ type: Number })
   // public dragRatio: number = .15;

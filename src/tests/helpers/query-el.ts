@@ -4,9 +4,9 @@ interface QueryEl {
 
 export async function queryEl(
   selector: string,
-  cb: QueryEl['cb']
+  cb?: QueryEl['cb']
 ): Promise<WebdriverIOAsync.Element> {
-  await browser.executeAsync(cb);
+  if (cb) await browser.executeAsync(cb);
 
   return $(selector);
 }

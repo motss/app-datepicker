@@ -109,7 +109,6 @@ export function getMultiCalendars(
       max,
       min,
       showWeekNumber,
-      weekLabel,
       weekNumberType,
       selectedDate: firstDayOfMonth,
     });

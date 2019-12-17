@@ -63,8 +63,9 @@ export type SauceLabsCapability =
 interface MochaFramework {
   framework: 'mocha';
   mochaOpts: {
-    ui: 'bdd' | 'tdd';
+    require?: string[];
     timeout?: number;
+    ui: 'bdd' | 'tdd';
   };
 }
 interface JasmineFramework {

@@ -450,7 +450,7 @@ export class AppDatepicker extends LitElement {
   public disabledDates: string = '';
 
   @property({ type: String })
-  public weekLabel: string = '';
+  public weekLabel: string = 'Wk';
 
   public get datepickerBodyCalendarView() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');

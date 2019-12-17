@@ -36,10 +36,10 @@
   "module": "dist/app-datepicker.js",
   "typings": "dist/app-datepicker.d.ts",
   "scripts": {
-    "build:test": "npm run ts -- -p tsconfig.test.json && tsc -p tsconfig.prod.json",
+    "build:config": "tsc -p tsconfig.test.json",
+    "build:test": "npm run ts && npm run build:config",
     "build": "npm run ts -- -p tsconfig.prod.json",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png",
-    "document": "polymer analyze > dist/analysis.json",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
@@ -63,7 +63,7 @@
     "@material/mwc-button": "^0.11.1",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
-    "nodemod": "^2.2.3",
+    "nodemod": "^2.2.5",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
@@ -72,7 +72,7 @@
     "@reallyland/tslint-config": "^1.1.1",
     "@types/mocha": "^5.2.7",
     "@types/pretty": "^2.0.0",
-    "@wdio/cli": "^5.16.15",
+    "@wdio/cli": "^5.16.16",
     "@wdio/local-runner": "^5.16.15",
     "@wdio/mocha-framework": "^5.16.15",
     "@wdio/sauce-service": "^5.16.10",
@@ -84,6 +84,7 @@
     "husky": "^3.1.0",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
+    "reify": "^0.20.12",
     "shx": "^0.3.2",
     "tslint": "^5.20.1",
     "typescript": "^3.7.3",

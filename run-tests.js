@@ -38,7 +38,7 @@ function readArg(argName) {
 }
 
 async function main() {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 4343;
   const mainStartAt = performance.now();
   const config = createConfig({
     port: PORT,

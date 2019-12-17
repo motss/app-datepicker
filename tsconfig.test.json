@@ -4,6 +4,6 @@
     "module": "CommonJS"
   },
   "include": [
-    "src/tests/**/*.ts"
+    "src/tests/*.config.ts"
   ]
 }

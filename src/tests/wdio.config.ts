@@ -48,5 +48,6 @@ export const config: WdioConfig = {
   mochaOpts: {
     ui: 'bdd',
     timeout: 30e3,
+    require: ['reify'],
   },
 };
