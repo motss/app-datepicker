@@ -15,7 +15,7 @@ import { queryEl } from '../helpers/query-el.js';
 
 describe('attributes', () => {
   before(async () => {
-    await browser.url(`http://localhost:4343/src/tests/index.html`);
+    await browser.url(`http://localhost:4000/src/tests/index.html`);
   });
 
   beforeEach(async () => {
@@ -53,8 +53,6 @@ describe('attributes', () => {
 
       done();
     });
-
-    $('app-datepicker');
 
     await browser.saveScreenshot(`./src/tests/snapshots/attributes-1-${browserName}.png`);
   });
@@ -229,7 +227,7 @@ describe('attributes', () => {
     const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
 
     const showWeekNumberVal = await getProp<boolean>('app-datepicker', 'showWeekNumber');
-    const showWeekNumberAttr = await el.getAttribute('showweeknumber');
+    const showWeekNumberAttr = await getAttr<string>('app-datepicker', 'showweeknumber');
 
     strictEqual(showWeekNumberVal, true);
     strictEqual(showWeekNumberAttr, '');

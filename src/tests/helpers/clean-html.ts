@@ -9,5 +9,6 @@ export async function cleanHtml(
     content
       .replace(/<!---->/g, '')
       .replace(/\s?style-scope app-datepicker\s?/gi, '')
+      .replace(/(\s?class=""|class=""\s?)/g, '')
   );
 }

@@ -38,7 +38,12 @@ function readArg(argName) {
 }
 
 async function main() {
-  const PORT = process.env.PORT || 4343;
+  /**
+   * Not all ports are supported by Sauce Connect Proxy.
+   *
+   * @see https://wiki.saucelabs.com/display/DOCS/Sauce+Connect+Proxy+FAQs,
+   */
+  const PORT = process.env.PORT || 4000;
   const mainStartAt = performance.now();
   const config = createConfig({
     port: PORT,
@@ -72,7 +77,7 @@ async function main() {
   });
 
   const { server } = await startServer(config);
-  const gracefulShutdown = () => {
+  const gracefulShutdown = (code) => {
     server.close((err) => {
       const mainDuration = performance.now() - mainStartAt;
 
@@ -83,13 +88,13 @@ async function main() {
         debug(`Server closed`);
       }
 
-      process.exit();
+      process.exit(code);
     });
 
     // force shutdown after 15s timeout
     setTimeout(() => {
       debug(`Could not close server in time, forcefully shutting down`);
-      process.exit();
+      process.exit(code);
     }, (15e3));
   };
 
@@ -101,12 +106,11 @@ async function main() {
   ].forEach(n => process.on(n, gracefulShutdown));
 
   const wdio = new Launcher(readArg('--config-file'));
-
-  await wdio.run();
+  const code = await wdio.run();
 
   debug(`Completed. Closing server...`);
 
-  gracefulShutdown();
+  gracefulShutdown(code);
 }
 
 main().catch((err) => {
