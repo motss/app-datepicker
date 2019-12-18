@@ -62,7 +62,7 @@ describe('attributes', () => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-17';
-      n.setAttribute('min', '2020-01-15');
+      n.min = '2020-01-15';
       await n.updateComplete;
 
       done();
@@ -98,7 +98,7 @@ describe('attributes', () => {
 
       n.value = '2020-01-15';
       n.min = '2000-01-01';
-      n.setAttribute('max', '2020-01-17');
+      n.max = '2020-01-17';
       await n.updateComplete;
 
       done();
@@ -144,10 +144,8 @@ describe('attributes', () => {
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const valueVal = await getProp<string>('app-datepicker', 'value');
-    const valueAttr = await el.getAttribute('value');
 
     strictEqual(valueVal, '2020-01-15');
-    strictEqual(valueAttr, '2020-01-15');
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
@@ -155,11 +153,11 @@ describe('attributes', () => {
     `);
   });
 
-  it(`renders with defined 'startview'`, async () => {
+  it(`renders with defined 'startView'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
-      n.setAttribute('startview', 'yearList' as StartView);
+      n.startView = 'yearList';
       await n.updateComplete;
 
       done();
@@ -175,13 +173,13 @@ describe('attributes', () => {
     ok(yearListView);
   });
 
-  it(`renders with defined 'firstdayofweek'`, async () => {
+  it(`renders with defined 'firstDayOfWeek'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
-      n.setAttribute('firstdayofweek', '2');
+      n.firstDayOfWeek = 2;
       await n.updateComplete;
 
       done();
@@ -211,12 +209,12 @@ describe('attributes', () => {
     `);
   });
 
-  it(`renders with defined 'showweeknumber'`, async () => {
+  it(`renders with defined 'showWeekNumber'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
-      n.setAttribute('showweeknumber', '');
+      n.showWeekNumber = true;
       await n.updateComplete;
 
       done();
@@ -250,13 +248,13 @@ describe('attributes', () => {
     ]);
   });
 
-  it(`renders with defined 'weeknumbertype'`, async () => {
+  it(`renders with defined 'weekNumberType'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
-      n.setAttribute('weeknumbertype', 'first-full-week' as WeekNumberType);
+      n.weekNumberType = 'first-full-week';
       await n.updateComplete;
 
       done();
@@ -288,7 +286,7 @@ describe('attributes', () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
-      n.setAttribute('landscape', '');
+      n.landscape = true;
       await n.updateComplete;
 
       done();
@@ -297,8 +295,6 @@ describe('attributes', () => {
     const landscapeVal = await getProp<boolean>('app-datepicker', 'landscape');
     const landscapeAttr = await getAttr<string>('app-datepicker', 'landscape');
 
-    // FIXME: For unknown reason, expecting 'landscape' to be '' but received 'true'.
-    // const landscapeAttr = await el.getAttribute('landscape');
     const cssDisplay = await el.getCSSProperty('display');
 
     strictEqual(landscapeVal, true);
@@ -311,7 +307,7 @@ describe('attributes', () => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
-      n.setAttribute('locale', 'ja-JP');
+      n.locale = 'ja-JP';
       await n.updateComplete;
 
       done();
@@ -327,10 +323,8 @@ describe('attributes', () => {
     const weekdayLabelsContents = await Promise.all(weekdayLabels.map(cleanHtml));
 
     const localeVal = await getProp<string>('app-datepicker', 'locale');
-    const localeAttr = await el.getAttribute('locale');
 
     strictEqual(localeVal, 'ja-JP');
-    strictEqual(localeAttr, 'ja-JP');
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="2020年1月15日">
       <div class="calendar-day">15日</div>
@@ -349,13 +343,13 @@ describe('attributes', () => {
     }));
   });
 
-  it(`renders with defined 'disableddays'`, async () => {
+  it(`renders with defined 'disabledDays'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
-      n.setAttribute('disableddays', '1,5');
+      n.disabledDays = '1,5';
       await n.updateComplete;
 
       done();
@@ -368,10 +362,8 @@ describe('attributes', () => {
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
     const disabledDaysVal = await getProp<string>('app-datepicker', 'disabledDays');
-    const disabledDaysAttr = await el.getAttribute('disableddays');
 
     strictEqual(disabledDaysVal, '1,5');
-    strictEqual(disabledDaysAttr, '1,5');
     deepStrictEqual(disabledDateContents, [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
       return prettyHtml(`
       <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
@@ -381,18 +373,18 @@ describe('attributes', () => {
     }));
   });
 
-  it(`renders with defined 'disableddates'`, async () => {
+  it(`renders with defined 'disabledDates'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
-      n.setAttribute('disableddates', [
+      n.disabledDates = [
         '2020-01-03',
         '2020-01-09',
         '2020-01-21',
         '2020-01-27',
-      ].join(','));
+      ].join(',');
       await n.updateComplete;
 
       done();
@@ -405,15 +397,8 @@ describe('attributes', () => {
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
     const disabledDatesVal = await getProp<string>('app-datepicker', 'disabledDates');
-    const disabledDatesAttr = await el.getAttribute('disableddates');
 
     strictEqual(disabledDatesVal, [
-      '2020-01-03',
-      '2020-01-09',
-      '2020-01-21',
-      '2020-01-27',
-    ].join(','));
-    strictEqual(disabledDatesAttr, [
       '2020-01-03',
       '2020-01-09',
       '2020-01-21',
@@ -428,13 +413,13 @@ describe('attributes', () => {
     }));
   });
 
-  it(`renders with optional 'weeklabel'`, async () => {
+  it(`renders with optional 'weekLabel'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
-      n.setAttribute('weeklabel', '周数');
+      n.weekLabel = '周数';
       await n.updateComplete;
 
       done();
@@ -447,21 +432,19 @@ describe('attributes', () => {
     const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
 
     const weekLabelVal = await getProp<string>('app-datepicker', 'weekLabel');
-    const weekLabelAttr = await el.getAttribute('weeklabel');
 
     strictEqual(weekLabelVal, '周数');
-    strictEqual(weekLabelAttr, '周数');
     strictEqual(weekNumberLabelContent, prettyHtml`<th aria-label="周数">周数</th>`);
   });
 
-  it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
+  it(`renders with different 'firstDayOfWeek' and 'disabledDays'`, async () => {
     const el = await queryEl('app-datepicker', async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
-      n.setAttribute('firstdayofweek', '2');
-      n.setAttribute('disableddays', '1,5');
+      n.firstDayOfWeek = 2;
+      n.disabledDays = '1,5';
       await n.updateComplete;
 
       done();
@@ -483,12 +466,10 @@ describe('attributes', () => {
     const firstDayOfWeekAttr = await el.getAttribute('firstdayofweek');
 
     const disabledDaysVal = await getProp<string>('app-datepicker', 'disabledDays');
-    const disabledDaysAttr = await el.getAttribute('disableddays');
 
     strictEqual(firstDayOfWeekVal, 2);
     strictEqual(firstDayOfWeekAttr, '2');
     strictEqual(disabledDaysVal, '1,5');
-    strictEqual(disabledDaysAttr, '1,5');
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
