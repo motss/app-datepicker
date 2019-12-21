@@ -1,9 +1,3 @@
-import {
-  deepStrictEqual,
-  ok,
-  strictEqual,
-} from 'assert';
-
 import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
@@ -13,6 +7,13 @@ import { getAttr } from '../helpers/get-attr.js';
 import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
+import { shadowQueryAll } from '../helpers/shadow-query-all.js';
+import { shadowQuery } from '../helpers/shadow-query.js';
+import {
+  deepStrictEqual,
+  ok,
+  strictEqual,
+} from '../helpers/typed-assert.js';
 
 describe('attributes', () => {
   const elementName = 'app-datepicker';
@@ -71,11 +72,11 @@ describe('attributes', () => {
       done();
     });
 
-    const disabledDates = await el.shadow$$('.day--disabled');
+    const disabledDates = await shadowQueryAll(el, ['.day--disabled']);
     const lastDisabledDate = disabledDates[disabledDates.length - 1];
     const lastDisabledDateContent = await cleanHtml(lastDisabledDate);
 
-    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const minVal = await getProp<string>(elementName, 'min');
@@ -107,11 +108,11 @@ describe('attributes', () => {
       done();
     });
 
-    const disabledDates = await el.shadow$$('.day--disabled');
+    const disabledDates = await shadowQueryAll(el, ['.day--disabled']);
     const firstDisabledDate = disabledDates[0];
     const firstDisabledDateContent = await cleanHtml(firstDisabledDate);
 
-    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const maxVal = await getProp<string>(elementName, 'max');
@@ -143,7 +144,7 @@ describe('attributes', () => {
       done();
     });
 
-    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const valueVal = await getProp<string>(elementName, 'value');
@@ -168,7 +169,7 @@ describe('attributes', () => {
       done();
     });
 
-    const yearListView = await el.shadow$('.datepicker-body__year-list-view');
+    const yearListView = await shadowQuery(el, ['.datepicker-body__year-list-view']);
 
     const startViewVal = await getProp<string>(elementName, 'startView');
     const startViewAttr = await el.getAttribute('startview');
@@ -190,13 +191,13 @@ describe('attributes', () => {
       done();
     });
 
-    const firstWeekdayLabel = await el.shadow$('.calendar-container:nth-of-type(2) th');
+    const firstWeekdayLabel = await shadowQuery(el, ['.calendar-container:nth-of-type(2) th']);
     const firstWeekdayLabelContent = await cleanHtml(firstWeekdayLabel);
 
-    const focusedDate = await el.shadow$([
+    const focusedDate = await shadowQuery(el, [
       '.calendar-container:nth-of-type(2)',
       'tbody > tr:nth-of-type(3) > td:nth-of-type(2)',
-    ].join(' '));
+    ]);
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');
@@ -225,16 +226,16 @@ describe('attributes', () => {
       done();
     });
 
-    const weekNumberLabel = await el.shadow$([
+    const weekNumberLabel = await shadowQuery(el, [
       '.calendar-container:nth-of-type(2)',
       'th[aria-label="Week"]',
-    ].join(' '));
+    ]);
     const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
 
-    const weekNumbers = await el.shadow$$([
+    const weekNumbers = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       'tbody > tr > td:first-of-type',
-    ].join(' '));
+    ]);
     const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
 
     const showWeekNumberVal = await getProp<boolean>(elementName, 'showWeekNumber');
@@ -265,10 +266,10 @@ describe('attributes', () => {
       done();
     });
 
-    const weekNumbers = await el.shadow$$([
+    const weekNumbers = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       'tbody > tr >td:first-of-type',
-    ].join(' '));
+    ]);
     const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
 
     const weekNumberTypeVal = await getProp<string>(elementName, 'weekNumberType');
@@ -300,8 +301,6 @@ describe('attributes', () => {
     const landscapeVal = await getProp<boolean>(elementName, 'landscape');
     const landscapeAttr = await getAttr<string>(elementName, 'landscape');
 
-    // FIXME: For unknown reason, expecting 'landscape' to be '' but received 'true'.
-    // const landscapeAttr = await el.getAttribute('landscape');
     const cssDisplay = await el.getCSSProperty('display');
 
     strictEqual(landscapeVal, true);
@@ -320,13 +319,13 @@ describe('attributes', () => {
       done();
     });
 
-    const focusedDate = await el.shadow$('.day--focused');
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const weekdayLabels = await el.shadow$$([
+    const weekdayLabels = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       '.calendar-weekdays > th',
-    ].join(' '));
+    ]);
     const weekdayLabelsContents = await Promise.all(weekdayLabels.map(cleanHtml));
 
     const localeVal = await getProp<string>(elementName, 'locale');
@@ -364,10 +363,10 @@ describe('attributes', () => {
       done();
     });
 
-    const disabledDates = await el.shadow$$([
+    const disabledDates = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
-    ].join(' '));
+    ]);
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
     const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
@@ -401,10 +400,10 @@ describe('attributes', () => {
       done();
     });
 
-    const disabledDates = await el.shadow$$([
+    const disabledDates = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
-    ].join(' '));
+    ]);
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
     const disabledDatesVal = await getProp<string>(elementName, 'disabledDates');
@@ -443,10 +442,10 @@ describe('attributes', () => {
       done();
     });
 
-    const weekNumberLabel = await el.shadow$([
+    const weekNumberLabel = await shadowQuery(el, [
       `.calendar-container:nth-of-type(2)`,
       `th[aria-label="周数"]`,
-    ].join(' '));
+    ]);
     const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
 
     const weekLabelVal = await getProp<string>(elementName, 'weekLabel');
@@ -470,16 +469,16 @@ describe('attributes', () => {
       done();
     });
 
-    const disabledDates = await el.shadow$$([
+    const disabledDates = await shadowQueryAll(el, [
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
-    ].join(' '));
+    ]);
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
-    const focusedDate = await el.shadow$([
+    const focusedDate = await shadowQuery(el, [
       '.calendar-container:nth-of-type(2)',
       'tbody > tr:nth-of-type(3) > td:nth-of-type(2)',
-    ].join(' '));
+    ]);
     const focusedDateContent = await cleanHtml(focusedDate);
 
     const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');

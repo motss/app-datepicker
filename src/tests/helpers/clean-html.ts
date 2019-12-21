@@ -1,14 +1,10 @@
 import { prettyHtml } from './pretty-html.js';
+import { sanitizeText } from './sanitize-text.js';
 
 export async function cleanHtml(
-  el: WebdriverIO.Element | WebdriverIOAsync.Element
+  el: WebdriverIOAsync.Element | WebdriverIO.Element
 ): Promise<string> {
   const content: string = await el.getHTML();
 
-  return prettyHtml(
-    content
-      .replace(/<!---->/g, '')
-      .replace(/\s?style-scope app-datepicker\s?/gi, '')
-      .replace(/(\s?class=""|class=""\s?)/g, '')
-  );
+  return prettyHtml(sanitizeText(content));
 }

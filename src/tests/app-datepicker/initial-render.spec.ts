@@ -1,16 +1,18 @@
-import {
-  deepStrictEqual,
-  strictEqual,
-} from 'assert';
-
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
+import { cleanText } from '../helpers/clean-text.js';
 import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
+import { shadowQueryAll } from '../helpers/shadow-query-all.js';
+import { shadowQuery } from '../helpers/shadow-query.js';
+import {
+  deepStrictEqual,
+  strictEqual,
+} from '../helpers/typed-assert.js';
 
-describe('attributes', () => {
+describe('initial render', () => {
   const elementName = 'app-datepicker';
 
   describe('calendar view', () => {
@@ -60,25 +62,24 @@ describe('attributes', () => {
     it(`renders calendar view`, async () => {
       const el = await queryEl(elementName);
 
-      const calendarLabel = await el.shadow$([
+      const calendarLabel = await shadowQuery(el, [
         '.calendar-container:nth-of-type(2)',
         '.calendar-label',
-      ].join(' '));
+      ]);
       const calendarLabelContent = await cleanHtml(calendarLabel);
 
-      const calendarRows = await el.shadow$$([
+      const calendarRows = await shadowQueryAll(el, [
         '.calendar-container:nth-of-type(2)',
         '.calendar-table td',
-      ].join(' '));
-      const calendarRowsContent = await Promise.all(
-        calendarRows.map(async n => n.getText())
-      );
+      ]);
+      const calendarRowsContent = await Promise.all(calendarRows.map(cleanText));
 
       strictEqual(
         calendarLabelContent,
         prettyHtml`<div class="calendar-label">February 2020</div>`
       );
-      deepStrictEqual(calendarRowsContent, [
+      // NOTE: Safari returns text content with unnecessary whitespaces
+      deepStrictEqual(calendarRowsContent.map(n => n.trim()), [
         '', '', '', '', '', '', 1,
         2, 3, 4,  5,  6,  7, 8,
         9, 10, 11, 12, 13, 14, 15,
@@ -91,7 +92,7 @@ describe('attributes', () => {
     it(`renders today's formatted date`, async () => {
       const el = await queryEl(elementName);
 
-      const formattedDate = await el.shadow$('.btn__calendar-selector');
+      const formattedDate = await shadowQuery(el, ['.btn__calendar-selector']);
       const formattedDateContent = await cleanHtml(formattedDate);
 
       strictEqual(formattedDateContent, prettyHtml`
@@ -102,7 +103,7 @@ describe('attributes', () => {
     it(`focuses today's date`, async () => {
       const el = await queryEl(elementName);
 
-      const focusedDate = await el.shadow$('.day--focused');
+      const focusedDate = await shadowQuery(el, ['.day--focused']);
       const focusedDateContent = await cleanHtml(focusedDate);
 
       strictEqual(focusedDateContent, prettyHtml`
@@ -148,11 +149,11 @@ describe('attributes', () => {
     it(`renders initial content`, async () => {
       const el = await queryEl(elementName);
 
-      const yearListItems = await el.shadow$$([
+      const yearListItems = await shadowQueryAll(el, [
         '.year-list-view__full-list',
         '.year-list-view__list-item > div',
-      ].join(' '));
-      const yearListItemsContents = await Promise.all(yearListItems.map(async n => n.getText()));
+      ]);
+      const yearListItemsContents = await Promise.all(yearListItems.map(cleanText));
 
       deepStrictEqual(
         yearListItemsContents,
@@ -163,7 +164,7 @@ describe('attributes', () => {
     it(`focuses this year`, async () => {
       const el = await queryEl(elementName);
 
-      const focusedYear = await el.shadow$('.year-list-view__list-item.year--selected');
+      const focusedYear = await shadowQuery(el, ['.year-list-view__list-item.year--selected']);
       const focusedYearContent = await cleanHtml(focusedYear);
 
       strictEqual(focusedYearContent, prettyHtml`

@@ -39,7 +39,7 @@
     "build:config": "tsc -p tsconfig.test.json",
     "build:test": "npm run ts && npm run build:config",
     "build": "npm run ts -- -p tsconfig.prod.json",
-    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png",
+    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
