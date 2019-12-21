@@ -7,6 +7,7 @@ import {
 import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
+import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { getAttr } from '../helpers/get-attr.js';
 import { getProp } from '../helpers/get-prop.js';
@@ -14,51 +15,53 @@ import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
 
 describe('attributes', () => {
+  const elementName = 'app-datepicker';
+
   before(async () => {
-    await browser.url(`http://localhost:4000/src/tests/index.html`);
+    await browser.url(APP_INDEX_URL);
   });
 
   beforeEach(async () => {
-    await browser.executeAsync(async (done) => {
-      const el: AppDatepicker = document.createElement('app-datepicker');
+    await browser.executeAsync(async (a, done) => {
+      const el: AppDatepicker = document.createElement(a);
 
       document.body.appendChild(el);
       await el.updateComplete;
 
       done();
-    });
+    }, elementName);
   });
 
   afterEach(async () => {
-    await browser.executeAsync((done) => {
-      const el = document.body.querySelector('app-datepicker')!;
+    await browser.executeAsync((a, done) => {
+      const el = document.body.querySelector(a)!;
 
       document.body.removeChild(el);
 
       done();
-    });
+    }, elementName);
   });
 
-  it(`takes snapshot`, async () => {
+  it(`takes snapshot (properties)`, async () => {
     const browserName = browser.capabilities.browserName;
 
-    await browser.saveScreenshot(`./src/tests/snapshots/attributes-0-${browserName}.png`);
+    await browser.saveScreenshot(`./src/tests/snapshots/properties-0-${browserName}.png`);
 
-    await browser.executeAsync(async (done) => {
-      const el = document.body.querySelector('app-datepicker')!;
+    await browser.executeAsync(async (a, done) => {
+      const el = document.body.querySelector(a)!;
 
       el.min = '2020-01-15';
       el.value = '2020-01-17';
       await el.updateComplete;
 
       done();
-    });
+    }, elementName);
 
-    await browser.saveScreenshot(`./src/tests/snapshots/attributes-1-${browserName}.png`);
+    await browser.saveScreenshot(`./src/tests/snapshots/properties-1-${browserName}.png`);
   });
 
   it(`renders with defined 'min'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-17';
@@ -75,7 +78,7 @@ describe('attributes', () => {
     const focusedDate = await el.shadow$('.day--focused');
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const minVal = await getProp<string>('app-datepicker', 'min');
+    const minVal = await getProp<string>(elementName, 'min');
     const minAttr = await el.getAttribute('min');
 
     strictEqual(minVal, '2020-01-15');
@@ -93,7 +96,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'max'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
@@ -111,7 +114,7 @@ describe('attributes', () => {
     const focusedDate = await el.shadow$('.day--focused');
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const maxVal = await getProp<string>('app-datepicker', 'max');
+    const maxVal = await getProp<string>(elementName, 'max');
     const maxAttr = await el.getAttribute('max');
 
     strictEqual(maxVal, '2020-01-17');
@@ -129,7 +132,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'value'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
@@ -143,7 +146,7 @@ describe('attributes', () => {
     const focusedDate = await el.shadow$('.day--focused');
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const valueVal = await getProp<string>('app-datepicker', 'value');
+    const valueVal = await getProp<string>(elementName, 'value');
 
     strictEqual(valueVal, '2020-01-15');
     strictEqual(focusedDateContent, prettyHtml`
@@ -154,7 +157,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'startView'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.startView = 'yearList';
@@ -165,7 +168,7 @@ describe('attributes', () => {
 
     const yearListView = await el.shadow$('.datepicker-body__year-list-view');
 
-    const startViewVal = await getProp<string>('app-datepicker', 'startView');
+    const startViewVal = await getProp<string>(elementName, 'startView');
     const startViewAttr = await el.getAttribute('startview');
 
     strictEqual(startViewVal, 'yearList' as StartView);
@@ -174,7 +177,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'firstDayOfWeek'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
@@ -194,7 +197,7 @@ describe('attributes', () => {
     ].join(' '));
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const firstDayOfWeekVal = await getProp<number>('app-datepicker', 'firstDayOfWeek');
+    const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');
     const firstDayOfWeekAttr = await el.getAttribute('firstdayofweek');
 
     strictEqual(firstDayOfWeekVal, 2);
@@ -210,7 +213,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'showWeekNumber'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
@@ -232,8 +235,8 @@ describe('attributes', () => {
     ].join(' '));
     const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
 
-    const showWeekNumberVal = await getProp<boolean>('app-datepicker', 'showWeekNumber');
-    const showWeekNumberAttr = await getAttr<string>('app-datepicker', 'showweeknumber');
+    const showWeekNumberVal = await getProp<boolean>(elementName, 'showWeekNumber');
+    const showWeekNumberAttr = await getAttr<string>(elementName, 'showweeknumber');
 
     strictEqual(showWeekNumberVal, true);
     strictEqual(showWeekNumberAttr, '');
@@ -249,7 +252,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'weekNumberType'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
@@ -266,7 +269,7 @@ describe('attributes', () => {
     ].join(' '));
     const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
 
-    const weekNumberTypeVal = await getProp<string>('app-datepicker', 'weekNumberType');
+    const weekNumberTypeVal = await getProp<string>(elementName, 'weekNumberType');
     const weekNumberTypeAttr = await el.getAttribute('weeknumbertype');
 
     strictEqual(weekNumberTypeVal, 'first-full-week' as WeekNumberType);
@@ -283,7 +286,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'landscape'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.landscape = true;
@@ -292,8 +295,8 @@ describe('attributes', () => {
       done();
     });
 
-    const landscapeVal = await getProp<boolean>('app-datepicker', 'landscape');
-    const landscapeAttr = await getAttr<string>('app-datepicker', 'landscape');
+    const landscapeVal = await getProp<boolean>(elementName, 'landscape');
+    const landscapeAttr = await getAttr<string>(elementName, 'landscape');
 
     const cssDisplay = await el.getCSSProperty('display');
 
@@ -303,7 +306,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'locale'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
@@ -322,7 +325,7 @@ describe('attributes', () => {
     ].join(' '));
     const weekdayLabelsContents = await Promise.all(weekdayLabels.map(cleanHtml));
 
-    const localeVal = await getProp<string>('app-datepicker', 'locale');
+    const localeVal = await getProp<string>(elementName, 'locale');
 
     strictEqual(localeVal, 'ja-JP');
     strictEqual(focusedDateContent, prettyHtml`
@@ -344,7 +347,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'disabledDays'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
@@ -361,7 +364,7 @@ describe('attributes', () => {
     ].join(' '));
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
-    const disabledDaysVal = await getProp<string>('app-datepicker', 'disabledDays');
+    const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
 
     strictEqual(disabledDaysVal, '1,5');
     deepStrictEqual(disabledDateContents, [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
@@ -374,7 +377,7 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'disabledDates'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
@@ -396,7 +399,7 @@ describe('attributes', () => {
     ].join(' '));
     const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
 
-    const disabledDatesVal = await getProp<string>('app-datepicker', 'disabledDates');
+    const disabledDatesVal = await getProp<string>(elementName, 'disabledDates');
 
     strictEqual(disabledDatesVal, [
       '2020-01-03',
@@ -414,7 +417,7 @@ describe('attributes', () => {
   });
 
   it(`renders with optional 'weekLabel'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.value = '2020-01-15';
@@ -431,14 +434,14 @@ describe('attributes', () => {
     ].join(' '));
     const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
 
-    const weekLabelVal = await getProp<string>('app-datepicker', 'weekLabel');
+    const weekLabelVal = await getProp<string>(elementName, 'weekLabel');
 
     strictEqual(weekLabelVal, '周数');
     strictEqual(weekNumberLabelContent, prettyHtml`<th aria-label="周数">周数</th>`);
   });
 
   it(`renders with different 'firstDayOfWeek' and 'disabledDays'`, async () => {
-    const el = await queryEl('app-datepicker', async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2000-01-01';
@@ -462,10 +465,10 @@ describe('attributes', () => {
     ].join(' '));
     const focusedDateContent = await cleanHtml(focusedDate);
 
-    const firstDayOfWeekVal = await getProp<number>('app-datepicker', 'firstDayOfWeek');
+    const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');
     const firstDayOfWeekAttr = await el.getAttribute('firstdayofweek');
 
-    const disabledDaysVal = await getProp<string>('app-datepicker', 'disabledDays');
+    const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
 
     strictEqual(firstDayOfWeekVal, 2);
     strictEqual(firstDayOfWeekAttr, '2');
