@@ -60,12 +60,23 @@ export type SauceLabsCapability =
   | SauceLabsSafariCapability
   | SauceLabsEdgeCapability;
 
+/**
+ * Mocha CLI commands
+ *
+ * @see https://mochajs.org/#command-line-usage
+ */
 interface MochaFramework {
   framework: 'mocha';
   mochaOpts: {
     require?: string[];
     timeout?: number;
     ui: 'bdd' | 'tdd';
+    checkLeaks?: boolean;
+    asyncOnly?: boolean;
+    bail?: boolean;
+    allowUncaught?: boolean;
+    reporter?: string;
+    inlineDiffs?: boolean;
   };
 }
 interface JasmineFramework {

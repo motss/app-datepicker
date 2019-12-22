@@ -46,8 +46,11 @@ export const config: WdioConfig = {
   specFileRetries: 1,
   reporters: ['spec'],
   mochaOpts: {
-    ui: 'bdd',
-    timeout: 30e3,
+    asyncOnly: true,
+    checkLeaks: true,
+    inlineDiffs: true,
     require: ['reify'],
+    timeout: 30e3,
+    ui: 'bdd',
   },
 };
