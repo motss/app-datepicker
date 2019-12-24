@@ -31,11 +31,11 @@ export const config: WdioConfig = {
       browserName: 'googlechrome',
       browserVersion: 'latest',
       'goog:chromeOptions': {
-        args: [
-          '--disable-gpu',
-          '--headless',
-          '--no-sandbox',
-        ],
+        // args: [
+        //   '--disable-gpu',
+        //   '--headless',
+        //   '--no-sandbox',
+        // ],
         w3c: true,
       },
       'sauce:options': {
@@ -47,11 +47,11 @@ export const config: WdioConfig = {
     {
       browserName: 'firefox',
       browserVersion: 'latest',
-      'moz:firefoxOptions': {
-        args: [
-          '--headless',
-        ],
-      },
+      // 'moz:firefoxOptions': {
+      //   args: [
+      //     '--headless',
+      //   ],
+      // },
       'sauce:options': {
         ...baseSauceOptions,
         logName: 'windows-10-firefox-latest',

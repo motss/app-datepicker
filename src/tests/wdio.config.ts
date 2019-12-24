@@ -3,7 +3,8 @@ import { WdioConfig } from './custom_typings.js';
 export const config: WdioConfig = {
   runner: 'local',
   specs: [
-    './dist/tests/**/*.spec.js',
+    // './dist/tests/**/*.spec.js',
+    './dist/tests/tests.js',
   ],
   exclude: [],
   maxInstances: 15,
@@ -17,6 +18,7 @@ export const config: WdioConfig = {
           '--disable-gpu',
           '--no-sandbox',
         ],
+        w3c: true,
       },
       maxInstances: 5,
     },
@@ -46,7 +48,7 @@ export const config: WdioConfig = {
   specFileRetries: 1,
   reporters: ['spec'],
   mochaOpts: {
-    asyncOnly: true,
+    // asyncOnly: true,
     checkLeaks: true,
     inlineDiffs: true,
     require: ['reify'],

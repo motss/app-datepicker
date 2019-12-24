@@ -1077,3 +1077,4 @@ declare global {
 // TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // FIXME: Replace Web Animations for better support for animations on older browsers.
+// FIXME: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
