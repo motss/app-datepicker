@@ -149,6 +149,7 @@ interface BaseConfig {
   // services: string[];
   specFileRetries: number;
   reporters: (Reporters | ReportersConfig)[];
+  filesToWatch?: string[];
 
   onPrepare?(config: WdioConfig, capabilities: WdioConfig['capabilities']): void;
   beforeSession?(config: WdioConfig, capabilities: WdioConfig['capabilities'], specs: WdioConfig['specs']): void;

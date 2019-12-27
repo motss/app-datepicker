@@ -14,7 +14,7 @@ export const config: WdioConfig = {
       'goog:chromeOptions': {
         args: [
           '--window-size=1920,1080',
-          '--headless',
+          // '--headless',
           '--disable-gpu',
           '--no-sandbox',
         ],
@@ -22,16 +22,16 @@ export const config: WdioConfig = {
       },
       maxInstances: 5,
     },
-    {
-      browserName: 'firefox',
-      'moz:firefoxOptions': {
-        args: [
-          '--window-size=1920,1080',
-          '--headless',
-        ],
-      },
-      maxInstances: 5,
-    },
+    // {
+    //   browserName: 'firefox',
+    //   'moz:firefoxOptions': {
+    //     args: [
+    //       '--window-size=1920,1080',
+    //       '--headless',
+    //     ],
+    //   },
+    //   maxInstances: 5,
+    // },
   ],
   logLevel: 'error',
   bail: 1,

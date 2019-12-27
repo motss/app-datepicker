@@ -1,4 +1,5 @@
 import { AppDatepicker } from '../../app-datepicker.js';
+import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { getProp } from '../helpers/get-prop.js';
@@ -6,13 +7,14 @@ import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
 import { shadowQuery } from '../helpers/shadow-query.js';
 import {
+  deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
 describe('keyboards', () => {
   const elementName = 'app-datepicker';
   const isMicrosoftEdge = 'MicrosoftEdge' === browser.capabilities.browserName;
-  // const isChrome = browser.isChrome;
+
   const focusCalendarsContainer = async (): Promise<string> => {
     return await browser.executeAsync(async (a, b, done) => {
       const a1: AppDatepicker = document.body.querySelector(a)!;
@@ -54,9 +56,9 @@ describe('keyboards', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a)!;
+      const el = document.body.querySelector(a);
 
-      document.body.removeChild(el);
+      if (el) document.body.removeChild(el);
 
       done();
     }, elementName);
@@ -65,7 +67,7 @@ describe('keyboards', () => {
   it(`takes snapshot`, async () => {
     const browserName = browser.capabilities.browserName;
 
-    await browser.saveScreenshot(`./src/tests/snapshots/timezones-${browserName}.png`);
+    await browser.saveScreenshot(`./src/tests/snapshots/keyboards-${browserName}.png`);
   });
 
   it(`focuses date (ArrowLeft)`, async () => {
@@ -90,7 +92,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (ArrowLeft + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-02-19';
@@ -102,8 +104,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['ArrowLeft']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -142,7 +142,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (ArrowRight + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-02-21';
@@ -154,8 +154,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['ArrowRight']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -194,7 +192,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (ArrowUp + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-02-13';
@@ -206,8 +204,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['ArrowUp']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -246,7 +242,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (ArrowDown + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-02-27';
@@ -258,8 +254,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['ArrowDown']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -298,7 +292,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (PageUp + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-01-20';
@@ -310,8 +304,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['PageUp']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -329,7 +321,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (PageUp + first focusable date + disabled date + min date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.min = '2020-02-02';
@@ -341,8 +333,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['PageUp']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -379,7 +369,7 @@ describe('keyboards', () => {
   });
 
   it(`focuses date (PageDown + first focusable date + disabled date)`, async () => {
-    await queryEl(elementName, async (done) => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.disabledDates = '2020-03-20';
@@ -391,8 +381,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['PageDown']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -409,8 +397,8 @@ describe('keyboards', () => {
     `));
   });
 
-  it(`focuses date (PageDown + first focusable date + disabled date + min date)`, async () => {
-    await queryEl(elementName, async (done) => {
+  it(`focuses date (PageDown + first focusable date + disabled date + max date)`, async () => {
+    const el = await queryEl(elementName, async (done) => {
       const n = document.body.querySelector('app-datepicker')!;
 
       n.max = '2020-02-27';
@@ -422,8 +410,6 @@ describe('keyboards', () => {
     });
     await focusCalendarsContainer();
     await browser.keys(['PageDown']);
-
-    const el = await $(elementName);
 
     const focusedDate = await shadowQuery(el, ['.day--focused']);
     const focusedDateContent = await cleanHtml(focusedDate);
@@ -438,100 +424,479 @@ describe('keyboards', () => {
     `);
   });
 
-  // it(`focuses date (Alt + PageUp)`, async () => {
-  //   await focusCalendarsContainer();
+  it(`focuses date (Home)`, async () => {
+    await focusCalendarsContainer();
+    await browser.keys(['Home']);
 
-  //   await new Promise(y => setTimeout(y, 3e3));
-  //   await browser.keys(['Alt', 'PageUp']);
+    const el = await $(elementName);
 
-  //   await new Promise(y => setTimeout(y, 3e3));
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
 
-  //   const el = await $(elementName);
+    const valueProp = await getProp<string>(elementName, 'value');
 
-  //   const focusedDate = await shadowQuery(el, ['.day--focused']);
-  //   const focusedDateContent = await cleanHtml(focusedDate);
+    strictEqual(valueProp, '2020-02-01');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 1, 2020">
+      <div class="calendar-day">1</div>
+    </td>
+    `));
+  });
 
-  //   const valueProp = await getProp<string>(elementName, 'value');
+  it(`focuses date (Home + first focusable date + disabled date)`, async () => {
+    const el = await queryEl(elementName, async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
 
-  //   strictEqual(valueProp, isChrome ? '2019-02-20' : '2020-01-20');
-  //   strictEqual(focusedDateContent, prettyHtml(`
-  //   <td class="full-calendar__day day--focused" aria-label="${
-  //     isChrome ? 'Feb' : 'Dec'
-  //   } 20, 2019">
-  //     <div class="calendar-day">20</div>
-  //   </td>
-  //   `));
-  //   await browser.keys(['Alt']);
-  // });
+      n.disabledDates = '2020-02-01';
+      n.value = '2020-02-20';
 
-  // it(
-  //   `focuses date (Alt + PageUp + first focusable date + disabled date)`,
-  //   async () => {
-  //     await browser.executeAsync(async (done) => {
-  //       const n = document.body.querySelector('app-datepicker')!;
+      await n.updateComplete;
 
-  //       n.disabledDates = '2019-02-20';
-  //       n.value = '2020-02-20';
+      done();
+    });
+    await focusCalendarsContainer();
+    await browser.keys(['Home']);
 
-  //       await n.updateComplete;
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
 
-  //       done();
-  //     });
-  //     await focusCalendarsContainer();
-  //     // await browser.keys(['Alt', 'PageUp']);
+    const valueProp = await getProp<string>(elementName, 'value');
 
-  //     // const el = await $(elementName);
+    strictEqual(valueProp, '2020-02-02');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 2, 2020">
+      <div class="calendar-day">2</div>
+    </td>
+    `));
+  });
 
-  //     // const focusedDate = await shadowQuery(el, ['.day--focused']);
-  //     // const focusedDateContent = await cleanHtml(focusedDate);
+  it(`focuses date (Home + first focusable date + disabled date + min date)`, async () => {
+    const el = await queryEl(elementName, async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
 
-  //     const valueProp = await getProp<string>(elementName, 'value');
+      n.min = '2020-02-17';
+      n.value = '2020-02-20';
 
-  //     strictEqual(valueProp, `2019-${isMicrosoftEdge ? '12-20' : '02-21'}`);
-  //     // strictEqual(focusedDateContent, prettyHtml(`
-  //     // <td class="full-calendar__day day--focused" aria-label="${
-  //     //   isMicrosoftEdge ? 'Dec 20' : 'Feb 21'
-  //     // }, 2019">
-  //     //   <div class="calendar-day">${isMicrosoftEdge ? '20' : '21'}</div>
-  //     // </td>
-  //     // `));
-  //     // await browser.keys(['Alt']);
-  //   }
-  // );
+      await n.updateComplete;
 
-  // it(
-  //   `focuses date (Alt + PageUp + first focusable date + disabled date + min date)`,
-  //   async () => {
-  //     await browser.executeAsync(async (done) => {
-  //       const n = document.body.querySelector('app-datepicker')!;
+      done();
+    });
+    await focusCalendarsContainer();
+    await browser.keys(['Home']);
 
-  //       n.min = '2019-02-27';
-  //       n.value = '2020-02-20';
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
 
-  //       await n.updateComplete;
+    const valueProp = await getProp<string>(elementName, 'value');
 
-  //       done();
-  //     });
-  //     await focusCalendarsContainer();
-  //     await browser.keys(['Alt', 'PageUp']);
+    strictEqual(valueProp, '2020-02-17');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 17, 2020">
+      <div class="calendar-day">17</div>
+    </td>
+    `);
+  });
 
-  //     const el = await $(elementName);
+  it(`focuses date (End)`, async () => {
+    await focusCalendarsContainer();
+    await browser.keys(['End']);
 
-  //     const focusedDate = await shadowQuery(el, ['.day--focused']);
-  //     const focusedDateContent = await cleanHtml(focusedDate);
+    const el = await $(elementName);
 
-  //     const valueProp = await getProp<string>(elementName, 'value');
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
 
-  //     strictEqual(valueProp, `2019-${isMicrosoftEdge ? '12-20' : '02-27'}`);
-  //     strictEqual(focusedDateContent, prettyHtml(`
-  //     <td class="full-calendar__day day--focused" aria-label="${
-  //       isMicrosoftEdge ? 'Dec 20' : 'Feb 27'
-  //     }, 2019">
-  //       <div class="calendar-day">${isMicrosoftEdge ? '20' : '27'}</div>
-  //     </td>
-  //     `));
-  //     await browser.keys(['Alt']);
-  //   }
-  // );
+    const valueProp = await getProp<string>(elementName, 'value');
+
+    strictEqual(valueProp, '2020-02-29');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+      <div class="calendar-day">29</div>
+    </td>
+    `));
+  });
+
+  it(`focuses date (End + first focusable date + disabled date)`, async () => {
+    const el = await queryEl(elementName, async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
+
+      n.disabledDates = '2020-02-29';
+      n.value = '2020-02-20';
+
+      await n.updateComplete;
+
+      done();
+    });
+    await focusCalendarsContainer();
+    await browser.keys(['End']);
+
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
+
+    const valueProp = await getProp<string>(elementName, 'value');
+
+    strictEqual(valueProp, '2020-02-28');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2020">
+      <div class="calendar-day">28</div>
+    </td>
+    `));
+  });
+
+  it(`focuses date (End + first focusable date + disabled date + max date)`, async () => {
+    const el = await queryEl(elementName, async (done) => {
+      const n = document.body.querySelector('app-datepicker')!;
+
+      n.max = '2020-02-27';
+      n.value = '2020-02-20';
+
+      await n.updateComplete;
+
+      done();
+    });
+    await focusCalendarsContainer();
+    await browser.keys(['End']);
+
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
+
+    const valueProp = await getProp<string>(elementName, 'value');
+
+    strictEqual(valueProp, '2020-02-27');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 27, 2020">
+      <div class="calendar-day">27</div>
+    </td>
+    `);
+  });
+
+  // FIXME: Helper as a workaround until `browser.keys()` supports Alt
+  // on all browsers on local and CI.
+  const browserKeysWithAltKey = async (keyCode: number, altKey: boolean = true) => {
+    return browser.executeAsync(async (a, b, c, d, done) => {
+      const n = document.body.querySelector(a)!;
+      const n2 = n.shadowRoot!.querySelector(b)!;
+
+      const opt: any = { keyCode: c, altKey: d };
+      const ev = new CustomEvent('keyup', opt);
+
+      Object.keys(opt).forEach((o) => {
+        Object.defineProperty(ev, o, { value: opt[o] });
+      });
+
+      n2.dispatchEvent(ev);
+
+      done();
+    }, elementName, '.calendars-container', keyCode, altKey);
+  };
+
+  it(`focuses date (Alt + PageUp)`, async () => {
+    await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_UP);
+
+    const el = await $(elementName);
+
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
+
+    const valueProp = await getProp<string>(elementName, 'value');
+
+    strictEqual(valueProp, '2019-02-20');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 20, 2019">
+      <div class="calendar-day">20</div>
+    </td>
+    `));
+  });
+
+  it(
+    `focuses date (Alt + PageUp + first focusable date + disabled date)`,
+    async () => {
+      const el = await queryEl(elementName, async (done) => {
+        const n = document.body.querySelector('app-datepicker')!;
+
+        n.disabledDates = '2019-02-20';
+        n.value = '2020-02-20';
+
+        await n.updateComplete;
+
+        done();
+      });
+      await focusCalendarsContainer();
+      await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_UP);
+
+      const focusedDate = await shadowQuery(el, ['.day--focused']);
+      const focusedDateContent = await cleanHtml(focusedDate);
+
+      const valueProp = await getProp<string>(elementName, 'value');
+
+      strictEqual(valueProp, '2019-02-21');
+      strictEqual(focusedDateContent, prettyHtml(`
+      <td class="full-calendar__day day--focused" aria-label="Feb 21, 2019">
+        <div class="calendar-day">21</div>
+      </td>
+      `));
+    }
+  );
+
+  it(
+    `focuses date (Alt + PageUp + first focusable date + disabled date + min date)`,
+    async () => {
+      const el = await queryEl(elementName, async (done) => {
+        const n = document.body.querySelector('app-datepicker')!;
+
+        n.min = '2019-02-27';
+        n.value = '2020-02-20';
+
+        await n.updateComplete;
+
+        done();
+      });
+      await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_UP);
+
+      const focusedDate = await shadowQuery(el, ['.day--focused']);
+      const focusedDateContent = await cleanHtml(focusedDate);
+
+      const valueProp = await getProp<string>(elementName, 'value');
+
+      strictEqual(valueProp, '2019-02-27');
+      strictEqual(focusedDateContent, prettyHtml(`
+      <td class="full-calendar__day day--focused" aria-label="Feb 27, 2019">
+        <div class="calendar-day">27</div>
+      </td>
+      `));
+    }
+  );
+
+  it(`focuses date (Alt + PageDown)`, async () => {
+    await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_DOWN);
+
+    const el = await $(elementName);
+
+    const focusedDate = await shadowQuery(el, ['.day--focused']);
+    const focusedDateContent = await cleanHtml(focusedDate);
+
+    const valueProp = await getProp<string>(elementName, 'value');
+
+    strictEqual(valueProp, '2021-02-20');
+    strictEqual(focusedDateContent, prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="Feb 20, 2021">
+      <div class="calendar-day">20</div>
+    </td>
+    `));
+  });
+
+  it(
+    `focuses date (Alt + PageDown + first focusable date + disabled date)`,
+    async () => {
+      const el = await queryEl(elementName, async (done) => {
+        const n = document.body.querySelector('app-datepicker')!;
+
+        n.disabledDates = '2021-02-20';
+        n.value = '2020-02-20';
+
+        await n.updateComplete;
+
+        done();
+      });
+      await focusCalendarsContainer();
+      await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_DOWN);
+
+      const focusedDate = await shadowQuery(el, ['.day--focused']);
+      const focusedDateContent = await cleanHtml(focusedDate);
+
+      const valueProp = await getProp<string>(elementName, 'value');
+
+      strictEqual(valueProp, '2021-02-19');
+      strictEqual(focusedDateContent, prettyHtml(`
+      <td class="full-calendar__day day--focused" aria-label="Feb 19, 2021">
+        <div class="calendar-day">19</div>
+      </td>
+      `));
+    }
+  );
+
+  it(
+    `focuses date (Alt + PageDown + first focusable date + disabled date + max date)`,
+    async () => {
+      const el = await queryEl(elementName, async (done) => {
+        const n = document.body.querySelector('app-datepicker')!;
+
+        n.max = '2021-02-17';
+        n.value = '2020-02-20';
+
+        await n.updateComplete;
+
+        done();
+      });
+      await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_DOWN);
+
+      const focusedDate = await shadowQuery(el, ['.day--focused']);
+      const focusedDateContent = await cleanHtml(focusedDate);
+
+      const valueProp = await getProp<string>(elementName, 'value');
+
+      strictEqual(valueProp, '2021-02-17');
+      strictEqual(focusedDateContent, prettyHtml(`
+      <td class="full-calendar__day day--focused" aria-label="Feb 17, 2021">
+        <div class="calendar-day">17</div>
+      </td>
+      `));
+    }
+  );
+
+  it(`fires 'datepicker-keyboard-selected' event (Enter, Space)`, async () => {
+    const results = [
+      KEY_CODES_MAP.ENTER,
+      KEY_CODES_MAP.SPACE,
+    ].map(async (k) => {
+      return browser.executeAsync(async (a, b, done) => {
+        const domTriggerKey = (root: HTMLElement, keyCode: number) => {
+          const ev = new CustomEvent('keyup', { keyCode } as any);
+
+          Object.defineProperty(ev, 'keyCode', { value: keyCode });
+
+          root.dispatchEvent(ev);
+        };
+        const n: AppDatepicker = document.body.querySelector(a)!;
+        const n2 = n.shadowRoot!.querySelector<HTMLElement>('.calendars-container')!;
+
+        n.min = '2000-01-01';
+        n.value = '2020-02-20';
+
+        await n.updateComplete;
+
+        domTriggerKey(n2, KEY_CODES_MAP.ARROW_LEFT);
+
+        const enteredValue = new Promise((yay) => {
+          let timer = -1;
+
+          function handler(ev: CustomEvent) {
+            clearTimeout(timer);
+            yay(ev.detail.value);
+            n.removeEventListener('datepicker-keyboard-selected', handler);
+          }
+          n.addEventListener('datepicker-keyboard-selected', handler);
+
+          timer = window.setTimeout(() => yay(''), 15e3);
+        });
+
+        domTriggerKey(n2, b);
+
+        await n.updateComplete;
+
+        done((await enteredValue) === '2020-02-19');
+      }, elementName, k);
+    });
+
+    deepStrictEqual(
+      await Promise.all(results),
+      [true, true]
+    );
+  });
+
+  const updateElement = async (
+    root: WebdriverIOAsync.Element,
+    value: string,
+    key: number,
+    alt: boolean = true
+  ) => {
+    await browser.executeAsync(async (a, b, done) => {
+      const n: AppDatepicker = document.body.querySelector(a)!;
+
+      n.min = '2000-01-01';
+      n.value = b;
+
+      await n.updateComplete;
+
+      done();
+    }, elementName, value);
+    await focusCalendarsContainer();
+
+    await browserKeysWithAltKey(key, alt);
+
+    const prop = await getProp<string>(elementName, 'value');
+    const elem = await shadowQuery(root, ['.day--focused']);
+
+    return [
+      prop,
+      await cleanHtml(elem),
+    ];
+  };
+
+  it(`focuses last day of month when new date is invalid (PageDown)`, async () => {
+    const el = await $(elementName);
+
+    let [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-01-31', KEY_CODES_MAP.PAGE_DOWN, false);
+
+    strictEqual(valueProp, '2020-02-29');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+      <div class="calendar-day">29</div>
+    </td>
+    `);
+
+    [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-03-31', KEY_CODES_MAP.PAGE_DOWN, false);
+
+    strictEqual(valueProp, '2020-04-30');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Apr 30, 2020">
+      <div class="calendar-day">30</div>
+    </td>
+    `);
+  });
+
+  it(`focuses last day of month when new date is invalid (PageUp)`, async () => {
+    const el = await $(elementName);
+
+    let [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-03-31', KEY_CODES_MAP.PAGE_UP, false);
+
+    strictEqual(valueProp, '2020-02-29');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+      <div class="calendar-day">29</div>
+    </td>
+    `);
+
+    [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-05-31', KEY_CODES_MAP.PAGE_UP, false);
+
+    strictEqual(valueProp, '2020-04-30');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Apr 30, 2020">
+      <div class="calendar-day">30</div>
+    </td>
+    `);
+  });
+
+  it(`focuses last day of month when new date is invalid (Alt + PageDown)`, async () => {
+    const el = await $(elementName);
+
+    const [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-02-29', KEY_CODES_MAP.PAGE_DOWN);
+
+    strictEqual(valueProp, '2021-02-28');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2021">
+      <div class="calendar-day">28</div>
+    </td>
+    `);
+  });
+
+  it(`focuses last day of month when new date is invalid (Alt + PageUp)`, async () => {
+    const el = await $(elementName);
+
+    const [valueProp, focusedDatContent] =
+      await updateElement(el, '2020-02-29', KEY_CODES_MAP.PAGE_UP);
+
+    strictEqual(valueProp, '2019-02-28');
+    strictEqual(focusedDatContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2019">
+      <div class="calendar-day">28</div>
+    </td>
+    `);
+  });
 
 });

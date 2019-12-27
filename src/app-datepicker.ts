@@ -1,9 +1,4 @@
-type ClassProperties<T> = {
-  [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
-};
-interface ParamUpdatedChanged extends ClassProperties<
-  Omit<Omit<AppDatepicker, keyof HTMLElement>, keyof LitElement>
-> {
+interface ParamUpdatedChanged extends Omit<AppDatepicker, keyof LitElement> {
   _selectedDate: Date;
   _focusedDate: Date;
   _startView: StartView;
