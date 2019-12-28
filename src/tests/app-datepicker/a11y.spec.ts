@@ -10,7 +10,7 @@ type A11yReport = { type: 'success' } | {
   stack: string;
 };
 
-describe('ally', () => {
+describe('a11y', () => {
   const elementName = 'app-datepicker';
   const toError = (result: A11yReport) => {
     if (result.type === 'success') return '';
