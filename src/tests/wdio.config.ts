@@ -3,11 +3,11 @@ import { WdioConfig } from './custom_typings.js';
 export const config: WdioConfig = {
   runner: 'local',
   specs: [
-    // './dist/tests/**/*.spec.js',
-    './dist/tests/tests.js',
+    './dist/tests/**/*.spec.js',
+    // './dist/tests/tests.js',
   ],
   exclude: [],
-  maxInstances: 15,
+  maxInstances: 45,
   capabilities: [
     {
       browserName: 'chrome',
@@ -20,7 +20,7 @@ export const config: WdioConfig = {
         ],
         w3c: true,
       },
-      maxInstances: 5,
+      maxInstances: 9,
     },
     {
       browserName: 'firefox',
@@ -30,7 +30,7 @@ export const config: WdioConfig = {
           '--headless',
         ],
       },
-      maxInstances: 5,
+      maxInstances: 9,
     },
   ],
   logLevel: 'error',

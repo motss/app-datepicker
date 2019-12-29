@@ -149,10 +149,7 @@ describe('initial render', () => {
     it(`renders initial content`, async () => {
       const el = await queryEl(elementName);
 
-      const yearListItems = await shadowQueryAll(el, [
-        '.year-list-view__full-list',
-        '.year-list-view__list-item > div',
-      ]);
+      const yearListItems = await shadowQueryAll(el, ['.year-list-view__list-item']);
       const yearListItemsContents = await Promise.all(yearListItems.map(cleanText));
 
       deepStrictEqual(
