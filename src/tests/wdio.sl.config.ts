@@ -77,5 +77,14 @@ export const config: WdioConfig = {
         logName: 'windows-10-microsoftedge-latest',
       },
     },
+    // {
+    //   browserName: 'internet explorer',
+    //   browserVersion: 'latest',
+    //   platformName: 'windows 10',
+    //   'sauce:options': {
+    //     ...baseSauceOptions,
+    //     logName: 'windows-10-internet-explorer-latest',
+    //   },
+    // },
   ] as SauceLabsCapability[],
 };

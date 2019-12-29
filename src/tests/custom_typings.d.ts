@@ -1,18 +1,21 @@
 interface ChromeCapability {
   browserName: 'chrome';
-  'goog:chromeOptions': {
+  'goog:chromeOptions'?: {
     args: string[];
     w3c?: boolean;
   };
 }
 interface FirefoxCapability {
   browserName: 'firefox';
-  'moz:firefoxOptions': {
+  'moz:firefoxOptions'?: {
     args: string[];
   };
 }
 interface SafariCapability {
   browserName: 'safari';
+  'apple:safari.options'?: {
+    technologyPreview: boolean;
+  };
 }
 
 interface EdgeCapability {
