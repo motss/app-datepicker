@@ -153,7 +153,7 @@ describe('initial render', () => {
       const yearListItemsContents = await Promise.all(yearListItems.map(cleanText));
 
       deepStrictEqual(
-        yearListItemsContents,
+        yearListItemsContents.map(n => n.trim()),
         Array.from(Array(2100 - 2000 + 1), (_, i) => `${2000 + i}`)
       );
     });
