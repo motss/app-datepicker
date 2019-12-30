@@ -4,7 +4,8 @@ export const config: WdioConfig = {
   runner: 'local',
   specs: [
     './dist/tests/**/*.spec.js',
-    // './dist/tests/tests.js',
+    // './dist/tests/app-datepicker/tests.js',
+    // './dist/tests/app-datepicker-dialog/tests.js',
   ],
   exclude: [],
   maxInstances: 45,
@@ -15,8 +16,8 @@ export const config: WdioConfig = {
         args: [
           '--window-size=1920,1080',
           '--headless',
-          '--disable-gpu',
           '--no-sandbox',
+          // '--disable-gpu',
         ],
         w3c: true,
       },

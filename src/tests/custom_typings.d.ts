@@ -34,15 +34,16 @@ interface BaseCapability extends Partial<Pick<WdioConfig, 'specs'>> {
 
 export type Capability = BaseCapability & BrowsersCapability;
 
-interface SauceLabsBrowserCapability {
+interface SauceLabsBrowserCapability extends Pick<BaseConfig, 'specs'> {
   browserVersion: string;
   platformName: string;
   'sauce:options': SauceLabsOptions;
 }
 
+/** @see https://wiki.saucelabs.com/display/DOCS/Test+Configuration+Options */
 export interface SauceLabsOptions {
   build: string;
-  logName: string;
+  name: string;
   screenResolution: string;
   seleniumVersion: string;
 }

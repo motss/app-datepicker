@@ -46,7 +46,8 @@ describe('properties', () => {
   it(`takes snapshot (properties)`, async () => {
     const browserName = browser.capabilities.browserName;
 
-    await browser.saveScreenshot(`./src/tests/snapshots/properties-0-${browserName}.png`);
+    await browser.saveScreenshot(
+      `./src/tests/snapshots/${elementName}/properties-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
       const el = document.body.querySelector(a)!;
@@ -58,7 +59,8 @@ describe('properties', () => {
       done();
     }, elementName);
 
-    await browser.saveScreenshot(`./src/tests/snapshots/properties-1-${browserName}.png`);
+    await browser.saveScreenshot(
+      `./src/tests/snapshots/${elementName}/properties-1-${browserName}.png`);
   });
 
   it(`renders with defined 'min'`, async () => {

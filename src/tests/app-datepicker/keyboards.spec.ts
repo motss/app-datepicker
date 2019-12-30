@@ -63,12 +63,6 @@ describe('keyboards', () => {
     }, elementName);
   });
 
-  it(`takes snapshot`, async () => {
-    const browserName = browser.capabilities.browserName;
-
-    await browser.saveScreenshot(`./src/tests/snapshots/keyboards-${browserName}.png`);
-  });
-
   it(`focuses date (ArrowLeft)`, async () => {
     await focusCalendarsContainer();
     await browser.keys(['ArrowLeft']);

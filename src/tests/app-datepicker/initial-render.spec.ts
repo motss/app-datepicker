@@ -49,7 +49,7 @@ describe('initial render', () => {
       const browserName = browser.capabilities.browserName;
 
       await browser.saveScreenshot(
-        `./src/tests/snapshots/initial-render-calendar-view-${browserName}.png`
+        `./src/tests/snapshots/${elementName}/initial-render-calendar-view-${browserName}.png`
       );
     });
 
@@ -144,6 +144,14 @@ describe('initial render', () => {
 
         done();
       }, elementName);
+    });
+
+    it(`takes snapshot`, async () => {
+      const browserName = browser.capabilities.browserName;
+
+      await browser.saveScreenshot(
+        `./src/tests/snapshots/${elementName}/initial-render-year-view-${browserName}.png`
+      );
     });
 
     it(`renders initial content`, async () => {
