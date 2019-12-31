@@ -1,6 +1,5 @@
 import {
   SauceLabsCapability,
-  SauceLabsOptions,
   WdioConfig,
 } from './custom_typings';
 
