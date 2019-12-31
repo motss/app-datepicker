@@ -6,11 +6,16 @@ import {
 
 import { config as baseConfig } from './wdio.config.js';
 
-const baseSauceOptions: SauceLabsOptions = {
-  build: new Date().toJSON(),
-  name: '',
-  screenResolution: '1920x1080',
-  seleniumVersion: '3.141.59',
+const baseCapability: SauceLabsCapability = {
+  browserVersion: 'latest',
+  'sauce:options': {
+    build: new Date().toJSON(),
+    screenResolution: '1920x1080',
+    seleniumVersion: '3.141.59',
+  },
+  specs: ['./dist/tests/**/*.spec.js'],
+  browserName: 'googlechrome',
+  platformName: 'windows 10',
 };
 const sauceLabsUser = process.env.SAUCE_USERNAME || '';
 const sauceLabsAccessKey = process.env.SAUCE_ACCESS_KEY || '';
@@ -29,58 +34,32 @@ export const config: WdioConfig = {
   },
   capabilities: [
     {
-      browserName: 'googlechrome',
-      browserVersion: 'latest',
+      ...baseCapability,
       'goog:chromeOptions': {
         w3c: true,
       },
-      'sauce:options': {
-        ...baseSauceOptions,
-        name: 'windows-10-googlechrome-latest',
-      },
-      platformName: 'windows 10',
-      specs: ['./dist/tests/tests_googlechrome.js'],
     },
     {
+      ...baseCapability,
       browserName: 'firefox',
-      browserVersion: 'latest',
-      'sauce:options': {
-        ...baseSauceOptions,
-        name: 'windows-10-firefox-latest',
-      },
-      platformName: 'windows 10',
-      specs: ['./dist/tests/tests_firefox.js'],
     },
     {
+      ...baseCapability,
       browserName: 'safari',
-      browserVersion: 'latest',
       platformName: 'macos 10.13',
       'sauce:options': {
-        ...baseSauceOptions,
-        name: 'macos-10-13-safari-latest',
+        ...baseCapability['sauce:options'],
         screenResolution: '1600x1200',
       },
-      specs: ['./dist/tests/tests_safari.js'],
     },
     {
+      ...baseCapability,
       browserName: 'microsoftedge',
-      browserVersion: 'latest',
-      platformName: 'windows 10',
-      'sauce:options': {
-        ...baseSauceOptions,
-        name: 'windows-10-microsoftedge-latest',
-      },
-      specs: ['./dist/tests/tests_microsoftedge.js'],
     },
 
     // {
+    //   ...baseCapability,
     //   browserName: 'internet explorer',
-    //   browserVersion: 'latest',
-    //   platformName: 'windows 10',
-    //   'sauce:options': {
-    //     ...baseSauceOptions,
-    //     name: 'windows-10-internet-explorer-latest',
-    //   },
     // },
   ] as SauceLabsCapability[],
 };

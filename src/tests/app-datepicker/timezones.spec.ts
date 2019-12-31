@@ -41,7 +41,8 @@ describe('timezones', () => {
   it(`takes snapshot`, async () => {
     const browserName = browser.capabilities.browserName;
 
-    await browser.saveScreenshot(`./src/tests/snapshots/timezones-${browserName}.png`);
+    await browser.saveScreenshot(
+      `./src/tests/snapshots/${elementName}/timezones-${browserName}.png`);
   });
 
   it(`resolves to the correct 'value' in different timezones`, async function timezoneTests() {
