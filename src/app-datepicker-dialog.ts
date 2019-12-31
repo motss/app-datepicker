@@ -7,6 +7,7 @@ export type DatepickerDialogOpenedEvent = DatepickerDialogClosedEvent & Datepick
 import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
 
+import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 import {
   AppDatepicker,
   DatepickerFirstUpdatedEvent,
@@ -14,7 +15,7 @@ import {
 } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import { FocusTrap, KEY_CODES_MAP, StartView, WeekNumberType } from './custom_typings.js';
+import { FocusTrap, KEY_CODES_MAP, StartView } from './custom_typings.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
 import { getResolvedLocale } from './helpers/get-resolved-locale.js';
@@ -166,14 +167,8 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: Boolean })
   public noFocusTrap: boolean = false;
 
-  @query('.scrim')
-  private _scrim?: HTMLDivElement;
-
   @query('.content-container')
   private _contentContainer?: HTMLDivElement;
-
-  @query('.datepicker')
-  private _datepicker?: AppDatepicker;
 
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm?: HTMLElement;
@@ -183,6 +178,8 @@ export class AppDatepickerDialog extends LitElement {
   private _opened: boolean = false;
 
   public open() {
+    if (this._opened) return this.updateComplete;
+
     this.removeAttribute('aria-hidden');
     this.style.display = 'block';
     this._opened = true;
@@ -210,12 +207,15 @@ export class AppDatepickerDialog extends LitElement {
         dispatchCustomEvent<DatepickerDialogOpenedEvent>(this, 'datepicker-dialog-opened', {
           firstFocusableElement: focusable,
           opened: true,
-          value: this.value });
+          value: this.value,
+        });
       });
     });
   }
 
   public close() {
+    if (!this._opened) return this.updateComplete;
+
     this._scrim!.style.visibility = '';
 
     return this.updateComplete.then(() => {
@@ -255,6 +255,15 @@ export class AppDatepickerDialog extends LitElement {
     dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
   }
 
+  // tslint:disable-next-line: function-name
+  protected _getUpdateComplete() {
+    const datepicker = this._datepicker;
+
+    return (
+      datepicker ? datepicker.updateComplete : Promise.resolve()
+    ).then(() => super._getUpdateComplete());
+  }
+
   protected render() {
     // .dragRatio="${this.dragRatio}"
     return html`
@@ -291,12 +300,20 @@ export class AppDatepickerDialog extends LitElement {
 
   private _update() {
     this._updateValue();
-    this.close();
+    return this.close();
   }
 
   private _setFocusable(ev: CustomEvent) {
     this._focusable = ev.detail && ev.detail.firstFocusableElement;
     this._updateValue();
+  }
+
+  private get _datepicker() {
+    return this.shadowRoot!.querySelector<AppDatepicker>('.datepicker');
+  }
+
+  private get _scrim() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.scrim');
   }
 
 }
