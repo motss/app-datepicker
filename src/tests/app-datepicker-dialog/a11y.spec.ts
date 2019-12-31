@@ -3,19 +3,23 @@ import { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { deepStrictEqual } from '../helpers/typed-assert.js';
 
-type A11yReport = { type: 'success' } | {
+interface A11ySuccess {
+  type: 'success';
+}
+interface A11yError {
   type: 'error';
   name: string;
   message: string;
   stack: string;
-};
+}
+type A11yReport = A11ySuccess | A11yError;
 
 describe('a11y', () => {
   const elementName = 'app-datepicker-dialog';
-  const toError = (result: A11yReport) => {
-    if (result.type === 'success') return '';
+  const toError = (result: null | A11yReport) => {
+    if (result?.type === 'success') return '';
 
-    const { message, name, stack } = result ?? {};
+    const { message, name, stack } = (result ?? {}) as A11yError;
 
     const err = new Error(message);
 
