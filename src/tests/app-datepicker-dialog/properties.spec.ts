@@ -23,7 +23,6 @@ describe('properties', () => {
 
       document.body.appendChild(el);
 
-      await el.updateComplete;
       await el.open();
       await el.updateComplete;
 

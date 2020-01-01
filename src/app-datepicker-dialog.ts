@@ -180,11 +180,13 @@ export class AppDatepickerDialog extends LitElement {
   public open() {
     if (this._opened) return this.updateComplete;
 
-    this.removeAttribute('aria-hidden');
-    this.style.display = 'block';
-    this._opened = true;
+    return this.updateComplete.then(() => {
+      this.removeAttribute('aria-hidden');
+      this.style.display = 'block';
+      this._opened = true;
 
-    return this.requestUpdate().then(() => {
+      return this.requestUpdate();
+    }).then(() => {
       const contentContainer = this._contentContainer!;
       const keyframes: Keyframe[] = [
         { opacity: '0' },
@@ -216,9 +218,11 @@ export class AppDatepickerDialog extends LitElement {
   public close() {
     if (!this._opened) return this.updateComplete;
 
-    this._scrim!.style.visibility = '';
-
     return this.updateComplete.then(() => {
+      this._scrim!.style.visibility = '';
+
+      return this.updateComplete;
+    }).then(() => {
       const contentContainer = this._contentContainer!;
       const keyframes: Keyframe[] = [
         { opacity: '1' },

@@ -9,7 +9,7 @@ const baseCapability: SauceLabsCapability = {
   browserVersion: 'latest',
   'sauce:options': {
     build: new Date().toJSON(),
-    screenResolution: '1920x1080',
+    screenResolution: '800x600',
     seleniumVersion: '3.141.59',
   },
   specs: ['./dist/tests/**/*.spec.js'],
@@ -49,7 +49,7 @@ export const config: WdioConfig = {
       platformName: 'macos 10.13',
       'sauce:options': {
         ...baseCapability['sauce:options'],
-        screenResolution: '1600x1200',
+        screenResolution: '1024x768',
       },
     },
     {
