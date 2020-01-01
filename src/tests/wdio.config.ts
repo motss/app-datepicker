@@ -3,9 +3,9 @@ import { WdioConfig } from './custom_typings.js';
 export const config: WdioConfig = {
   runner: 'local',
   specs: [
-    './dist/tests/**/*.spec.js',
+    // './dist/tests/**/*.spec.js',
     // './dist/tests/app-datepicker/tests.js',
-    // './dist/tests/app-datepicker-dialog/tests.js',
+    './dist/tests/app-datepicker-dialog/tests.js',
   ],
   exclude: [],
   maxInstances: 45,
@@ -14,7 +14,7 @@ export const config: WdioConfig = {
       browserName: 'chrome',
       'goog:chromeOptions': {
         args: [
-          '--window-size=1920,1080',
+          '--window-size=800,600',
           '--headless',
           '--no-sandbox',
           // '--disable-gpu',
@@ -27,7 +27,7 @@ export const config: WdioConfig = {
       browserName: 'firefox',
       'moz:firefoxOptions': {
         args: [
-          '--window-size=1920,1080',
+          '--window-size=800,600',
           '--headless',
         ],
       },

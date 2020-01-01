@@ -14,8 +14,9 @@ interface A11yError {
 }
 type A11yReport = A11ySuccess | A11yError;
 
-describe('a11y', () => {
-  const elementName = 'app-datepicker-dialog';
+const elementName = 'app-datepicker-dialog';
+
+describe(`${elementName}::a11y`, () => {
   const toError = (result: null | A11yReport) => {
     if (result?.type === 'success') return '';
 

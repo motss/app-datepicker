@@ -7,12 +7,12 @@ import {
   deepStrictEqual,
 } from '../helpers/typed-assert.js';
 
-type ExpectedValues<T> = [T, T];
+type ExpectedValues<T, U = undefined> = U extends undefined ? [T, T] : [T, T, U, U];
 
 const elementName = 'app-datepicker-dialog';
 const elementName2 = 'app-datepicker';
 
-describe(`${elementName}::properties`, () => {
+describe(`${elementName}::attributes`, () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
   });
@@ -44,13 +44,13 @@ describe(`${elementName}::properties`, () => {
     const browserName = browser.capabilities.browserName;
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/properties-0-${browserName}.png`);
+      `./src/tests/snapshots/${elementName}/attributes-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
       const el: AppDatepickerDialog = document.body.querySelector(a)!;
 
-      el.min = '2020-01-15';
-      el.value = '2020-01-17';
+      el.setAttribute('min', '2020-01-15');
+      el.setAttribute('value', '2020-01-17');
 
       await el.updateComplete;
 
@@ -58,31 +58,31 @@ describe(`${elementName}::properties`, () => {
     }, elementName);
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/properties-1-${browserName}.png`);
+      `./src/tests/snapshots/${elementName}/attributes-1-${browserName}.png`);
   });
 
-  it(`renders with initial properties`, async () => {
-    type A = ExpectedValues<[number, WeekNumberType, StartView]>;
+  it(`renders with initial attributes`, async () => {
+    type A = ExpectedValues<[string, StartView, WeekNumberType]>;
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
       const props: string[] = [
-        'firstDayOfWeek',
-        'startView',
-        'weekNumberType',
+        'firstdayofweek',
+        'startview',
+        'weeknumbertype',
       ];
 
       done([
-        props.map(p => (n as any)[p]),
-        props.map(p => (n2 as any)[p]),
+        props.map(p => n.getAttribute(p)),
+        props.map(p => n2.getAttribute(p)),
       ] as A);
     }, elementName, elementName2);
 
     deepStrictEqual(values, [
-      [0, 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
-      [0, 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
+      ['0', 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
+      ['0', 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
     ]);
   });
 
@@ -94,11 +94,11 @@ describe(`${elementName}::properties`, () => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.min = c;
+      n.setAttribute('min', c);
 
       await n.updateComplete;
 
-      done([n.min, n2.min] as A);
+      done([n.getAttribute('min'), n2.getAttribute('min')] as A);
     }, elementName, elementName2, expectedMin);
 
     deepStrictEqual(values, [expectedMin, expectedMin]);
@@ -112,219 +112,256 @@ describe(`${elementName}::properties`, () => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.max = c;
+      n.setAttribute('max', c);
 
       await n.updateComplete;
 
-      done([n.max, n2.max] as A);
+      done([n.getAttribute('max'), n2.getAttribute('max')] as A);
     }, elementName, elementName2, expectedMax);
 
     deepStrictEqual(values, [expectedMax, expectedMax]);
   });
 
   it(`renders with defined 'value'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = ExpectedValues<boolean, string>;
 
     const expectedValue = '2020-02-20';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.value = c;
+      n.setAttribute('value', c);
 
       await n.updateComplete;
 
-      done([n.value, n2.value] as A);
+      done([
+        n.hasAttribute('value'),
+        n2.hasAttribute('value'),
+
+        n.value,
+        n2.value,
+      ] as A);
     }, elementName, elementName2, expectedValue);
 
-    deepStrictEqual(values, [expectedValue, expectedValue]);
+    deepStrictEqual(values, [true, false, expectedValue, expectedValue]);
   });
 
-  it(`renders with defined 'startView'`, async () => {
+  it(`renders with defined 'startview'`, async () => {
     type A = ExpectedValues<string>;
 
-    const expectedStartView: StartView = 'calendar';
+    const expectedStartview: StartView = 'calendar';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.startView = c;
+      n.setAttribute('startview', c);
 
       await n.updateComplete;
 
-      done([n.startView, n2.startView] as A);
-    }, elementName, elementName2, expectedStartView);
+      done([n.getAttribute('startview'), n2.getAttribute('startview')] as A);
+    }, elementName, elementName2, expectedStartview);
 
-    deepStrictEqual(values, [expectedStartView, expectedStartView] as A);
+    deepStrictEqual(values, [expectedStartview, expectedStartview] as A);
   });
 
-  it(`renders with defined 'firstDayOfWeek'`, async () => {
-    type A = ExpectedValues<number>;
+  it(`renders with defined 'firstdayofweek'`, async () => {
+    type A = ExpectedValues<string>;
 
-    const expectedFirstDayOfWeek = 1;
+    const expectedFirstdayofweek = '1';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.firstDayOfWeek = c;
+      n.setAttribute('firstdayofweek', c);
 
       await n.updateComplete;
 
-      done([n.firstDayOfWeek, n2.firstDayOfWeek] as A);
-    }, elementName, elementName2, expectedFirstDayOfWeek);
+      done([n.getAttribute('firstdayofweek'), n2.getAttribute('firstdayofweek')] as A);
+    }, elementName, elementName2, expectedFirstdayofweek);
 
-    deepStrictEqual(values, [expectedFirstDayOfWeek, expectedFirstDayOfWeek] as A);
+    deepStrictEqual(values, [expectedFirstdayofweek, expectedFirstdayofweek] as A);
   });
 
-  it(`renders with defined 'showWeekNumber'`, async () => {
+  it(`renders with defined 'showeeknumber'`, async () => {
     type A = ExpectedValues<boolean>;
 
-    const expectedShowWeekNumber: boolean = true;
-    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+    const values: A = await browser.executeAsync(async (a, b, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.showWeekNumber = c;
+      n.setAttribute('showweeknumber', '');
 
       await n.updateComplete;
 
-      done([n.showWeekNumber, n2.showWeekNumber] as A);
-    }, elementName, elementName2, expectedShowWeekNumber);
+      done([n.hasAttribute('showweeknumber'), n2.hasAttribute('showweeknumber')] as A);
+    }, elementName, elementName2);
 
-    deepStrictEqual(values, [expectedShowWeekNumber, expectedShowWeekNumber] as A);
+    deepStrictEqual(values, [true, true] as A);
   });
 
-  it(`renders with defined 'weekNumberType'`, async () => {
+  it(`renders with defined 'weeknumbertype'`, async () => {
     type A = ExpectedValues<WeekNumberType>;
 
-    const expectedWeekNumberType: WeekNumberType = 'first-4-day-week';
+    const expectedWeeknumbertype: WeekNumberType = 'first-4-day-week';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.weekNumberType = c;
+      n.setAttribute('weeknumbertype', c);
 
       await n.updateComplete;
 
-      done([n.weekNumberType, n2.weekNumberType] as A);
-    }, elementName, elementName2, expectedWeekNumberType);
+      done([n.getAttribute('weeknumbertype'), n2.getAttribute('weeknumbertype')] as A);
+    }, elementName, elementName2, expectedWeeknumbertype);
 
-    deepStrictEqual(values, [expectedWeekNumberType, expectedWeekNumberType] as A);
+    deepStrictEqual(values, [expectedWeeknumbertype, expectedWeeknumbertype] as A);
   });
 
   it(`renders with defined 'landscape'`, async () => {
     type A = ExpectedValues<boolean>;
 
-    const expectedLandscape: boolean = true;
-    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+    const values: A = await browser.executeAsync(async (a, b, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.landscape = c;
+      n.setAttribute('landscape', '');
 
       await n.updateComplete;
 
-      done([n.landscape, n2.landscape] as A);
-    }, elementName, elementName2, expectedLandscape);
+      done([n.hasAttribute('landscape'), n2.hasAttribute('landscape')] as A);
+    }, elementName, elementName2);
 
-    deepStrictEqual(values, [expectedLandscape, expectedLandscape] as A);
+    deepStrictEqual(values, [true, true] as A);
   });
 
   it(`renders with defined 'locale'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = ExpectedValues<string | null, string>;
 
     const expectedLocale: string = 'ja-JP';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n: AppDatepickerDialog = document.body.querySelector(a)!;
       const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
 
-      n.locale = c;
-
-      await n.updateComplete;
-
-      done([n.locale, n2.locale] as A);
-    }, elementName, elementName2, expectedLocale);
-
-    deepStrictEqual(values, [expectedLocale, expectedLocale] as A);
-  });
-
-  it(`renders with defined 'disabledDays'`, async () => {
-    type A = ExpectedValues<string>;
-
-    const expectedDisabledDays: string = '3,5';
-    const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
-
-      n.disabledDays = c;
-
-      await n.updateComplete;
-
-      done([n.disabledDays, n2.disabledDays] as A);
-    }, elementName, elementName2, expectedDisabledDays);
-
-    deepStrictEqual(values, [expectedDisabledDays, expectedDisabledDays] as A);
-  });
-
-  it(`renders with defined 'disabledDates'`, async () => {
-    type A = ExpectedValues<string>;
-
-    const expectedDisabledDates: string = '2020-02-02,2020-02-15';
-    const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
-
-      n.disabledDates = c;
-
-      await n.updateComplete;
-
-      done([n.disabledDates, n2.disabledDates] as A);
-    }, elementName, elementName2, expectedDisabledDates);
-
-    deepStrictEqual(values, [expectedDisabledDates, expectedDisabledDates] as A);
-  });
-
-  it(`renders with defined 'weekLabel'`, async () => {
-    type A = ExpectedValues<string>;
-
-    const expectedWeekLabel: string = '周数';
-    const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
-
-      n.weekLabel = c;
-
-      await n.updateComplete;
-
-      done([n.weekLabel, n2.weekLabel] as A);
-    }, elementName, elementName2, expectedWeekLabel);
-
-    deepStrictEqual(values, [expectedWeekLabel, expectedWeekLabel] as A);
-  });
-
-  it(`renders with different 'firstDayOfWeek' and 'disabledDays'`, async () => {
-    type A = ExpectedValues<[number, string]>;
-
-    const expectedFirstDayOfWeek: number = 1;
-    const expectedDisabledDays: string = '3,5';
-    const values: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
-
-      n.firstDayOfWeek = c;
-      n.disabledDays = d;
+      n.setAttribute('locale', c);
 
       await n.updateComplete;
 
       done([
+        n.getAttribute('locale'),
+        n2.getAttribute('locale'),
+
+        n.locale,
+        n2.locale,
+      ] as A);
+    }, elementName, elementName2, expectedLocale);
+
+    deepStrictEqual(values, [expectedLocale, null, expectedLocale, expectedLocale] as A);
+  });
+
+  it(`renders with defined 'disableddays'`, async () => {
+    type A = ExpectedValues<string | null, string>;
+
+    const expectedDisableddays: string = '3,5';
+    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n: AppDatepickerDialog = document.body.querySelector(a)!;
+      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+
+      n.setAttribute('disableddays', c);
+
+      await n.updateComplete;
+
+      done([
+        n.getAttribute('disableddays'),
+        n2.getAttribute('disableddays'),
+
+        n.disabledDays,
+        n2.disabledDays,
+      ] as A);
+    }, elementName, elementName2, expectedDisableddays);
+
+    deepStrictEqual(values, [
+      expectedDisableddays, null, expectedDisableddays, expectedDisableddays] as A);
+  });
+
+  it(`renders with defined 'disableddates'`, async () => {
+    type A = ExpectedValues<string | null, string>;
+
+    const expectedDisableddates: string = '2020-02-02,2020-02-15';
+    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n: AppDatepickerDialog = document.body.querySelector(a)!;
+      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+
+      n.setAttribute('disableddates', c);
+
+      await n.updateComplete;
+
+      done([
+        n.getAttribute('disableddates'),
+        n2.getAttribute('disableddates'),
+
+        n.disabledDates,
+        n2.disabledDates,
+      ] as A);
+    }, elementName, elementName2, expectedDisableddates);
+
+    deepStrictEqual(values, [
+      expectedDisableddates, null, expectedDisableddates, expectedDisableddates] as A);
+  });
+
+  it(`renders with defined 'weekLabel'`, async () => {
+    type A = ExpectedValues<string | null, string>;
+
+    const expectedWeeklabel: string = '周数';
+    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n: AppDatepickerDialog = document.body.querySelector(a)!;
+      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+
+      n.setAttribute('weeklabel', c);
+
+      await n.updateComplete;
+
+      done([
+        n.getAttribute('weeklabel'),
+        n2.getAttribute('weeklabel'),
+
+        n.weekLabel,
+        n2.weekLabel,
+      ] as A);
+    }, elementName, elementName2, expectedWeeklabel);
+
+    deepStrictEqual(values, [
+      expectedWeeklabel, null, expectedWeeklabel, expectedWeeklabel] as A);
+  });
+
+  it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
+    type A = ExpectedValues<[string, string | null], [number, string]>;
+
+    const expectedFirstdayofweek: string = '1';
+    const expectedDisableddays: string = '3,5';
+    const values: A = await browser.executeAsync(async (a, b, c, d, done) => {
+      const n: AppDatepickerDialog = document.body.querySelector(a)!;
+      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+
+      n.setAttribute('firstdayofweek', c);
+      n.setAttribute('disableddays', d);
+
+      await n.updateComplete;
+
+      done([
+        [n.getAttribute('firstdayofweek'), n.getAttribute('disableddays')],
+        [n2.getAttribute('firstdayofweek'), n2.getAttribute('disableddays')],
+
         [n.firstDayOfWeek, n.disabledDays],
         [n2.firstDayOfWeek, n2.disabledDays],
       ] as A);
-    }, elementName, elementName2, expectedFirstDayOfWeek, expectedDisabledDays);
+    }, elementName, elementName2, expectedFirstdayofweek, expectedDisableddays);
 
     deepStrictEqual(values, [
-      [expectedFirstDayOfWeek, expectedDisabledDays],
-      [expectedFirstDayOfWeek, expectedDisabledDays],
+      [expectedFirstdayofweek, expectedDisableddays],
+      [expectedFirstdayofweek, null],
+
+      [Number(expectedFirstdayofweek), expectedDisableddays],
+      [Number(expectedFirstdayofweek), expectedDisableddays],
     ] as A);
   });
 
