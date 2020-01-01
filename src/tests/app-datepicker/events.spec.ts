@@ -13,32 +13,6 @@ describe('events', () => {
     await browser.url(APP_INDEX_URL);
   });
 
-  beforeEach(async () => {
-    await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a);
-
-      // Reset `min` and `value` here before running tests
-      el.min = '2000-01-01';
-      el.value = '2020-02-20';
-
-      document.body.appendChild(el);
-
-      await el.updateComplete;
-
-      done();
-    }, elementName);
-  });
-
-  afterEach(async () => {
-    await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a);
-
-      if (el) document.body.removeChild(el);
-
-      done();
-    }, elementName);
-  });
-
   it(`fires 'datepicker-first-updated'`, async () => {
     const result = await browser.executeAsync(async (a, done) => {
       const n: AppDatepicker = document.createElement(a)!;
@@ -71,11 +45,14 @@ describe('events', () => {
   });
 
   it(`fires 'datepicker-keyboard-selected' event (Enter, Space)`, async () => {
-    const results = [
+    const keys = [
       KEY_CODES_MAP.ENTER,
       KEY_CODES_MAP.SPACE,
-    ].map(async (k) => {
-      return browser.executeAsync(async (a, b, done) => {
+    ];
+    const results: boolean[] = [];
+
+    for (const k of keys) {
+      const result: boolean = await browser.executeAsync(async (a, b, done) => {
         const domTriggerKey = (root: HTMLElement, keyCode: number) => {
           const ev = new CustomEvent('keyup', { keyCode } as any);
 
@@ -84,13 +61,16 @@ describe('events', () => {
           root.dispatchEvent(ev);
         };
 
-        const n = document.body.querySelector<AppDatepicker>(a)!;
-        const n2 = n.shadowRoot!.querySelector<HTMLElement>('.calendars-container')!;
+        const n: AppDatepicker = document.createElement(a);
 
         n.min = '2000-01-01';
         n.value = '2020-02-20';
 
+        document.body.appendChild(n);
+
         await n.updateComplete;
+
+        const n2 = n.shadowRoot!.querySelector<HTMLElement>('.calendars-container')!;
 
         domTriggerKey(n2, KEY_CODES_MAP.ARROW_LEFT);
 
@@ -111,14 +91,15 @@ describe('events', () => {
 
         await n.updateComplete;
 
+        document.body.removeChild(n);
+
         done((await enteredValue) === '2020-02-19');
       }, elementName, k);
-    });
 
-    deepStrictEqual(
-      await Promise.all(results),
-      [true, true]
-    );
+      results.push(result);
+    }
+
+    deepStrictEqual(results, [true, true]);
   });
 
 });

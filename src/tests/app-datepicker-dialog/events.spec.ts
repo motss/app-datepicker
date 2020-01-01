@@ -14,38 +14,15 @@ describe(`${elementName}::events`, () => {
     await browser.url(APP_INDEX_URL);
   });
 
-  beforeEach(async () => {
-    await browser.executeAsync(async (a, done) => {
-      const el: AppDatepickerDialog = document.createElement(a);
-
-      // Reset `min` and `value` here before running tests
-      el.min = '2000-01-01';
-      el.value = '2020-02-20';
-
-      document.body.appendChild(el);
-
-      await el.updateComplete;
-
-      done();
-    }, elementName);
-  });
-
-  afterEach(async () => {
-    await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a);
-
-      if (el) document.body.removeChild(el);
-
-      done();
-    }, elementName);
-  });
-
   it(`fires 'datepicker-keyboard-selected' event (Enter, Space)`, async () => {
-    const results = [
+    const keys = [
       KEY_CODES_MAP.ENTER,
       KEY_CODES_MAP.SPACE,
-    ].map(async (k) => {
-      return browser.executeAsync(async (a, b, c, done) => {
+    ];
+    const results: boolean[] = [];
+
+    for (const k of keys) {
+      const result: boolean = await browser.executeAsync(async (a, b, c, done) => {
         const domTriggerKey = (root: HTMLElement, keyCode: number) => {
           const ev = new CustomEvent('keyup', { keyCode } as any);
 
@@ -54,10 +31,12 @@ describe(`${elementName}::events`, () => {
           root.dispatchEvent(ev);
         };
 
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n: AppDatepickerDialog = document.createElement(a);
 
         n.min = '2000-01-01';
         n.value = '2020-02-20';
+
+        document.body.appendChild(n);
 
         await n.open();
         await n.updateComplete;
@@ -84,14 +63,46 @@ describe(`${elementName}::events`, () => {
 
         await n.updateComplete;
 
+        document.body.removeChild(n);
+
         done((await enteredValue) === '2020-02-19');
       }, elementName, elementName2, k);
-    });
 
-    deepStrictEqual(
-      await Promise.all(results),
-      [true, true]
-    );
+      results.push(result);
+    }
+
+    deepStrictEqual(results, [true, true]);
+  });
+
+  it(`fires 'datepicker-dialog-first-updated'`, async () => {
+    const result = await browser.executeAsync(async (a, done) => {
+      const n: AppDatepickerDialog = document.createElement(a);
+
+      const firstUpdated = new Promise((yay) => {
+        let timer = -1;
+
+        function handler() {
+          clearTimeout(timer);
+          yay(true);
+          n.removeEventListener('datepicker-dialog-first-updated', handler);
+        }
+        n.addEventListener('datepicker-dialog-first-updated', handler);
+
+        timer = window.setTimeout(() => yay(false), 15e3);
+      });
+
+      document.body.appendChild(n);
+
+      await n.updateComplete;
+
+      const firstUpdatedResult = await firstUpdated;
+
+      document.body.removeChild(n);
+
+      done(firstUpdatedResult);
+    }, elementName);
+
+    strictEqual(result, true);
   });
 
   it(`fires 'datepicker-dialog-opened'`, async () => {
