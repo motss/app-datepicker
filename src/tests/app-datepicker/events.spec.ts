@@ -41,7 +41,7 @@ describe('events', () => {
 
   it(`fires 'datepicker-first-updated'`, async () => {
     const result = await browser.executeAsync(async (a, done) => {
-      const n = document.createElement(a)!;
+      const n: AppDatepicker = document.createElement(a)!;
 
       const firstUpdated = new Promise((yay) => {
         let timer = -1;
@@ -59,6 +59,7 @@ describe('events', () => {
       document.body.appendChild(n);
 
       await n.updateComplete;
+
       const firstUpdatedResult = await firstUpdated;
 
       document.body.removeChild(n);
@@ -82,7 +83,8 @@ describe('events', () => {
 
           root.dispatchEvent(ev);
         };
-        const n: AppDatepicker = document.body.querySelector(a)!;
+
+        const n = document.body.querySelector<AppDatepicker>(a)!;
         const n2 = n.shadowRoot!.querySelector<HTMLElement>('.calendars-container')!;
 
         n.min = '2000-01-01';
