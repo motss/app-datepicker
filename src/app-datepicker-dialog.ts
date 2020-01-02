@@ -219,10 +219,9 @@ export class AppDatepickerDialog extends LitElement {
     if (!this._opened) return this.updateComplete;
 
     return this.updateComplete.then(() => {
+      this._opened = false;
       this._scrim!.style.visibility = '';
 
-      return this.updateComplete;
-    }).then(() => {
       const contentContainer = this._contentContainer!;
       const keyframes: Keyframe[] = [
         { opacity: '1' },
@@ -232,11 +231,14 @@ export class AppDatepickerDialog extends LitElement {
         ((contentContainer.animate(keyframes, opts)).onfinish = yay));
 
       return fadeOutAnimationTask.then(() => {
-        contentContainer.style.opacity = contentContainer.style.visibility = '';
+        contentContainer.style.opacity =
+        contentContainer.style.visibility = '';
+
         this.setAttribute('aria-hidden', 'true');
         this.style.display = 'none';
 
         if (!this.noFocusTrap) this._focusTrap!.disconnect();
+
         dispatchCustomEvent<DatepickerDialogClosedEvent>(
           this, 'datepicker-dialog-closed', { opened: false, value: this.value });
       });

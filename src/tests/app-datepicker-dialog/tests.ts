@@ -1,5 +1,6 @@
-import './a11y.spec.js';
-import './attributes.spec.js';
-import './events.spec.js';
-import './initial-render.spec.js';
-import './properties.spec.js';
+// import './a11y.spec.js';
+// import './attributes.spec.js';
+// import './events.spec.js';
+// import './initial-render.spec.js';
+import './mouses.spec.js';
+// import './properties.spec.js';
