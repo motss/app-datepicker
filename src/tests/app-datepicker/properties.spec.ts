@@ -236,7 +236,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       'tbody > tr > td:first-of-type',
     ]);
-    const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
+    const weekNumbersContents = await Promise.all(weekNumbers.map(n => cleanHtml(n)));
 
     const showWeekNumberVal = await getProp<boolean>(elementName, 'showWeekNumber');
     const showWeekNumberAttr = await getAttr<string>(elementName, 'showweeknumber');
@@ -270,7 +270,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       'tbody > tr >td:first-of-type',
     ]);
-    const weekNumbersContents = await Promise.all(weekNumbers.map(cleanHtml));
+    const weekNumbersContents = await Promise.all(weekNumbers.map(n => cleanHtml(n)));
 
     const weekNumberTypeVal = await getProp<string>(elementName, 'weekNumberType');
     const weekNumberTypeAttr = await el.getAttribute('weeknumbertype');
@@ -326,7 +326,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       '.calendar-weekdays > th',
     ]);
-    const weekdayLabelsContents = await Promise.all(weekdayLabels.map(cleanHtml));
+    const weekdayLabelsContents = await Promise.all(weekdayLabels.map(n => cleanHtml(n)));
 
     const localeVal = await getProp<string>(elementName, 'locale');
 
@@ -365,7 +365,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
     ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
+    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
 
     const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
 
@@ -400,7 +400,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
     ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
+    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
 
     const disabledDatesVal = await getProp<string>(elementName, 'disabledDates');
 
@@ -460,7 +460,7 @@ describe('properties', () => {
       '.calendar-container:nth-of-type(2)',
       '.day--disabled',
     ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(cleanHtml));
+    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
 
     const focusedDate = await shadowQuery(el, [
       '.calendar-container:nth-of-type(2)',

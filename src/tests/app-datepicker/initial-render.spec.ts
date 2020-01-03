@@ -5,6 +5,7 @@ import { cleanText } from '../helpers/clean-text.js';
 import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { queryEl } from '../helpers/query-el.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
 import { shadowQueryAll } from '../helpers/shadow-query-all.js';
 import { shadowQuery } from '../helpers/shadow-query.js';
 import {
@@ -89,18 +90,29 @@ describe('initial render', () => {
       ].map(String));
     });
 
-    it(`renders today's formatted date`, async () => {
-      const el = await queryEl(elementName);
+    it(`renders today's date`, async () => {
+      const now = new Date();
+      const formattedDate = Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(now);
 
-      const formattedDate = await shadowQuery(el, ['.btn__calendar-selector']);
-      const formattedDateContent = await cleanHtml(formattedDate);
+      const todayDateContent: string = await browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n2 = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-      strictEqual(formattedDateContent, prettyHtml`
-      <button class="btn__calendar-selector selected" data-view="calendar">Sun, Feb 2</button>
-      `);
+        done(n2.outerHTML);
+      }, elementName, ['.day--today']);
+
+      strictEqual(prettyHtml(sanitizeText(todayDateContent, true)), prettyHtml(`
+      <td class="full-calendar__day day--today" aria-label="${formattedDate}">
+        <div class="calendar-day">${now.getDate()}</div>
+      </td>
+      `));
     });
 
-    it(`focuses today's date`, async () => {
+    it(`focuses date based on 'value'`, async () => {
       const el = await queryEl(elementName);
 
       const focusedDate = await shadowQuery(el, ['.day--focused']);

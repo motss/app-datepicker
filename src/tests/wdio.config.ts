@@ -3,9 +3,9 @@ import { WdioConfig } from './custom_typings.js';
 export const config: WdioConfig = {
   runner: 'local',
   specs: [
-    // './dist/tests/**/*.spec.js',
+    './dist/tests/**/*.spec.js',
     // './dist/tests/app-datepicker/tests.js',
-    './dist/tests/app-datepicker-dialog/tests.js',
+    // './dist/tests/app-datepicker-dialog/tests.js',
   ],
   exclude: [],
   maxInstances: 45,
@@ -49,7 +49,6 @@ export const config: WdioConfig = {
   specFileRetries: 1,
   reporters: ['spec'],
   mochaOpts: {
-    // asyncOnly: true,
     checkLeaks: true,
     inlineDiffs: true,
     require: ['reify'],

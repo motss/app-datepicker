@@ -98,9 +98,9 @@ describe(`${elementName}::initial_render`, () => {
     it(`renders today's date`, async () => {
       const now = new Date();
       const today = [
-        now.getUTCFullYear(),
-        `0${now.getUTCMonth() + 1}`.slice(-2),
-        `0${now.getUTCDate()}`.slice(-2),
+        now.getFullYear(),
+        `0${now.getMonth() + 1}`.slice(-2),
+        `0${now.getDate()}`.slice(-2),
       ].join('-');
 
       const todayProp = await getProp<string>(elementName, 'value');
