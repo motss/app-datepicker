@@ -16,8 +16,8 @@ describe('keyboards', () => {
 
   const focusCalendarsContainer = async (): Promise<string> => {
     return await browser.executeAsync(async (a, b, done) => {
-      const a1: AppDatepicker = document.body.querySelector(a)!;
-      const b1: HTMLElement = a1.shadowRoot!.querySelector(b)!;
+      const a1 = document.body.querySelector<AppDatepicker>(a)!;
+      const b1 = a1.shadowRoot!.querySelector<HTMLElement>(b)!;
 
       b1.focus();
 
@@ -55,7 +55,7 @@ describe('keyboards', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a);
+      const el = document.body.querySelector<AppDatepicker>(a);
 
       if (el) document.body.removeChild(el);
 
@@ -567,8 +567,8 @@ describe('keyboards', () => {
   // on all browsers on local and CI.
   const browserKeysWithAltKey = async (keyCode: number, altKey: boolean = true) => {
     return browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector(a)!;
-      const n2 = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
       const opt: any = { keyCode: c, altKey: d };
       const ev = new CustomEvent('keyup', opt);
@@ -744,7 +744,7 @@ describe('keyboards', () => {
     alt: boolean = true
   ) => {
     await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = b;

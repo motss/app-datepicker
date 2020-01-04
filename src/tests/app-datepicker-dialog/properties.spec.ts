@@ -65,8 +65,8 @@ describe(`${elementName}::properties`, () => {
     type A = ExpectedValues<[number, WeekNumberType, StartView]>;
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       const props: string[] = [
         'firstDayOfWeek',
@@ -91,8 +91,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedMin = '2000-01-01';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.min = c;
 
@@ -109,8 +109,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedMax = '2020-02-27';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.max = c;
 
@@ -127,8 +127,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedValue = '2020-02-20';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.value = c;
 
@@ -145,8 +145,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedStartView: StartView = 'calendar';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.startView = c;
 
@@ -163,8 +163,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedFirstDayOfWeek = 1;
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.firstDayOfWeek = c;
 
@@ -181,8 +181,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedShowWeekNumber: boolean = true;
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.showWeekNumber = c;
 
@@ -199,8 +199,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedWeekNumberType: WeekNumberType = 'first-4-day-week';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.weekNumberType = c;
 
@@ -217,8 +217,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedLandscape: boolean = true;
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.landscape = c;
 
@@ -235,8 +235,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedLocale: string = 'ja-JP';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.locale = c;
 
@@ -253,8 +253,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedDisabledDays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.disabledDays = c;
 
@@ -271,8 +271,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedDisabledDates: string = '2020-02-02,2020-02-15';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.disabledDates = c;
 
@@ -289,8 +289,8 @@ describe(`${elementName}::properties`, () => {
 
     const expectedWeekLabel: string = '周数';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.weekLabel = c;
 
@@ -308,8 +308,8 @@ describe(`${elementName}::properties`, () => {
     const expectedFirstDayOfWeek: number = 1;
     const expectedDisabledDays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n: AppDatepickerDialog = document.body.querySelector(a)!;
-      const n2: AppDatepicker = n.shadowRoot!.querySelector(b)!;
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.firstDayOfWeek = c;
       n.disabledDays = d;

@@ -29,7 +29,7 @@ describe('mouses', () => {
     for (const cls of classes) {
       if (isSafari) {
         await browser.executeAsync(async (a, b, done) => {
-          const n: AppDatepicker = document.body.querySelector(a)!;
+          const n = document.body.querySelector<AppDatepicker>(a)!;
           const n2: HTMLElement = n.shadowRoot!.querySelector(b)!;
 
           if (n2 instanceof HTMLButtonElement) {
@@ -55,7 +55,7 @@ describe('mouses', () => {
     }
 
     return queryEl(elementName, async (done) => {
-      const n: AppDatepicker = document.body.querySelector('app-datepicker')!;
+      const n = document.body.querySelector<AppDatepicker>('app-datepicker')!;
 
       await n.updateComplete;
 
@@ -103,7 +103,7 @@ describe('mouses', () => {
 
   it(`switches to calendar view`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.startView = 'yearList';
 
@@ -252,7 +252,7 @@ describe('mouses', () => {
 
   it(`does not show months before 'min'`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2020-01-01';
       n.value = '2020-02-02';
@@ -267,7 +267,7 @@ describe('mouses', () => {
     ]);
 
     const hasPrevMonthSelector = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
       const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
 
       done(n2?.nodeType === Node.ELEMENT_NODE);
@@ -301,7 +301,7 @@ describe('mouses', () => {
 
   it(`does not show months after 'max'`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.max = '2020-03-31';
       n.value = '2020-02-02';
@@ -316,7 +316,7 @@ describe('mouses', () => {
     ]);
 
     const hasNextMonthSelector = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
       const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
 
       done(n2?.nodeType === Node.ELEMENT_NODE);
@@ -350,7 +350,7 @@ describe('mouses', () => {
 
   it(`shows correct 'min' month when spam clicking previous month button`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2020-01-01';
       n.value = '2020-05-02';
@@ -365,7 +365,7 @@ describe('mouses', () => {
     )));
 
     const hasPrevMonthSelector = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
       const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
 
       done(n2?.nodeType === Node.ELEMENT_NODE);
@@ -399,7 +399,7 @@ describe('mouses', () => {
 
   it(`shows correct 'max' month when spam clicking next month button`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.max = '2020-03-31';
       n.value = '2019-11-02';
@@ -414,7 +414,7 @@ describe('mouses', () => {
     )));
 
     const hasNextMonthSelector = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
       const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
 
       done(n2?.nodeType === Node.ELEMENT_NODE);
@@ -460,7 +460,7 @@ describe('mouses', () => {
     };
 
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2020-04-13';
       n.value = '2020-04-25';
@@ -513,7 +513,7 @@ describe('mouses', () => {
     };
 
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.max = '2020-04-25';
       n.value = '2020-04-13';
@@ -595,7 +595,7 @@ describe('mouses', () => {
     const currentCalendarLabelContent = await cleanText(currentCalendarLabel);
 
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.firstDayOfWeek = 2;
       n.value = '2020-02-13';
@@ -650,7 +650,7 @@ describe('mouses', () => {
     const currentCalendarLabelContent = await cleanText(currentCalendarLabel);
 
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.setAttribute('firstdayofweek', '2');
       n.setAttribute('value', '2020-02-13');
@@ -691,7 +691,7 @@ describe('mouses', () => {
 
   it(`selects new focused date with optional 'locale'`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.locale = 'ja-JP';
 

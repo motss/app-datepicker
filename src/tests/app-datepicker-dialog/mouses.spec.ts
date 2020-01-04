@@ -141,7 +141,7 @@ describe(`${elementName}::mouses`, () => {
 
   it(`switches to calendar view`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.body.querySelector(a)!;
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.startView = 'yearList';
 

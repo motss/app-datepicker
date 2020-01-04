@@ -47,7 +47,7 @@ describe('a11y', () => {
 
   afterEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.body.querySelector(a)!;
+      const el = document.body.querySelector<AppDatepicker>(a)!;
 
       if (el) document.body.removeChild(el);
 
@@ -62,7 +62,7 @@ describe('a11y', () => {
     ].map<Promise<A11yReport>>(async (startView) => {
       const report = await browser.executeAsync(async (a, b, done) => {
         try {
-          const el: AppDatepicker = document.body.querySelector(a)!;
+          const el = document.body.querySelector<AppDatepicker>(a)!;
 
           el.startView = b;
 
