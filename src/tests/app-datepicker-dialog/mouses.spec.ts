@@ -34,10 +34,10 @@ describe(`${elementName}::mouses`, () => {
      */
     for (const cls of classes) {
       if (isSafari) {
-        await browser.executeAsync(async (a, b, c, done) => {
+        await browser.executeAsync(async (a, b, c, d, done) => {
           const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
-          const n2 = dialogOnly ? n : n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+          const n2 = d ? n : n.shadowRoot!.querySelector<AppDatepicker>(b)!;
           const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
 
           if (n3 instanceof HTMLButtonElement || n3.tagName === 'MWC-BUTTON') {
@@ -53,7 +53,7 @@ describe(`${elementName}::mouses`, () => {
           await n.updateComplete;
 
           done();
-        }, elementName, elementName2, cls);
+        }, elementName, elementName2, cls, dialogOnly);
       } else {
         const el = await queryEl(elementName);
         const el2 = dialogOnly ? el : await shadowQuery(el, [elementName2]);
