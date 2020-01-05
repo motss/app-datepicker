@@ -2,7 +2,6 @@ import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { getProp } from '../helpers/get-prop.js';
-import { queryEl } from '../helpers/query-el.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {
   deepStrictEqual,
@@ -71,7 +70,7 @@ describe(`${elementName}::initial_render`, () => {
     });
 
     it(`has 'display: none'`, async () => {
-      const el = await queryEl(elementName);
+      const el = await $(elementName);
 
       const displayValue = await el.getCSSProperty('display');
 

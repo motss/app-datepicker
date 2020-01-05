@@ -1,12 +1,9 @@
-interface QueryEl {
-  cb(done: () => void): void;
-}
-
 export async function queryEl(
   selector: string,
-  cb?: QueryEl['cb']
+  cb?: (...args: any[]) => Promise<void>,
+  ...args: any[]
 ): Promise<WebdriverIOAsync.Element> {
-  if (cb) await browser.executeAsync(cb);
+  if (cb) await browser.executeAsync(cb, ...args);
 
   return $(selector);
 }

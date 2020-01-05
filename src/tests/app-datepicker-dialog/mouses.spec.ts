@@ -5,7 +5,6 @@ import { cleanHtml } from '../helpers/clean-html.js';
 import { cleanText } from '../helpers/clean-text.js';
 import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { queryEl } from '../helpers/query-el.js';
 import { shadowQueryAll } from '../helpers/shadow-query-all.js';
 import { shadowQuery } from '../helpers/shadow-query.js';
 import {
@@ -55,7 +54,7 @@ describe(`${elementName}::mouses`, () => {
           done();
         }, elementName, elementName2, cls, dialogOnly);
       } else {
-        const el = await queryEl(elementName);
+        const el = await $(elementName);
         const el2 = dialogOnly ? el : await shadowQuery(el, [elementName2]);
         const el3 = await shadowQuery(el2, [cls]);
 

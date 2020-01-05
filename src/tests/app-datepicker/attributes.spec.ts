@@ -2,22 +2,18 @@ import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { cleanHtml } from '../helpers/clean-html.js';
-import { getAttr } from '../helpers/get-attr.js';
-import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { queryEl } from '../helpers/query-el.js';
-import { shadowQueryAll } from '../helpers/shadow-query-all.js';
-import { shadowQuery } from '../helpers/shadow-query.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
+import { toSelector } from '../helpers/to-selector.js';
 import {
   deepStrictEqual,
   ok,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-describe('attributes', () => {
-  const elementName = 'app-datepicker';
+const elementName = 'app-datepicker';
 
+describe('attributes', () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
   });
@@ -63,35 +59,45 @@ describe('attributes', () => {
       `./src/tests/snapshots/${elementName}/attributes-1-${browserName}.png`);
   });
 
+  const cleanHtml =
+    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+
   it(`renders with defined 'min'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string, string];
+    const [
+      prop,
+      attr,
+      lastDisabledDateContent,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-17';
       n.setAttribute('min', '2020-01-15');
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const disabledDates = await shadowQueryAll(el, ['.day--disabled']);
-    const lastDisabledDate = disabledDates[disabledDates.length - 1];
-    const lastDisabledDateContent = await cleanHtml(lastDisabledDate);
+      const disabledDates = Array.from(root.querySelectorAll<HTMLTableCellElement>(b));
+      const lastDisabledDate = disabledDates[disabledDates.length - 1];
 
-    const focusedDate = await shadowQuery(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      const focusedDate = root.querySelector(c);
 
-    const minVal = await getProp<string>(elementName, 'min');
-    const minAttr = await el.getAttribute('min');
+      done([
+        n.min,
+        n.getAttribute('min'),
+        lastDisabledDate.outerHTML,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
 
-    strictEqual(minVal, '2020-01-15');
-    strictEqual(minAttr, '2020-01-15');
-    strictEqual(lastDisabledDateContent, prettyHtml`
+    ok([prop, attr].every(n => n === '2020-01-15'));
+    strictEqual(cleanHtml(lastDisabledDateContent), prettyHtml`
     <td class="full-calendar__day day--disabled" aria-label="Jan 14, 2020">
       <div class="calendar-day">14</div>
     </td>
     `);
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 17, 2020">
       <div class="calendar-day">17</div>
     </td>
@@ -99,35 +105,42 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'max'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string, string];
+
+    const [
+      prop,
+      attr,
+      firstDisabledDateContent,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.min = '2000-01-01';
       n.setAttribute('max', '2020-01-17');
+
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const disabledDates = await shadowQueryAll(el, ['.day--disabled']);
-    const firstDisabledDate = disabledDates[0];
-    const firstDisabledDateContent = await cleanHtml(firstDisabledDate);
+      const firstDisabledDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
 
-    const focusedDate = await shadowQuery(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      done([
+        n.max,
+        n.getAttribute('max'),
+        firstDisabledDate.outerHTML,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
 
-    const maxVal = await getProp<string>(elementName, 'max');
-    const maxAttr = await el.getAttribute('max');
-
-    strictEqual(maxVal, '2020-01-17');
-    strictEqual(maxAttr, '2020-01-17');
-    strictEqual(firstDisabledDateContent, prettyHtml`
+    ok([prop, attr].every(n => n === '2020-01-17'));
+    strictEqual(cleanHtml(firstDisabledDateContent), prettyHtml`
     <td class="full-calendar__day day--disabled" aria-label="Jan 18, 2020">
       <div class="calendar-day">18</div>
     </td>
     `);
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
     </td>
@@ -135,26 +148,32 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'value'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string, string];
+
+    const [
+      prop,
+      attr,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.max = '2020-12-31';
       n.setAttribute('value', '2020-01-15');
+
       await n.updateComplete;
 
-      done();
-    });
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-    const focusedDate = await shadowQuery(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      done([
+        n.value,
+        n.getAttribute('value'),
+        focusedDate.outerHTML,
+      ]);
+    }, elementName, toSelector('.day--focused'));
 
-    const valueVal = await getProp<string>(elementName, 'value');
-    const valueAttr = await el.getAttribute('value');
-
-    strictEqual(valueVal, '2020-01-15');
-    strictEqual(valueAttr, '2020-01-15');
-    strictEqual(focusedDateContent, prettyHtml`
+    ok([prop, attr].every(n => n === '2020-01-15'));
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
     </td>
@@ -162,55 +181,71 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'startview'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [StartView, StartView, boolean];
+
+    const [
+      prop,
+      attr,
+      hasYearListView,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.setAttribute('startview', 'yearList' as StartView);
+
       await n.updateComplete;
 
-      done();
-    });
+      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
-    const yearListView = await shadowQuery(el, ['.datepicker-body__year-list-view']);
+      done([
+        n.startView,
+        n.getAttribute('startview'),
+        yearListView != null,
+      ] as A);
+    }, elementName, '.datepicker-body__year-list-view');
 
-    const startViewVal = await getProp<string>(elementName, 'startView');
-    const startViewAttr = await el.getAttribute('startview');
-
-    strictEqual(startViewVal, 'yearList' as StartView);
-    strictEqual(startViewAttr, 'yearList' as StartView);
-    ok(yearListView);
+    ok([prop, attr].every(n => n === 'yearList' as StartView));
+    ok(hasYearListView);
   });
 
   it(`renders with defined 'firstdayofweek'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [number, string, string, string];
+
+    const [
+      prop,
+      attr,
+      firstWeekdayLabelContent,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.setAttribute('firstdayofweek', '2');
+
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const firstWeekdayLabel = await shadowQuery(el, ['.calendar-container:nth-of-type(2) th']);
-    const firstWeekdayLabelContent = await cleanHtml(firstWeekdayLabel);
+      const firstWeekdayLabel = root.querySelector<HTMLTableHeaderCellElement>(b)!;
+      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
 
-    const focusedDate = await shadowQuery(el, [
-      '.calendar-container:nth-of-type(2)',
-      'tbody > tr:nth-of-type(3) > td:nth-of-type(2)',
-    ]);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      done([
+        n.firstDayOfWeek,
+        n.getAttribute('firstdayofweek'),
+        firstWeekdayLabel.outerHTML,
+        focusedDate.outerHTML,
+      ] as A);
+    },
+    elementName,
+    toSelector('th'),
+    toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'));
 
-    const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');
-    const firstDayOfWeekAttr = await el.getAttribute('firstdayofweek');
-
-    strictEqual(firstDayOfWeekVal, 2);
-    strictEqual(firstDayOfWeekAttr, '2');
-    strictEqual(firstWeekdayLabelContent, prettyHtml`
+    strictEqual(prop, 2);
+    strictEqual(attr, '2');
+    strictEqual(cleanHtml(firstWeekdayLabelContent), prettyHtml`
       <th aria-label="Tuesday">T</th>
     `);
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
     </td>
@@ -218,35 +253,42 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'showweeknumber'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [boolean, string, string, string[]];
+
+    const [
+      prop,
+      attr,
+      weekNumberLabelContent,
+      weekNumbersContents,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.setAttribute('showweeknumber', '');
+
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const weekNumberLabel = await shadowQuery(el, [
-      '.calendar-container:nth-of-type(2)',
-      'th[aria-label="Week"]',
-    ]);
-    const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
+      const weekNumberLabel = root.querySelector<HTMLTableHeaderCellElement>(b)!;
+      const weekNumbers = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(c), o => o.outerHTML);
 
-    const weekNumbers = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      'tbody > tr > td:first-of-type',
-    ]);
-    const weekNumbersContents = await Promise.all(weekNumbers.map(n => cleanHtml(n)));
+      done([
+        n.showWeekNumber,
+        n.getAttribute('showweeknumber'),
+        weekNumberLabel.outerHTML,
+        weekNumbers,
+      ] as A);
+    },
+    elementName,
+    toSelector(`th[aria-label="Week"]`),
+    toSelector('tbody > tr > td:first-of-type'));
 
-    const showWeekNumberVal = await getProp<boolean>(elementName, 'showWeekNumber');
-    const showWeekNumberAttr = await getAttr<string>(elementName, 'showweeknumber');
-
-    strictEqual(showWeekNumberVal, true);
-    strictEqual(showWeekNumberAttr, '');
-    strictEqual(weekNumberLabelContent, prettyHtml`<th aria-label="Week">Wk</th>`);
-    deepStrictEqual(weekNumbersContents, [
+    strictEqual(prop, true);
+    strictEqual(attr, '');
+    strictEqual(cleanHtml(weekNumberLabelContent), prettyHtml`<th aria-label="Week">Wk</th>`);
+    deepStrictEqual(weekNumbersContents.map(n => cleanHtml(n)), [
       ...([1, 2, 3, 4, 5].map((n) => {
         return prettyHtml(
           `<td class="full-calendar__day weekday-label" aria-label="Week ${n}">${n}</td>`
@@ -257,29 +299,33 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'weeknumbertype'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [WeekNumberType, WeekNumberType, string[]];
+
+    const [
+      prop,
+      attr,
+      weekNumbersContents,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
       n.setAttribute('weeknumbertype', 'first-full-week' as WeekNumberType);
+
       await n.updateComplete;
 
-      done();
-    });
+      const weekNumbers = Array.from(
+        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(b), o => o.outerHTML);
 
-    const weekNumbers = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      'tbody > tr >td:first-of-type',
-    ]);
-    const weekNumbersContents = await Promise.all(weekNumbers.map(n => cleanHtml(n)));
+      done([
+        n.weekNumberType,
+        n.getAttribute('weeknumbertype'),
+        weekNumbers,
+      ] as A);
+    }, elementName, toSelector('tbody > tr >td:first-of-type'));
 
-    const weekNumberTypeVal = await getProp<string>(elementName, 'weekNumberType');
-    const weekNumberTypeAttr = await el.getAttribute('weeknumbertype');
-
-    strictEqual(weekNumberTypeVal, 'first-full-week' as WeekNumberType);
-    strictEqual(weekNumberTypeAttr, 'first-full-week' as WeekNumberType);
-    deepStrictEqual(weekNumbersContents, [
+    ok([prop, attr].every(n => n === 'first-full-week' as WeekNumberType));
+    deepStrictEqual(weekNumbersContents.map(n => cleanHtml(n)), [
       ...([52, 1, 2, 3, 4].map((n) => {
         return prettyHtml(
           `<td class="full-calendar__day weekday-label" aria-label="Week ${n}">${n}</td>`
@@ -291,56 +337,68 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'landscape'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [boolean, string, string];
+
+    const [
+      prop,
+      attr,
+      cssDisplay,
+    ]: A = await browser.executeAsync(async (a, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.setAttribute('landscape', '');
+
       await n.updateComplete;
 
-      done();
-    });
+      done([
+        n.landscape,
+        n.getAttribute('landscape'),
+        getComputedStyle(n).display,
+      ] as A);
+    }, elementName);
 
-    const landscapeVal = await getProp<boolean>(elementName, 'landscape');
-    const landscapeAttr = await getAttr<string>(elementName, 'landscape');
-
-    const cssDisplay = await el.getCSSProperty('display');
-
-    strictEqual(landscapeVal, true);
-    strictEqual(landscapeAttr, '');
-    strictEqual(cssDisplay.value, 'flex');
+    strictEqual(prop, true);
+    strictEqual(attr, '');
+    strictEqual(cssDisplay, 'flex');
   });
 
   it(`renders with defined 'locale'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string, string[]];
+
+    const [
+      prop,
+      attr,
+      focusedDateContent,
+      weekdayLabelsContents,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.setAttribute('locale', 'ja-JP');
+
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const focusedDate = await shadowQuery(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const weekdayLabels = Array.from(
+        root.querySelectorAll<HTMLTableHeaderCellElement>(c), o => o.outerHTML);
 
-    const weekdayLabels = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.calendar-weekdays > th',
-    ]);
-    const weekdayLabelsContents = await Promise.all(weekdayLabels.map(n => cleanHtml(n)));
+      done([
+        n.locale,
+        n.getAttribute('locale'),
+        focusedDate.outerHTML,
+        weekdayLabels,
+      ] as A);
+    }, elementName, toSelector('.day--focused'), toSelector('.calendar-weekdays > th'));
 
-    const localeVal = await getProp<string>(elementName, 'locale');
-    const localeAttr = await el.getAttribute('locale');
-
-    strictEqual(localeVal, 'ja-JP');
-    strictEqual(localeAttr, 'ja-JP');
-    strictEqual(focusedDateContent, prettyHtml`
+    ok([prop, attr].every(n => n === 'ja-JP'));
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="2020年1月15日">
       <div class="calendar-day">15日</div>
     </td>
     `);
-    deepStrictEqual(weekdayLabelsContents, [
+    deepStrictEqual(weekdayLabelsContents.map(n => cleanHtml(n)), [
       '日',
       '月',
       '火',
@@ -354,40 +412,53 @@ describe('attributes', () => {
   });
 
   it(`renders with defined 'disableddays'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string[]];
+
+    const [
+      prop,
+      attr,
+      disabledDatesContents,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.setAttribute('disableddays', '1,5');
+
       await n.updateComplete;
 
-      done();
-    });
+      const disabledDates = Array.from(
+        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(b), o => o.outerHTML);
 
-    const disabledDates = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.day--disabled',
-    ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
+      done([
+        n.disabledDays,
+        n.getAttribute('disableddays'),
+        disabledDates,
+      ] as A);
+    }, elementName, toSelector('.day--disabled'));
 
-    const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
-    const disabledDaysAttr = await el.getAttribute('disableddays');
-
-    strictEqual(disabledDaysVal, '1,5');
-    strictEqual(disabledDaysAttr, '1,5');
-    deepStrictEqual(disabledDateContents, [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
-      return prettyHtml(`
-      <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
-        <div class="calendar-day">${n}</div>
-      </td>
-      `);
-    }));
+    ok([prop, attr].every(n => n === '1,5'));
+    deepStrictEqual(
+      disabledDatesContents.map(n => cleanHtml(n)),
+      [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
+        return prettyHtml(`
+        <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
+          <div class="calendar-day">${n}</div>
+        </td>
+        `);
+      })
+    );
   });
 
   it(`renders with defined 'disableddates'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string[]];
+
+    const [
+      prop,
+      attr,
+      disabledDatesContents,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -397,33 +468,26 @@ describe('attributes', () => {
         '2020-01-21',
         '2020-01-27',
       ].join(','));
+
       await n.updateComplete;
 
-      done();
-    });
+      const disabledDates = Array.from(
+        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(b), o => o.outerHTML);
 
-    const disabledDates = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.day--disabled',
-    ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
+      done([
+        n.disabledDates,
+        n.getAttribute('disableddates'),
+        disabledDates,
+      ] as A);
+    }, elementName, toSelector('.day--disabled'));
 
-    const disabledDatesVal = await getProp<string>(elementName, 'disabledDates');
-    const disabledDatesAttr = await el.getAttribute('disableddates');
-
-    strictEqual(disabledDatesVal, [
+    ok([prop, attr].every(n => n === [
       '2020-01-03',
       '2020-01-09',
       '2020-01-21',
       '2020-01-27',
-    ].join(','));
-    strictEqual(disabledDatesAttr, [
-      '2020-01-03',
-      '2020-01-09',
-      '2020-01-21',
-      '2020-01-27',
-    ].join(','));
-    deepStrictEqual(disabledDateContents, [3, 9, 21, 27].map((n) => {
+    ].join(',')));
+    deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [3, 9, 21, 27].map((n) => {
       return prettyHtml(`
       <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
         <div class="calendar-day">${n}</div>
@@ -433,72 +497,82 @@ describe('attributes', () => {
   });
 
   it(`renders with optional 'weeklabel'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [string, string, string];
+
+    const [
+      prop,
+      attr,
+      weekNumberLabelContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
       n.setAttribute('weeklabel', '周数');
+
       await n.updateComplete;
 
-      done();
-    });
+      const weekNumberLabel = n.shadowRoot!.querySelector<HTMLTableHeaderCellElement>(b)!;
 
-    const weekNumberLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `th[aria-label="周数"]`,
-    ]);
-    const weekNumberLabelContent = await cleanHtml(weekNumberLabel);
+      done([
+        n.weekLabel,
+        n.getAttribute('weeklabel'),
+        weekNumberLabel.outerHTML,
+      ] as A);
+    }, elementName, toSelector(`th[aria-label="周数"]`));
 
-    const weekLabelVal = await getProp<string>(elementName, 'weekLabel');
-    const weekLabelAttr = await el.getAttribute('weeklabel');
-
-    strictEqual(weekLabelVal, '周数');
-    strictEqual(weekLabelAttr, '周数');
-    strictEqual(weekNumberLabelContent, prettyHtml`<th aria-label="周数">周数</th>`);
+    ok([prop, attr].every(n => n === '周数'));
+    strictEqual(cleanHtml(weekNumberLabelContent), prettyHtml`<th aria-label="周数">周数</th>`);
   });
 
   it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
-    const el = await queryEl(elementName, async (done) => {
-      const n = document.body.querySelector('app-datepicker')!;
+    type A = [number, string, string, string, string, string[]];
+
+    const [
+      prop,
+      attr,
+      prop2,
+      attr2,
+      focusedDateContent,
+      disabledDatesContents,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.setAttribute('firstdayofweek', '2');
       n.setAttribute('disableddays', '1,5');
+
       await n.updateComplete;
 
-      done();
-    });
+      const root = n.shadowRoot!;
 
-    const disabledDates = await shadowQueryAll(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.day--disabled',
-    ]);
-    const disabledDateContents = await Promise.all(disabledDates.map(n => cleanHtml(n)));
+      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const disabledDates = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(c), o => o.outerHTML);
 
-    const focusedDate = await shadowQuery(el, [
-      '.calendar-container:nth-of-type(2)',
-      'tbody > tr:nth-of-type(3) > td:nth-of-type(2)',
-    ]);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      done([
+        n.firstDayOfWeek,
+        n.getAttribute('firstdayofweek'),
+        n.disabledDays,
+        n.getAttribute('disableddays'),
+        focusedDate.outerHTML,
+        disabledDates,
+      ] as A);
+    },
+    elementName,
+    toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'),
+    toSelector('.day--disabled'));
 
-    const firstDayOfWeekVal = await getProp<number>(elementName, 'firstDayOfWeek');
-    const firstDayOfWeekAttr = await el.getAttribute('firstdayofweek');
-
-    const disabledDaysVal = await getProp<string>(elementName, 'disabledDays');
-    const disabledDaysAttr = await el.getAttribute('disableddays');
-
-    strictEqual(firstDayOfWeekVal, 2);
-    strictEqual(firstDayOfWeekAttr, '2');
-    strictEqual(disabledDaysVal, '1,5');
-    strictEqual(disabledDaysAttr, '1,5');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, 2);
+    strictEqual(attr, '2');
+    ok([prop2, attr2].every(n => n === '1,5'));
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
     </td>
     `);
-    deepStrictEqual(disabledDateContents, [
+    deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [
       3, 6, 10, 13, 17, 20, 24, 27, 31,
     ].map((n) => {
       return prettyHtml(`
