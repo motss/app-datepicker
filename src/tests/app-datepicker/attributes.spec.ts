@@ -6,6 +6,7 @@ import { prettyHtml } from '../helpers/pretty-html.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
+  allStrictEqual,
   deepStrictEqual,
   ok,
   strictEqual,
@@ -91,7 +92,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
 
-    ok([prop, attr].every(n => n === '2020-01-15'));
+    allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(lastDisabledDateContent), prettyHtml`
     <td class="full-calendar__day day--disabled" aria-label="Jan 14, 2020">
       <div class="calendar-day">14</div>
@@ -134,7 +135,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
 
-    ok([prop, attr].every(n => n === '2020-01-17'));
+    allStrictEqual([prop, attr], '2020-01-17');
     strictEqual(cleanHtml(firstDisabledDateContent), prettyHtml`
     <td class="full-calendar__day day--disabled" aria-label="Jan 18, 2020">
       <div class="calendar-day">18</div>
@@ -172,7 +173,7 @@ describe('attributes', () => {
       ]);
     }, elementName, toSelector('.day--focused'));
 
-    ok([prop, attr].every(n => n === '2020-01-15'));
+    allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
@@ -203,7 +204,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, '.datepicker-body__year-list-view');
 
-    ok([prop, attr].every(n => n === 'yearList' as StartView));
+    allStrictEqual<StartView>([prop, attr], 'yearList');
     ok(hasYearListView);
   });
 
@@ -324,7 +325,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, toSelector('tbody > tr >td:first-of-type'));
 
-    ok([prop, attr].every(n => n === 'first-full-week' as WeekNumberType));
+    allStrictEqual<WeekNumberType>([prop, attr], 'first-full-week');
     deepStrictEqual(weekNumbersContents.map(n => cleanHtml(n)), [
       ...([52, 1, 2, 3, 4].map((n) => {
         return prettyHtml(
@@ -392,7 +393,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, toSelector('.day--focused'), toSelector('.calendar-weekdays > th'));
 
-    ok([prop, attr].every(n => n === 'ja-JP'));
+    allStrictEqual([prop, attr], 'ja-JP');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="2020年1月15日">
       <div class="calendar-day">15日</div>
@@ -437,7 +438,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, toSelector('.day--disabled'));
 
-    ok([prop, attr].every(n => n === '1,5'));
+    allStrictEqual([prop, attr], '1,5');
     deepStrictEqual(
       disabledDatesContents.map(n => cleanHtml(n)),
       [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
@@ -453,21 +454,22 @@ describe('attributes', () => {
   it(`renders with defined 'disableddates'`, async () => {
     type A = [string, string, string[]];
 
+    const disableddates = [
+      '2020-01-03',
+      '2020-01-09',
+      '2020-01-21',
+      '2020-01-27',
+    ].join(',');
     const [
       prop,
       attr,
       disabledDatesContents,
-    ]: A = await browser.executeAsync(async (a, b, done) => {
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
-      n.setAttribute('disableddates', [
-        '2020-01-03',
-        '2020-01-09',
-        '2020-01-21',
-        '2020-01-27',
-      ].join(','));
+      n.setAttribute('disableddates', c);
 
       await n.updateComplete;
 
@@ -479,14 +481,9 @@ describe('attributes', () => {
         n.getAttribute('disableddates'),
         disabledDates,
       ] as A);
-    }, elementName, toSelector('.day--disabled'));
+    }, elementName, toSelector('.day--disabled'), disableddates);
 
-    ok([prop, attr].every(n => n === [
-      '2020-01-03',
-      '2020-01-09',
-      '2020-01-21',
-      '2020-01-27',
-    ].join(',')));
+    allStrictEqual([prop, attr], disableddates);
     deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [3, 9, 21, 27].map((n) => {
       return prettyHtml(`
       <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
@@ -499,16 +496,17 @@ describe('attributes', () => {
   it(`renders with optional 'weeklabel'`, async () => {
     type A = [string, string, string];
 
+    const weekLabel  = '周数';
     const [
       prop,
       attr,
       weekNumberLabelContent,
-    ]: A = await browser.executeAsync(async (a, b, done) => {
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
-      n.setAttribute('weeklabel', '周数');
+      n.setAttribute('weeklabel', c);
 
       await n.updateComplete;
 
@@ -519,9 +517,9 @@ describe('attributes', () => {
         n.getAttribute('weeklabel'),
         weekNumberLabel.outerHTML,
       ] as A);
-    }, elementName, toSelector(`th[aria-label="周数"]`));
+    }, elementName, toSelector(`th[aria-label="${weekLabel}"]`), weekLabel);
 
-    ok([prop, attr].every(n => n === '周数'));
+    allStrictEqual([prop, attr], weekLabel);
     strictEqual(cleanHtml(weekNumberLabelContent), prettyHtml`<th aria-label="周数">周数</th>`);
   });
 
@@ -566,7 +564,7 @@ describe('attributes', () => {
 
     strictEqual(prop, 2);
     strictEqual(attr, '2');
-    ok([prop2, attr2].every(n => n === '1,5'));
+    allStrictEqual([prop2, attr2], '1,5');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>

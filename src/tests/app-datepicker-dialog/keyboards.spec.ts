@@ -9,6 +9,7 @@ import { prettyHtml } from '../helpers/pretty-html.js';
 import { shadowQueryAll } from '../helpers/shadow-query-all.js';
 import { shadowQuery } from '../helpers/shadow-query.js';
 import {
+  allStrictEqual,
   deepStrictEqual,
   ok,
   strictEqual,
@@ -207,10 +208,11 @@ describe(`${elementName}::keyboards`, () => {
     const valueProp3 = await getProp<string>(elementName, 'value');
     const valueProp4 = await getProp2<string>('value');
 
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2020-02-20');
-
-    strictEqual(valueProp3, '2020-02-20');
+    allStrictEqual([
+      valueProp,
+      valueProp2,
+      valueProp3,
+    ], '2020-02-20');
     strictEqual(valueProp4, '2022-02-20');
 
     strictEqual(yearSelectorButtonContent, prettyHtml`
@@ -331,8 +333,7 @@ describe(`${elementName}::keyboards`, () => {
     const valueProp3 = await getProp<string>(elementName, 'value');
 
     strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2020-02-13');
-    strictEqual(valueProp3, '2020-02-13');
+    allStrictEqual([valueProp2, valueProp3], '2020-02-13');
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
       <div class="calendar-day">13</div>

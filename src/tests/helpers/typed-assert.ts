@@ -26,3 +26,11 @@ export function ok<T>(
 ): void {
   return ok2(value, message);
 }
+
+export function allStrictEqual<T>(
+  values: T[],
+  expected: T,
+  message?: string | Error | undefined
+) {
+  return ok2(values.every(n => n === expected), message);
+}
