@@ -14,6 +14,9 @@ import {
 
 const elementName = 'app-datepicker';
 
+const cleanHtml =
+    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+
 describe('attributes', () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
@@ -59,9 +62,6 @@ describe('attributes', () => {
     await browser.saveScreenshot(
       `./src/tests/snapshots/${elementName}/attributes-1-${browserName}.png`);
   });
-
-  const cleanHtml =
-    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
 
   it(`renders with defined 'min'`, async () => {
     type A = [string, string, string, string];

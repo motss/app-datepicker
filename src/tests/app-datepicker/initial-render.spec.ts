@@ -1,21 +1,20 @@
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { cleanHtml } from '../helpers/clean-html.js';
-import { cleanText } from '../helpers/clean-text.js';
 import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { queryEl } from '../helpers/query-el.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
-import { shadowQueryAll } from '../helpers/shadow-query-all.js';
-import { shadowQuery } from '../helpers/shadow-query.js';
+import { toSelector } from '../helpers/to-selector.js';
 import {
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-describe('initial render', () => {
-  const elementName = 'app-datepicker';
+const elementName = 'app-datepicker';
 
+const cleanHtml =
+    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+
+describe('initial render', () => {
   describe('calendar view', () => {
     before(async () => {
       await browser.url(APP_INDEX_URL);
@@ -61,26 +60,32 @@ describe('initial render', () => {
     });
 
     it(`renders calendar view`, async () => {
-      const el = await queryEl(elementName);
+      type A = [string, string[]];
 
-      const calendarLabel = await shadowQuery(el, [
-        '.calendar-container:nth-of-type(2)',
-        '.calendar-label',
-      ]);
-      const calendarLabelContent = await cleanHtml(calendarLabel);
+      const [
+        calendarLabelContent,
+        calendarDaysContents,
+      ]: A = await browser.executeAsync(async (a, b, c, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      const calendarRows = await shadowQueryAll(el, [
-        '.calendar-container:nth-of-type(2)',
-        '.calendar-table td',
-      ]);
-      const calendarRowsContent = await Promise.all(calendarRows.map(cleanText));
+        const root = n.shadowRoot!;
+
+        const calendarLabel = root.querySelector<HTMLDivElement>(b)!;
+        const calendarDays = Array.from(
+          root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
+
+        done([
+          calendarLabel.outerHTML,
+          calendarDays,
+        ] as A);
+      }, elementName, toSelector('.calendar-label'), toSelector('.full-calendar__day'));
 
       strictEqual(
-        calendarLabelContent,
+        cleanHtml(calendarLabelContent),
         prettyHtml`<div class="calendar-label">February 2020</div>`
       );
       // NOTE: Safari returns text content with unnecessary whitespaces
-      deepStrictEqual(calendarRowsContent.map(n => n.trim()), [
+      deepStrictEqual(calendarDaysContents.map(n => n.trim()), [
         '', '', '', '', '', '', 1,
         2, 3, 4,  5,  6,  7, 8,
         9, 10, 11, 12, 13, 14, 15,
@@ -105,7 +110,7 @@ describe('initial render', () => {
         done(n2.outerHTML);
       }, elementName, ['.day--today']);
 
-      strictEqual(prettyHtml(sanitizeText(todayDateContent, true)), prettyHtml(`
+      strictEqual(cleanHtml(todayDateContent, true), prettyHtml(`
       <td class="full-calendar__day day--today" aria-label="${formattedDate}">
         <div class="calendar-day">${now.getDate()}</div>
       </td>
@@ -113,12 +118,15 @@ describe('initial render', () => {
     });
 
     it(`focuses date based on 'value'`, async () => {
-      const el = await queryEl(elementName);
+      const focusedDateContent: string = await browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      const focusedDate = await shadowQuery(el, ['.day--focused']);
-      const focusedDateContent = await cleanHtml(focusedDate);
+        const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-      strictEqual(focusedDateContent, prettyHtml`
+        done(focusedDate.outerHTML);
+      }, elementName, toSelector('.day--focused'));
+
+      strictEqual(cleanHtml(focusedDateContent), prettyHtml`
       <td class="full-calendar__day day--focused" aria-label="Feb 2, 2020">
         <div class="calendar-day">2</div>
       </td>
@@ -167,10 +175,14 @@ describe('initial render', () => {
     });
 
     it(`renders initial content`, async () => {
-      const el = await queryEl(elementName);
+      const yearListItemsContents: string[] = await browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      const yearListItems = await shadowQueryAll(el, ['.year-list-view__list-item']);
-      const yearListItemsContents = await Promise.all(yearListItems.map(cleanText));
+        const yearListItems = Array.from(
+          n.shadowRoot!.querySelectorAll<HTMLButtonElement>(b), o => o.textContent);
+
+        done(yearListItems);
+      }, elementName, '.year-list-view__list-item');
 
       deepStrictEqual(
         yearListItemsContents.map(n => n.trim()),
@@ -179,12 +191,15 @@ describe('initial render', () => {
     });
 
     it(`focuses this year`, async () => {
-      const el = await queryEl(elementName);
+      const focusedYearContent: string = await browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      const focusedYear = await shadowQuery(el, ['.year-list-view__list-item.year--selected']);
-      const focusedYearContent = await cleanHtml(focusedYear);
+        const focusedYear = n.shadowRoot!.querySelector<HTMLButtonElement>(b)!;
 
-      strictEqual(focusedYearContent, prettyHtml`
+        done(focusedYear.outerHTML);
+      }, elementName, '.year-list-view__list-item.year--selected');
+
+      strictEqual(cleanHtml(focusedYearContent), prettyHtml`
       <button class="year-list-view__list-item year--selected">
         <div>2020</div>
       </button>
