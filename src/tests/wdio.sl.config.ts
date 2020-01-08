@@ -1,7 +1,7 @@
 import {
   SauceLabsCapability,
   WdioConfig,
-} from './custom_typings';
+} from './custom_wdio.js';
 
 import { config as baseConfig } from './wdio.config.js';
 

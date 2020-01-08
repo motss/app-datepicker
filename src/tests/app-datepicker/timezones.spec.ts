@@ -5,9 +5,9 @@ import {
 } from '../helpers/typed-assert.js';
 import { getAllDateStrings } from '../timezones.js';
 
-describe('timezones', () => {
-  const elementName = 'app-datepicker';
+const elementName = 'app-datepicker';
 
+describe('timezones', () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
   });
@@ -59,15 +59,16 @@ describe('timezones', () => {
 
     for (const n of allDateStrings) {
       const valueProp = await browser.executeAsync(
-        async (a: string, done: (a: string) => void) => {
-          const el = document.body.querySelector('app-datepicker')!;
+        async (a: string, b: string, done: (a: string) => void) => {
+          const el = document.body.querySelector<AppDatepicker>(a)!;
 
-          el.value = a;
+          el.value = b;
 
           await el.updateComplete;
 
           return done(el.value);
         },
+        elementName,
         n[1].date
       );
 

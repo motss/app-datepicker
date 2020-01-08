@@ -1,4 +1,4 @@
-import { WdioConfig } from './custom_typings.js';
+import { WdioConfig } from './custom_wdio.js';
 
 export const config: WdioConfig = {
   runner: 'local',

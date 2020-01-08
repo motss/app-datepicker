@@ -1,7 +1,7 @@
-import { LitElement } from 'lit-element';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
+import { PrepareOptions } from '../custom_typings.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
@@ -16,8 +16,6 @@ const cleanHtml =
 describe('keyboards', () => {
   // #region helper
   type A = [string, string];
-  type PrepareOptions = Partial<
-    Record<'props' | 'attrs', Partial<Omit<AppDatepicker, keyof LitElement>>>>;
   const focusCalendarsContainer = async (prepareOptions?: PrepareOptions): Promise<string> => {
     return await browser.executeAsync(async (a, b, c, done) => {
       const a1 = document.body.querySelector<AppDatepicker>(a)!;
@@ -37,6 +35,8 @@ describe('keyboards', () => {
           });
         }
       }
+
+      await a1.updateComplete;
 
       const b1 = a1.shadowRoot!.querySelector<HTMLElement>(b)!;
 

@@ -1,20 +1,48 @@
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { cleanHtml } from '../helpers/clean-html.js';
-import { cleanText } from '../helpers/clean-text.js';
-import { getProp } from '../helpers/get-prop.js';
+import { PrepareOptions } from '../custom_typings.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { queryEl } from '../helpers/query-el.js';
-import { shadowQueryAll } from '../helpers/shadow-query-all.js';
-import { shadowQuery } from '../helpers/shadow-query.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
+import { toSelector } from '../helpers/to-selector.js';
 import {
-  deepStrictEqual, ok, strictEqual
+  allStrictEqual,
+  deepStrictEqual,
+  ok,
+  strictEqual,
 } from '../helpers/typed-assert.js';
 
+const elementName = 'app-datepicker';
+const cleanHtml =
+  (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+
 describe('mouses', () => {
-  const elementName = 'app-datepicker';
   const isSafari = browser.capabilities.browserName === 'Safari';
-  const clickElements = async (classes: string[]) => {
+
+  const clickElements = async (classes: string[], prepareOptions?: PrepareOptions) => {
+    if (prepareOptions) {
+      await browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
+
+        const { props, attrs }: PrepareOptions = b;
+
+        if (props) {
+          Object.keys(props).forEach((o) => {
+            (n as any)[o] = (props as any)[o];
+          });
+        }
+
+        if (attrs) {
+          Object.keys(attrs).forEach((o) => {
+            n.setAttribute(o.toLowerCase(), String((attrs as any)[o]));
+          });
+        }
+
+        await n.updateComplete;
+
+        done();
+      }, elementName, prepareOptions);
+    }
+
     /**
      * NOTE: [20191229] Due to a bug in Safari 13, Safari is not able
      * to recognize any clicks but it has yet to release the patch to
@@ -47,20 +75,12 @@ describe('mouses', () => {
           done();
         }, elementName, cls);
       } else {
-        const el = await queryEl(elementName);
-        const el2 = await shadowQuery(el, [cls]);
+        const el = await $(elementName);
+        const el2 = (await el.shadow$(cls)) as unknown as WebdriverIOAsync.Element;
 
         await el2.click();
       }
     }
-
-    return queryEl(elementName, async (done) => {
-      const n = document.body.querySelector<AppDatepicker>('app-datepicker')!;
-
-      await n.updateComplete;
-
-      done();
-    });
   };
 
   before(async () => {
@@ -94,53 +114,75 @@ describe('mouses', () => {
   });
 
   it(`switches to year list view`, async () => {
-    const el = await clickElements(['.btn__year-selector']);
+    await clickElements(['.btn__year-selector']);
 
-    const yearListView = await shadowQuery(el, ['.datepicker-body__year-list-view']);
+    const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
-    ok(await yearListView.isExisting());
+      done(yearListView != null);
+    }, elementName, '.datepicker-body__year-list-view');
+
+    ok(hasYearListView);
   });
 
   it(`switches to calendar view`, async () => {
-    await browser.executeAsync(async (a, done) => {
+    await clickElements(['.btn__calendar-selector'], {
+      props: {
+        startView: 'yearList',
+      },
+    });
+
+    const hasCalendarView: boolean = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      n.startView = 'yearList';
+      const calendarView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
-      await n.updateComplete;
+      done(calendarView != null);
+    }, elementName, '.datepicker-body__calendar-view');
 
-      done();
-    }, elementName);
-
-    const el = await clickElements(['.btn__calendar-selector']);
-
-    const calendarView = await shadowQuery(el, ['.datepicker-body__calendar-view']);
-
-    ok(await calendarView.isExisting());
+    ok(hasCalendarView);
   });
 
   it(`focuses date after navigating away when switching to calendar view`, async () => {
-    let el = await clickElements([
+    type A = [boolean, string];
+
+    await clickElements([
       `.btn__month-selector[aria-label="Next month"]`,
       `.btn__year-selector`,
     ]);
 
-    const yearListView = await shadowQuery(el, ['.datepicker-body__year-list-view']);
+    const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    ok(await yearListView.isExisting());
+      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
-    el = await clickElements([`.btn__calendar-selector`]);
+      done(yearListView != null);
+    }, elementName, '.datepicker-body__year-list-view');
 
-    const calendarView = await shadowQuery(el, ['.datepicker-body__calendar-view']);
-    const focusedDate = await shadowQuery(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.day--focused',
-    ]);
+    await clickElements([`.btn__calendar-selector`]);
 
-    const focusedDateContent = await cleanHtml(focusedDate);
+    const [
+      hasCalendarView,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const root = n.shadowRoot!;
 
-    ok(await calendarView.isExisting());
-    strictEqual(focusedDateContent, prettyHtml`
+      const calendarView = root.querySelector<HTMLDivElement>(b)!;
+      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+
+      done([
+        calendarView != null,
+        focusedDate.outerHTML,
+      ] as A);
+    },
+    elementName,
+    '.datepicker-body__calendar-view',
+    toSelector('.day--focused'));
+
+    allStrictEqual([hasYearListView, hasCalendarView], true);
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 20, 2020">
       <div class="calendar-day">20</div>
     </td>
@@ -148,9 +190,9 @@ describe('mouses', () => {
   });
 
   it(`switches back to calendar view when new year is selected`, async () => {
-    const valueProp = await getProp<string>(elementName, 'value');
+    type A = [string, string, string, string[]];
 
-    const el = await clickElements([
+    await clickElements([
       '.btn__year-selector',
       [
         `.year-list-view__list-item.year--selected`,
@@ -159,32 +201,40 @@ describe('mouses', () => {
       ].join(' '),
     ]);
 
-    const yearSelectorButton = await shadowQuery(el, ['.btn__year-selector']);
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+    const [
+      prop,
+      yearSelectorButtonContent,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const root = n.shadowRoot!;
 
-    const yearSelectorButtonContent = await cleanHtml(yearSelectorButton);
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
+      const yearSelectorButton = root.querySelector<HTMLButtonElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-    const valueProp2 = await getProp<string>(elementName, 'value');
+      done([
+        n.value,
+        yearSelectorButton.outerHTML,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    '.btn__year-selector',
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2022-02-20');
-
-    strictEqual(yearSelectorButtonContent, prettyHtml`
+    strictEqual(prop, '2022-02-20');
+    strictEqual(cleanHtml(yearSelectorButtonContent), prettyHtml`
     <button class="btn__year-selector" data-view="yearList">2022</button>
     `);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">February 2022</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '', '', 1, 2, 3, 4, 5,
       6, 7, 8, 9, 10, 11, 12,
       13, 14, 15, 16, 17, 18, 19,
@@ -195,24 +245,26 @@ describe('mouses', () => {
   });
 
   it(`selects new focused date in current month`, async () => {
-    const el = await clickElements([
-      [
-        `.calendar-container:nth-of-type(2)`,
-        `.full-calendar__day[aria-label="Feb 13, 2020"]`,
-      ].join(' '),
-    ]);
+    type A = [string, string];
 
-    const newFocusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
+    await clickElements([toSelector(`.full-calendar__day[aria-label="Feb 13, 2020"]`)]);
 
-    const newFocusedDateContent = await cleanHtml(newFocusedDate);
+    const [
+      prop,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    const valueProp = await getProp<string>(elementName, 'value');
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-    strictEqual(valueProp, '2020-02-13');
-    strictEqual(newFocusedDateContent, prettyHtml`
+      done([
+        n.value,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--focused'));
+
+    strictEqual(prop, '2020-02-13');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
       <div class="calendar-day">13</div>
     </td>
@@ -220,76 +272,82 @@ describe('mouses', () => {
   });
 
   it(`selects new focused date in new month`, async () => {
-    const el = await clickElements([
+    type A = [string, string];
+
+    await clickElements([
       '.btn__month-selector[aria-label="Next month"]',
-      [
-        `.calendar-container:nth-of-type(2)`,
-        `.full-calendar__day[aria-label="Mar 18, 2020"]`,
-      ].join(' '),
+      toSelector(`.full-calendar__day[aria-label="Mar 18, 2020"]`),
     ]);
 
-    const newFocusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
+    const [
+      focusedDateContent,
+      calendarLabelContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    const newFocusedDateContent = await cleanHtml(newFocusedDate);
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
+      const root = n.shadowRoot!;
 
-    strictEqual(newFocusedDateContent, prettyHtml`
+      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+
+      done([
+        focusedDate.outerHTML,
+        calendarLabel.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--focused'), toSelector('.calendar-label'));
+
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Mar 18, 2020">
       <div class="calendar-day">18</div>
     </td>
     `);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">March 2020</div>
     `);
   });
 
   it(`does not show months before 'min'`, async () => {
-    await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+    type A = [boolean, string, string[]];
 
-      n.min = '2020-01-01';
-      n.value = '2020-02-02';
-
-      await n.updateComplete;
-
-      done();
-    }, elementName);
-
-    const el = await clickElements([
+    await clickElements([
       `.btn__month-selector[aria-label="Previous month"]`,
-    ]);
+    ], {
+      props: {
+        min: '2020-01-01',
+        value: '2020-02-02',
+      },
+    });
 
-    const hasPrevMonthSelector = await browser.executeAsync(async (a, b, done) => {
+    const [
+      noPrevMonthSelector,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
-      const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
+      const root = n.shadowRoot!;
 
-      done(n2?.nodeType === Node.ELEMENT_NODE);
-    }, elementName, `.btn__month-selector[aria-label="Previous month"]`);
+      const prevMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+      done([
+        prevMonthSelector == null,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    `.btn__month-selector[aria-label="Previous month"]`,
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day')
+    );
 
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
-
-    strictEqual(hasPrevMonthSelector, false);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    ok(noPrevMonthSelector);
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">January 2020</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '', '', '', 1, 2, 3, 4,
       5, 6, 7, 8, 9, 10, 11,
       12, 13, 14, 15, 16, 17, 18,
@@ -300,45 +358,46 @@ describe('mouses', () => {
   });
 
   it(`does not show months after 'max'`, async () => {
-    await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+    type A = [boolean, string, string[]];
 
-      n.max = '2020-03-31';
-      n.value = '2020-02-02';
-
-      await n.updateComplete;
-
-      done();
-    }, elementName);
-
-    const el = await clickElements([
+    await clickElements([
       `.btn__month-selector[aria-label="Next month"]`,
-    ]);
+    ], {
+      props: {
+        max: '2020-03-31',
+        value: '2020-02-02',
+      },
+    });
 
-    const hasNextMonthSelector = await browser.executeAsync(async (a, b, done) => {
+    const [
+      noNextMonthSelector,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
-      const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
+      const root = n.shadowRoot!;
 
-      done(n2?.nodeType === Node.ELEMENT_NODE);
-    }, elementName, `.btn__month-selector[aria-label="Next month"]`);
+      const nextMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+      done([
+        nextMonthSelector == null,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    `.btn__month-selector[aria-label="Next month"]`,
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
-
-    strictEqual(hasNextMonthSelector, false);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    ok(noNextMonthSelector);
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">March 2020</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       1, 2, 3, 4, 5, 6, 7,
       8, 9, 10, 11, 12, 13, 14,
       15, 16, 17, 18, 19, 20, 21,
@@ -349,45 +408,46 @@ describe('mouses', () => {
   });
 
   it(`shows correct 'min' month when spam clicking previous month button`, async () => {
-    await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+    type A = [boolean, string, string[]];
 
-      n.min = '2020-01-01';
-      n.value = '2020-05-02';
-
-      await n.updateComplete;
-
-      done();
-    }, elementName);
-
-    const el = await clickElements(Array.from('1234', () => (
+    await clickElements(Array.from('1234', () => (
       `.btn__month-selector[aria-label="Previous month"]`
-    )));
+    )), {
+      props: {
+        min: '2020-01-01',
+        value: '2020-05-02',
+      },
+    });
 
-    const hasPrevMonthSelector = await browser.executeAsync(async (a, b, done) => {
+    const [
+      noPrevMonthSelector,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
-      const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
+      const root = n.shadowRoot!;
 
-      done(n2?.nodeType === Node.ELEMENT_NODE);
-    }, elementName, `.btn__month-selector[aria-label="Previous month"]`);
+      const prevMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+      done([
+        prevMonthSelector == null,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    `.btn__month-selector[aria-label="Previous month"]`,
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
-
-    strictEqual(hasPrevMonthSelector, false);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    ok(noPrevMonthSelector);
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">January 2020</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '', '', '', 1, 2, 3, 4,
       5, 6, 7, 8, 9, 10, 11,
       12, 13, 14, 15, 16, 17, 18,
@@ -398,45 +458,46 @@ describe('mouses', () => {
   });
 
   it(`shows correct 'max' month when spam clicking next month button`, async () => {
-    await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+    type A = [boolean, string, string[]];
 
-      n.max = '2020-03-31';
-      n.value = '2019-11-02';
-
-      await n.updateComplete;
-
-      done();
-    }, elementName);
-
-    const el = await clickElements(Array.from('1234', () => (
+    await clickElements(Array.from('1234', () => (
       `.btn__month-selector[aria-label="Next month"]`
-    )));
+    )), {
+      props: {
+        max: '2020-03-31',
+        value: '2019-11-02',
+      },
+    });
 
-    const hasNextMonthSelector = await browser.executeAsync(async (a, b, done) => {
+    const [
+      noNextMonthSelector,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
-      const n2: HTMLButtonElement = n.shadowRoot!.querySelector(b);
+      const root = n.shadowRoot!;
 
-      done(n2?.nodeType === Node.ELEMENT_NODE);
-    }, elementName, `.btn__month-selector[aria-label="Next month"]`);
+      const nextMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+      done([
+        nextMonthSelector == null,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    `.btn__month-selector[aria-label="Next month"]`,
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
-
-    strictEqual(hasNextMonthSelector, false);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    ok(noNextMonthSelector);
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">March 2020</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       1, 2, 3, 4, 5, 6, 7,
       8, 9, 10, 11, 12, 13, 14,
       15, 16, 17, 18, 19, 20, 21,
@@ -446,53 +507,56 @@ describe('mouses', () => {
     ].map(String));
   });
 
-  it(`focuses 'min' when focused date is before 'min' after updating the years`, async () => {
-    const updateYear = async (a: string) => {
-      const n = await clickElements([`.btn__year-selector`]);
+  const updateYear = async (newYear: string, prepareOptions?: PrepareOptions) => {
+    await clickElements([`.btn__year-selector`], prepareOptions);
 
-      const allYears = await shadowQueryAll(n, [`.year-list-view__list-item`]);
-      const allYearsContents = await Promise.all(allYears.map(cleanText));
-      const yearIdx = allYearsContents.findIndex(o => o.trim() === a);
-
-      return clickElements([
-        `.year-list-view__list-item${!yearIdx ? '' : `:nth-of-type(${1 + yearIdx})`}`,
-      ]);
-    };
-
-    await browser.executeAsync(async (a, done) => {
+    const yearIdx: number = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      n.min = '2020-04-13';
-      n.value = '2020-04-25';
+      const allYears = Array.from(
+        n.shadowRoot!.querySelectorAll<HTMLButtonElement>(b), o => o.textContent!);
 
-      await n.updateComplete;
+      done(allYears.findIndex(o => o.trim() === c));
+    }, elementName, `.year-list-view__list-item`, newYear);
 
-      done();
-    }, elementName);
+    await clickElements([
+      `.year-list-view__list-item${!yearIdx ? '' : `:nth-of-type(${1 + yearIdx})`}`,
+    ]);
+  };
 
-    await updateYear('2021');
+  it(`focuses 'min' when focused date is before 'min' after updating the years`, async () => {
+    type A = [string, string];
+
+    await updateYear('2021', {
+      props: {
+        min: '2020-04-13',
+        value: '2020-04-25',
+      },
+    });
 
     await clickElements([
       ...Array.from('123', () => `.btn__month-selector[aria-label="Previous month"]`),
-      [
-        `.calendar-container:nth-of-type(2)`,
-        `.full-calendar__day[aria-label="Jan 15, 2021"]`,
-      ].join(' '),
+      toSelector(`.full-calendar__day[aria-label="Jan 15, 2021"]`),
     ]);
 
-    const el = await updateYear('2020');
+    await updateYear('2020');
 
-    const focusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
+    const [
+      prop,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    const focusedDateContent = await cleanHtml(focusedDate);
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-    const valueProp = await getProp<string>(elementName, 'value');
+      done([
+        n.value,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--focused'));
 
-    strictEqual(valueProp, '2020-04-13');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, '2020-04-13');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Apr 13, 2020">
       <div class="calendar-day">13</div>
     </td>
@@ -500,52 +564,38 @@ describe('mouses', () => {
   });
 
   it(`focuses 'max' when focused date is after 'max' after updating the years`, async () => {
-    const updateYear = async (a: string) => {
-      const n = await clickElements([`.btn__year-selector`]);
+    type A = [string, string];
 
-      const allYears = await shadowQueryAll(n, [`.year-list-view__list-item`]);
-      const allYearsContents = await Promise.all(allYears.map(cleanText));
-      const yearIdx = allYearsContents.findIndex(o => o.trim() === a);
-
-      return clickElements([
-        `.year-list-view__list-item${!yearIdx ? '' : `:nth-of-type(${1 + yearIdx})`}`,
-      ]);
-    };
-
-    await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
-
-      n.max = '2020-04-25';
-      n.value = '2020-04-13';
-
-      await n.updateComplete;
-
-      done();
-    }, elementName);
-
-    await updateYear('2019');
+    await updateYear('2019', {
+      props: {
+        max: '2020-04-25',
+        value: '2020-04-13',
+      },
+    });
 
     await clickElements([
       ...Array.from('123', () => `.btn__month-selector[aria-label="Next month"]`),
-      [
-        `.calendar-container:nth-of-type(2)`,
-        `.full-calendar__day[aria-label="Jul 15, 2019"]`,
-      ].join(' '),
+      toSelector(`.full-calendar__day[aria-label="Jul 15, 2019"]`),
     ]);
 
-    const el = await updateYear('2020');
+    await updateYear('2020');
 
-    const focusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
+    const [
+      prop,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    const focusedDateContent = await cleanHtml(focusedDate);
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-    const valueProp = await getProp<string>(elementName, 'value');
+      done([
+        n.value,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--focused'));
 
-    strictEqual(valueProp, '2020-04-25');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, '2020-04-25');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Apr 25, 2020">
       <div class="calendar-day">25</div>
     </td>
@@ -553,46 +603,55 @@ describe('mouses', () => {
   });
 
   it(`updates focused date in landscape mode after navigating months`, async () => {
-    const el = await clickElements([
+    type A = [string, string];
+
+    await clickElements([
       `.btn__month-selector[aria-label="Next month"]`,
       ...Array.from('12', () => `.btn__month-selector[aria-label="Previous month"]`),
-      [
-        `.calendar-container:nth-of-type(2)`,
-        `.full-calendar__day[aria-label="Jan 15, 2020"]`,
-      ].join(' '),
+      toSelector(`.full-calendar__day[aria-label="Jan 15, 2020"]`),
     ]);
 
-    const focusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
+    const [
+      prop,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
 
-    const focusedDateContent = await cleanHtml(focusedDate);
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-    const valueProp = await getProp<string>(elementName, 'value');
+      done([
+        n.value,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, toSelector('.day--focused'));
 
-    strictEqual(valueProp, '2020-01-15');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, '2020-01-15');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
       <div class="calendar-day">15</div>
     </td>
     `);
   });
 
-  it(`resets month after updating 'value' and 'firstDayOfWeek'`, async () => {
-    const queryCalendarLabel = async (a: WebdriverIOAsync.Element) => {
-      return shadowQuery(a, [
-        `.calendar-container:nth-of-type(2)`,
-        `.calendar-label`,
-      ]);
-    };
+  const queryCalendarLabel = async () => {
+    const label: string = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
-    let el = await clickElements(
+      done(n2.textContent);
+    }, elementName, toSelector('.calendar-label'));
+
+    return sanitizeText(label);
+  };
+
+  it(`resets month after updating 'value' and 'firstDayOfWeek'`, async () => {
+    type A = [string, string[]];
+
+    await clickElements(
       Array.from('123', () => `.btn__month-selector[aria-label="Next month"]`)
     );
 
-    const currentCalendarLabel = await queryCalendarLabel(el);
-    const currentCalendarLabelContent = await cleanText(currentCalendarLabel);
+    const calendarLabelContent = await queryCalendarLabel();
 
     await browser.executeAsync(async (a, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
@@ -605,26 +664,33 @@ describe('mouses', () => {
       done();
     }, elementName);
 
-    const currentCalendarLabel2 = await queryCalendarLabel(el);
-    const currentCalendarLabel2Content = await cleanText(currentCalendarLabel2);
+    const calendarLabelContent2 = await queryCalendarLabel();
 
-    el = await clickElements(
+    await clickElements(
       Array.from('12', () => `.btn__month-selector[aria-label="Next month"]`)
     );
 
-    const currentCalendarLabel3 = await queryCalendarLabel(el);
-    const currentCalendarLabel3Content = await cleanText(currentCalendarLabel3);
+    const [
+      calendarLabelContent3,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const root = n.shadowRoot!;
 
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
+      const calendarLabel3 = root.querySelector<HTMLDivElement>(b)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
 
-    strictEqual(currentCalendarLabelContent, `May 2020`);
-    strictEqual(currentCalendarLabel2Content, `February 2020`);
-    strictEqual(currentCalendarLabel3Content, `April 2020`);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+      done([
+        calendarLabel3.textContent,
+        calendarDays,
+      ] as A);
+    }, elementName, toSelector('.calendar-label'), toSelector('.full-calendar__day'));
+
+    strictEqual(calendarLabelContent, `May 2020`);
+    strictEqual(calendarLabelContent2, `February 2020`);
+    strictEqual(calendarLabelContent3, `April 2020`);
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '',  1, 2, 3, 4, 5, 6,
       7, 8, 9, 10, 11, 12, 13,
       14, 15, 16, 17, 18, 19, 20,
@@ -635,19 +701,13 @@ describe('mouses', () => {
   });
 
   it(`resets month after setting 'value' and 'firstdayofweek' attributes`, async () => {
-    const queryCalendarLabel = async (a: WebdriverIOAsync.Element) => {
-      return shadowQuery(a, [
-        `.calendar-container:nth-of-type(2)`,
-        `.calendar-label`,
-      ]);
-    };
+    type A = [string, string[]];
 
-    let el = await clickElements(
+    await clickElements(
       Array.from('123', () => `.btn__month-selector[aria-label="Next month"]`)
     );
 
-    const currentCalendarLabel = await queryCalendarLabel(el);
-    const currentCalendarLabelContent = await cleanText(currentCalendarLabel);
+    const calendarLabelContent = await queryCalendarLabel();
 
     await browser.executeAsync(async (a, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
@@ -660,26 +720,33 @@ describe('mouses', () => {
       done();
     }, elementName);
 
-    const currentCalendarLabel2 = await queryCalendarLabel(el);
-    const currentCalendarLabel2Content = await cleanText(currentCalendarLabel2);
+    const calendarLabelContent2 = await queryCalendarLabel();
 
-    el = await clickElements(
+    await clickElements(
       Array.from('12', () => `.btn__month-selector[aria-label="Next month"]`)
     );
 
-    const currentCalendarLabel3 = await queryCalendarLabel(el);
-    const currentCalendarLabel3Content = await cleanText(currentCalendarLabel3);
+    const [
+      calendarLabelContent3,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const root = n.shadowRoot!;
 
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
-    const calendarDaysContents = await Promise.all(calendarDays.map(cleanText));
+      const calendarLabel3 = root.querySelector<HTMLDivElement>(b)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
 
-    strictEqual(currentCalendarLabelContent, `May 2020`);
-    strictEqual(currentCalendarLabel2Content, `February 2020`);
-    strictEqual(currentCalendarLabel3Content, `April 2020`);
-    deepStrictEqual(calendarDaysContents.map(n => n.trim()), [
+      done([
+        calendarLabel3.textContent,
+        calendarDays,
+      ] as A);
+    }, elementName, toSelector('.calendar-label'), toSelector('.full-calendar__day'));
+
+    strictEqual(calendarLabelContent, `May 2020`);
+    strictEqual(calendarLabelContent2, `February 2020`);
+    strictEqual(calendarLabelContent3, `April 2020`);
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '',  1, 2, 3, 4, 5, 6,
       7, 8, 9, 10, 11, 12, 13,
       14, 15, 16, 17, 18, 19, 20,
@@ -690,50 +757,52 @@ describe('mouses', () => {
   });
 
   it(`selects new focused date with optional 'locale'`, async () => {
-    await browser.executeAsync(async (a, done) => {
+    type A = [string, string, string, string[]];
+
+    await clickElements([
+      toSelector(`.full-calendar__day[aria-label="2020年2月13日"]`),
+    ], {
+      props: {
+        locale: 'ja-JP',
+      },
+    });
+
+    const [
+      prop,
+      focusedDateContent,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
+      const root = n.shadowRoot!;
 
-      n.locale = 'ja-JP';
+      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
 
-      await n.updateComplete;
+      done([
+        n.value,
+        focusedDate.outerHTML,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as A);
+    },
+    elementName,
+    toSelector('.day--focused'),
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-      done();
-    }, elementName);
-
-    const el = await clickElements([
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day[aria-label="2020年2月13日"]`,
-    ]);
-
-    const focusedDate = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
-    const currentCalendarLabel = await shadowQuery(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
-
-    const focusedDateContent = await cleanHtml(focusedDate);
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContents = await Promise.all(calendarDays.map(cleanText));
-
-    const valueProp = await getProp<string>(elementName, 'value');
-
-    strictEqual(valueProp, '2020-02-13');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, '2020-02-13');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="2020年2月13日">
       <div class="calendar-day">13日</div>
     </td>
     `);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">2020年2月</div>
     `);
-    deepStrictEqual(calendarDaysContents.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => sanitizeText(n.trim())), [
       '', '', '', '', '', '', 1,
       2, 3, 4, 5, 6, 7, 8,
       9, 10, 11, 12, 13, 14, 15,

@@ -91,9 +91,9 @@ interface JasmineFramework {
   framework: 'jasmine';
   jasmineNodeOpts: {
     defaultTimeoutInterval: number;
-    expectationResultHandler(passed: unknown, assertion: unknown): void;
     grep: null;
     invertGrep: null;
+    expectationResultHandler(passed: unknown, assertion: unknown): void;
   };
 }
 // interface CucumberFramework {
@@ -117,22 +117,35 @@ interface JasmineFramework {
 //   beforeHook(test: unknown, context: unknown, stepData: unknown, world: unknown): void
 
 //   /** Cucumber specific overloads */
-//   afterHook(test: unknown, context: unknown, { error, result, duration, passed, retries }: any, stepData: unknown): void;
-//   afterHook(test: unknown, context: unknown, { error, result, duration, passed, retries }: any, stepData: unknown, world: unknown): void;
+//   afterHook(
+//     test: unknown,
+//     context: unknown,
+//     { error, result, duration, passed, retries }: any,
+//     stepData: unknown,
+//     world?: unknown
+//   ): void;
 
 //   beforeFeature(uri: string, feature: unknown, scenarios: unknown): void;
-//   beforeScenario(uri: string, feature: unknown, scenarios: unknown, sourceLocation: string): void;
+//   beforeScenario(
+//     uri: string, feature: unknown, scenarios: unknown, sourceLocation: string): void;
 //   beforeStep(uri: string, feature: unknown, stepData: unknown, context: unknown): void;
-//   afterStep(uri: string, feature: unknown, { error, result, duration, passed }: any,  stepData: unknown, context: unknown): void;
-//   afterScenario(uri: string, feature: unknown, scenarios: unknown, sourceLocation: string): void;
+//   afterStep(
+//     uri: string,
+//     feature: unknown,
+//     { error, result, duration, passed }: any,
+//     stepData: unknown,
+//     context: unknown
+//   ): void;
+//   afterScenario(
+//     uri: string, feature: unknown, scenarios: unknown, sourceLocation: string): void;
 //   afterFeature(uri: string, feature: unknown, scenarios: unknown): void;
 // }
 
 export type Framework = MochaFramework | JasmineFramework;
 
-type Services =
-  | 'selenium-standalone'
-  | 'sauce';
+// type Services =
+//   | 'selenium-standalone'
+//   | 'sauce';
 
 type Reporters =
   | 'spec';
@@ -162,17 +175,24 @@ interface BaseConfig {
   onPrepare?(config: WdioConfig, capabilities: WdioConfig['capabilities']): void;
   beforeSession?(config: WdioConfig, capabilities: WdioConfig['capabilities'], specs: WdioConfig['specs']): void;
   before?(config: WdioConfig, capabilities: WdioConfig['capabilities']): void;
-  beforeSuite?(suite: Object): void;
+  beforeSuite?(suite: object): void;
   beforeHook?(test: unknown, context: unknown): void;
-  afterHook?(test: unknown, context: unknown, { error, result, duration, passed, retries }: any): void;
+  afterHook?(
+    test: unknown, context: unknown, { error, result, duration, passed, retries }: any): void;
   beforeTest?(test: unknown, context: unknown): void;
   beforeCommand?(commandName: string, args: string[]): void;
   afterCommand?(commandName: string, args: string[], result: 0 | 1, error: Error): void;
-  afterTest?(test: unknown, context: unknown, { error, result, duration, passed, retries }: any): void;
-  afterSuite?(suite: Object): void;
+  afterTest?(
+    test: unknown, context: unknown, { error, result, duration, passed, retries }: any): void;
+  afterSuite?(suite: object): void;
   after?(result: 0 | 1, capabilities: WdioConfig['capabilities'], specs: WdioConfig['specs']): void;
   afterSession?(config: WdioConfig, capabilities: WdioConfig['capabilities'], specs: WdioConfig['specs']): void;
-  onComplete?(exitCode: 0 | 1, config: WdioConfig, capabilities: WdioConfig['capabilities'], results: Object): void;
+  onComplete?(
+    exitCode: 0 | 1,
+    config: WdioConfig,
+    capabilities: WdioConfig['capabilities'],
+    results: object
+  ): void;
   onReload?(oldSessionId: string, newSessionId: string): void;
 }
 
@@ -185,7 +205,7 @@ interface SeleniumArgs {
 interface SeleniumConfig extends BaseConfig {
   capabilities: Capability[];
   services: ['selenium-standalone'];
-  seleniumLogs: 'logs',
+  seleniumLogs: 'logs';
   seleniumInstallArgs?: SeleniumArgs;
   seleniumArgs?: SeleniumArgs;
 }
