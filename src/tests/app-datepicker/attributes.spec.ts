@@ -1,4 +1,5 @@
-import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
+import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+
 import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
