@@ -16,7 +16,7 @@ import {
 const elementName = 'app-datepicker';
 
 const cleanHtml =
-    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+  (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
 
 describe('attributes', () => {
   before(async () => {

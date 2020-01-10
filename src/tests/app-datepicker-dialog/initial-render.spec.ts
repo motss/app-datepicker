@@ -51,7 +51,7 @@ describe(`${elementName}::initial_render`, () => {
       type A = [string, string, string, string];
 
       const values: A = await browser.executeAsync(async (a, done) => {
-        const n: AppDatepickerDialog = document.body.querySelector(a)!;
+        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
         done([
           n.getAttribute('role'),

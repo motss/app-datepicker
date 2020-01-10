@@ -2,12 +2,9 @@ import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { cleanHtml } from '../helpers/clean-html.js';
-import { cleanText } from '../helpers/clean-text.js';
-import { getProp } from '../helpers/get-prop.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { shadowQueryAll } from '../helpers/shadow-query-all.js';
-import { shadowQuery } from '../helpers/shadow-query.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
+import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
   deepStrictEqual,
@@ -18,75 +15,33 @@ import {
 const elementName = 'app-datepicker-dialog';
 const elementName2 = 'app-datepicker';
 
+const cleanHtml =
+  (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
+
 describe(`${elementName}::keyboards`, () => {
-  const isMicrosoftEdge = 'MicrosoftEdge' === browser.capabilities.browserName;
-
-  const tapElements = async (
-    selectors: string[],
-    keys: string[]
-  ): Promise<WebdriverIOAsync.Element> => {
-    for (const s of selectors) {
-      await browser.executeAsync(async (a, b, c, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-        const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
-        const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
-
-        n3.focus();
-
-        done();
-      }, elementName, elementName2, s);
-
-      await browser.keys(keys);
-    }
-
-    return $(elementName);
-  };
-  const focusCalendarsContainer = async (): Promise<string> => {
-    return await browser.executeAsync(async (a, b, c, done) => {
+  const focusElement = async (selector: string, inDialog: boolean = false) => {
+    return browser.executeAsync(async (a, b, c, d, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
-      const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
+      const n3 = (d ? n : n2).shadowRoot!.querySelector<HTMLElement>(c)!;
 
       n3.focus();
 
-      let activeElement = document.activeElement;
+      await n.updateComplete;
+      await new Promise(y => setTimeout(() => y(n3.focus())));
+      await n.updateComplete;
 
-      while (activeElement?.shadowRoot) {
-        activeElement = activeElement.shadowRoot.activeElement;
-      }
-
-      done(
-        `.${Array.from(activeElement?.classList.values() ?? []).join('.')}`
-      );
-    }, elementName, elementName2, '.calendars-container');
+      done();
+    }, elementName, elementName2, selector, inDialog);
   };
-  const shadowQuery2 = async (
-    el: WebdriverIOAsync.Element,
-    selector: string[]
-  ): Promise<WebdriverIOAsync.Element> => {
-    const n = await shadowQuery(el, [elementName2]);
-    const n2 = await shadowQuery(n, selector);
-
-    return n2;
-  };
-  const shadowQueryAll2 = async (
-    el: WebdriverIOAsync.Element,
-    selector: string[]
-  ): Promise<WebdriverIOAsync.ElementArray> => {
-    const n = await shadowQuery(el, [elementName2]);
-    const n2s = await shadowQueryAll(n, selector);
-
-    return n2s;
-  };
-  const getProp2 = async <T>(propName: string): Promise<T> => {
-    const value: T = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
-
-      done((n2 as any)[c]);
-    }, elementName, elementName2, propName);
-
-    return value;
+  const tapElements = async (
+    selectors: string[],
+    keys: string[]
+  ): Promise<void> => {
+    for (const s of selectors) {
+      await focusElement(s);
+      await browser.keys(keys);
+    }
   };
 
   before(async () => {
@@ -112,7 +67,7 @@ describe(`${elementName}::keyboards`, () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a);
+      const el = document.body.querySelector<AppDatepickerDialog>(a);
 
       if (el) document.body.removeChild(el);
 
@@ -121,15 +76,18 @@ describe(`${elementName}::keyboards`, () => {
   });
 
   it(`switches to year list view`, async () => {
-    await new Promise(y => setTimeout(y, 3e3));
+    await tapElements(['.btn__year-selector'], ['Space']);
 
-    const el = await tapElements(['.btn__year-selector'], ['Space']);
+    const hasYearListView: boolean = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-    await new Promise(y => setTimeout(y, 3e3));
+      const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
-    const yearListView = await shadowQuery2(el, ['.datepicker-body__year-list-view']);
+      done(yearListView != null);
+    }, elementName, elementName2, '.datepicker-body__year-list-view');
 
-    ok(await yearListView.isExisting());
+    ok(hasYearListView);
   });
 
   it(`switches to calendar view`, async () => {
@@ -143,35 +101,63 @@ describe(`${elementName}::keyboards`, () => {
       done();
     }, elementName);
 
-    const el = await tapElements(['.btn__calendar-selector'], ['Space']);
+    await tapElements(['.btn__calendar-selector'], ['Space']);
 
-    const calendarView = await shadowQuery2(el, ['.datepicker-body__calendar-view']);
+    const hasCalendarView: boolean = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-    ok(await calendarView.isExisting());
+      const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
+
+      done(yearListView != null);
+    }, elementName, elementName2, '.datepicker-body__calendar-view');
+
+    ok(hasCalendarView);
   });
 
   it(`focuses date after navigating away when switching to calendar view`, async () => {
-    let el = await tapElements([
+    type A = [boolean, string];
+
+    await tapElements([
       `.btn__month-selector[aria-label="Next month"]`,
       `.btn__year-selector`,
     ], ['Space']);
 
-    const yearListView = await shadowQuery2(el, ['.datepicker-body__year-list-view']);
+    const hasYearListView: boolean = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-    ok(await yearListView.isExisting());
+      const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
-    el = await tapElements([`.btn__calendar-selector`], ['Space']);
+      done(yearListView != null);
+    }, elementName, elementName2, '.datepicker-body__year-list-view');
 
-    const calendarView = await shadowQuery2(el, ['.datepicker-body__calendar-view']);
-    const focusedDate = await shadowQuery2(el, [
-      '.calendar-container:nth-of-type(2)',
-      '.day--focused',
-    ]);
+    await tapElements([`.btn__calendar-selector`], ['Space']);
 
-    const focusedDateContent = await cleanHtml(focusedDate);
+    const [
+      hasCalendarView,
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-    ok(await calendarView.isExisting());
-    strictEqual(focusedDateContent, prettyHtml`
+      const root = n2.shadowRoot!;
+
+      const yearListView = root.querySelector<HTMLDivElement>(c)!;
+      const focusedDate = root.querySelector<HTMLTableCellElement>(d)!;
+
+      done([
+        yearListView != null,
+        focusedDate.outerHTML,
+      ] as A);
+    },
+    elementName,
+    elementName2,
+    '.datepicker-body__calendar-view',
+    toSelector('.day--focused'));
+
+    allStrictEqual([hasCalendarView, hasYearListView], true);
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 20, 2020">
       <div class="calendar-day">20</div>
     </td>
@@ -179,10 +165,23 @@ describe(`${elementName}::keyboards`, () => {
   });
 
   it(`switches back to calendar view when new year is selected`, async () => {
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
+    type A = [string, string];
+    type B = [string, string, string, string, string[]];
 
-    const el = await tapElements([
+    const [
+      prop,
+      prop2,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      done([
+        n.value,
+        n2.value,
+      ] as A);
+    }, elementName, elementName2);
+
+    await tapElements([
       '.btn__year-selector',
       [
         `.year-list-view__list-item.year--selected`,
@@ -191,37 +190,47 @@ describe(`${elementName}::keyboards`, () => {
       ].join(' '),
     ], ['Space']);
 
-    const yearSelectorButton = await shadowQuery2(el, ['.btn__year-selector']);
-    const currentCalendarLabel = await shadowQuery2(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.calendar-label`,
-    ]);
-    const calendarDays = await shadowQueryAll2(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.full-calendar__day`,
-    ]);
+    const [
+      prop3,
+      prop4,
+      yearSelectorButtonContent,
+      calendarLabelContent,
+      calendarDaysContents,
+    ]: B = await browser.executeAsync(async (a, b, c, d, e, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-    const yearSelectorButtonContent = await cleanHtml(yearSelectorButton);
-    const currentCalendarLabelContent = await cleanHtml(currentCalendarLabel);
-    const calendarDaysContent = await Promise.all(calendarDays.map(cleanText));
+      const root = n2.shadowRoot!;
 
-    const valueProp3 = await getProp<string>(elementName, 'value');
-    const valueProp4 = await getProp2<string>('value');
+      const yearSelectorButton = root.querySelector<HTMLButtonElement>(c)!;
+      const calendarLabel = root.querySelector<HTMLDivElement>(d)!;
+      const calendarDays = Array.from(
+        root.querySelectorAll<HTMLTableCellElement>(e), o => o.textContent);
 
-    allStrictEqual([
-      valueProp,
-      valueProp2,
-      valueProp3,
-    ], '2020-02-20');
-    strictEqual(valueProp4, '2022-02-20');
+      done([
+        n.value,
+        n2.value,
+        yearSelectorButton.outerHTML,
+        calendarLabel.outerHTML,
+        calendarDays,
+      ] as B);
+    },
+    elementName,
+    elementName2,
+    '.btn__year-selector',
+    toSelector('.calendar-label'),
+    toSelector('.full-calendar__day'));
 
-    strictEqual(yearSelectorButtonContent, prettyHtml`
+    allStrictEqual([prop, prop2, prop3], '2020-02-20');
+    strictEqual(prop4, '2022-02-20');
+
+    strictEqual(cleanHtml(yearSelectorButtonContent), prettyHtml`
     <button class="btn__year-selector" data-view="yearList">2022</button>
     `);
-    strictEqual(currentCalendarLabelContent, prettyHtml`
+    strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">February 2022</div>
     `);
-    deepStrictEqual(calendarDaysContent.map(n => n.trim()), [
+    deepStrictEqual(calendarDaysContents.map(n => cleanHtml(n.trim())), [
       '', '', 1, 2, 3, 4, 5,
       6, 7, 8, 9, 10, 11, 12,
       13, 14, 15, 16, 17, 18, 19,
@@ -232,49 +241,44 @@ describe(`${elementName}::keyboards`, () => {
   });
 
   it(`closes dialog when dismiss button is tapped`, async () => {
-    type A = [boolean, boolean];
+    type A = [string, string];
 
-    await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const dialogDismissButton = n.shadowRoot!.querySelector<HTMLElement>(b)!;
-
-      dialogDismissButton.focus();
-
-      await n.updateComplete;
-
-      await new Promise(y => setTimeout(() => y(dialogDismissButton.focus())));
-
-      await n.updateComplete;
-
-      done();
-    }, elementName, `.actions-container > mwc-button[dialog-dismiss]`);
+    await focusElement(`.actions-container > mwc-button[dialog-dismiss]`, true);
 
     await browser.keys(['Space']);
 
-    const el = await $(elementName);
+    // Wait for dialog closes
+    await (await $(elementName)).waitForDisplayed(undefined, true);
 
-    await el.waitForDisplayed(undefined, true);
-
-    const values: A = await browser.executeAsync(async (a, done) => {
+    const [
+      cssDisplay,
+      ariaHiddenAttr,
+    ]: A = await browser.executeAsync(async (a, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
       await n.updateComplete;
 
       done([
-        getComputedStyle(n).display === 'none',
-        n.getAttribute('aria-hidden') === 'true',
-      ]);
+        getComputedStyle(n).display,
+        n.getAttribute('aria-hidden'),
+      ] as A);
     }, elementName);
 
-    deepStrictEqual(values, [true, true]);
+    strictEqual(cssDisplay, 'none');
+    strictEqual(ariaHiddenAttr, 'true');
   });
 
   it(`closes dialog with new focused date when confirm button is tapped`, async () => {
-    type A = [boolean, boolean, boolean];
+    type A = [string, string, string];
+    type B = [string, string, string];
 
     // FIXME: Using keyboard to select new focused date is tedious and inconsistent.
     // Here updates via `value` property.
-    await browser.executeAsync(async (a, b, done) => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
@@ -282,250 +286,80 @@ describe(`${elementName}::keyboards`, () => {
 
       await n2.updateComplete;
 
-      done();
-    }, elementName, elementName2);
+      const focusedDate = n2.shadowRoot!.querySelector<HTMLTableCellElement>(c)!;
 
-    let el = await $(elementName);
+      done([
+        n.value,
+        n2.value,
+        focusedDate.outerHTML,
+      ] as A);
+    }, elementName, elementName2, toSelector('.day--focused'));
 
-    const focusedDate = await shadowQuery2(el, [
-      `.calendar-container:nth-of-type(2)`,
-      `.day--focused`,
-    ]);
-
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const dialogConfirmButton = n.shadowRoot!.querySelector<HTMLElement>(b)!;
-
-      dialogConfirmButton.focus();
-
-      await n.updateComplete;
-
-      await new Promise(y => setTimeout(() => y(dialogConfirmButton.focus())));
-
-      await n.updateComplete;
-
-      done();
-    }, elementName, `.actions-container > mwc-button[dialog-confirm]`);
+    await focusElement(`.actions-container > mwc-button[dialog-confirm]`, true);
 
     await browser.keys(['Space']);
 
-    el = await $(elementName);
+    await (await $(elementName)).waitForDisplayed(undefined, true);
 
-    await el.waitForDisplayed(undefined, true);
-
-    const values: A = await browser.executeAsync(async (a, done) => {
+    const [
+      prop3,
+      cssDisplay,
+      ariaHiddenAttr,
+    ]: B = await browser.executeAsync(async (a, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
       await n.updateComplete;
 
       done([
-        getComputedStyle(n).display === 'none',
-        n.getAttribute('aria-hidden')  === 'true',
-        n.value === '2020-02-13',
-      ] as A);
+        n.value,
+        getComputedStyle(n).display,
+        n.getAttribute('aria-hidden'),
+        // === '2020-02-13'
+      ] as B);
     }, elementName);
 
-    const valueProp3 = await getProp<string>(elementName, 'value');
-
-    strictEqual(valueProp, '2020-02-20');
-    allStrictEqual([valueProp2, valueProp3], '2020-02-13');
-    strictEqual(focusedDateContent, prettyHtml`
+    strictEqual(prop, '2020-02-20');
+    allStrictEqual([prop2, prop3], '2020-02-13');
+    strictEqual(cssDisplay, 'none');
+    strictEqual(ariaHiddenAttr, 'true');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
       <div class="calendar-day">13</div>
     </td>
     `);
-
-    deepStrictEqual(values, [true, true, true]);
   });
 
-  it(`focuses date (ArrowLeft)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['ArrowLeft']);
+  // region helpers
+  type C = [string, string, string];
 
-    const el = await $(elementName);
+  const focusCalendarsContainer = async (): Promise<string> => {
+    return await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
 
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
+      n3.focus();
 
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
+      await n.updateComplete;
+      await new Promise(y => setTimeout(() => y(n3.focus())));
+      await n.updateComplete;
 
-    const expected = isMicrosoftEdge ? '18' : '19';
+      let activeElement = document.activeElement;
 
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, `2020-02-${expected}`);
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="Feb ${expected}, 2020">
-      <div class="calendar-day">${expected}</div>
-    </td>
-    `));
-  });
+      while (activeElement?.shadowRoot) {
+        activeElement = activeElement.shadowRoot.activeElement;
+      }
 
-  it(`focuses date (ArrowRight)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['ArrowRight']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    const expected = isMicrosoftEdge ? '22' : '21';
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, `2020-02-${expected}`);
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="Feb ${expected}, 2020">
-      <div class="calendar-day">${expected}</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (ArrowUp)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['ArrowUp']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    const expected = isMicrosoftEdge ? '6' : '13';
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, `2020-02-${expected.padStart(2, '0')}`);
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="Feb ${expected}, 2020">
-      <div class="calendar-day">${expected}</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (ArrowDown)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['ArrowDown']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, isMicrosoftEdge ? '2020-03-05' : '2020-02-27');
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="${
-      isMicrosoftEdge ? 'Mar 5' : 'Feb 27'
-    }, 2020">
-      <div class="calendar-day">${isMicrosoftEdge ? '5' : '27'}</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (PageUp)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['PageUp']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, isMicrosoftEdge ? '2019-12-20' : '2020-01-20');
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="${
-      isMicrosoftEdge ? 'Dec 20, 2019' : 'Jan 20, 2020'
-    }">
-      <div class="calendar-day">20</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (PageDown)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['PageDown']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, isMicrosoftEdge ? '2020-04-20' : '2020-03-20');
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="${
-      isMicrosoftEdge ? 'Apr' : 'Mar'
-    } 20, 2020">
-      <div class="calendar-day">20</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (Home)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['Home']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2020-02-01');
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="Feb 1, 2020">
-      <div class="calendar-day">1</div>
-    </td>
-    `));
-  });
-
-  it(`focuses date (End)`, async () => {
-    await focusCalendarsContainer();
-    await browser.keys(['End']);
-
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2020-02-29');
-    strictEqual(focusedDateContent, prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
-      <div class="calendar-day">29</div>
-    </td>
-    `));
-  });
-
+      done(
+        `.${Array.from(activeElement?.classList.values() ?? []).join('.')}`
+      );
+    }, elementName, elementName2, '.calendars-container');
+  };
   // FIXME: Helper as a workaround until `browser.keys()` supports Alt
   // on all browsers on local and CI.
-  const browserKeysWithAltKey = async (keyCode: number, altKey: boolean = true) => {
+  const browserKeys = async (keyCode: number, altKey: boolean = false) => {
+    await focusCalendarsContainer();
+
     return browser.executeAsync(async (a, b, c, d, e, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
@@ -543,45 +377,189 @@ describe(`${elementName}::keyboards`, () => {
       done();
     }, elementName, elementName2, '.calendars-container', keyCode, altKey);
   };
+  const getValuesAfterKeys = async (
+    key: number,
+    altKey: boolean = false
+  ): Promise<C> => {
+    await focusCalendarsContainer();
+
+    await browserKeys(key, altKey);
+
+    const [prop, prop2, content]: C = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      const focusedDate = n2.shadowRoot!.querySelector<HTMLTableCellElement>(c)!;
+
+      done([
+        n.value,
+        n2.value,
+        focusedDate.outerHTML,
+      ] as C);
+    }, elementName, elementName2, toSelector('.day--focused'));
+
+    return [prop, prop2, cleanHtml(content)];
+  };
+  // #endregion helpers
+
+  it(`focuses date (ArrowLeft)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.ARROW_LEFT);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-02-19');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 19, 2020">
+      <div class="calendar-day">19</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (ArrowRight)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.ARROW_RIGHT);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-02-21');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 21, 2020">
+      <div class="calendar-day">21</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (ArrowUp)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.ARROW_UP);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, `2020-02-13`);
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
+      <div class="calendar-day">13</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (ArrowDown)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.ARROW_DOWN);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-02-27');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 27, 2020">
+      <div class="calendar-day">27</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (PageUp)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.PAGE_UP);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-01-20');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Jan 20, 2020">
+      <div class="calendar-day">20</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (PageDown)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.PAGE_DOWN);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-03-20');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Mar 20, 2020">
+      <div class="calendar-day">20</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (Home)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.HOME);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-02-01');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 1, 2020">
+      <div class="calendar-day">1</div>
+    </td>
+    `);
+  });
+
+  it(`focuses date (End)`, async () => {
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.END);
+
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2020-02-29');
+    strictEqual(focusedDateContent, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+      <div class="calendar-day">29</div>
+    </td>
+    `);
+  });
 
   it(`focuses date (Alt + PageUp)`, async () => {
-    await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_UP);
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.PAGE_UP, true);
 
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2019-02-20');
-    strictEqual(focusedDateContent, prettyHtml(`
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2019-02-20');
+    strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 20, 2019">
       <div class="calendar-day">20</div>
     </td>
-    `));
+    `);
   });
 
   it(`focuses date (Alt + PageDown)`, async () => {
-    await browserKeysWithAltKey(KEY_CODES_MAP.PAGE_DOWN);
+    const [
+      prop,
+      prop2,
+      focusedDateContent,
+    ]: C = await getValuesAfterKeys(KEY_CODES_MAP.PAGE_DOWN, true);
 
-    const el = await $(elementName);
-
-    const focusedDate = await shadowQuery2(el, ['.day--focused']);
-    const focusedDateContent = await cleanHtml(focusedDate);
-
-    const valueProp = await getProp<string>(elementName, 'value');
-    const valueProp2 = await getProp2<string>('value');
-
-    strictEqual(valueProp, '2020-02-20');
-    strictEqual(valueProp2, '2021-02-20');
-    strictEqual(focusedDateContent, prettyHtml(`
+    strictEqual(prop, '2020-02-20');
+    strictEqual(prop2, '2021-02-20');
+    strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-label="Feb 20, 2021">
       <div class="calendar-day">20</div>
     </td>
-    `));
+    `);
   });
 
 });

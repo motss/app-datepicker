@@ -42,6 +42,10 @@ describe('keyboards', () => {
 
       b1.focus();
 
+      await a1.updateComplete;
+      await new Promise(y => setTimeout(() => y(b1.focus())));
+      await a1.updateComplete;
+
       let activeElement = document.activeElement;
 
       while (activeElement?.shadowRoot) {
