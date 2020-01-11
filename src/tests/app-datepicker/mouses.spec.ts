@@ -60,7 +60,7 @@ describe('mouses', () => {
           const n = document.body.querySelector<AppDatepicker>(a)!;
           const n2: HTMLElement = n.shadowRoot!.querySelector(b)!;
 
-          if (n2 instanceof HTMLButtonElement) {
+          if (n2 instanceof HTMLButtonElement || n2.tagName === 'MWC-BUTTON') {
             n2.click();
           } else {
             // Simulate click event on non natively focusable elements.

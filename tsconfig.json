@@ -7,8 +7,6 @@
     "target": "ES2020",
     "sourceMap": false,
     "inlineSources": false,
-    "incremental": true,
-    "tsBuildInfoFile": "./.app-datepicker.tsbuildinfo",
     "types": [
       "@wdio/mocha-framework",
       "node",
