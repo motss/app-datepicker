@@ -23,7 +23,7 @@ describe(`${elementName}::mouses`, () => {
   const clickElements = async (classes: string[], prepareOptions?: PrepareOptions) => {
     if (prepareOptions) {
       await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
         const { props, attrs }: PrepareOptions = b;
 
@@ -60,7 +60,7 @@ describe(`${elementName}::mouses`, () => {
       if (isSafari) {
         await browser.executeAsync(async (a, b, c, done) => {
           const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-          const n2 = document.body.querySelector<AppDatepicker>(b)!;
+          const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
           const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
 
           if (n3 instanceof HTMLButtonElement || n3.tagName === 'MWC-BUTTON') {
