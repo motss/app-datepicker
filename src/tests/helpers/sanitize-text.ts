@@ -1,5 +1,4 @@
 export function sanitizeText(content: string, showToday: boolean = false): string {
-
   return (
     showToday
       ? content

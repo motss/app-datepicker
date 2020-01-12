@@ -85,9 +85,9 @@ describe(`${elementName}::properties`, () => {
 
     deepStrictEqual(values, [
       0, 0,
-      'first-4-day-week' as WeekNumberType, 'first-4-day-week' as WeekNumberType,
-      'calendar' as StartView, 'calendar' as StartView,
-    ]);
+      'first-4-day-week', 'first-4-day-week',
+      'calendar', 'calendar',
+    ] as A);
   });
 
   it(`renders with defined 'min'`, async () => {

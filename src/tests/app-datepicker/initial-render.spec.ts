@@ -1,8 +1,7 @@
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { getProp } from '../helpers/get-prop.js';
+import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   deepStrictEqual,
@@ -10,9 +9,6 @@ import {
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker';
-
-const cleanHtml =
-    (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
 
 describe('initial render', () => {
   describe('calendar view', () => {
@@ -54,9 +50,13 @@ describe('initial render', () => {
     });
 
     it(`renders initial content`, async () => {
-      const locale = await getProp(elementName, 'locale');
+      const prop: string = await browser.executeAsync(async (a, done) => {
+        const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      strictEqual(locale, 'en-US');
+        done(n.locale);
+      }, elementName);
+
+      strictEqual(prop, 'en-US');
     });
 
     it(`renders calendar view`, async () => {

@@ -2,8 +2,8 @@ import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
+import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
@@ -14,9 +14,6 @@ import {
 
 const elementName = 'app-datepicker-dialog';
 const elementName2 = 'app-datepicker';
-
-const cleanHtml =
-  (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
 
 describe(`${elementName}::keyboards`, () => {
   const focusElement = async (selector: string, inDialog: boolean = false) => {

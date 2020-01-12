@@ -1,7 +1,6 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { getProp } from '../helpers/get-prop.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {
   deepStrictEqual,
@@ -102,9 +101,13 @@ describe(`${elementName}::initial_render`, () => {
         `0${now.getDate()}`.slice(-2),
       ].join('-');
 
-      const todayProp = await getProp<string>(elementName, 'value');
+      const prop: string = await browser.executeAsync(async (a, done) => {
+        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
-      strictEqual(todayProp, today);
+        done(n.value);
+      }, elementName);
+
+      strictEqual(prop, today);
     });
 
     it(`renders year list view`, async () => {

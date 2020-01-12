@@ -3,8 +3,8 @@ import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
+import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
-import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
@@ -14,9 +14,6 @@ import {
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker';
-
-const cleanHtml =
-  (s: string, showToday: boolean = false) => prettyHtml(sanitizeText(s, showToday));
 
 describe('attributes', () => {
   before(async () => {
@@ -205,7 +202,7 @@ describe('attributes', () => {
       ] as A);
     }, elementName, '.datepicker-body__year-list-view');
 
-    allStrictEqual<StartView>([prop, attr], 'yearList');
+    allStrictEqual([prop, attr], 'yearList');
     ok(hasYearListView);
   });
 

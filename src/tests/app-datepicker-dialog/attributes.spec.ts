@@ -4,10 +4,9 @@ import { AppDatepicker } from '../../app-datepicker.js';
 import { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
+  allStrictEqual,
   deepStrictEqual,
 } from '../helpers/typed-assert.js';
-
-type ExpectedValues<T, U = undefined> = U extends undefined ? [T, T] : [T, T, U, U];
 
 const elementName = 'app-datepicker-dialog';
 const elementName2 = 'app-datepicker';
@@ -62,32 +61,45 @@ describe(`${elementName}::attributes`, () => {
   });
 
   it(`renders with initial attributes`, async () => {
-    type A = ExpectedValues<[string, StartView, WeekNumberType]>;
+    type A = [
+      string,
+      string,
+      StartView,
+      StartView,
+      WeekNumberType,
+      WeekNumberType,
+    ];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
-      const props: string[] = [
-        'firstdayofweek',
-        'startview',
-        'weeknumbertype',
-      ];
-
       done([
-        props.map(p => n.getAttribute(p)),
-        props.map(p => n2.getAttribute(p)),
+        n.getAttribute('firstdayofweek'),
+        n2.getAttribute('firstdayofweek'),
+
+        n.getAttribute('startview'),
+        n2.getAttribute('startview'),
+
+        n.getAttribute('weeknumbertype'),
+        n2.getAttribute('weeknumbertype'),
       ] as A);
     }, elementName, elementName2);
 
     deepStrictEqual(values, [
-      ['0', 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
-      ['0', 'calendar' as StartView, 'first-4-day-week' as WeekNumberType],
-    ]);
+      '0',
+      '0',
+
+      'calendar',
+      'calendar',
+
+      'first-4-day-week',
+      'first-4-day-week',
+    ] as A);
   });
 
   it(`renders with defined 'min'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = [string, string];
 
     const expectedMin = '2000-01-01';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -101,11 +113,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.getAttribute('min'), n2.getAttribute('min')] as A);
     }, elementName, elementName2, expectedMin);
 
-    deepStrictEqual(values, [expectedMin, expectedMin]);
+    allStrictEqual(values, expectedMin);
   });
 
   it(`renders with defined 'max'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = [string, string];
 
     const expectedMax = '2020-02-27';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -119,11 +131,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.getAttribute('max'), n2.getAttribute('max')] as A);
     }, elementName, elementName2, expectedMax);
 
-    deepStrictEqual(values, [expectedMax, expectedMax]);
+    allStrictEqual(values, expectedMax);
   });
 
   it(`renders with defined 'value'`, async () => {
-    type A = ExpectedValues<boolean, string>;
+    type A = [boolean, boolean, string, string];
 
     const expectedValue = '2020-02-20';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -147,7 +159,7 @@ describe(`${elementName}::attributes`, () => {
   });
 
   it(`renders with defined 'startview'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = [string, string];
 
     const expectedStartview: StartView = 'calendar';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -161,11 +173,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.getAttribute('startview'), n2.getAttribute('startview')] as A);
     }, elementName, elementName2, expectedStartview);
 
-    deepStrictEqual(values, [expectedStartview, expectedStartview] as A);
+    allStrictEqual(values, expectedStartview);
   });
 
   it(`renders with defined 'firstdayofweek'`, async () => {
-    type A = ExpectedValues<string>;
+    type A = [string, string];
 
     const expectedFirstdayofweek = '1';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -179,11 +191,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.getAttribute('firstdayofweek'), n2.getAttribute('firstdayofweek')] as A);
     }, elementName, elementName2, expectedFirstdayofweek);
 
-    deepStrictEqual(values, [expectedFirstdayofweek, expectedFirstdayofweek] as A);
+    allStrictEqual(values, expectedFirstdayofweek);
   });
 
   it(`renders with defined 'showeeknumber'`, async () => {
-    type A = ExpectedValues<boolean>;
+    type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
@@ -196,11 +208,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.hasAttribute('showweeknumber'), n2.hasAttribute('showweeknumber')] as A);
     }, elementName, elementName2);
 
-    deepStrictEqual(values, [true, true] as A);
+    allStrictEqual(values, true);
   });
 
   it(`renders with defined 'weeknumbertype'`, async () => {
-    type A = ExpectedValues<WeekNumberType>;
+    type A = [WeekNumberType, WeekNumberType];
 
     const expectedWeeknumbertype: WeekNumberType = 'first-4-day-week';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -214,11 +226,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.getAttribute('weeknumbertype'), n2.getAttribute('weeknumbertype')] as A);
     }, elementName, elementName2, expectedWeeknumbertype);
 
-    deepStrictEqual(values, [expectedWeeknumbertype, expectedWeeknumbertype] as A);
+    allStrictEqual(values, expectedWeeknumbertype);
   });
 
   it(`renders with defined 'landscape'`, async () => {
-    type A = ExpectedValues<boolean>;
+    type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
@@ -231,11 +243,11 @@ describe(`${elementName}::attributes`, () => {
       done([n.hasAttribute('landscape'), n2.hasAttribute('landscape')] as A);
     }, elementName, elementName2);
 
-    deepStrictEqual(values, [true, true] as A);
+    allStrictEqual(values, true);
   });
 
   it(`renders with defined 'locale'`, async () => {
-    type A = ExpectedValues<string | null, string>;
+    type A = [string, null, string, string];
 
     const expectedLocale: string = 'ja-JP';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -259,7 +271,7 @@ describe(`${elementName}::attributes`, () => {
   });
 
   it(`renders with defined 'disableddays'`, async () => {
-    type A = ExpectedValues<string | null, string>;
+    type A = [string, null, string, string];
 
     const expectedDisableddays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -280,11 +292,15 @@ describe(`${elementName}::attributes`, () => {
     }, elementName, elementName2, expectedDisableddays);
 
     deepStrictEqual(values, [
-      expectedDisableddays, null, expectedDisableddays, expectedDisableddays] as A);
+      expectedDisableddays,
+      null,
+      expectedDisableddays,
+      expectedDisableddays,
+    ] as A);
   });
 
   it(`renders with defined 'disableddates'`, async () => {
-    type A = ExpectedValues<string | null, string>;
+    type A = [string, null, string, string];
 
     const expectedDisableddates: string = '2020-02-02,2020-02-15';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -305,11 +321,15 @@ describe(`${elementName}::attributes`, () => {
     }, elementName, elementName2, expectedDisableddates);
 
     deepStrictEqual(values, [
-      expectedDisableddates, null, expectedDisableddates, expectedDisableddates] as A);
+      expectedDisableddates,
+      null,
+      expectedDisableddates,
+      expectedDisableddates,
+    ] as A);
   });
 
   it(`renders with defined 'weekLabel'`, async () => {
-    type A = ExpectedValues<string | null, string>;
+    type A = [string, null, string, string];
 
     const expectedWeeklabel: string = '周数';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
@@ -330,11 +350,27 @@ describe(`${elementName}::attributes`, () => {
     }, elementName, elementName2, expectedWeeklabel);
 
     deepStrictEqual(values, [
-      expectedWeeklabel, null, expectedWeeklabel, expectedWeeklabel] as A);
+      expectedWeeklabel,
+      null,
+      expectedWeeklabel,
+      expectedWeeklabel,
+    ] as A);
   });
 
   it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
-    type A = ExpectedValues<[string, string | null], [number, string]>;
+    type A = [
+      string,
+      string,
+
+      string,
+      null,
+
+      number,
+      number,
+
+      string,
+      string,
+    ];
 
     const expectedFirstdayofweek: string = '1';
     const expectedDisableddays: string = '3,5';
@@ -348,20 +384,32 @@ describe(`${elementName}::attributes`, () => {
       await n.updateComplete;
 
       done([
-        [n.getAttribute('firstdayofweek'), n.getAttribute('disableddays')],
-        [n2.getAttribute('firstdayofweek'), n2.getAttribute('disableddays')],
+        n.getAttribute('firstdayofweek'),
+        n2.getAttribute('firstdayofweek'),
 
-        [n.firstDayOfWeek, n.disabledDays],
-        [n2.firstDayOfWeek, n2.disabledDays],
+        n.getAttribute('disableddays'),
+        n2.getAttribute('disableddays'),
+
+        n.firstDayOfWeek,
+        n2.firstDayOfWeek,
+
+        n.disabledDays,
+        n2.disabledDays,
       ] as A);
     }, elementName, elementName2, expectedFirstdayofweek, expectedDisableddays);
 
     deepStrictEqual(values, [
-      [expectedFirstdayofweek, expectedDisableddays],
-      [expectedFirstdayofweek, null],
+      expectedFirstdayofweek,
+      expectedFirstdayofweek,
 
-      [Number(expectedFirstdayofweek), expectedDisableddays],
-      [Number(expectedFirstdayofweek), expectedDisableddays],
+      expectedDisableddays,
+      null,
+
+      Number(expectedFirstdayofweek),
+      Number(expectedFirstdayofweek),
+
+      expectedDisableddays,
+      expectedDisableddays,
     ] as A);
   });
 
