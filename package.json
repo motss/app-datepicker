@@ -90,8 +90,8 @@
     "webdriverio": "^5.18.5"
   },
   "engines": {
-    "node": ">= 8.16.0",
-    "npm": ">= 6.4.1"
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4"
   },
   "publishConfig": {
     "access": "public"
