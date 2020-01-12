@@ -5,7 +5,6 @@ export const config: WdioConfig = {
   specs: [
     './dist/tests/**/*.spec.js',
     // './dist/tests/app-datepicker/tests.js',
-    // './dist/tests/app-datepicker/tests.js',
     // './dist/tests/app-datepicker-dialog/tests.js',
   ],
   exclude: [],

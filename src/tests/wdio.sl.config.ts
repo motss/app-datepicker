@@ -13,8 +13,8 @@ const baseCapability: SauceLabsCapability = {
     seleniumVersion: '3.141.59',
   },
   specs: ['./dist/tests/**/*.spec.js'],
-  // specs: ['./dist/tests/app-datepicker-dialog/tests.js'],
   // specs: ['./dist/tests/app-datepicker/tests.js'],
+  // specs: ['./dist/tests/app-datepicker-dialog/tests.js'],
   browserName: 'googlechrome',
   platformName: 'windows 10',
 };

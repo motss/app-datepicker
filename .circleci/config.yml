@@ -72,45 +72,10 @@ jobs:
           name: Test on SauceLabs
           command: npm run test:sl
 
-  # # According to the resources below, Edge 15 is the oldest supported MS Edge.
-  # # https://en.wikipedia.org/wiki/Microsoft_Edge
-  # # https://reports.adduplex.com/#/r/2019-04
-  # # https://en.wikipedia.org/wiki/Windows_10_version_history
-  # test_edge_ie:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/app-datepicker
-  #     - run:
-  #         name: Test (Edge 17, 15, Internet Explorer 11)
-  #         command: |
-  #           if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-  #             npm run test:sl -- -s 'windows 10/microsoftedge@17' -s 'windows 10/microsoftedge@15' -s 'windows 10/internet explorer@11';
-  #           fi
-
-  # test_safari:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/app-datepicker
-  #     - run:
-  #         name: Test (Safari 10.1, 9)
-  #         command: |
-  #           if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-  #             npm run test:sl -- -s 'macos 10.12/safari@10.1' -s 'os x 10.11/safari@9';
-  #           fi
-
-  # test_old_firefox_chrome:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: ~/app-datepicker
-  #     - run:
-  #         name: Test (Firefox 62, Chrome 69)
-  #         command: |
-  #           if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
-  #             npm run test:sl -- -s 'macos 10.14/firefox@62' -s 'windows 10/chrome@69';
-  #           fi
+  # According to the resources below, Edge 15 is the oldest supported MS Edge.
+  # https://en.wikipedia.org/wiki/Microsoft_Edge
+  # https://reports.adduplex.com/#/r/2019-04
+  # https://en.wikipedia.org/wiki/Windows_10_version_history
 
 workflows:
   version: 2
@@ -123,15 +88,3 @@ workflows:
       - test_sauce_labs:
           requires:
             - build
-
-      # - test_edge_ie:
-      #     requires:
-      #       - build
-
-      # - test_safari:
-      #     requires:
-      #       - build
-
-      # - test_old_firefox_chrome:
-      #     requires:
-      #       - build
