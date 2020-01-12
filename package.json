@@ -21,7 +21,7 @@
   },
   "license": "MIT",
   "author": {
-    "name": "Rong Sen Ng",
+    "name": "Rong Sen Ng (motss)",
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
@@ -36,48 +36,58 @@
   "module": "dist/app-datepicker.js",
   "typings": "dist/app-datepicker.d.ts",
   "scripts": {
+    "build:config": "tsc -p tsconfig.test.json",
+    "build:test": "npm run ts && npm run build:config",
     "build": "npm run ts -- -p tsconfig.prod.json",
-    "clean": "shx rm -rf dist/",
-    "document": "polymer analyze > dist/analysis.json",
+    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
+    "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
-    "lint:debug": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
-    "serve": "polymer serve . --npm --module-resolution=node",
-    "test": "npm run lint && wct --skip-selenium-install --config-file wct.config.json",
-    "test:ci": "wct --config-file ./wct.config.ci.json",
-    "test:sl": "wct --config-file ./wct.config.sl.json",
-    "ts": "shx rm -rf dist/ && tsc",
-    "upgrade": "npm outdated --dev; npm update --dev; npm audit fix",
+    "serve": "es-dev-server --port 3000 --node-resolve --dedupe",
+    "test:dev:all": "npm run build:test && npm t && npm run test:sl:dev",
+    "test:dev": "npm run build:test && npm t",
+    "test:sl:dev": "env-cmd -f ./.env npm run test:sl",
+    "test:sl": "node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
+    "test": "node ./run-tests.js --config-file ./dist/tests/wdio.config.js",
+    "ts": "npm run clean && npm run lint && tsc",
+    "tsc": "tsc",
+    "upgrade": "npm outdated --dev && npm update --dev && npm audit fix",
     "watch": "npm run ts -- --watch"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run ts -- --noEmit && npm run clean"
+      "pre-commit": "npm run ts -- --noEmit && npm run clean"
     }
   },
   "dependencies": {
-    "@material/mwc-button": "^0.11.1",
+    "@material/mwc-button": "^0.12.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
-    "nodemod": "^2.2.3",
+    "nodemod": "^2.3.0",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "@reallyland/really-elements": "^0.3.0",
+    "@reallyland/really-elements": "^0.4.0",
     "@reallyland/tsconfig": "^1.0.1",
     "@reallyland/tslint-config": "^1.1.1",
-    "@types/chai": "^4.2.7",
     "@types/mocha": "^5.2.7",
-    "axe-core": "3.3.0",
-    "chai": "^4.2.0",
-    "esm": "^3.2.25",
-    "husky": "^3.1.0",
-    "mocha": "^6.2.2",
+    "@types/pretty": "^2.0.0",
+    "@wdio/cli": "^5.18.5",
+    "@wdio/local-runner": "^5.18.5",
+    "@wdio/mocha-framework": "^5.16.15",
+    "@wdio/sauce-service": "^5.16.10",
+    "@wdio/selenium-standalone-service": "^5.16.10",
+    "@wdio/spec-reporter": "^5.16.11",
+    "axe-core": "^3.4.1",
+    "env-cmd": "^10.0.1",
+    "es-dev-server": "^1.36.1",
+    "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
+    "reify": "^0.20.12",
     "shx": "^0.3.2",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.3",
-    "wct-mocha": "^1.0.1"
+    "typescript": "^3.7.4",
+    "webdriverio": "^5.18.5"
   },
   "engines": {
     "node": ">= 8.16.0",

@@ -1,6 +1,6 @@
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
-import { NEXT_KEYCODES_SET, PREV_KEYCODES_SET } from '../CONSTANT.js';
-import { KEYCODES_MAP } from '../custom_typings.js';
+import { NEXT_KEY_CODES_SET, PREV_KEY_CODES_SET } from '../CONSTANT.js';
+import { KEY_CODES_MAP } from '../custom_typings.js';
 import { getNextSelectableDate } from './get-selectable-date.js';
 
 interface ParamsComputeNextFocusedDate {
@@ -66,39 +66,39 @@ export function computeNextFocusedDate({
       d = 1;
       break;
     }
-    case focusedDateTime === minTime && PREV_KEYCODES_SET.has(keyCode):
-    case focusedDateTime === maxTime && NEXT_KEYCODES_SET.has(keyCode):
+    case focusedDateTime === minTime && PREV_KEY_CODES_SET.has(keyCode):
+    case focusedDateTime === maxTime && NEXT_KEY_CODES_SET.has(keyCode):
       break;
-    case keyCode === KEYCODES_MAP.ARROW_UP: {
+    case keyCode === KEY_CODES_MAP.ARROW_UP: {
       d -= 7;
       break;
     }
-    case keyCode === KEYCODES_MAP.ARROW_DOWN: {
+    case keyCode === KEY_CODES_MAP.ARROW_DOWN: {
       d += 7;
       break;
     }
-    case keyCode === KEYCODES_MAP.ARROW_LEFT: {
+    case keyCode === KEY_CODES_MAP.ARROW_LEFT: {
       d -= 1;
       break;
     }
-    case keyCode === KEYCODES_MAP.ARROW_RIGHT: {
+    case keyCode === KEY_CODES_MAP.ARROW_RIGHT: {
       d += 1;
       break;
     }
-    case keyCode === KEYCODES_MAP.PAGE_DOWN: {
+    case keyCode === KEY_CODES_MAP.PAGE_DOWN: {
       hasAltKey ? fy += 1 : m += 1;
       break;
     }
-    case keyCode === KEYCODES_MAP.PAGE_UP: {
+    case keyCode === KEY_CODES_MAP.PAGE_UP: {
       hasAltKey ? fy -= 1 : m -= 1;
       break;
     }
-    case keyCode === KEYCODES_MAP.END: {
+    case keyCode === KEY_CODES_MAP.END: {
       m += 1;
       d = 0;
       break;
     }
-    case keyCode === KEYCODES_MAP.HOME:
+    case keyCode === KEY_CODES_MAP.HOME:
     default: {
       d = 1;
       break;
@@ -113,7 +113,7 @@ export function computeNextFocusedDate({
    * - `2020-01-31` -> next month -> `2020-02-31` (invalid) -> fallback to `2020-02-29`
    * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
    */
-  if (keyCode === KEYCODES_MAP.PAGE_DOWN || keyCode === KEYCODES_MAP.PAGE_UP) {
+  if (keyCode === KEY_CODES_MAP.PAGE_DOWN || keyCode === KEY_CODES_MAP.PAGE_UP) {
     const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getUTCDate();
     if (d > totalDaysOfMonth) {
       d = totalDaysOfMonth;

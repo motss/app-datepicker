@@ -1,9 +1,4 @@
-type ClassProperties<T> = {
-  [P in keyof T]: T[P] extends CallableFunction ? never : T[P];
-};
-interface ParamUpdatedChanged extends ClassProperties<
-  Omit<Omit<AppDatepicker, keyof HTMLElement>, keyof LitElement>
-> {
+interface ParamUpdatedChanged extends Omit<AppDatepicker, keyof LitElement> {
   _selectedDate: Date;
   _focusedDate: Date;
   _startView: StartView;
@@ -34,7 +29,7 @@ import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
-import { Formatters, KEYCODES_MAP, MonthUpdateType, StartView } from './custom_typings.js';
+import { Formatters, KEY_CODES_MAP, MonthUpdateType, StartView } from './custom_typings.js';
 import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { findShadowTarget } from './helpers/find-shadow-target.js';
@@ -450,7 +445,7 @@ export class AppDatepicker extends LitElement {
   public disabledDates: string = '';
 
   @property({ type: String })
-  public weekLabel: string = '';
+  public weekLabel: string = 'Wk';
 
   public get datepickerBodyCalendarView() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
@@ -995,14 +990,14 @@ export class AppDatepicker extends LitElement {
     const keyCode = ev.keyCode;
 
     /** NOTE: Skip updating and fire an event to notify of updated focused date. */
-    if (KEYCODES_MAP.ENTER === keyCode || KEYCODES_MAP.SPACE === keyCode) {
+    if (KEY_CODES_MAP.ENTER === keyCode || KEY_CODES_MAP.SPACE === keyCode) {
       dispatchCustomEvent<DatepickerValueUpdatedEvent>(
         this, 'datepicker-keyboard-selected', { value: this.value });
       return;
     }
 
     /** NOTE: Skip for TAB key and other non-related keys */
-    if (keyCode === KEYCODES_MAP.TAB || !ALL_NAV_KEYS_SET.has(keyCode)) return;
+    if (keyCode === KEY_CODES_MAP.TAB || !ALL_NAV_KEYS_SET.has(keyCode)) return;
 
     const selectedDate = this._selectedDate;
     const nextFocusedDate = computeNextFocusedDate({
@@ -1077,3 +1072,4 @@ declare global {
 // TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
 // FIXME: Replace Web Animations for better support for animations on older browsers.
+// FIXME: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
