@@ -80,7 +80,7 @@
     "@wdio/spec-reporter": "^5.16.11",
     "axe-core": "^3.4.1",
     "env-cmd": "^10.0.1",
-    "es-dev-server": "^1.36.1",
+    "es-dev-server": "^1.36.2",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
     "reify": "^0.20.12",
