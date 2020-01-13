@@ -29,7 +29,11 @@
     "dist/*.*js.map",
     "dist/*.*js",
     "dist/*.d.ts.map",
-    "dist/*.d.ts"
+    "dist/*.d.ts",
+    "dist/helpers/.*js.map",
+    "dist/helpers/*.*js",
+    "dist/helpers/*.d.ts.map",
+    "dist/helpers/*.d.ts"
   ],
   "sideEffects": false,
   "main": "dist/app-datepicker.js",
