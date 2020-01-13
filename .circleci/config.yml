@@ -70,7 +70,10 @@ jobs:
           at: ~/app-datepicker
       - run:
           name: Test on SauceLabs
-          command: npm run test:sl
+          command: |
+            if [ -z "${CIRCLE_PULL_REQUEST}" ] && [ -z "$(git describe --exact-match HEAD)" ] && [ -z "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+$')" ]; then
+              npm run test:sl
+            fi
 
   # According to the resources below, Edge 15 is the oldest supported MS Edge.
   # https://en.wikipedia.org/wiki/Microsoft_Edge
