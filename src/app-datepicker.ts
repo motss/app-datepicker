@@ -1017,10 +1017,11 @@ export class AppDatepicker extends LitElement {
     const selectedDateFY = selectedDate.getUTCFullYear();
     const selectedDateM = selectedDate.getUTCMonth();
     /**
-     * NOTE: Update `_selectedDate` if new focused date is no longer in the same month or year.
+     * NOTE: Update `_selectedDate` and `_lastSelectedDate` if
+     * new focused date is no longer in the same month or year.
      */
     if (nextFocusedDateFy !== selectedDateFY || nextFocusedDateM !== selectedDateM) {
-      this._selectedDate = nextFocusedDate;
+      this._selectedDate = this._lastSelectedDate = nextFocusedDate;
     }
 
     this._focusedDate = nextFocusedDate;
@@ -1067,9 +1068,9 @@ declare global {
 // FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
 // FIXED: `disabledDays` is broken with `firstDayOfWeek`
 // FIXED: When a new property is set, it re-renders the calendar to last focused date but
-// FIXED: Add test for custom events
-//        never updates the selected date
+// FIXED: Add test for custom events never updates the selected date
+// FIXED: Replace Web Animations for better support for animations on older browsers.
+// FIXED: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
 // TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: Replace Web Animations for better support for animations on older browsers.
-// FIXME: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
+// FIXME: To finalize cases where focused date does not exist in current month for each key pressed

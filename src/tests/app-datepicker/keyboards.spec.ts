@@ -3,6 +3,7 @@ import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
+import { interaction } from '../helpers/interaction.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
@@ -10,70 +11,11 @@ import {
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker';
+const { focusCalendarsContainer, browserKeys } = interaction(elementName);
 
 describe('keyboards', () => {
   // #region helper
   type A = [string, string];
-  const focusCalendarsContainer = async (prepareOptions?: PrepareOptions): Promise<string> => {
-    return await browser.executeAsync(async (a, b, c, done) => {
-      const a1 = document.body.querySelector<AppDatepicker>(a)!;
-
-      if (c) {
-        const { props, attrs }: PrepareOptions = c;
-
-        if (props) {
-          Object.keys(props).forEach((o) => {
-            (a1 as any)[o] = (props as any)[o];
-          });
-        }
-
-        if (attrs) {
-          Object.keys(attrs).forEach((o) => {
-            a1.setAttribute(o.toLowerCase(), String((attrs as any)[o]));
-          });
-        }
-      }
-
-      await a1.updateComplete;
-
-      const b1 = a1.shadowRoot!.querySelector<HTMLElement>(b)!;
-
-      b1.focus();
-
-      await a1.updateComplete;
-      await new Promise(y => setTimeout(() => y(b1.focus())));
-      await a1.updateComplete;
-
-      let activeElement = document.activeElement;
-
-      while (activeElement?.shadowRoot) {
-        activeElement = activeElement.shadowRoot.activeElement;
-      }
-
-      done(
-        `.${Array.from(activeElement?.classList.values() ?? []).join('.')}`
-      );
-    }, elementName, '.calendars-container', prepareOptions);
-  };
-  // FIXME: Helper as a workaround until `browser.keys()` supports Alt
-  // on all browsers on local and CI.
-  const browserKeys = async (keyCode: number, altKey: boolean = false) => {
-    return browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
-      const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
-
-      const opt: any = { keyCode: c, altKey: d };
-      const ev = new CustomEvent('keyup', opt);
-
-      Object.keys(opt).forEach((o) => {
-        Object.defineProperty(ev, o, { value: opt[o] });
-      });
-
-      n2.dispatchEvent(ev);
-
-      done();
-    }, elementName, '.calendars-container', keyCode, altKey);
-  };
   const getValuesAfterKeys = async (
     key: number,
     altKey: boolean = false,

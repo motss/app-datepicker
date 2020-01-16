@@ -2,6 +2,7 @@ import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
+import { interaction } from '../helpers/interaction.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
@@ -16,71 +17,7 @@ const elementName = 'app-datepicker';
 
 describe('mouses', () => {
   const isSafari = browser.capabilities.browserName === 'Safari';
-
-  const clickElements = async (classes: string[], prepareOptions?: PrepareOptions) => {
-    if (prepareOptions) {
-      await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
-
-        const { props, attrs }: PrepareOptions = b;
-
-        if (props) {
-          Object.keys(props).forEach((o) => {
-            (n as any)[o] = (props as any)[o];
-          });
-        }
-
-        if (attrs) {
-          Object.keys(attrs).forEach((o) => {
-            n.setAttribute(o.toLowerCase(), String((attrs as any)[o]));
-          });
-        }
-
-        await n.updateComplete;
-
-        done();
-      }, elementName, prepareOptions);
-    }
-
-    /**
-     * NOTE: [20191229] Due to a bug in Safari 13, Safari is not able
-     * to recognize any clicks but it has yet to release the patch to
-     * stable Safari and any older versions of Safari. As of writing,
-     * only Safari TP has it fixed.
-     *
-     * Therefore, this helper is here to imperatively calling `.click()`
-     * in the browser the tests run when it detects a Safari browser.
-     *
-     * @see https://bugs.webkit.org/show_bug.cgi?id=202589
-     */
-    for (const cls of classes) {
-      if (isSafari) {
-        await browser.executeAsync(async (a, b, done) => {
-          const n = document.body.querySelector<AppDatepicker>(a)!;
-          const n2: HTMLElement = n.shadowRoot!.querySelector(b)!;
-
-          if (n2 instanceof HTMLButtonElement || n2.tagName === 'MWC-BUTTON') {
-            n2.click();
-          } else {
-            // Simulate click event on non natively focusable elements.
-            // This is for selecting new focused date in the table.
-            ['touchstart', 'touchend'].forEach((o) => {
-              n2.dispatchEvent(new CustomEvent(o, { bubbles: true, composed: true }));
-            });
-          }
-
-          await n.updateComplete;
-
-          done();
-        }, elementName, cls);
-      } else {
-        const el = await $(elementName);
-        const el2 = (await el.shadow$(cls)) as unknown as WebdriverIOAsync.Element;
-
-        await el2.click();
-      }
-    }
-  };
+  const { clickElements } = interaction(elementName, isSafari);
 
   before(async () => {
     await browser.url(APP_INDEX_URL);
