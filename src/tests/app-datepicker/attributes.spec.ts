@@ -25,6 +25,7 @@ describe('attributes', () => {
       const el: AppDatepicker = document.createElement(a);
 
       document.body.appendChild(el);
+
       await el.updateComplete;
 
       done();
@@ -372,6 +373,7 @@ describe('attributes', () => {
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
+      n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.setAttribute('locale', 'ja-JP');
 

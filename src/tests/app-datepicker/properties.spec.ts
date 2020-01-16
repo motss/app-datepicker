@@ -388,6 +388,7 @@ describe('properties', () => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
       const root = n.shadowRoot!;
 
+      n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.locale = 'ja-JP';
 
