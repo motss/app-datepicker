@@ -55,17 +55,30 @@ export function computeNextFocusedDate({
   const sdFy = selectedDate.getUTCFullYear();
   const sdM = selectedDate.getUTCMonth();
 
+  const notInCurrentMonth = sdM !== oldM || sdFy !== oldFy;
+
   let fy = oldFy;
   let m = oldM;
   let d = oldD;
+  let shouldRunSwitch = true;
 
-  switch (true) {
-    case sdM !== oldM || sdFy !== oldFy: {
-      fy = sdFy;
-      m = sdM;
-      d = 1;
-      break;
-    }
+  // If the focused date is not in the current month, focus the first day of the month
+  // Only run switch case, when one of the following keys is pressed:
+  // * PageDown (w/ or w/o Alt)
+  // * PageUp (w/ or w/o Alt)
+  // * End
+  if (notInCurrentMonth) {
+    fy = sdFy;
+    m = sdM;
+    d = 1;
+
+    shouldRunSwitch =
+      keyCode === KEY_CODES_MAP.PAGE_DOWN ||
+      keyCode === KEY_CODES_MAP.PAGE_UP ||
+      keyCode === KEY_CODES_MAP.END;
+  }
+
+  switch (shouldRunSwitch) {
     case focusedDateTime === minTime && PREV_KEY_CODES_SET.has(keyCode):
     case focusedDateTime === maxTime && NEXT_KEY_CODES_SET.has(keyCode):
       break;
@@ -101,7 +114,6 @@ export function computeNextFocusedDate({
     case keyCode === KEY_CODES_MAP.HOME:
     default: {
       d = 1;
-      break;
     }
   }
 
