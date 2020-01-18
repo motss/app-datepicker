@@ -1,5 +1,6 @@
 import './a11y.spec.js';
 import './attributes.spec.js';
+import './edge-cases.spec.js';
 import './events.spec.js';
 import './initial-render.spec.js';
 import './keyboards.spec.js';
