@@ -1071,6 +1071,6 @@ declare global {
 // FIXED: Add test for custom events never updates the selected date
 // FIXED: Replace Web Animations for better support for animations on older browsers.
 // FIXED: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
+// FIXED: To finalize cases where focused date does not exist in current month for each key pressed
 // TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.
-// FIXME: To finalize cases where focused date does not exist in current month for each key pressed
