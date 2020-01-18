@@ -8,6 +8,7 @@ import { prettyHtml } from '../helpers/pretty-html.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
+  deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
@@ -82,6 +83,138 @@ describe('edge cases', () => {
     strictEqual(cleanHtml(calendarLabelContent2), prettyHtml`
     <div class="calendar-label">March 2020</div>
     `);
+  });
+
+  // #region helper
+  type B = [string, string];
+  const getValuesAfterKeys = async (key: number, altKey: boolean = false): Promise<B> => {
+    await browser.executeAsync(async (a, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+
+      n.min = '2000-01-01';
+      n.value = '2020-02-29';
+
+      await n.updateComplete;
+
+      done();
+    }, elementName);
+
+    await clickElements(Array.from('123', () => (
+      `.btn__month-selector[aria-label="Next month"]`
+    )));
+
+    await focusCalendarsContainer();
+    await browserKeys(key, altKey);
+
+    const [prop, content]: B = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+
+      done([
+        n.value,
+        focusedDate.outerHTML,
+      ] as B);
+    }, elementName, toSelector('.day--focused'));
+
+    return [prop, cleanHtml(content)];
+  };
+  // #endregion helper
+
+  it(`focuses first day of month when focused date does not exist (Arrows)`, async () => {
+    const arrowKeys: KEY_CODES_MAP[] = [
+      KEY_CODES_MAP.ARROW_DOWN,
+      KEY_CODES_MAP.ARROW_LEFT,
+      KEY_CODES_MAP.ARROW_RIGHT,
+      KEY_CODES_MAP.ARROW_UP,
+    ];
+    const props: string[] = [];
+    const focusedContents: string[] = [];
+
+    for (const arrowKey of arrowKeys) {
+      const [prop, focusedDateContent] = await getValuesAfterKeys(arrowKey);
+
+      props.push(prop);
+      focusedContents.push(focusedDateContent);
+    }
+
+    allStrictEqual(props, '2020-05-01');
+    allStrictEqual(focusedContents, prettyHtml`
+    <td class="full-calendar__day day--focused" aria-label="May 1, 2020">
+    <div class="calendar-day">1</div>
+    </td>
+    `);
+  });
+
+  it(`focuses first day of month when focused date does not exist (Home, End)`, async () => {
+    const arrowKeys: KEY_CODES_MAP[] = [
+      KEY_CODES_MAP.HOME,
+      KEY_CODES_MAP.END,
+    ];
+    const props: string[] = [];
+    const focusedContents: string[] = [];
+
+    for (const arrowKey of arrowKeys) {
+      const [prop, focusedDateContent] = await getValuesAfterKeys(arrowKey);
+
+      props.push(prop);
+      focusedContents.push(focusedDateContent);
+    }
+
+    deepStrictEqual(props, ['2020-05-01', '2020-05-31']);
+    deepStrictEqual(focusedContents, [1, 31].map(n => prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="May ${n}, 2020">
+    <div class="calendar-day">${n}</div>
+    </td>
+    `)));
+  });
+
+  it(`focuses first day of month when focused date does not exist (PageDown, PageUp)`,
+  async () => {
+    const arrowKeys: KEY_CODES_MAP[] = [
+      KEY_CODES_MAP.PAGE_DOWN,
+      KEY_CODES_MAP.PAGE_UP,
+    ];
+    const props: string[] = [];
+    const focusedContents: string[] = [];
+
+    for (const arrowKey of arrowKeys) {
+      const [prop, focusedDateContent] = await getValuesAfterKeys(arrowKey);
+
+      props.push(prop);
+      focusedContents.push(focusedDateContent);
+    }
+
+    deepStrictEqual(props, ['2020-06-01', '2020-04-01']);
+    deepStrictEqual(focusedContents, ['Jun', 'Apr'].map(n => prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="${n} 1, 2020">
+    <div class="calendar-day">1</div>
+    </td>
+    `)));
+  });
+
+  it(`focuses first day of month when focused date does not exist (Alt + {PageDown, PageUp})`,
+  async () => {
+    const arrowKeys: KEY_CODES_MAP[] = [
+      KEY_CODES_MAP.PAGE_DOWN,
+      KEY_CODES_MAP.PAGE_UP,
+    ];
+    const props: string[] = [];
+    const focusedContents: string[] = [];
+
+    for (const arrowKey of arrowKeys) {
+      const [prop, focusedDateContent] = await getValuesAfterKeys(arrowKey, true);
+
+      props.push(prop);
+      focusedContents.push(focusedDateContent);
+    }
+
+    deepStrictEqual(props, ['2021-05-01', '2019-05-01']);
+    deepStrictEqual(focusedContents, [2021, 2019].map(n => prettyHtml(`
+    <td class="full-calendar__day day--focused" aria-label="May 1, ${n}">
+    <div class="calendar-day">1</div>
+    </td>
+    `)));
   });
 
 });
