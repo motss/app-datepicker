@@ -44,9 +44,6 @@ jobs:
           name: Versions
           command: node -v && npm version && which npm && pwd
       - run:
-          name: Lint
-          command: npm run lint
-      - run:
           name: Build
           command: npm run build:test
       - persist_to_workspace:
