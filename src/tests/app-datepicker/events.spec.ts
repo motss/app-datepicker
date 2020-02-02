@@ -22,7 +22,7 @@ describe('events', () => {
       const firstUpdated = new Promise((yay) => {
         let timer = -1;
 
-        n.addEventListener( 'datepicker-first-updated', function handler() {
+        n.addEventListener('datepicker-first-updated', function handler() {
           clearTimeout(timer);
           yay(true);
           n.removeEventListener('datepicker-first-updated', handler);
