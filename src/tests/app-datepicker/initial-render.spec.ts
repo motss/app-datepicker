@@ -110,7 +110,10 @@ describe('initial render', () => {
         done(n2.outerHTML);
       }, elementName, ['.day--today']);
 
-      strictEqual(cleanHtml(todayDateContent, true), prettyHtml(`
+      strictEqual(cleanHtml(todayDateContent, {
+        showToday: true,
+        showFocused: false,
+      }), prettyHtml(`
       <td class="full-calendar__day day--today" aria-label="${formattedDate}">
         <div class="calendar-day">${now.getDate()}</div>
       </td>

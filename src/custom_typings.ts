@@ -41,3 +41,13 @@ export const enum KEY_CODES_MAP {
 export interface FocusTrap {
   disconnect(): void;
 }
+
+export interface DatepickerValueUpdatedEvent {
+  isKeypress: boolean;
+  keyCode?: KEY_CODES_MAP;
+  value: string;
+}
+
+export interface DatepickerFirstUpdatedEvent extends Pick<DatepickerValueUpdatedEvent, 'value'> {
+  firstFocusableElement: HTMLElement;
+}

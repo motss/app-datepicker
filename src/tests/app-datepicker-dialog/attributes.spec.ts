@@ -20,6 +20,8 @@ describe(`${elementName}::attributes`, () => {
     await browser.executeAsync(async (a, done) => {
       const el: AppDatepickerDialog = document.createElement(a);
 
+      el.min = '2000-01-01';
+
       document.body.appendChild(el);
 
       await el.open();

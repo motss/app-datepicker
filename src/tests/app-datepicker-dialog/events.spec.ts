@@ -1,6 +1,6 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
-import { KEY_CODES_MAP } from '../../custom_typings.js';
+import { DatepickerValueUpdatedEvent, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   deepStrictEqual, strictEqual,
@@ -49,12 +49,19 @@ describe(`${elementName}::events`, () => {
         const enteredValue = new Promise((yay) => {
           let timer = -1;
 
-          function handler(ev: CustomEvent) {
-            clearTimeout(timer);
-            yay(ev.detail.value);
-            n.removeEventListener('datepicker-keyboard-selected', handler);
-          }
-          n.addEventListener('datepicker-keyboard-selected', handler);
+          n.addEventListener(
+            'datepicker-value-updated',
+            function handler(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+              const { isKeypress, keyCode, value } = ev.detail;
+              const selectedValue = isKeypress && (
+                keyCode === KEY_CODES_MAP.ENTER || keyCode === KEY_CODES_MAP.SPACE
+              ) ? value : '';
+
+              clearTimeout(timer);
+              yay(selectedValue);
+              n.removeEventListener('datepicker-value-updated', handler);
+            }
+          );
 
           timer = window.setTimeout(() => yay(''), 15e3);
         });

@@ -4,13 +4,6 @@ interface ParamUpdatedChanged extends Omit<AppDatepicker, keyof LitElement> {
   _startView: StartView;
 }
 
-export interface DatepickerValueUpdatedEvent {
-  value: AppDatepicker['value'];
-}
-export interface DatepickerFirstUpdatedEvent extends DatepickerValueUpdatedEvent {
-  firstFocusableElement: HTMLElement;
-}
-
 import {
   css,
   customElement,
@@ -29,7 +22,14 @@ import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
-import { Formatters, KEY_CODES_MAP, MonthUpdateType, StartView } from './custom_typings.js';
+import {
+  DatepickerFirstUpdatedEvent,
+  DatepickerValueUpdatedEvent,
+  Formatters,
+  KEY_CODES_MAP,
+  MonthUpdateType,
+  StartView,
+} from './custom_typings.js';
 import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { findShadowTarget } from './helpers/find-shadow-target.js';
@@ -652,7 +652,6 @@ export class AppDatepicker extends LitElement {
         }
       }
     }
-
   }
 
   private _renderHeaderSelectorButton() {
@@ -961,6 +960,11 @@ export class AppDatepicker extends LitElement {
       ].some(n => hasClass(selectedDayEl, n))) return;
 
     this._focusedDate = new Date(selectedDayEl.fullDate);
+
+    dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+      isKeypress: false,
+      value: this.value,
+    });
   }
 
   // Left Move focus to the previous day. Will move to the last day of the previous month,
@@ -991,8 +995,12 @@ export class AppDatepicker extends LitElement {
 
     /** NOTE: Skip updating and fire an event to notify of updated focused date. */
     if (KEY_CODES_MAP.ENTER === keyCode || KEY_CODES_MAP.SPACE === keyCode) {
-      dispatchCustomEvent<DatepickerValueUpdatedEvent>(
-        this, 'datepicker-keyboard-selected', { value: this.value });
+      dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+        keyCode,
+
+        isKeypress: true,
+        value: this.value,
+      });
       return;
     }
 
@@ -1025,6 +1033,13 @@ export class AppDatepicker extends LitElement {
     }
 
     this._focusedDate = nextFocusedDate;
+
+    dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+      keyCode,
+
+      isKeypress: true,
+      value: this.value,
+    });
   }
 
 }
@@ -1046,7 +1061,7 @@ declare global {
   interface HTMLElementEventMap {
     'datepicker-first-updated': CustomEvent<DatepickerFirstUpdatedEvent>;
     'datepicker-animation-finished': CustomEvent<undefined>;
-    'datepicker-keyboard-selected': CustomEvent<DatepickerValueUpdatedEvent>;
+    'datepicker-value-updated': CustomEvent<DatepickerValueUpdatedEvent>;
   }
 }
 

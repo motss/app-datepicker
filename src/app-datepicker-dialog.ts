@@ -8,14 +8,16 @@ import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
 
 import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
-import {
-  AppDatepicker,
-  DatepickerFirstUpdatedEvent,
-  DatepickerValueUpdatedEvent,
-} from './app-datepicker.js';
+import { AppDatepicker } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import { FocusTrap, KEY_CODES_MAP, StartView } from './custom_typings.js';
+import {
+  DatepickerFirstUpdatedEvent,
+  DatepickerValueUpdatedEvent,
+  FocusTrap,
+  KEY_CODES_MAP,
+  StartView,
+} from './custom_typings.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
 import { getResolvedLocale } from './helpers/get-resolved-locale.js';
@@ -290,7 +292,7 @@ export class AppDatepickerDialog extends LitElement {
       .value="${this.value}"
       .weekLabel="${this.weekLabel}"
       @datepicker-first-updated="${this._setFocusable}"
-      @datepicker-keyboard-selected="${this._update}"></app-datepicker>
+      @datepicker-value-updated="${this._updateWithKey}"></app-datepicker>
 
       <div class="actions-container">
         <mwc-button dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
@@ -306,7 +308,16 @@ export class AppDatepickerDialog extends LitElement {
 
   private _update() {
     this._updateValue();
+
     return this.close();
+  }
+
+  private _updateWithKey(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+    const { isKeypress, keyCode } = ev.detail;
+
+    if (!isKeypress || keyCode !== KEY_CODES_MAP.ENTER && keyCode !== KEY_CODES_MAP.SPACE) return;
+
+    return this._update();
   }
 
   private _setFocusable(ev: CustomEvent) {

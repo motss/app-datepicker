@@ -277,6 +277,7 @@ describe('properties', () => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
       const root = n.shadowRoot!;
 
+      n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.showWeekNumber = true;
 
@@ -321,6 +322,7 @@ describe('properties', () => {
     ]: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
+      n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.showWeekNumber = true;
       n.weekNumberType = 'first-full-week';
@@ -529,6 +531,7 @@ describe('properties', () => {
     ]: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
+      n.min = '2000-01-01';
       n.value = '2020-01-15';
       n.showWeekNumber = true;
       n.weekLabel = '周数';
