@@ -31,9 +31,9 @@ _None_
 
 | Event | Description |
 | --- | --- |
-| `datepicker-first-updated` | Fires when datepicker first renders. Returns `{ firstFocusableElement, value }` where `firstFocusableElement` is of type [HTMLElement][htmlelement-mdn-url] and `value` is of type [string][string-mdn-url], e.g. `{ firstFocusableElement: <HTMLElement>, value: '2020-02-02' }`. |
+| `datepicker-first-updated` | Fires when datepicker first renders. Returns an object of type [DatepickerFirstUpdated]. |
 | `datepicker-animation-finished` | Fires when drag animation finishes during the switch between calendars. Returns no value. |
-| `datepicker-keyboard-selected` | Fires when datepicker updates its `value` via keyboard input (Enter or Space key). Returns `{ value }` where `value` is of type [string][string-mdn-url], e.g. `{ value: '2020-02-02' }`. |
+| `datepicker-value-updated` | Fires when datepicker updates its `value` via keyboard input (Enter or Space key) or mouse clicks. Returns an object of type [DatepickerValueUpdated]. |
 
 ### Custom properties
 
@@ -80,9 +80,9 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 
 | Event | Description |
 | --- | --- |
-| `datepicker-dialog-first-updated` | Fires when datepicker dialog first renders. Returns `{ value }` where `value` is of type [string][string-mdn-url], e.g. `{ value: '2020-02-02' }`. |
-| `datepicker-dialog-opened` | Fires when datepicker dialog opens. Returns `{ firstFocusableElement, opened, value }` where they are of type [HTMLElement][htmlelement-mdn-url], type [boolean][boolean-mdn-url], and type [string][string-mdn-url] respectively, e.g. `{ firstFocusableElement: <HTMLElement>, opened: true, value: '2020-02-02' }`. |
-| `datepicker-dialog-closed` | Fires when datepicker dialog closes. Returns `{ opened, value }` where `opened` is of type [boolean][boolean-mdn-url] and `value` is of type [string][string-mdn-url], e.g. `{ opened: false, value: '2020-02-02' }`. |
+| `datepicker-dialog-first-updated` | Fires when datepicker dialog first renders. Returns an object of type [DatepickerFirstUpdated]. |
+| `datepicker-dialog-opened` | Fires when datepicker dialog opens. Returns an object of type [DatepickerDialogOpened]. |
+| `datepicker-dialog-closed` | Fires when datepicker dialog closes. Returns an object of type [DatepickerDialogClosed]. |
 
 ### Custom properties
 
@@ -92,10 +92,74 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 | `--app-datepicker-dialog-scrim-bg-color` | `rgba(0, 0, 0, .55)` | Background color of dialog's scrim. |
 | `--app-datepicker-dialog-z-index` | `24` | Stack order of datepicker dialog. |
 
+## Interfaces
+
+### KEY_CODES_MAP
+
+```ts
+enum KEY_CODES_MAP {
+  ESCAPE = 27,
+  SHIFT = 16,
+  TAB = 9,
+  ENTER = 13,
+  SPACE = 32,
+  PAGE_UP = 33,
+  PAGE_DOWN = 34,
+  END = 35,
+  HOME = 36,
+  ARROW_LEFT = 37,
+  ARROW_UP = 38,
+  ARROW_RIGHT = 39,
+  ARROW_DOWN = 40,
+}
+```
+
+### DatepickerFirstUpdated
+
+```ts
+interface DatepickerFirstUpdated {
+  firstFocusableElement: HTMLElement;
+  value: string;
+}
+```
+
+### DatepickerValueUpdated
+
+```ts
+interface DatepickerValueUpdated {
+  isKeypress: boolean;
+  keyCode?: number; // See KEY_CODE_MAP enum.
+  value: string;
+}
+```
+
+### DatepickerDialogClosed
+
+```ts
+interface DatepickerDialogClosed {
+  opened: boolean;
+  value: string;
+}
+```
+
+### DatepickerDialogOpened
+
+```ts
+interface DatepickerDialogOpened {
+  firstFocusableElement: HTMLElement,
+  opened: boolean;
+  value: string;
+}
+```
+
 <!-- References -->
 [AppDatepicker]: #appdatepicker
 [iso-8601-date-format-url]: https://en.wikipedia.org/wiki/ISO_8601
 [iso-639-url]: https://en.wikipedia.org/wiki/ISO_639
+[DatepickerFirstUpdated]: #datepickerfirstupdated
+[DatepickerValueUpdated]: #datepickervalueupdated
+[DatepickerDialogClosed]: #datepickerdialogclosed
+[DatepickerDialogOpened]: #datepickerdialogopened
 
 <!-- MDN -->
 [htmlelement-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement

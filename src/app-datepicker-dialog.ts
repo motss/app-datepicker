@@ -1,8 +1,8 @@
-export interface DatepickerDialogClosedEvent {
+export interface DatepickerDialogClosed {
   opened: boolean;
   value: AppDatepickerDialog['value'];
 }
-export type DatepickerDialogOpenedEvent = DatepickerDialogClosedEvent & DatepickerFirstUpdatedEvent;
+export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpdated;
 
 import '@material/mwc-button/mwc-button.js';
 import { css, customElement, html, LitElement, property, query } from 'lit-element';
@@ -12,8 +12,8 @@ import { AppDatepicker } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
 import {
-  DatepickerFirstUpdatedEvent,
-  DatepickerValueUpdatedEvent,
+  DatepickerFirstUpdated,
+  DatepickerValueUpdated,
   FocusTrap,
   KEY_CODES_MAP,
   StartView,
@@ -208,7 +208,7 @@ export class AppDatepickerDialog extends LitElement {
           this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
         }
         focusable.focus();
-        dispatchCustomEvent<DatepickerDialogOpenedEvent>(this, 'datepicker-dialog-opened', {
+        dispatchCustomEvent<DatepickerDialogOpened>(this, 'datepicker-dialog-opened', {
           firstFocusableElement: focusable,
           opened: true,
           value: this.value,
@@ -241,7 +241,7 @@ export class AppDatepickerDialog extends LitElement {
 
         if (!this.noFocusTrap) this._focusTrap!.disconnect();
 
-        dispatchCustomEvent<DatepickerDialogClosedEvent>(
+        dispatchCustomEvent<DatepickerDialogClosed>(
           this, 'datepicker-dialog-closed', { opened: false, value: this.value });
       });
     });
@@ -260,7 +260,10 @@ export class AppDatepickerDialog extends LitElement {
       if (ev.keyCode === KEY_CODES_MAP.ESCAPE) this.close();
     });
 
-    dispatchCustomEvent(this, 'datepicker-dialog-first-updated', { value: this.value });
+    dispatchCustomEvent<DatepickerFirstUpdated>(this, 'datepicker-dialog-first-updated', {
+      value: this.value,
+      firstFocusableElement: this._focusable!,
+    });
   }
 
   // tslint:disable-next-line: function-name
@@ -312,7 +315,7 @@ export class AppDatepickerDialog extends LitElement {
     return this.close();
   }
 
-  private _updateWithKey(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+  private _updateWithKey(ev: CustomEvent<DatepickerValueUpdated>) {
     const { isKeypress, keyCode } = ev.detail;
 
     if (!isKeypress || keyCode !== KEY_CODES_MAP.ENTER && keyCode !== KEY_CODES_MAP.SPACE) return;
@@ -320,7 +323,7 @@ export class AppDatepickerDialog extends LitElement {
     return this._update();
   }
 
-  private _setFocusable(ev: CustomEvent) {
+  private _setFocusable(ev: CustomEvent<DatepickerFirstUpdated>) {
     this._focusable = ev.detail && ev.detail.firstFocusableElement;
     this._updateValue();
   }
@@ -341,11 +344,8 @@ declare global {
   }
 
   interface HTMLElementEventMap {
-    'datepicker-dialog-first-updated':
-      CustomEvent<DatepickerValueUpdatedEvent>;
-    'datepicker-dialog-opened':
-      CustomEvent<DatepickerDialogOpenedEvent>;
-    'datepicker-dialog-closed':
-      CustomEvent<DatepickerDialogClosedEvent>;
+    'datepicker-dialog-closed': CustomEvent<DatepickerDialogClosed>;
+    'datepicker-dialog-first-updated': CustomEvent<DatepickerFirstUpdated>;
+    'datepicker-dialog-opened': CustomEvent<DatepickerDialogOpened>;
   }
 }

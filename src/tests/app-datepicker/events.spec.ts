@@ -1,5 +1,5 @@
 import { AppDatepicker } from '../../app-datepicker.js';
-import { DatepickerValueUpdatedEvent, KEY_CODES_MAP } from '../../custom_typings.js';
+import { DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
@@ -80,7 +80,7 @@ describe('events', () => {
 
           n.addEventListener(
             'datepicker-value-updated',
-            function handler(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+            function handler(ev: CustomEvent<DatepickerValueUpdated>) {
               const { isKeypress, keyCode, value } = ev.detail;
               const selectedValue = isKeypress && (
                 keyCode === KEY_CODES_MAP.ENTER || keyCode === KEY_CODES_MAP.SPACE
@@ -127,12 +127,12 @@ describe('events', () => {
 
       await n.updateComplete;
 
-      const valueUpdated = new Promise<DatepickerValueUpdatedEvent | null>((yay) => {
+      const valueUpdated = new Promise<DatepickerValueUpdated | null>((yay) => {
         let timer = -1;
 
         n.addEventListener(
           'datepicker-value-updated',
-          function handler(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+          function handler(ev: CustomEvent<DatepickerValueUpdated>) {
             clearTimeout(timer);
             yay(ev.detail);
             n.removeEventListener('datepicker-value-updated', handler);
@@ -155,7 +155,7 @@ describe('events', () => {
       }
 
       await n.updateComplete;
-      const { isKeypress, value } = (await valueUpdated) ?? {} as DatepickerValueUpdatedEvent;
+      const { isKeypress, value } = (await valueUpdated) ?? {} as DatepickerValueUpdated;
 
       document.body.removeChild(n);
 

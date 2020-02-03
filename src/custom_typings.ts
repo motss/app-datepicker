@@ -42,12 +42,12 @@ export interface FocusTrap {
   disconnect(): void;
 }
 
-export interface DatepickerValueUpdatedEvent {
+export interface DatepickerValueUpdated {
   isKeypress: boolean;
   keyCode?: KEY_CODES_MAP;
   value: string;
 }
 
-export interface DatepickerFirstUpdatedEvent extends Pick<DatepickerValueUpdatedEvent, 'value'> {
+export interface DatepickerFirstUpdated extends Pick<DatepickerValueUpdated, 'value'> {
   firstFocusableElement: HTMLElement;
 }

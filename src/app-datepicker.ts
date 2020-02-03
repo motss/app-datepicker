@@ -23,8 +23,8 @@ import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
 import {
-  DatepickerFirstUpdatedEvent,
-  DatepickerValueUpdatedEvent,
+  DatepickerFirstUpdated,
+  DatepickerValueUpdated,
   Formatters,
   KEY_CODES_MAP,
   MonthUpdateType,
@@ -547,7 +547,7 @@ export class AppDatepicker extends LitElement {
     const firstFocusableElement = ('calendar' === this._startView ?
       this._buttonSelectorYear : this._yearViewListItem)!;
 
-    dispatchCustomEvent<DatepickerFirstUpdatedEvent>(
+    dispatchCustomEvent<DatepickerFirstUpdated>(
       this, 'datepicker-first-updated', { firstFocusableElement, value: this.value });
   }
 
@@ -961,7 +961,7 @@ export class AppDatepicker extends LitElement {
 
     this._focusedDate = new Date(selectedDayEl.fullDate);
 
-    dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+    dispatchCustomEvent<DatepickerValueUpdated>(this, 'datepicker-value-updated', {
       isKeypress: false,
       value: this.value,
     });
@@ -995,7 +995,7 @@ export class AppDatepicker extends LitElement {
 
     /** NOTE: Skip updating and fire an event to notify of updated focused date. */
     if (KEY_CODES_MAP.ENTER === keyCode || KEY_CODES_MAP.SPACE === keyCode) {
-      dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+      dispatchCustomEvent<DatepickerValueUpdated>(this, 'datepicker-value-updated', {
         keyCode,
 
         isKeypress: true,
@@ -1034,7 +1034,7 @@ export class AppDatepicker extends LitElement {
 
     this._focusedDate = nextFocusedDate;
 
-    dispatchCustomEvent<DatepickerValueUpdatedEvent>(this, 'datepicker-value-updated', {
+    dispatchCustomEvent<DatepickerValueUpdated>(this, 'datepicker-value-updated', {
       keyCode,
 
       isKeypress: true,
@@ -1059,9 +1059,9 @@ declare global {
   }
 
   interface HTMLElementEventMap {
-    'datepicker-first-updated': CustomEvent<DatepickerFirstUpdatedEvent>;
+    'datepicker-first-updated': CustomEvent<DatepickerFirstUpdated>;
     'datepicker-animation-finished': CustomEvent<undefined>;
-    'datepicker-value-updated': CustomEvent<DatepickerValueUpdatedEvent>;
+    'datepicker-value-updated': CustomEvent<DatepickerValueUpdated>;
   }
 }
 

@@ -1,6 +1,6 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
-import { DatepickerValueUpdatedEvent, KEY_CODES_MAP } from '../../custom_typings.js';
+import { DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   deepStrictEqual, strictEqual,
@@ -14,7 +14,7 @@ describe(`${elementName}::events`, () => {
     await browser.url(APP_INDEX_URL);
   });
 
-  it(`fires 'datepicker-keyboard-selected' event (Enter, Space)`, async () => {
+  it(`fires 'datepicker-value-updated' event (Enter, Space)`, async () => {
     const keys = [
       KEY_CODES_MAP.ENTER,
       KEY_CODES_MAP.SPACE,
@@ -51,7 +51,7 @@ describe(`${elementName}::events`, () => {
 
           n.addEventListener(
             'datepicker-value-updated',
-            function handler(ev: CustomEvent<DatepickerValueUpdatedEvent>) {
+            function handler(ev: CustomEvent<DatepickerValueUpdated>) {
               const { isKeypress, keyCode, value } = ev.detail;
               const selectedValue = isKeypress && (
                 keyCode === KEY_CODES_MAP.ENTER || keyCode === KEY_CODES_MAP.SPACE
