@@ -166,19 +166,25 @@ export class MyApp extends LitElement {
 
 ## Browser compatibility
 
-Both `app-datepicker` and `app-datepicker-dialog` works in all major browsers (Chrome, Firefox, IE, Edge, and Safari).
+Both `app-datepicker` and `app-datepicker-dialog` works in last 2 versions of all evergreen browsers (Chrome, Firefox, Edge, and Safari). Internet Explorer 11 is no longer supported in favor of the [new Microsoft Edge].
 
-[Heavily tested](/.circleci/config.yml) on the following browsers:
+Tested on the following browsers:
 
 | Name | OS |
 | --- | --- |
-| Edge 17 | Windows 10 |
+| Chrome 79 | Windows 10 |
+| Edge 18 | Windows 10 |
+| Firefox 72 | Windows 10 |
+| Safari 13 | mac 10.13 |
+
+
+<!-- | Chrome 69 ([WRE 2019][wre-2019-url]) | Windows 10 |
 | Edge 15 | Windows 10 |
+| Edge 17 | Windows 10 |
+| Firefox 62 (w/o native Shadow DOM) | macOS Mojave (10.14) |
 | Internet Explorer 11 | Windows 10 |
 | Safari 10.1 | Mac OS 10.12 |
-| Safari 9 | Mac OS X 10.11 |
-| Firefox 62 (w/o native Shadow DOM) | macOS Mojave (10.14) |
-| Chrome 69 ([WRE 2019][wre-2019-url]) | Windows 10 |
+| Safari 9 | Mac OS X 10.11 | -->
 
 ## API references
 
@@ -221,6 +227,7 @@ Meantime, feel free to check the older version out at:
 [web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
+[new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
 
 <!-- Browsers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
