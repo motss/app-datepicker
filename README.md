@@ -77,7 +77,7 @@ The following are the list of tools used that makes it shine:
 
 **Polyfills**
 
-Please make sure you have all these features available on the browsers you are supporting. If no, please consider polyfilling in order to run the datepicker element.
+Please make sure you have all these features available on the browsers you are supporting. If no, please consider polyfill-ing in order to run the datepicker element.
 
 * [Array.prototype.find]
 * [Intl.DateTimeFormat]
@@ -103,15 +103,6 @@ The following snippet shows a simple script used in the demo to load polyfills v
     wa.onerror = console.error;
     document.head.appendChild(wa);
   }
-
-  if (!(Element.prototype.animate)) {
-    const wa = document.createElement('script');
-    wa.src = 'https://unpkg.com/web-animations-js@latest/web-animations.min.js';
-    wa.onload = () => console.info('⚒ Web Animations Next lite loaded');
-    wa.onerror = console.error;
-    document.head.appendChild(wa);
-  }
-
 </script>
 ```
 
