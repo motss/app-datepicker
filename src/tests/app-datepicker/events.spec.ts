@@ -1,8 +1,6 @@
 import { AppDatepicker } from '../../app-datepicker.js';
 import { DatepickerFirstUpdated, DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { prettyHtml } from '../helpers/pretty-html.js';
-import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
@@ -38,11 +36,14 @@ describe('events', () => {
             ev: CustomEvent<DatepickerFirstUpdated>
           ) {
             const { firstFocusableElement, value } = ev.detail;
+            const elementTag = firstFocusableElement.localName;
+            const selectorCls =
+              Array.from(firstFocusableElement.classList).find(o => o.indexOf('selector') >= 0);
 
             clearTimeout(timer);
             yay([
               value,
-              firstFocusableElement.outerHTML,
+              `${elementTag}${selectorCls ? `.${selectorCls}` : ''}`,
             ] as A);
             n.removeEventListener('datepicker-first-updated', handler);
           });
@@ -74,13 +75,9 @@ describe('events', () => {
     const d = todayDate.getDate();
 
     allStrictEqual(resultValues, `${fy}-${`0${1 + m}`.slice(-2)}-${`0${d}`.slice(-2)}`);
-    deepStrictEqual(resultContents.map(n => prettyHtml(sanitizeText(n))), [
-      prettyHtml`<button class="btn__month-selector" aria-label="Previous month"><svg height="24" viewBox="0 0 24 24" width="24">
-        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
-      </svg></button>`,
-      prettyHtml(` <button class="btn__year-selector" data-view="yearList">${
-        todayDate.getUTCFullYear()
-      }</button>`),
+    deepStrictEqual(resultContents, [
+      `button.btn__month-selector`,
+      `button.btn__year-selector`,
     ]);
   });
 
