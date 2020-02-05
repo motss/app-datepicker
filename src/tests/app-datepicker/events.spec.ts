@@ -51,10 +51,10 @@ describe('events', () => {
           timer = window.setTimeout(() => yay(['', '']), 15e3);
         });
 
-        document.body.appendChild(n);
-
         n.min = '2000-01-01';
         n.inline = b;
+
+        document.body.appendChild(n);
 
         await n.updateComplete;
 
