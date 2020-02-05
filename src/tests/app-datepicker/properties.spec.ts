@@ -522,6 +522,31 @@ describe('properties', () => {
     }));
   });
 
+  it(`renders with defined 'inline'`, async () => {
+    type A = [boolean, null];
+
+    const [
+      prop,
+      noDatepickerHeader,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+
+      n.inline = true;
+
+      await n.updateComplete;
+
+      const datepickerHeader = n.shadowRoot!.querySelector<HTMLDivElement>(b);
+
+      done([
+        n.inline,
+        datepickerHeader,
+      ] as A);
+    }, elementName, '.datepicker-header');
+
+    strictEqual(prop, true);
+    strictEqual(noDatepickerHeader, null);
+  });
+
   it(`renders with optional 'weekLabel'`, async () => {
     type A = [string, string];
 

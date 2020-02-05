@@ -1,12 +1,14 @@
 import { AppDatepicker } from '../../app-datepicker.js';
-import { DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
+import { DatepickerFirstUpdated, DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
+import { prettyHtml } from '../helpers/pretty-html.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
 
 const elementName = 'app-datepicker';
 
@@ -16,33 +18,70 @@ describe('events', () => {
   });
 
   it(`fires 'datepicker-first-updated'`, async () => {
-    const result = await browser.executeAsync(async (a, done) => {
-      const n: AppDatepicker = document.createElement(a)!;
+    type A = [string, string];
 
-      const firstUpdated = new Promise((yay) => {
-        let timer = -1;
+    const resultValues: string[] = [];
+    const resultContents: string[] = [];
 
-        n.addEventListener('datepicker-first-updated', function handler() {
-          clearTimeout(timer);
-          yay(true);
-          n.removeEventListener('datepicker-first-updated', handler);
+    /**
+     * This ensures the datepicker returns the correct first focusable element
+     * when it renders in inline mode and in normal mode.
+     */
+    for (const inlineVal of [true, false]) {
+      const [val, content]: A = await browser.executeAsync(async (a, b, done) => {
+        const n: AppDatepicker = document.createElement(a)!;
+
+        const firstUpdated: Promise<A> = new Promise((yay) => {
+          let timer = -1;
+
+          n.addEventListener('datepicker-first-updated', function handler(
+            ev: CustomEvent<DatepickerFirstUpdated>
+          ) {
+            const { firstFocusableElement, value } = ev.detail;
+
+            clearTimeout(timer);
+            yay([
+              value,
+              firstFocusableElement.outerHTML,
+            ] as A);
+            n.removeEventListener('datepicker-first-updated', handler);
+          });
+
+          timer = window.setTimeout(() => yay(['', '']), 15e3);
         });
 
-        timer = window.setTimeout(() => yay(false), 15e3);
-      });
+        document.body.appendChild(n);
 
-      document.body.appendChild(n);
+        n.min = '2000-01-01';
+        n.inline = b;
 
-      await n.updateComplete;
+        await n.updateComplete;
 
-      const firstUpdatedResult = await firstUpdated;
+        const firstUpdatedResult = await firstUpdated;
 
-      document.body.removeChild(n);
+        document.body.removeChild(n);
 
-      done(firstUpdatedResult);
-    }, elementName);
+        done(firstUpdatedResult);
+      }, elementName, inlineVal);
 
-    strictEqual(result, true);
+      resultValues.push(val);
+      resultContents.push(content);
+    }
+
+    const todayDate = new Date();
+    const fy = todayDate.getFullYear();
+    const m = todayDate.getMonth();
+    const d = todayDate.getDate();
+
+    allStrictEqual(resultValues, `${fy}-${`0${1 + m}`.slice(-2)}-${`0${d}`.slice(-2)}`);
+    deepStrictEqual(resultContents.map(n => prettyHtml(sanitizeText(n))), [
+      prettyHtml`<button class="btn__month-selector" aria-label="Previous month"><svg height="24" viewBox="0 0 24 24" width="24">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path>
+      </svg></button>`,
+      prettyHtml(` <button class="btn__year-selector" data-view="yearList">${
+        todayDate.getUTCFullYear()
+      }</button>`),
+    ]);
   });
 
   it(`fires 'datepicker-value-selected' event (Enter, Space)`, async () => {

@@ -19,6 +19,7 @@
 | `locale` | String | _<System's default locale>_ | [ISO 639][iso-639-url] language code, e.g. `en-US`. |
 | `disabledDays` | String | | Week days to be disabled for selection, e.g. `0,6` disables selection for dates that are weekends (Saturday, Sunday). |
 | `disabledDates` | String | | Dates to be disabled for selection. Accepts [ISO 8601 date format][iso-8601-date-format-url], e.g. `2020-02-02`, `2020-02-02T00:00:00.000Z`. |
+| `inline` | Boolean | `false` | If true, datepicker renders in inline mode without datepicker header. |
 | `weekLabel` | String | `Wk` | Label for week number when `showWeekNumber` is true. |
 
 <!-- | `dragRatio` | Number | `.15` | Minimum drag distance to switch between calendars of different months, e.g. `.15` of the total draggable distance of a calendar will trigger the switch. If the drag distance is too small, the drag will return to its initial state. | -->

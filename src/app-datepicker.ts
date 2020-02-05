@@ -12,6 +12,7 @@ import {
   LitElement,
   property,
   query,
+  TemplateResult,
 } from 'lit-element';
 import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
@@ -447,6 +448,9 @@ export class AppDatepicker extends LitElement {
   @property({ type: String })
   public weekLabel: string = 'Wk';
 
+  @property({ type: Boolean })
+  public inline: boolean = false;
+
   public get datepickerBodyCalendarView() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
   }
@@ -533,19 +537,29 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
      */
-    const datepickerBodyContent: import('lit-element').TemplateResult =
+    const datepickerBodyContent: TemplateResult =
       'yearList' === this._startView ?
         this._renderDatepickerYearList() : this._renderDatepickerCalendar();
+    const datepickerHeaderContent: null | TemplateResult = this.inline ?
+      null :
+      html`<div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>`
 
     return html`
-    <div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>
+    ${datepickerHeaderContent}
     <div class="datepicker-body">${cache(datepickerBodyContent)}</div>
     `;
   }
 
   protected firstUpdated() {
-    const firstFocusableElement = ('calendar' === this._startView ?
-      this._buttonSelectorYear : this._yearViewListItem)!;
+    let firstFocusableElement: HTMLElement;
+
+    if ('calendar' === this._startView) {
+      firstFocusableElement = this.inline ?
+        this.shadowRoot!.querySelector<HTMLButtonElement>('.btn__month-selector')! :
+        this._buttonSelectorYear!;
+    } else {
+      firstFocusableElement = this._yearViewListItem!;
+    }
 
     dispatchCustomEvent<DatepickerFirstUpdated>(
       this, 'datepicker-first-updated', { firstFocusableElement, value: this.value });
