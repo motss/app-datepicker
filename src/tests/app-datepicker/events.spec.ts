@@ -2,13 +2,13 @@ import { AppDatepicker } from '../../app-datepicker.js';
 import { DatepickerFirstUpdated, DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
+import { sanitizeText } from '../helpers/sanitize-text.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
-import { sanitizeText } from '../helpers/sanitize-text.js';
 
 const elementName = 'app-datepicker';
 

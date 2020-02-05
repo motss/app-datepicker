@@ -542,7 +542,7 @@ export class AppDatepicker extends LitElement {
         this._renderDatepickerYearList() : this._renderDatepickerCalendar();
     const datepickerHeaderContent: null | TemplateResult = this.inline ?
       null :
-      html`<div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>`
+      html`<div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>`;
 
     return html`
     ${datepickerHeaderContent}
