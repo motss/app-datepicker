@@ -47,7 +47,6 @@ import { targetScrollTo } from './helpers/target-scroll-to.js';
 import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
 import { toYearList } from './helpers/to-year-list.js';
 import { updateYearWithMinMax } from './helpers/update-year-with-min-max.js';
-import { waitForNextFrame } from './helpers/wait-for-next-frame.js';
 import { Tracker, TrackerHandlers } from './tracker.js';
 
 @customElement(AppDatepicker.is)
@@ -459,8 +458,8 @@ export class AppDatepicker extends LitElement {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
   }
 
-  // @property({ type: Number })
-  // public dragRatio: number = .15;
+  @property({ type: Number })
+  public dragRatio: number = .15;
 
   @property({ type: Date })
   private _selectedDate: Date;
@@ -491,12 +490,8 @@ export class AppDatepicker extends LitElement {
   private _disabledDaysSet: Set<number> | null = new Set();
   private _disabledDatesSet: Set<number> | null = new Set();
   private _lastSelectedDate?: Date;
-  private _isPointerDown: boolean = false;
-  private _swiping: boolean = false;
-  private _animating: boolean = false;
-  private _dx: number = 0;
   private _tracker?: Tracker;
-  private _draggableDistance: number = 0;
+  private _dx: number = -Infinity;
 
   public constructor() {
     super();
@@ -584,84 +579,72 @@ export class AppDatepicker extends LitElement {
 
       if ('calendar' === startView && null == this._tracker) {
         const calendarsContainer = this.calendarsContainer;
-        let abortDragWhenMinDate = false;
-        let abortDragWhenMaxDate = false;
+
+        let $down = false;
+        let $move = false;
+        let $transitioning = false;
 
         if (calendarsContainer) {
           const handlers: TrackerHandlers = {
             down: () => {
-              if (this._isPointerDown || this._swiping || this._animating) return;
+              if ($transitioning) return;
 
-              abortDragWhenMaxDate = abortDragWhenMinDate = false;
+              $down = true;
               this._dx = 0;
-              this._isPointerDown = true;
-              this._draggableDistance = calendarsContainer.getBoundingClientRect().width;
             },
-            move: async (changedPointer, oldPointer) => {
-              if (this._animating || !this._isPointerDown) return;
+            move : (pointer, oldPointer) => {
+              const dx = this._dx;
 
-              if (!this._swiping) {
-                this._swiping = true;
+              if (
+                (dx < 0 && hasClass(calendarsContainer, 'has-max-date')) ||
+                (dx > 0 && hasClass(calendarsContainer, 'has-min-date'))
+              ) {
+                $down = false;
               }
 
-              if (calendarsContainer) {
-                this._dx += changedPointer.x - oldPointer.x;
+              if (Math.abs(dx) > 0 && $down) {
+                $move = true;
+                calendarsContainer.style.transform = `translateX(${makeNumberPrecise(dx)}px)`;
+              }
 
+              this._dx += (pointer.x - oldPointer.x);
+            },
+            up: (_$, _$$, ev) => {
+              if ($down && $move) {
                 const dx = this._dx;
+                const didPassThreshold = Math.abs(dx) > Number(this.dragRatio);
 
-                abortDragWhenMinDate = dx > 0 && hasClass(calendarsContainer, 'has-min-date');
-                abortDragWhenMaxDate = dx < 0 && hasClass(calendarsContainer, 'has-max-date');
+                const maxWidth = calendarsContainer.getBoundingClientRect().width / 3;
 
-                if (abortDragWhenMaxDate || abortDragWhenMinDate) return;
+                const transitionEnd = () => {
+                  if (didPassThreshold) {
+                    this._updateMonth(dx < 0 ? 'next' : 'previous').handleEvent();
+                  }
 
-                calendarsContainer.style.transform = `translate3d(${this._dx}px, 0, 0)`;
-              }
-            },
-            up: async (changedPointer, oldPointer, ev) => {
-              // | animating | swiping |     state |
-              // |       --- |     --- |       --- |
-              // |         0 |       0 |       new |
-              // |         0 |       1 |  dragging |
-              // |         1 |       0 | animating |
-              // |         1 |       1 |     reset |
-              if (this._animating || !this._isPointerDown) return;
+                  $down = $move = $transitioning = false;
+                  this._dx = -Infinity;
 
-              if (!this._swiping) {
+                  calendarsContainer.removeAttribute('style');
+                  calendarsContainer.removeEventListener('transitionend', transitionEnd);
+                };
+
+                calendarsContainer.style.transitionDuration = '350ms';
+                calendarsContainer.style.transitionTimingFunction = 'cubic-bezier(0, 0, .4, 1)';
+                calendarsContainer.style.transform = `translateX(${
+                  didPassThreshold ? makeNumberPrecise(maxWidth * (dx < 0 ? -1 : 1)) : 0
+                }px)`;
+                calendarsContainer.addEventListener('transitionend', transitionEnd);
+
+                $transitioning = true;
+              } else if ($down) {
                 this._updateFocusedDate(ev as MouseEvent);
 
-                await this.updateComplete;
-
-                this._swiping = this._animating = this._isPointerDown = false;
-
-                return;
-              }
-
-              if (abortDragWhenMaxDate || abortDragWhenMinDate) {
-                this._swiping = this._animating = this._isPointerDown = false;
-
-                return;
-              }
-
-              if (calendarsContainer) {
-                this._swiping = false;
-                this._animating = true;
-
-                calendarsContainer.style.transitionTimingFunction = `cubic-bezier(0, 0, .4, 1)`;
-                calendarsContainer.style.transitionDuration = `350ms`;
-                this._dx += changedPointer.x - oldPointer.x;
-
-                const dx = this._dx;
-                const didThresholdPass = Math.abs(dx) > 35;
-                const fx = didThresholdPass
-                  ? (
-                    `${dx < 0 ? '-' : ''}${makeNumberPrecise(this._draggableDistance / 3)}px`
-                  )
-                  : '-1px';
-
-                calendarsContainer.style.transform = `translate3d(${fx}, 0, 0)`;
+                $down = $move = false;
+                this._dx = -Infinity;
               }
             },
           };
+
           this._tracker = new Tracker(calendarsContainer, handlers);
         }
       }
@@ -839,35 +822,9 @@ export class AppDatepicker extends LitElement {
         })}"
         tabindex="0"
         @keyup="${this._updateFocusedDateWithKeyboard}"
-        @transitionend="${this._whenTransitionend}"
       >${calendarsContent}</div>
     </div>
     `;
-  }
-
-  private async _whenTransitionend() {
-    await waitForNextFrame();
-
-    const calendarsContainer = this.calendarsContainer;
-
-    if (calendarsContainer) {
-      calendarsContainer.style.transform =
-      calendarsContainer.style.transitionTimingFunction =
-      calendarsContainer.style.transitionDuration = ``;
-
-      const dx = this._dx;
-
-      if (Math.abs(dx) > 35) {
-        const updateType: MonthUpdateType = dx < 0 ? 'next' : 'previous';
-        this._updateMonth(updateType).handleEvent();
-      }
-
-      await this.updateComplete;
-
-      this._animating = this._swiping = this._isPointerDown = false;
-
-      dispatchCustomEvent(this, 'datepicker-animation-finished');
-    }
   }
 
   private _updateView(view: StartView) {
