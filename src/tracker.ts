@@ -17,6 +17,25 @@ export interface TrackerHandlers {
   up(startPointer: ResolvedPointer, oldPointer: ResolvedPointer, ev: PointerType): void;
 }
 
+const supportsPassive = (() => {
+  let supportsPassiveFlag = false;
+
+  try {
+    const noop = () => void 0;
+    const opts = Object.defineProperty({}, 'passive', {
+      get() {
+        supportsPassiveFlag = true;
+      },
+    });
+    window.addEventListener('testPassive' as any, noop, opts);
+    window.removeEventListener('testPassive' as any, noop, opts);
+
+    return supportsPassiveFlag;
+  } catch (_) {
+    return supportsPassiveFlag;
+  }
+})();
+
 function toPointer(ev: PointerType): ResolvedPointer {
   const { clientX, clientY, pageX, pageY } = ev as PointerEvent;
   /**
@@ -48,9 +67,21 @@ function getFirstTouch(startPointer: ResolvedPointer | null, ev: PointerType): F
   return { newPointer, oldPointer: startPointer };
 }
 
+function addPassiveEventListener(
+  node: HTMLElement,
+  event: string,
+  callback: unknown
+): void {
+  node.addEventListener(
+    event,
+    callback as EventListenerOrEventListenerObject,
+    supportsPassive ? { passive: true } : false
+  );
+}
+
 export class Tracker {
   private _startPointer: ResolvedPointer | null = null;
-  private _started: boolean = false;
+  // private _started: boolean = false;
   private readonly _down: PointerHandler['handler'];
   private readonly _move: PointerHandler['handler'];
   private readonly _up: PointerHandler['handler'];
@@ -64,9 +95,10 @@ export class Tracker {
 
     if (_element && _element.addEventListener) {
       _element.addEventListener('mousedown', this._down);
-      _element.addEventListener('touchstart', this._down);
-      _element.addEventListener('touchmove', this._move);
-      _element.addEventListener('touchend', this._up);
+
+      addPassiveEventListener(_element, 'touchstart', this._down);
+      addPassiveEventListener(_element, 'touchmove', this._move);
+      addPassiveEventListener(_element, 'touchend', this._up);
     }
   }
 
@@ -83,10 +115,6 @@ export class Tracker {
 
   private _onDown(down: TrackerHandlers['down']) {
     return (ev: PointerType) => {
-      (ev as MouseEvent).preventDefault();
-
-      if (this._started) return;
-
       if (ev instanceof MouseEvent) {
         this._element.addEventListener('mousemove', this._move);
         this._element.addEventListener('mouseup', this._up);
@@ -96,30 +124,22 @@ export class Tracker {
 
       down(newPointer, ev);
       this._startPointer = newPointer;
-      this._started = true;
     };
   }
 
   private _onMove(move: TrackerHandlers['move']) {
     return (ev: PointerType) => {
-      if (this._started) {
-        this._updatePointers(move, ev);
-      }
+      this._updatePointers(move, ev);
     };
   }
 
   private _onUp(up: TrackerHandlers['up']) {
     return (ev: PointerType) => {
       this._updatePointers(up, ev, true);
-      this._started = false;
     };
   }
 
   private _updatePointers(cb: (...args: any[]) => void, ev: PointerType, shouldReset?: boolean) {
-    (ev as MouseEvent).preventDefault();
-
-    if (!this._started) return;
-
     if (shouldReset && ev instanceof MouseEvent) {
       this._element.removeEventListener('mousemove', this._move);
       this._element.removeEventListener('mouseup', this._up);
