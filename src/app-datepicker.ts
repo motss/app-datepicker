@@ -628,14 +628,14 @@ export class AppDatepicker extends LitElement {
                   calendarsContainer.removeEventListener('transitionend', transitionEnd);
                 };
 
+                $transitioning = true;
+
                 calendarsContainer.style.transitionDuration = '350ms';
                 calendarsContainer.style.transitionTimingFunction = 'cubic-bezier(0, 0, .4, 1)';
                 calendarsContainer.style.transform = `translateX(${
                   didPassThreshold ? makeNumberPrecise(maxWidth * (dx < 0 ? -1 : 1)) : 0
                 }px)`;
                 calendarsContainer.addEventListener('transitionend', transitionEnd);
-
-                $transitioning = true;
               } else if ($down) {
                 this._updateFocusedDate(ev as MouseEvent);
 

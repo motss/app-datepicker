@@ -81,7 +81,6 @@ function addPassiveEventListener(
 
 export class Tracker {
   private _startPointer: ResolvedPointer | null = null;
-  // private _started: boolean = false;
   private readonly _down: PointerHandler['handler'];
   private readonly _move: PointerHandler['handler'];
   private readonly _up: PointerHandler['handler'];
