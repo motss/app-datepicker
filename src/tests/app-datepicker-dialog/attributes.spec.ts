@@ -33,7 +33,7 @@ describe(`${elementName}::attributes`, () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el: AppDatepickerDialog = document.body.querySelector(a)!;
+      const el = document.body.querySelector<AppDatepickerDialog>(a)!;
 
       if (el) document.body.removeChild(el);
 

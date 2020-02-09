@@ -17,7 +17,7 @@ const elementName = 'app-datepicker';
 
 describe('mouses', () => {
   const isSafari = browser.capabilities.browserName === 'Safari';
-  const { clickElements } = interaction(elementName, isSafari);
+  const { clickElements } = interaction({ elementName, isSafari });
 
   before(async () => {
     await browser.url(APP_INDEX_URL);
@@ -41,7 +41,7 @@ describe('mouses', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a);
+      const el = document.body.querySelector<AppDatepicker>(a);
 
       if (el) document.body.removeChild(el);
 

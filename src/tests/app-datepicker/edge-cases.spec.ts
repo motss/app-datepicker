@@ -20,7 +20,7 @@ describe('edge cases', () => {
     browserKeys,
     clickElements,
     focusCalendarsContainer,
-  } = interaction(elementName, isSafari);
+  } = interaction({ elementName, isSafari });
 
   before(async () => {
     await browser.url(APP_INDEX_URL);
@@ -42,7 +42,7 @@ describe('edge cases', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a)!;
+      const el = document.body.querySelector<AppDatepicker>(a)!;
 
       document.body.removeChild(el);
 

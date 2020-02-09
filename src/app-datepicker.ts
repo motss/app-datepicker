@@ -492,6 +492,7 @@ export class AppDatepicker extends LitElement {
   private _lastSelectedDate?: Date;
   private _tracker?: Tracker;
   private _dx: number = -Infinity;
+  private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
 
   public constructor() {
     super();
@@ -593,49 +594,67 @@ export class AppDatepicker extends LitElement {
               this._dx = 0;
             },
             move : (pointer, oldPointer) => {
+              if ($transitioning || !$down) return;
+
               const dx = this._dx;
-
-              if (
+              const hasMin =
                 (dx < 0 && hasClass(calendarsContainer, 'has-max-date')) ||
-                (dx > 0 && hasClass(calendarsContainer, 'has-min-date'))
-              ) {
-                $down = false;
-              }
+                (dx > 0 && hasClass(calendarsContainer, 'has-min-date'));
 
-              if (Math.abs(dx) > 0 && $down) {
+              if (!hasMin && Math.abs(dx) > 0 && $down) {
                 $move = true;
                 calendarsContainer.style.transform = `translateX(${makeNumberPrecise(dx)}px)`;
               }
 
-              this._dx += (pointer.x - oldPointer.x);
+              this._dx = hasMin ? 0 : dx + (pointer.x - oldPointer.x);
             },
-            up: (_$, _$$, ev) => {
+            up: async (_$, _$$, ev) => {
               if ($down && $move) {
                 const dx = this._dx;
-                const didPassThreshold = Math.abs(dx) > Number(this.dragRatio);
-
                 const maxWidth = calendarsContainer.getBoundingClientRect().width / 3;
-
-                const transitionEnd = () => {
-                  if (didPassThreshold) {
-                    this._updateMonth(dx < 0 ? 'next' : 'previous').handleEvent();
-                  }
-
-                  $down = $move = $transitioning = false;
-                  this._dx = -Infinity;
-
-                  calendarsContainer.removeAttribute('style');
-                  calendarsContainer.removeEventListener('transitionend', transitionEnd);
-                };
+                const didPassThreshold = Math.abs(dx) > (Number(this.dragRatio) * maxWidth);
+                const transitionDuration = 350;
+                const transitionEasing = 'cubic-bezier(0, 0, .4, 1)';
+                const transformTo =
+                  didPassThreshold ? makeNumberPrecise(maxWidth * (dx < 0 ? -1 : 1)) : 0;
 
                 $transitioning = true;
 
-                calendarsContainer.style.transitionDuration = '350ms';
-                calendarsContainer.style.transitionTimingFunction = 'cubic-bezier(0, 0, .4, 1)';
-                calendarsContainer.style.transform = `translateX(${
-                  didPassThreshold ? makeNumberPrecise(maxWidth * (dx < 0 ? -1 : 1)) : 0
-                }px)`;
-                calendarsContainer.addEventListener('transitionend', transitionEnd);
+                await new Promise<void>((y) => {
+                  if (!this._hasNativeWebAnimation) {
+                    const animationEnd = calendarsContainer.animate([
+                      { transform: `translateX(${dx}px)` },
+                      {
+                        transform: `translateX(${transformTo}px)`,
+                      },
+                    ], {
+                      duration: transitionDuration,
+                      easing: transitionEasing,
+                    });
+
+                    animationEnd.onfinish = () => y();
+                  } else {
+                    const transitionEnd = () => {
+                      calendarsContainer.removeEventListener('transitionend', transitionEnd);
+                      y();
+                    };
+
+                    calendarsContainer.addEventListener('transitionend', transitionEnd);
+                    calendarsContainer.style.transitionDuration = `${transitionDuration}ms`;
+                    calendarsContainer.style.transitionTimingFunction = transitionEasing;
+                    calendarsContainer.style.transform = `translateX(${transformTo}px)`;
+                  }
+                });
+
+                if (didPassThreshold) {
+                  this._updateMonth(dx < 0 ? 'next' : 'previous').handleEvent();
+                }
+
+                $down = $move = $transitioning = false;
+                this._dx = -Infinity;
+
+                calendarsContainer.removeAttribute('style');
+                dispatchCustomEvent(this, 'datepicker-animation-finished');
               } else if ($down) {
                 this._updateFocusedDate(ev as MouseEvent);
 

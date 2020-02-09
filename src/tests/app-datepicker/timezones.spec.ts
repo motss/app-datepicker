@@ -30,7 +30,7 @@ describe('timezones', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector(a)!;
+      const el = document.body.querySelector<AppDatepicker>(a)!;
 
       document.body.removeChild(el);
 

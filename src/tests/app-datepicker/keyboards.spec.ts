@@ -11,7 +11,7 @@ import {
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker';
-const { focusCalendarsContainer, browserKeys } = interaction(elementName);
+const { focusCalendarsContainer, browserKeys } = interaction({ elementName });
 
 describe('keyboards', () => {
   // #region helper
