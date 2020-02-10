@@ -158,7 +158,7 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
     options: DragOptions,
     prepareOptions?: PrepareOptions
   ): Promise<string> => {
-    return await browser.executeAsync(async (a, b, c, d, e, f, done) => {
+    return browser.executeAsync(async (a, b, c, d, e, f, done) => {
       try {
         const simulateInputEvent = (n: HTMLElement, eventName: string, opts?: PointerEvent) => {
           /**
@@ -271,65 +271,61 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
             return { x: fx, y: fy, steps: temp };
           };
 
-          try {
-            const eachStep = step == null || step <= 0 ? 20 : step;
+          const eachStep = step == null || step <= 0 ? 20 : step;
 
-            let lastX = x;
-            let lastY = y;
-            let steps: [number, number][] = [];
+          let lastX = x;
+          let lastY = y;
+          let steps: [number, number][] = [];
 
-            for (const [nx, ny] of [
-              [dx, dy],
-              [dx2, dy2],
-            ]) {
-              // Simulate pause before starting subsequent dragging sequences
-              await new Promise(yay => setTimeout(yay, 500));
+          for (const [nx, ny] of [
+            [dx, dy],
+            [dx2, dy2],
+          ]) {
+            // Simulate pause before starting subsequent dragging sequences
+            await new Promise(yay => setTimeout(yay, 500));
 
-              const results = computeSteps({
-                ix: lastX,
-                iy: lastY,
-                xn: nx,
-                yn: ny,
-                stepN: eachStep,
-              });
+            const results = computeSteps({
+              ix: lastX,
+              iy: lastY,
+              xn: nx,
+              yn: ny,
+              stepN: eachStep,
+            });
 
-              if (!results.steps.length) continue;
+            if (!results.steps.length) continue;
 
-              lastX = results.x;
-              lastY = results.y;
-              steps = steps.concat(results.steps);
-            }
-
-            simulateInputEvent(
-              target,
-              isMouse ? 'mousedown' : 'touchstart',
-              toPointerEventOptions(x, y));
-
-            for (const [nx, ny] of steps) {
-              simulateInputEvent(
-                target,
-                isMouse ? 'mousemove' : 'touchmove',
-                toPointerEventOptions(nx, ny));
-
-              await new Promise(yay => requestAnimationFrame(yay));
-            }
-
-            simulateInputEvent(
-              target,
-              isMouse ? 'mouseup' : 'touchend',
-              toPointerEventOptions(lastX, lastY));
-
-            return {
-              done: true,
-              value: {
-                x: lastX,
-                y: lastY,
-                step: eachStep,
-              },
-            };
-          } catch (err) {
-            throw err;
+            lastX = results.x;
+            lastY = results.y;
+            steps = steps.concat(results.steps);
           }
+
+          simulateInputEvent(
+            target,
+            isMouse ? 'mousedown' : 'touchstart',
+            toPointerEventOptions(x, y));
+
+          for (const [nx, ny] of steps) {
+            simulateInputEvent(
+              target,
+              isMouse ? 'mousemove' : 'touchmove',
+              toPointerEventOptions(nx, ny));
+
+            await new Promise(yay => requestAnimationFrame(yay));
+          }
+
+          simulateInputEvent(
+            target,
+            isMouse ? 'mouseup' : 'touchend',
+            toPointerEventOptions(lastX, lastY));
+
+          return {
+            done: true,
+            value: {
+              x: lastX,
+              y: lastY,
+              step: eachStep,
+            },
+          };
         };
 
         const a1 = document.body.querySelector<AppDatepicker>(a)!;

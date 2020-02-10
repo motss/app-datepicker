@@ -40,8 +40,8 @@
   "module": "dist/app-datepicker.js",
   "typings": "dist/app-datepicker.d.ts",
   "scripts": {
-    "build:config": "tsc -p tsconfig.test.json",
-    "build:test": "npm run ts && npm run build:config",
+    "build:config": "tsc -p tsconfig.wdio.json",
+    "build:test": "npm run ts -- -p tsconfig.test.json && npm run build:config",
     "build": "npm run ts -- -p tsconfig.prod.json",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",

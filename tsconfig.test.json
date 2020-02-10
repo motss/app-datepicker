@@ -1,9 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS"
-  },
-  "include": [
-    "src/tests/*.config.ts"
-  ]
+    "target": "ES2017"
+  }
 }
