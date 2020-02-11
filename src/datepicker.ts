@@ -304,7 +304,7 @@ export class AppDatepicker extends LitElement {
       pointer-events: none;
     }
     .full-calendar__day.day--disabled:not(.day--today) {
-      color: var(--app-datepicker-disabled-day-color, rgba(0, 0, 0, .35));
+      color: var(--app-datepicker-disabled-day-color, rgba(0, 0, 0, .55));
     }
 
     .year-list-view__list-item {
