@@ -20,9 +20,8 @@
 | `disabledDays` | String | | Week days to be disabled for selection, e.g. `0,6` disables selection for dates that are weekends (Saturday, Sunday). |
 | `disabledDates` | String | | Dates to be disabled for selection. Accepts [ISO 8601 date format][iso-8601-date-format-url], e.g. `2020-02-02`, `2020-02-02T00:00:00.000Z`. |
 | `inline` | Boolean | `false` | If true, datepicker renders in inline mode without datepicker header. |
+| `dragRatio` | Number | `.15` | Minimum distance to drag to switch to new calendar month, e.g. `0.15 * 300px = 45px`. The calendar returns to its original position without updating the month if the distance being dragged is less than the minimum distance required. |
 | `weekLabel` | String | `Wk` | Label for week number when `showWeekNumber` is true. |
-
-<!-- | `dragRatio` | Number | `.15` | Minimum drag distance to switch between calendars of different months, e.g. `.15` of the total draggable distance of a calendar will trigger the switch. If the drag distance is too small, the drag will return to its initial state. | -->
 
 ### Methods
 
@@ -58,7 +57,7 @@ ___
 
 ![app-datepicker-dialog](https://user-images.githubusercontent.com/10607759/67633823-ce170c80-f8ef-11e9-9e21-e670b2acbed2.jpg)
 
-It inherits all the properties, events, and custom properties from [AppDatepicker] by default.
+It inherits all the properties, events, and custom properties from [AppDatepicker] by default, except the `inline` property.
 
 ### Properties
 
@@ -67,8 +66,6 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 | `dismissLabel` | String | `cancel` | Label of dismiss button. |
 | `confirmLabel` | String | `ok` | Label of confirm button. |
 | `noFocusTrap` | Boolean | `false` | If true, focus will be _trapped_ inside the datepicker dialog. |
-
-<!-- | `dragRatio` | Number | `.15` | [AppDatepicker] | Minimum drag distance to switch between calendars of different months, e.g. `.15` of the total draggable distance of a calendar will trigger the switch. If the drag distance is too small, the drag will return to its initial state. | -->
 
 ### Methods
 

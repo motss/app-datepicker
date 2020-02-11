@@ -450,6 +450,9 @@ export class AppDatepicker extends LitElement {
   @property({ type: Boolean })
   public inline: boolean = false;
 
+  @property({ type: Number })
+  public dragRatio: number = .15;
+
   public get datepickerBodyCalendarView() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
   }
@@ -457,9 +460,6 @@ export class AppDatepicker extends LitElement {
   public get calendarsContainer() {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
   }
-
-  @property({ type: Number })
-  public dragRatio: number = .15;
 
   @property({ type: Date })
   private _selectedDate: Date;

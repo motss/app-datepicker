@@ -33,7 +33,7 @@
 
 This marks another completion of an important milestone of `app-datepicker` with all the love from the [Web Components community][web-components-community-url] in making this element great and wonderful. As Web Components getting more and more traction and better at providing a web standard way of creating shareable components, it plays an important role in the JavaScript community as many developers depend on a plethora of development tools written in JavaScript for the web to create a better developer experience when developing a library, a component, or even a large scalable application.
 
-![screen shot 2019-01-30 at 12 49 30](https://user-images.githubusercontent.com/10607759/51959002-857c1100-248d-11e9-8d1a-9abbafdb2385.png)
+![app-datepicker](https://user-images.githubusercontent.com/10607759/67633824-ce170c80-f8ef-11e9-8d20-856eb0e62409.jpg)
 
 Today, `app-datepicker` has been completely rewritten to adapt to the best of both worlds by leveraging the modern technologies the community most familiar with since year 2018.
 
