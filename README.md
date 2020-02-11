@@ -55,10 +55,8 @@ The following are the list of tools used that makes it shine:
 
 ## Pre-requisite
 
-- [Node.js][node-js-url] >= 10.18.1
-- [NPM][npm-url] >= 6.13.4 ([NPM][npm-url] comes with [Node.js][node-js-url] so there is no need to install separately.)
+- [ES2020] (_The element is compiled with features targeting ES2020, so it might not work properly without transpilation on older browsers._)
 - [lit-element][lit-element-url] >= 2.2.1
-- [TypeScript][typescript-url] >= 3.7.4
 
 ## Installation
 
@@ -219,6 +217,7 @@ Meantime, feel free to check the older version out at:
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
+[ES2020]: https://kangax.github.io/compat-table/es2016plus
 
 <!-- Browsers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
