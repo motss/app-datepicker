@@ -84,7 +84,7 @@
     "axe-core": "^3.5.0",
     "env-cmd": "^10.1.0",
     "es-dev-server": "^1.40.0",
-    "husky": "^4.2.1",
+    "husky": "^4.2.2",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
     "reify": "^0.20.12",
