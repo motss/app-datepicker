@@ -85,7 +85,7 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 ### Custom properties
 
 | Custom property | Default | Description |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | `--app-datepicker-dialog-border-radius` | `8px` | Radius of outer border edge. |
 | `--app-datepicker-dialog-scrim-bg-color` | `rgba(0, 0, 0, .55)` | Background color of dialog's scrim. |
 | `--app-datepicker-dialog-z-index` | `24` | Stack order of datepicker dialog. |
