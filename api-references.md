@@ -46,7 +46,7 @@ _None_
 | `--app-datepicker-border-top-left-radius` | `8px` | Radius of outer top-left border edge. |
 | `--app-datepicker-border-top-right-radius` | `8px` | Radius of outer top-right border edge. |
 | `--app-datepicker-color` | `#000` | Text color. |
-| `--app-datepicker-disabled-day-color` | `rgba(0, 0, 0, .35)` | Text color of disabled day. |
+| `--app-datepicker-disabled-day-color` | `rgba(0, 0, 0, .55)` | Text color of disabled day. |
 | `--app-datepicker-focused-day-color` | `#fff` | Text color of focused day. |
 | `--app-datepicker-selector-color` | `rgba(0, 0, 0, .55)` | Text color of selector buttons. |
 | `--app-datepicker-separator-color` | `#ddd` | Separator color between selector and calendar. |
