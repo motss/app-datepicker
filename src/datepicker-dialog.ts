@@ -1,3 +1,8 @@
+interface AnimateOptions {
+  options?: KeyframeAnimationOptions;
+  keyframes?: Keyframe[];
+  transitions?: string[];
+}
 export interface DatepickerDialogClosed {
   opened: boolean;
   value: AppDatepickerDialog['value'];
@@ -23,8 +28,6 @@ import { getResolvedDate } from './helpers/get-resolved-date.js';
 import { getResolvedLocale } from './helpers/get-resolved-locale.js';
 import { setFocusTrap } from './helpers/set-focus-trap.js';
 import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
-
-const opts: KeyframeAnimationOptions = { duration: 100 };
 
 export class AppDatepickerDialog extends LitElement {
   static get is() { return 'app-datepicker-dialog'; }
@@ -102,8 +105,12 @@ export class AppDatepickerDialog extends LitElement {
         --mdc-theme-primary: var(--app-datepicker-accent-color, #1a73e8);
       }
 
-      mwc-button + mwc-button {
+      mwc-button[dialog-confirm] {
         margin: 0 0 0 8px;
+      }
+
+      .clear {
+        margin: 0 auto 0 0;
       }
 
       /**
@@ -156,14 +163,17 @@ export class AppDatepickerDialog extends LitElement {
   @property({ type: String })
   public weekLabel: string = 'Wk';
 
-  // @property({ type: Number })
-  // public dragRatio: number = .15;
+  @property({ type: Number })
+  public dragRatio: number = .15;
+
+  @property({ type: String })
+  public clearLabel: string = 'clear';
 
   @property({ type: String })
   public dismissLabel: string = 'cancel';
 
   @property({ type: String })
-  public confirmLabel: string = 'ok';
+  public confirmLabel: string = 'set';
 
   @property({ type: Boolean })
   public noFocusTrap: boolean = false;
@@ -174,76 +184,77 @@ export class AppDatepickerDialog extends LitElement {
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm?: HTMLElement;
 
+  private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
   private _focusable?: HTMLElement;
   private _focusTrap?: FocusTrap;
   private _opened: boolean = false;
 
-  public open() {
-    if (this._opened) return this.updateComplete;
+  public async open(): Promise<void> {
+    await this.updateComplete;
 
-    return this.updateComplete.then(() => {
-      this.removeAttribute('aria-hidden');
-      this.style.display = 'block';
-      this._opened = true;
+    if (this._opened) return;
 
-      return this.requestUpdate();
-    }).then(() => {
-      const contentContainer = this._contentContainer!;
-      const keyframes: Keyframe[] = [
+    this.removeAttribute('aria-hidden');
+    this.style.display = 'block';
+    this._opened = true;
+
+    await this.requestUpdate('_opened');
+
+    const contentContainer = this._contentContainer!;
+
+    this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
+
+    await this._animate(contentContainer, {
+      keyframes: [
         { opacity: '0' },
         { opacity: '1' },
-      ];
+      ],
+    });
 
-      this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
+    contentContainer.style.opacity = '1';
 
-      const fadeInAnimationTask = new Promise(yay =>
-        ((contentContainer.animate(keyframes, opts)).onfinish = yay));
+    const focusable = this._focusable!;
 
-      return fadeInAnimationTask.then(() => {
-        contentContainer.style.opacity = '1';
+    if (!this.noFocusTrap) {
+      this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
+    }
 
-        const focusable = this._focusable!;
-        if (!this.noFocusTrap) {
-          this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
-        }
-        focusable.focus();
-        dispatchCustomEvent<DatepickerDialogOpened>(this, 'datepicker-dialog-opened', {
-          firstFocusableElement: focusable,
-          opened: true,
-          value: this.value,
-        });
-      });
+    focusable.focus();
+
+    dispatchCustomEvent<DatepickerDialogOpened>(this, 'datepicker-dialog-opened', {
+      firstFocusableElement: focusable,
+      opened: true,
+      value: this.value,
     });
   }
 
-  public close() {
-    if (!this._opened) return this.updateComplete;
+  public async close(): Promise<void> {
+    await this.updateComplete;
 
-    return this.updateComplete.then(() => {
-      this._opened = false;
-      this._scrim!.style.visibility = '';
+    if (!this._opened) return;
 
-      const contentContainer = this._contentContainer!;
-      const keyframes: Keyframe[] = [
+    this._opened = false;
+    this._scrim!.style.visibility = '';
+
+    const contentContainer = this._contentContainer!;
+
+    await this._animate(contentContainer, {
+      keyframes: [
         { opacity: '1' },
         { opacity: '0' },
-      ];
-      const fadeOutAnimationTask = new Promise(yay =>
-        ((contentContainer.animate(keyframes, opts)).onfinish = yay));
-
-      return fadeOutAnimationTask.then(() => {
-        contentContainer.style.opacity =
-        contentContainer.style.visibility = '';
-
-        this.setAttribute('aria-hidden', 'true');
-        this.style.display = 'none';
-
-        if (!this.noFocusTrap) this._focusTrap!.disconnect();
-
-        dispatchCustomEvent<DatepickerDialogClosed>(
-          this, 'datepicker-dialog-closed', { opened: false, value: this.value });
-      });
+      ],
     });
+
+    contentContainer.style.opacity =
+    contentContainer.style.visibility = '';
+
+    this.setAttribute('aria-hidden', 'true');
+    this.style.display = 'none';
+
+    if (!this.noFocusTrap) this._focusTrap!.disconnect();
+
+    dispatchCustomEvent<DatepickerDialogClosed>(
+      this, 'datepicker-dialog-closed', { opened: false, value: this.value });
   }
 
   protected shouldUpdate() {
@@ -293,15 +304,59 @@ export class AppDatepickerDialog extends LitElement {
       .startView="${this.startView}"
       .value="${this.value}"
       .weekLabel="${this.weekLabel}"
+      .dragRatio="${this.dragRatio}"
       @datepicker-first-updated="${this._setFocusable}"
       @datepicker-value-updated="${this._updateWithKey}"></app-datepicker>
 
       <div class="actions-container">
+        <mwc-button class="clear" @click="${this._setToday}">${this.clearLabel}</mwc-button>
+
         <mwc-button dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
         <mwc-button dialog-confirm @click="${this._update}">${this.confirmLabel}</mwc-button>
       </div>
     </div>` : null}
     `;
+  }
+
+  private async _animate(node: HTMLElement, opts: AnimateOptions) {
+    const {
+      keyframes,
+      options = { duration: 100 },
+    } = opts || {};
+
+    if (!keyframes) return;
+
+    return new Promise((y) => {
+      if (this._hasNativeWebAnimation) {
+        node.animate(keyframes, options).onfinish = y;
+      } else {
+        const [, endFrame] = keyframes || [];
+        const transitionEnd = () => {
+          node.removeEventListener('transitionend', transitionEnd);
+          y();
+        };
+
+        node.addEventListener('transitionend', transitionEnd);
+        node.style.transitionDuration = `${options.duration}ms`;
+
+        Object.keys(endFrame).forEach((n) => {
+          if (n) (node.style as any)[n] = endFrame[n];
+        });
+      }
+    });
+  }
+
+  private _padStart(val: number) {
+    return `0${val}`.slice(-2);
+  }
+
+  private _setToday() {
+    const today = getResolvedDate();
+    const fy = today.getFullYear();
+    const m = today.getMonth();
+    const d = today.getDate();
+
+    this._datepicker!.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
   }
 
   private _updateValue() {

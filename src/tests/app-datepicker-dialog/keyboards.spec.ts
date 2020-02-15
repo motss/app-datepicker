@@ -326,6 +326,48 @@ describe(`${elementName}::keyboards`, () => {
     `);
   });
 
+  it(`reset value when clear button is tapped`, async () => {
+    type A = [string, string];
+    type B = string;
+
+    const [
+      initialVal,
+      todayValue,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      const padStart = (v: number) => `0${v}`.slice(-2);
+      const today = new Date();
+      const fy = today.getFullYear();
+      const m = today.getMonth();
+      const d = today.getDate();
+      const todayVal = [`${fy}`].concat([1 + m, d].map(padStart)).join('-');
+
+      n.min = `${fy - 10}-01-01`;
+      n2.value = `${fy - 1}-01-01`;
+      n.max = `${fy + 10}-01-01`;
+
+      await n2.updateComplete;
+      await n.updateComplete;
+
+      done([n2.value, todayVal] as A);
+    }, elementName, elementName2);
+
+    await focusElement('mwc-button.clear', true);
+    await browser.keys(['Space']);
+
+    const prop: B = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      done(n2.value as B);
+    }, elementName, elementName2);
+
+    strictEqual(initialVal, `${Number(todayValue.slice(0, 4)) - 1}-01-01`);
+    strictEqual(prop, todayValue);
+  });
+
   // region helpers
   type C = [string, string, string];
 

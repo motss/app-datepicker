@@ -321,6 +321,28 @@ describe(`${elementName}::properties`, () => {
     allStrictEqual(values, expectedDisabledDates);
   });
 
+  it(`renders with defined 'dragRatio'`, async () => {
+    type A = [number, number];
+
+    const dragRatio = .5;
+    const values: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.querySelector<AppDatepickerDialog>(a)!;
+
+      n.dragRatio = c;
+
+      await n.updateComplete;
+
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      done([
+        n.dragRatio,
+        n2.dragRatio,
+      ] as A);
+    }, elementName, elementName2, dragRatio);
+
+    allStrictEqual(values, dragRatio);
+  });
+
   it(`renders with defined 'weekLabel'`, async () => {
     type A = [string, string];
 

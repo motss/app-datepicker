@@ -523,7 +523,31 @@ describe('attributes', () => {
     strictEqual(noDatepickerHeader, null);
   });
 
-  it(`renders with optional 'weeklabel'`, async () => {
+  it(`renders with optional 'dragratio'`, async () => {
+    type A = [number, string];
+
+    const dragRatio = .5;
+    const [
+      prop,
+      attr,
+    ]: A = await browser.executeAsync(async (a, b, done) => {
+      const n = document.body.querySelector<AppDatepicker>(a)!;
+
+      n.setAttribute('dragratio', `${b}`);
+
+      await n.updateComplete;
+
+      done([
+        n.dragRatio,
+        n.getAttribute('dragratio'),
+      ] as A);
+    }, elementName, dragRatio);
+
+    strictEqual(prop, dragRatio);
+    strictEqual(attr, `${dragRatio}`);
+  });
+
+  it(`renders with defined 'weeklabel'`, async () => {
     type A = [string, string, string];
 
     const weekLabel  = '周数';

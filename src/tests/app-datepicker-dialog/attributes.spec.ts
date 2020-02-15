@@ -6,6 +6,7 @@ import { APP_INDEX_URL } from '../constants.js';
 import {
   allStrictEqual,
   deepStrictEqual,
+  strictEqual,
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker-dialog';
@@ -307,11 +308,12 @@ describe(`${elementName}::attributes`, () => {
     const expectedDisableddates: string = '2020-02-02,2020-02-15';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       n.setAttribute('disableddates', c);
 
       await n.updateComplete;
+
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
 
       done([
         n.getAttribute('disableddates'),
@@ -328,6 +330,33 @@ describe(`${elementName}::attributes`, () => {
       expectedDisableddates,
       expectedDisableddates,
     ] as A);
+  });
+
+  it(`renders with defined 'dragratio'`, async () => {
+    type A = [number, number, string];
+
+    const dragRatio = .5;
+    const [
+      prop,
+      prop2,
+      attr,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+
+      n.setAttribute('dragratio', `${c}`);
+
+      await n.updateComplete;
+
+      done([
+        n.dragRatio,
+        n2.dragRatio,
+        n.getAttribute('dragratio'),
+      ] as A);
+    }, elementName, elementName2, dragRatio);
+
+    allStrictEqual([prop, prop2], dragRatio);
+    strictEqual(attr, `${dragRatio}`);
   });
 
   it(`renders with defined 'weekLabel'`, async () => {

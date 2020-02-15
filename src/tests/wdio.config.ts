@@ -14,10 +14,12 @@ export const config: WdioConfig = {
       browserName: 'chrome',
       'goog:chromeOptions': {
         args: [
-          '--window-size=800,600',
-          '--headless',
-          '--no-sandbox',
-          // '--disable-gpu',
+          'disable-background-timer-throttling',
+          'disable-gpu',
+          'disable-renderer-backgrounding',
+          'headless',
+          'no-sandbox',
+          'window-size=800,600',
         ],
         w3c: true,
       },

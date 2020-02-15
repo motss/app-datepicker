@@ -619,7 +619,7 @@ export class AppDatepicker extends LitElement {
                 $transitioning = true;
 
                 await new Promise<void>((y) => {
-                  if (!this._hasNativeWebAnimation) {
+                  if (this._hasNativeWebAnimation) {
                     const animationEnd = calendarsContainer.animate([
                       { transform: `translateX(${dx}px)` },
                       {
