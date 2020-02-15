@@ -30,8 +30,8 @@
 > A different way of `datepicker`-ing on the web.
 >
 > 🛠 While it is still in RC release, feel free to try it out.
-
-> 💯 Featured in [awesome-lit-html].
+> 
+> 💯 Also, featured in [awesome-lit-html].
 
 This marks another completion of an important milestone of `app-datepicker` with all the love from the [Web Components community][web-components-community-url] in making this element great and wonderful. As Web Components getting more and more traction and better at providing a web standard way of creating shareable components, it plays an important role in the JavaScript community as many developers depend on a plethora of development tools written in JavaScript for the web to create a better developer experience when developing a library, a component, or even a large scalable application.
 
@@ -177,6 +177,29 @@ Tested on the following browsers:
 | Safari 10.1 | Mac OS 10.12 |
 | Safari 9 | Mac OS X 10.11 | -->
 
+## Works well with `mwc-dialog>`
+
+For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-datepicker` inside [mwc-dialog].
+
+Feasible source code can be viewed [here][mwc-date-picker-url].
+
+```ts
+// Simplified code snippet
+
+class MWCDatePicker extends LitElement {
+  render() {
+    return html`
+    <mwc-dialog>
+      <app-datepicker></app-datepicker>
+
+      <mwc-button slot="secondaryAction" dialogAction="cancel">cancel</mwc-button>
+      <mwc-button slot="primaryAction" dialogAction="set">set</mwc-button>
+    </mwc-dialog>
+    `;
+  }
+}
+```
+
 ## API references
 
 - [AppDatepicker][app-datepicker-api-reference-url]
@@ -221,6 +244,9 @@ Meantime, feel free to check the older version out at:
 [new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
 [ES2020]: https://kangax.github.io/compat-table/es2016plus
 [awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
+[material-components-web-components]: https://github.com/material-components/material-components-web-components
+[mwc-dialog]: https://github.com/material-components/material-components-web-components/tree/master/packages/dialog
+[mwc-date-picker-url]: https://motss-app.web.app/demo/app-datepicker/mwc-date-picker.js
 
 <!-- Browsers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
