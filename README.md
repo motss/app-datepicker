@@ -50,6 +50,7 @@ The following are the list of tools used that makes it shine:
 - [Installation](#installation)
 - [How to use](#how-to-use)
 - [Browser compatibility](#browser-compatibility)
+- [Works well with `mwc-dialog>`](#works-well-with-mwc-dialog)
 - [API references](#api-references)
 - [Demo](#demo)
 - [Older versions](#older-versions)
