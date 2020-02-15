@@ -3,6 +3,7 @@ import { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {
+  allStrictEqual,
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
@@ -40,6 +41,15 @@ describe(`${elementName}::initial_render`, () => {
 
     it(`takes snapshot`, async () => {
       const browserName = browser.capabilities.browserName;
+
+      await browser.executeAsync(async (a, done) => {
+        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+
+        await n.open();
+        await n.updateComplete;
+
+        done();
+      }, elementName);
 
       await browser.saveScreenshot(
         `./src/tests/snapshots/${elementName}/initial-render-calendar-view-${browserName}.png`
@@ -90,16 +100,17 @@ describe(`${elementName}::initial_render`, () => {
         ] as A);
       }, elementName, elementName2);
 
-      deepStrictEqual(values, [true, true]);
+      allStrictEqual(values, true);
     });
 
     it(`renders today's date`, async () => {
       const now = new Date();
-      const today = [
-        now.getFullYear(),
-        `0${now.getMonth() + 1}`.slice(-2),
-        `0${now.getDate()}`.slice(-2),
-      ].join('-');
+      const today =
+        [`${now.getFullYear()}`]
+          .concat(
+            [1 + now.getMonth(), now.getDate()].map(n => `0${n}`.slice(-2))
+          )
+          .join('-');
 
       const prop: string = await browser.executeAsync(async (a, done) => {
         const n = document.body.querySelector<AppDatepickerDialog>(a)!;
@@ -132,29 +143,29 @@ describe(`${elementName}::initial_render`, () => {
     it(`renders with scrim and action buttons when opened`, async () => {
       type A = [boolean, boolean, string[]];
 
-      const values: A = await browser.executeAsync(async (a, done) => {
+      const [
+        hasVisibleScrim,
+        hasActionButtons,
+        actionLabels,
+      ]: A = await browser.executeAsync(async (a, done) => {
         const n = document.body.querySelector<AppDatepickerDialog>(a)!;
 
         await n.open();
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<HTMLDivElement>('.scrim')!;
-        const n3s = Array.from(n.shadowRoot!.querySelectorAll<HTMLButtonElement>('mwc-button')!);
-
-        const hasVisibleScrim = getComputedStyle(n2).visibility === 'visible';
-        const hasActionButtons = n3s.length === 2;
-        const actionLabels = n3s.map(o => o.textContent);
+        const root = n.shadowRoot!;
+        const n2 = root.querySelector<HTMLDivElement>('.scrim')!;
+        const n3s = Array.from(root.querySelectorAll<HTMLButtonElement>('mwc-button')!);
 
         done([
-          hasVisibleScrim,
-          hasActionButtons,
-          actionLabels,
+          getComputedStyle(n2).visibility === 'visible',
+          n3s.length === 3,
+          n3s.map(o => o.textContent),
         ]);
       }, elementName);
 
-      strictEqual(values[0], true);
-      strictEqual(values[1], true);
-      deepStrictEqual(values[2].map(n => sanitizeText(n)), ['cancel', 'ok']);
+      allStrictEqual([hasVisibleScrim, hasActionButtons], true);
+      deepStrictEqual(actionLabels.map(n => sanitizeText(n)), ['clear', 'cancel', 'set']);
     });
 
   });

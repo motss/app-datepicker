@@ -56,7 +56,7 @@ export const config: WdioConfig = {
     {
       ...baseCapability,
       browserName: 'microsoftedge',
-      browserVersion: 'latest-1',
+      browserVersion: '18',
     },
 
     // {
