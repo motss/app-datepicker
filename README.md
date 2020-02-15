@@ -31,6 +31,8 @@
 >
 > 🛠 While it is still in RC release, feel free to try it out.
 
+> 💯 Featured in [awesome-lit-html].
+
 This marks another completion of an important milestone of `app-datepicker` with all the love from the [Web Components community][web-components-community-url] in making this element great and wonderful. As Web Components getting more and more traction and better at providing a web standard way of creating shareable components, it plays an important role in the JavaScript community as many developers depend on a plethora of development tools written in JavaScript for the web to create a better developer experience when developing a library, a component, or even a large scalable application.
 
 ![app-datepicker](https://user-images.githubusercontent.com/10607759/67633824-ce170c80-f8ef-11e9-8d20-856eb0e62409.jpg)
@@ -218,6 +220,7 @@ Meantime, feel free to check the older version out at:
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
 [ES2020]: https://kangax.github.io/compat-table/es2016plus
+[awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
 
 <!-- Browsers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
