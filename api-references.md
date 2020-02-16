@@ -48,6 +48,7 @@ _None_
 | `--app-datepicker-color` | `#000` | Text color. |
 | `--app-datepicker-disabled-day-color` | `rgba(0, 0, 0, .55)` | Text color of disabled day. |
 | `--app-datepicker-focused-day-color` | `#fff` | Text color of focused day. |
+| `--app-datepicker-focused-year-bg-color` | `#000` | Background color of focused year. |
 | `--app-datepicker-selector-color` | `rgba(0, 0, 0, .55)` | Text color of selector buttons. |
 | `--app-datepicker-separator-color` | `#ddd` | Separator color between selector and calendar. |
 | `--app-datepicker-weekday-color` | `rgba(0, 0, 0, .55)` | Text color of weekday. |

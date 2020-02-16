@@ -326,7 +326,7 @@ export class AppDatepicker extends LitElement {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: var(--app-datepicker-bg-color, #000);
+      background-color: var(--app-datepicker-focused-year-bg-color, #000);
       opacity: 0;
       pointer-events: none;
     }
