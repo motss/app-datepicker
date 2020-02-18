@@ -57,8 +57,7 @@ export class AppDatepicker extends LitElement {
     resetButton,
     css`
     :host {
-      min-width: 300px;
-      width: 300px;
+      width: 312px;
       /** NOTE: Magic number as 16:9 aspect ratio does not look good */
       /* height: calc((var(--app-datepicker-width) / .66) - var(--app-datepicker-footer-height, 56px)); */
       background-color: var(--app-datepicker-bg-color, #fff);
@@ -177,7 +176,6 @@ export class AppDatepicker extends LitElement {
       top: 0;
       left: calc(-100%);
       width: calc(100% * 3);
-      padding: 0 0 16px;
       transform: translateZ(0);
       will-change: transform;
       /**
@@ -203,14 +201,14 @@ export class AppDatepicker extends LitElement {
       will-change: transform;
     }
 
-    .calendar-container {
-      max-width: calc(100% / 3);
-      width: calc(100% / 3);
-    }
-
+    .calendar-container,
     .calendar-label,
     .calendar-table {
-      width: calc(100% - 16px * 2);
+      width: 100%;
+    }
+
+    .calendar-container {
+      padding: 0 16px 16px;
     }
 
     .calendar-label {
@@ -218,10 +216,7 @@ export class AppDatepicker extends LitElement {
       align-items: center;
       justify-content: center;
 
-      max-width: calc(100% - 8px * 2);
-      width: 100%;
       height: 56px;
-      margin: 0 8px;
       font-weight: 500;
       text-align: center;
     }
@@ -231,16 +226,20 @@ export class AppDatepicker extends LitElement {
       -webkit-user-select: none;
       user-select: none;
 
-      margin: 0 16px;
       border-collapse: collapse;
+      border-spacing: 0;
       text-align: center;
     }
 
     .calendar-weekdays > th,
     .full-calendar__day {
       position: relative;
-      min-height: 40px;
-      height: 40px;
+      width: calc(100% / 7);
+      height: 0;
+      padding: calc(100% / 7 / 2) 0;
+      line-height: 0;
+      outline: none;
+      text-align: center;
     }
 
     /**
@@ -262,10 +261,10 @@ export class AppDatepicker extends LitElement {
       content: '';
       display: block;
       position: absolute;
-      width: 40px;
-      height: 40px;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       background-color: var(--app-datepicker-accent-color, #1a73e8);
       border-radius: 50%;
       opacity: 0;
@@ -285,11 +284,18 @@ export class AppDatepicker extends LitElement {
     }
 
     .full-calendar__day > .calendar-day {
-      display: inline-block;
-      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      position: absolute;
+      top: 5%;
+      left: 5%;
+      width: 90%;
+      height: 90%;
       color: currentColor;
-      z-index: 1;
       pointer-events: none;
+      z-index: 1;
     }
     .full-calendar__day.day--today {
       color: var(--app-datepicker-accent-color, #1a73e8);
