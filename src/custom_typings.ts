@@ -1,8 +1,28 @@
 import { DateTimeFormatter } from 'nodemod/dist/calendar/calendar_typing.js';
 
+// #region TS helpers
 export type Nullable<T> = {
   [P in keyof T]: T[P] | null;
 };
+// #endregion TS helpers
+
+export type HTMLDivElementPart =
+  | 'body'
+  | 'calendar-view'
+  | 'calendar'
+  | 'calendars'
+  | 'day'
+  | 'header'
+  | 'label'
+  | 'month-selectors'
+  | 'toolbar'
+  | 'year-list-view'
+  | 'year-list';
+export type HTMLButtonElementPart =
+  | 'calendar-selector'
+  | 'month-selector'
+  | 'year-selector'
+  | 'year';
 
 export type StartView = 'calendar' | 'yearList';
 

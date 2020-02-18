@@ -26,6 +26,8 @@ import {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   Formatters,
+  HTMLButtonElementPart,
+  HTMLDivElementPart,
   KEY_CODES_MAP,
   MonthUpdateType,
   StartView,
@@ -67,6 +69,7 @@ export class AppDatepicker extends LitElement {
         var(--app-datepicker-border-top-right-radius, 8px)
         var(--app-datepicker-border-bottom-right-radius, 8px)
         var(--app-datepicker-border-bottom-left-radius, 8px);
+      contain: content;
       overflow: hidden;
     }
     :host([landscape]) {
@@ -322,9 +325,6 @@ export class AppDatepicker extends LitElement {
       /* will-change: opacity; */
       /* outline: none; */
     }
-    .year-list-view__list-item > div {
-      z-index: 1;
-    }
     .year-list-view__list-item::after {
       content: '';
       position: absolute;
@@ -542,11 +542,13 @@ export class AppDatepicker extends LitElement {
         this._renderDatepickerYearList() : this._renderDatepickerCalendar();
     const datepickerHeaderContent: null | TemplateResult = this.inline ?
       null :
-      html`<div class="datepicker-header">${this._renderHeaderSelectorButton()}</div>`;
+      html`<div class="datepicker-header" part="header">${
+        this._renderHeaderSelectorButton()
+      }</div>`;
 
     return html`
     ${datepickerHeaderContent}
-    <div class="datepicker-body">${cache(datepickerBodyContent)}</div>
+    <div class="datepicker-body" part="body">${cache(datepickerBodyContent)}</div>
     `;
   }
 
@@ -684,12 +686,14 @@ export class AppDatepicker extends LitElement {
     return html`
     <button
       class="${classMap({ 'btn__year-selector': true, selected: !isCalendarView })}"
+      part="year-selector"
       data-view="${'yearList' as StartView}"
       @click="${this._updateView('yearList')}">${formatterFy}</button>
 
-    <div class="datepicker-toolbar">
+    <div class="datepicker-toolbar" part="toolbar">
       <button
         class="${classMap({ 'btn__calendar-selector': true, selected: isCalendarView })}"
+        part="calendar-selector"
         data-view="${'calendar' as StartView}"
         @click="${this._updateView('calendar')}">${formattedDate}</button>
     </div>
@@ -701,17 +705,16 @@ export class AppDatepicker extends LitElement {
     const focusedDateFy = this._focusedDate.getUTCFullYear();
 
     return html`
-    <div class="datepicker-body__year-list-view">
-      <div class="year-list-view__full-list" @click="${this._updateYear}">
+    <div class="datepicker-body__year-list-view" part="year-list-view">
+      <div class="year-list-view__full-list" part="year-list" @click="${this._updateYear}">
       ${this._yearList.map(n =>
-        html`<button
-          class="${classMap({
-            'year-list-view__list-item': true,
-            'year--selected': focusedDateFy === n,
-          })}"
-          .year="${n}">
-          <div>${yearFormat(toUTCDate(n, 0, 1))}</div>
-        </button>`)
+      html`<button
+        class="${classMap({
+          'year-list-view__list-item': true,
+          'year--selected': focusedDateFy === n,
+        })}"
+        part="year"
+        .year="${n}">${yearFormat(toUTCDate(n, 0, 1))}</button>`)
       }</div>
     </div>
     `;
@@ -752,19 +755,19 @@ export class AppDatepicker extends LitElement {
     const hasMinDate = null == calendars[0].calendar;
     const hasMaxDate = null == calendars[2].calendar;
 
-    const weekdaysContent = weekdays.map(o => html`<th aria-label="${o.label}">${o.value}</th>`);
+    const weekdaysContent = weekdays.map(o => html`<th part="weekday" aria-label="${o.label}">${o.value}</th>`);
     const calendarsContent = repeat(calendars, n => n.key, ({ calendar }) => {
       if (calendar == null) {
-        return html`<div class="calendar-container"></div>`;
+        return html`<div class="calendar-container" part="calendar"></div>`;
       }
 
       return html`
-      <div class="calendar-container">
-        <div class="calendar-label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
+      <div class="calendar-container" part="calendar">
+        <div class="calendar-label" part="label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
 
-        <table class="calendar-table">
+        <table class="calendar-table" part="table">
           <thead>
-            <tr class="calendar-weekdays">${weekdaysContent}</tr>
+            <tr class="calendar-weekdays" part="weekdays">${weekdaysContent}</tr>
           </thead>
 
           <tbody>${
@@ -774,13 +777,14 @@ export class AppDatepicker extends LitElement {
                   const { disabled, fullDate, label, value } = calendarCol;
 
                   if (fullDate == null && value == null) {
-                    return html`<td class="full-calendar__day day--empty"></td>`;
+                    return html`<td class="full-calendar__day day--empty" part="calendar-day"></td>`;
                   }
 
                   /** NOTE(motss): Could be week number labeling */
                   if (fullDate == null && showWeekNumber && i < 1) {
                     return html`<td
                       class="full-calendar__day weekday-label"
+                      part="calendar-day"
                       aria-label="${label}"
                     >${value}</td>`;
                   }
@@ -795,10 +799,11 @@ export class AppDatepicker extends LitElement {
                       'day--today': +todayDate === curTime,
                       'day--focused': !disabled && +focusedDate === curTime,
                     })}"
+                    part="calendar-day"
                     aria-label="${label}"
                     .fullDate="${fullDate}"
                     .day="${value}">
-                    <div class="calendar-day">${value}</div>
+                    <div class="calendar-day" part="day">${value}</div>
                   </td>
                   `;
                 })
@@ -818,11 +823,12 @@ export class AppDatepicker extends LitElement {
      * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
      */
     return html`
-    <div class="datepicker-body__calendar-view">
-      <div class="calendar-view__month-selector">
+    <div class="datepicker-body__calendar-view" part="calendar-view">
+      <div class="calendar-view__month-selector" part="month-selectors">
         <div class="month-selector-container">${hasMinDate ? null : html`
           <button
             class="btn__month-selector"
+            part="month-selector"
             aria-label="Previous month"
             @click="${this._updateMonth('previous')}"
           >${iconChevronLeft}</button>
@@ -831,6 +837,7 @@ export class AppDatepicker extends LitElement {
         <div class="month-selector-container">${hasMaxDate ? null : html`
           <button
             class="btn__month-selector"
+            part="month-selector"
             aria-label="Next month"
             @click="${this._updateMonth('next')}"
           >${iconChevronRight}</button>
@@ -843,6 +850,7 @@ export class AppDatepicker extends LitElement {
           'has-min-date': hasMinDate,
           'has-max-date': hasMaxDate,
         })}"
+        part="calendars"
         tabindex="0"
         @keyup="${this._updateFocusedDateWithKeyboard}"
       >${calendarsContent}</div>
@@ -1039,17 +1047,33 @@ export class AppDatepicker extends LitElement {
 }
 
 declare global {
-  interface HTMLElementTagNameMap {
-    'app-datepicker': AppDatepicker;
+  // #region HTML element type extensions
+  interface HTMLButtonElement {
+    year: number;
+    part: HTMLButtonElementPart;
+  }
+
+  interface HTMLDivElement {
+    part: HTMLDivElementPart;
   }
 
   interface HTMLTableCellElement {
     day: string;
     fullDate: string;
+    part: 'calendar-day' | 'weekday'; // Both td and th have the same instance
   }
 
-  interface HTMLButtonElement {
-    year: number;
+  interface HTMLTableElement {
+    part: 'table';
+  }
+
+  interface HTMLTableRowElement {
+    part: 'weekdays';
+  }
+  // #endregion HTML element type extensions
+
+  interface HTMLElementTagNameMap {
+    'app-datepicker': AppDatepicker;
   }
 
   interface HTMLElementEventMap {
