@@ -20,6 +20,7 @@ import {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   FocusTrap,
+  HTMLElementPart,
   KEY_CODES_MAP,
   StartView,
 } from './custom_typings.js';
@@ -286,11 +287,10 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   protected render() {
-    // .dragRatio="${this.dragRatio}"
     return html`
-    <div class="scrim" @click="${this.close}"></div>
+    <div class="scrim" part="scrim" @click="${this.close}"></div>
 
-    ${this._opened ? html`<div class="content-container">
+    ${this._opened ? html`<div class="content-container" part="dialog-content">
     <app-datepicker class="datepicker"
       .min="${this.min}"
       .max="${this.max}"
@@ -308,11 +308,11 @@ export class AppDatepickerDialog extends LitElement {
       @datepicker-first-updated="${this._setFocusable}"
       @datepicker-value-updated="${this._updateWithKey}"></app-datepicker>
 
-      <div class="actions-container">
-        <mwc-button class="clear" @click="${this._setToday}">${this.clearLabel}</mwc-button>
+      <div class="actions-container" part="actions">
+        <mwc-button class="clear" part="clear" @click="${this._setToday}">${this.clearLabel}</mwc-button>
 
-        <mwc-button dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
-        <mwc-button dialog-confirm @click="${this._update}">${this.confirmLabel}</mwc-button>
+        <mwc-button part="dismiss" dialog-dismiss @click="${this.close}">${this.dismissLabel}</mwc-button>
+        <mwc-button part="confirm" dialog-confirm @click="${this._update}">${this.confirmLabel}</mwc-button>
       </div>
     </div>` : null}
     `;
@@ -393,6 +393,12 @@ export class AppDatepickerDialog extends LitElement {
 }
 
 declare global {
+  // #region HTML element type extension
+  interface HTMLElement {
+    part: HTMLElementPart;
+  }
+  // #endregion HTML element type extension
+
   interface HTMLElementTagNameMap {
     'app-datepicker-dialog': AppDatepickerDialog;
   }

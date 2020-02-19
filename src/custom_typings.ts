@@ -6,23 +6,44 @@ export type Nullable<T> = {
 };
 // #endregion TS helpers
 
-export type HTMLDivElementPart =
+// #region part attribute
+type HTMLButtonElementPart =
+  | 'calendar-selector'
+  | 'month-selector'
+  | 'year-selector'
+  | 'year';
+type HTMLDivElementPart =
+  | 'actions'
   | 'body'
   | 'calendar-view'
   | 'calendar'
   | 'calendars'
   | 'day'
+  | 'dialog-content'
   | 'header'
   | 'label'
   | 'month-selectors'
+  | 'scrim'
   | 'toolbar'
   | 'year-list-view'
   | 'year-list';
-export type HTMLButtonElementPart =
-  | 'calendar-selector'
-  | 'month-selector'
-  | 'year-selector'
-  | 'year';
+type HTMLElementMWCButtonPart =
+  | 'clear'
+  | 'confirm'
+  | 'dismiss';
+type HTMLTableCellElementPart = /** Both td and th have the same instance */
+  | 'calendar-day'
+  | 'weekday';
+type HTMLTableElementPart = 'table';
+type HTMLTableRowElementPart = 'weekdays';
+export type HTMLElementPart =
+  | HTMLButtonElementPart
+  | HTMLDivElementPart
+  | HTMLElementMWCButtonPart
+  | HTMLTableCellElementPart
+  | HTMLTableElementPart
+  | HTMLTableRowElementPart;
+// #endregion part attribute
 
 export type StartView = 'calendar' | 'yearList';
 

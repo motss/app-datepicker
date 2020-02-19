@@ -26,8 +26,7 @@ import {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   Formatters,
-  HTMLButtonElementPart,
-  HTMLDivElementPart,
+  HTMLElementPart,
   KEY_CODES_MAP,
   MonthUpdateType,
   StartView,
@@ -1050,25 +1049,15 @@ declare global {
   // #region HTML element type extensions
   interface HTMLButtonElement {
     year: number;
-    part: HTMLButtonElementPart;
   }
 
-  interface HTMLDivElement {
-    part: HTMLDivElementPart;
+  interface HTMLElement {
+    part: HTMLElementPart;
   }
 
   interface HTMLTableCellElement {
     day: string;
     fullDate: string;
-    part: 'calendar-day' | 'weekday'; // Both td and th have the same instance
-  }
-
-  interface HTMLTableElement {
-    part: 'table';
-  }
-
-  interface HTMLTableRowElement {
-    part: 'weekdays';
   }
   // #endregion HTML element type extensions
 

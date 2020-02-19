@@ -35,7 +35,7 @@ _None_
 | `datepicker-animation-finished` | Fires when drag animation finishes during the switch between calendars. Returns no value. |
 | `datepicker-value-updated` | Fires when datepicker updates its `value` via keyboard input (Enter or Space key) or mouse clicks. Returns an object of type [DatepickerValueUpdated]. |
 
-### Custom properties
+### CSS Custom properties
 
 | Custom property | Default | Description |
 | --- | --- | --- |
@@ -52,6 +52,31 @@ _None_
 | `--app-datepicker-selector-color` | `rgba(0, 0, 0, .55)` | Text color of selector buttons. |
 | `--app-datepicker-separator-color` | `#ddd` | Separator color between selector and calendar. |
 | `--app-datepicker-weekday-color` | `rgba(0, 0, 0, .55)` | Text color of weekday. |
+
+### CSS Shadow Parts
+
+| Name | Description |
+| --- | --- |
+| `body` | Datepicker body, contain `calendar-view` or `year-list-view` |
+| `calendar` | Container of `label` and `table` |
+| `calendar-day` | Container of `day` |
+| `calendar-selector` | Button in `header` to show `calendar-view` when clicked |
+| `calendar-view` | Container of `month-selectors` and `calendars` |
+| `calendars` | Container of multiple `calendar`s |
+| `day` | Calendar day |
+| `header` | Datepicker header, contains `year-selector` and `toolbar` |
+| `label` | Calendar label |
+| `month-selector` | Button to navigate to previous or next month |
+| `month-selectors` | Container of multiple `month-selector`s |
+| `table` | Calendar table |
+| `toolbar` | Container of `calendar-selector` |
+| `weekday` | Weekday |
+| `weekdays` | Container of multiple `weekday`s |
+| `year` | Year |
+| `year-list` | Year list, contains multiple `year`s |
+| `year-list-view` | Container of `year-list` |
+| `year-selector` | Button in `header` to show `year-list-view` when clicked |
+
 ___
 
 ## AppDatepickerDialog
@@ -84,13 +109,24 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 | `datepicker-dialog-opened` | Fires when datepicker dialog opens. Returns an object of type [DatepickerDialogOpened]. |
 | `datepicker-dialog-closed` | Fires when datepicker dialog closes. Returns an object of type [DatepickerDialogClosed]. |
 
-### Custom properties
+### CSS Custom properties
 
 | Custom property | Default | Description |
 | --- | --- | --- |
 | `--app-datepicker-dialog-border-radius` | `8px` | Radius of outer border edge. |
 | `--app-datepicker-dialog-scrim-bg-color` | `rgba(0, 0, 0, .55)` | Background color of dialog's scrim. |
 | `--app-datepicker-dialog-z-index` | `24` | Stack order of datepicker dialog. |
+
+### CSS Shadow Parts
+
+| Name | Description |
+| --- | --- |
+| `actions` | Container of `clear`, `dismiss`, and `confirm` |
+| `clear` | Clear button |
+| `confirm` | Confirm button |
+| `dialog-content` | Dialog content, contains `<app-datepicker>` and `actions` |
+| `dismiss` | Dismiss button |
+| `scrim` | Dialog scrim |
 
 ## Interfaces
 

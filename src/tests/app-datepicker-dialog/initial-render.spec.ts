@@ -1,5 +1,6 @@
 import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { AppDatepicker } from '../../app-datepicker.js';
+import { HTMLElementPart } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {
@@ -166,6 +167,46 @@ describe(`${elementName}::initial_render`, () => {
 
       allStrictEqual([hasVisibleScrim, hasActionButtons], true);
       deepStrictEqual(actionLabels.map(n => sanitizeText(n)), ['clear', 'cancel', 'set']);
+    });
+
+    it(`has contents with 'part' attributes`, async () => {
+      type A = boolean;
+
+      const results: A[] = [];
+      const parts = [
+        [['scrim'], false],
+        [
+          [
+            'actions',
+            'clear',
+            'confirm',
+            'dialog-content',
+            'dismiss',
+            'scrim',
+          ],
+          true,
+        ],
+      ] as [HTMLElementPart[], boolean][];
+
+      for (const part of parts) {
+        const result: A = await browser.executeAsync(async (a, [b, c], done) => {
+          const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+
+          if (c) {
+            await n.open();
+            await n.updateComplete;
+          }
+
+          const partContents =
+            (b as HTMLElementPart[]).map(o => n.shadowRoot!.querySelector(`[part="${o}"]`));
+
+          done(partContents.every(o => o instanceof HTMLElement) as A);
+        }, elementName, part);
+
+        results.push(result);
+      }
+
+      allStrictEqual(results, true);
     });
 
   });
