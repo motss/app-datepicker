@@ -117,6 +117,7 @@ export class Tracker {
       if (ev instanceof MouseEvent) {
         this._element.addEventListener('mousemove', this._move);
         this._element.addEventListener('mouseup', this._up);
+        this._element.addEventListener('mouseleave', this._up);
       }
 
       const { newPointer } = getFirstTouch(this._startPointer, ev);
@@ -142,6 +143,7 @@ export class Tracker {
     if (shouldReset && ev instanceof MouseEvent) {
       this._element.removeEventListener('mousemove', this._move);
       this._element.removeEventListener('mouseup', this._up);
+      this._element.removeEventListener('mouseleave', this._up);
     }
 
     const { newPointer, oldPointer } = getFirstTouch(this._startPointer, ev);

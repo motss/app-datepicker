@@ -47,7 +47,7 @@
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build",
-    "serve": "es-dev-server --port 3000 --node-resolve --dedupe",
+    "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
     "test:dev:all": "npm run build:test && npm t && npm run test:sl:dev",
     "test:dev": "npm run build:test && npm t",
     "test:sl:dev": "env-cmd -f ./.env npm run test:sl",
