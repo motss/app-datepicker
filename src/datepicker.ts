@@ -196,7 +196,7 @@ export class AppDatepicker extends LitElement {
     }
 
     .calendar-weekdays > th,
-    td.weekday-label {
+    .weekday-label {
       color: var(--app-datepicker-weekday-color, rgba(0, 0, 0, .55));
       font-weight: 400;
       transform: translateZ(0);
@@ -233,7 +233,7 @@ export class AppDatepicker extends LitElement {
       text-align: center;
     }
 
-    .calendar-weekdays > th,
+    .calendar-weekday,
     .full-calendar__day {
       position: relative;
       width: calc(100% / 7);
@@ -242,6 +242,19 @@ export class AppDatepicker extends LitElement {
       line-height: 0;
       outline: none;
       text-align: center;
+    }
+    .full-calendar__day:focus {
+      outline: #000 dotted 1px;
+      outline: -webkit-focus-ring-color auto 1px;
+    }
+    :host([showweeknumber]) .calendar-weekday,
+    :host([showweeknumber]) .full-calendar__day {
+      width: calc(100% / 8);
+      padding-top: calc(100% / 8);
+      padding-bottom: 0;
+    }
+    :host([showweeknumber]) th.weekday-label {
+      padding: 0;
     }
 
     /**
@@ -285,6 +298,7 @@ export class AppDatepicker extends LitElement {
       opacity: 1;
     }
 
+    .calendar-weekday > .weekday,
     .full-calendar__day > .calendar-day {
       display: flex;
       align-items: center;
@@ -464,13 +478,13 @@ export class AppDatepicker extends LitElement {
     return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
   }
 
-  @property({ type: Date })
+  @property({ type: Date, attribute: false })
   private _selectedDate: Date;
 
-  @property({ type: Date })
+  @property({ type: Date, attribute: false })
   private _focusedDate: Date;
 
-  @property({ type: String })
+  @property({ type: String, attribute: false })
   private _startView?: StartView;
 
   @query('.year-list-view__full-list')
@@ -496,6 +510,7 @@ export class AppDatepicker extends LitElement {
   private _tracker?: Tracker;
   private _dx: number = -Infinity;
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
+  private _updatingDateWithKey: boolean = false;
 
   public constructor() {
     super();
@@ -672,7 +687,25 @@ export class AppDatepicker extends LitElement {
           this._tracker = new Tracker(calendarsContainer, handlers);
         }
       }
+
+      // Focus year selector button when switches to calendar view.
+      if ('calendar' === startView) this._focusElement('[part="year-selector"]');
     }
+
+    /**
+     * Focus to new focused date when updating with keyboard.
+     * It is to provide better support for screen reader.
+     */
+    if (this._updatingDateWithKey) {
+      this._focusElement('[part="calendars"]:nth-of-type(2) .day--focused');
+      this._updatingDateWithKey = false;
+    }
+  }
+
+  private _focusElement(selector: string) {
+    const focusedTarget = this.shadowRoot!.querySelector<HTMLElement>(selector);
+
+    if (focusedTarget) focusedTarget.focus();
   }
 
   private _renderHeaderSelectorButton() {
@@ -754,24 +787,37 @@ export class AppDatepicker extends LitElement {
     const hasMinDate = null == calendars[0].calendar;
     const hasMaxDate = null == calendars[2].calendar;
 
-    const weekdaysContent = weekdays.map(o => html`<th part="weekday" aria-label="${o.label}">${o.value}</th>`);
-    const calendarsContent = repeat(calendars, n => n.key, ({ calendar }) => {
+    const weekdaysContent = weekdays.map(
+      o => html`<th
+        class="calendar-weekday"
+        part="calendar-weekday"
+        role="columnheader"
+        aria-label="${o.label}"
+      >
+        <div class="weekday" part="weekday">${o.value}</div>
+      </th>`
+    );
+    const calendarsContent = repeat(calendars, n => n.key, ({ calendar }, ci) => {
       if (calendar == null) {
         return html`<div class="calendar-container" part="calendar"></div>`;
       }
 
+      const calendarAriaId = `calendarcaption${ci}`;
+
       return html`
       <div class="calendar-container" part="calendar">
-        <div class="calendar-label" part="label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
+        <table class="calendar-table" part="table" role="grid" aria-labelledby="${calendarAriaId}">
+          <caption id="${calendarAriaId}">
+            <div class="calendar-label" part="label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
+          </caption>
 
-        <table class="calendar-table" part="table">
-          <thead>
-            <tr class="calendar-weekdays" part="weekdays">${weekdaysContent}</tr>
+          <thead role="rowgroup">
+            <tr class="calendar-weekdays" part="weekdays" role="row">${weekdaysContent}</tr>
           </thead>
 
-          <tbody>${
+          <tbody role="rowgroup">${
             calendar.map((calendarRow) => {
-              return html`<tr>${
+              return html`<tr role="row">${
                 calendarRow.map((calendarCol, i) => {
                   const { disabled, fullDate, label, value } = calendarCol;
 
@@ -781,14 +827,18 @@ export class AppDatepicker extends LitElement {
 
                   /** NOTE(motss): Could be week number labeling */
                   if (fullDate == null && showWeekNumber && i < 1) {
-                    return html`<td
+                    return html`<th
                       class="full-calendar__day weekday-label"
                       part="calendar-day"
+                      scope="row"
+                      role="rowheader"
+                      abbr="${label}"
                       aria-label="${label}"
                     >${value}</td>`;
                   }
 
                   const curTime = +new Date(fullDate!);
+                  const isCurrentDate = +focusedDate === curTime;
 
                   return html`
                   <td
@@ -796,12 +846,15 @@ export class AppDatepicker extends LitElement {
                       'full-calendar__day': true,
                       'day--disabled': disabled,
                       'day--today': +todayDate === curTime,
-                      'day--focused': !disabled && +focusedDate === curTime,
+                      'day--focused': !disabled && isCurrentDate,
                     })}"
                     part="calendar-day"
+                    role="gridcell"
+                    tabindex="${isCurrentDate ? '0' : '-1'}"
                     aria-label="${label}"
                     .fullDate="${fullDate}"
-                    .day="${value}">
+                    .day="${value}"
+                  >
                     <div class="calendar-day" part="day">${value}</div>
                   </td>
                   `;
@@ -850,7 +903,6 @@ export class AppDatepicker extends LitElement {
           'has-max-date': hasMaxDate,
         })}"
         part="calendars"
-        tabindex="0"
         @keyup="${this._updateFocusedDateWithKeyboard}"
       >${calendarsContent}</div>
     </div>
@@ -1034,6 +1086,7 @@ export class AppDatepicker extends LitElement {
     }
 
     this._focusedDate = nextFocusedDate;
+    this._updatingDateWithKey = true;
 
     dispatchCustomEvent<DatepickerValueUpdated>(this, 'datepicker-value-updated', {
       keyCode,

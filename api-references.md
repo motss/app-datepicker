@@ -58,10 +58,11 @@ _None_
 | Name | Description |
 | --- | --- |
 | `body` | Datepicker body, contain `calendar-view` or `year-list-view` |
-| `calendar` | Container of `label` and `table` |
 | `calendar-day` | Container of `day` |
 | `calendar-selector` | Button in `header` to show `calendar-view` when clicked |
 | `calendar-view` | Container of `month-selectors` and `calendars` |
+| `calendar-weekday` | Container of `weekday` |
+| `calendar` | Container of `label` and `table` |
 | `calendars` | Container of multiple `calendar`s |
 | `day` | Calendar day |
 | `header` | Datepicker header, contains `year-selector` and `toolbar` |
@@ -71,11 +72,11 @@ _None_
 | `table` | Calendar table |
 | `toolbar` | Container of `calendar-selector` |
 | `weekday` | Weekday |
-| `weekdays` | Container of multiple `weekday`s |
-| `year` | Year |
-| `year-list` | Year list, contains multiple `year`s |
+| `weekdays` | Container of multiple `calendar-weekday`s |
 | `year-list-view` | Container of `year-list` |
+| `year-list` | Year list, contains multiple `year`s |
 | `year-selector` | Button in `header` to show `year-list-view` when clicked |
+| `year` | Year |
 
 ___
 

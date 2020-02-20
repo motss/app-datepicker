@@ -25,6 +25,7 @@ type HTMLDivElementPart =
   | 'month-selectors'
   | 'scrim'
   | 'toolbar'
+  | 'weekday'
   | 'year-list-view'
   | 'year-list';
 type HTMLElementMWCButtonPart =
@@ -33,7 +34,7 @@ type HTMLElementMWCButtonPart =
   | 'dismiss';
 type HTMLTableCellElementPart = /** Both td and th have the same instance */
   | 'calendar-day'
-  | 'weekday';
+  | 'calendar-weekday';
 type HTMLTableElementPart = 'table';
 type HTMLTableRowElementPart = 'weekdays';
 export type HTMLElementPart =
