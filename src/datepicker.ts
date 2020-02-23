@@ -986,10 +986,10 @@ export class AppDatepicker extends LitElement {
 
   @eventOptions({ passive: true })
   private _updateYear(ev: MouseEvent) {
-    const selectedYearEl = findShadowTarget(
+    const selectedYearEl = findShadowTarget<HTMLButtonElement>(
       ev,
       (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')
-    ) as HTMLButtonElement;
+    );
 
     if (selectedYearEl == null) return;
 
@@ -1011,10 +1011,10 @@ export class AppDatepicker extends LitElement {
   }
 
   private _updateFocusedDate(ev: MouseEvent) {
-    const selectedDayEl = findShadowTarget(
+    const selectedDayEl = findShadowTarget<HTMLTableCellElement>(
       ev,
       (n: HTMLElement) => hasClass(n, 'full-calendar__day')
-    ) as HTMLTableCellElement;
+    );
 
     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
     if (selectedDayEl == null ||
