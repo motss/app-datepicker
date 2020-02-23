@@ -1,6 +1,6 @@
-import { LitElement } from 'lit-element';
+import type { LitElement } from 'lit-element';
 
-import { AppDatepicker } from '../app-datepicker.js';
+import type { AppDatepicker } from '../app-datepicker.js';
 
 export type PrepareOptions = Partial<
   Record<'props' | 'attrs', Partial<Omit<AppDatepicker, keyof LitElement>>>>;

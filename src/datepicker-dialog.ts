@@ -12,18 +12,18 @@ export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpd
 import '@material/mwc-button/mwc-button.js';
 import { css, html, LitElement, property, query } from 'lit-element';
 
-import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
-import { AppDatepicker } from './app-datepicker.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { AppDatepicker } from './app-datepicker.js';
 import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
-import {
+import type {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   FocusTrap,
   HTMLElementPart,
-  KEY_CODES_MAP,
   StartView,
 } from './custom_typings.js';
+import { KEY_CODES_MAP } from './custom_typings.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
 import { getResolvedLocale } from './helpers/get-resolved-locale.js';

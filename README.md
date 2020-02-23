@@ -58,7 +58,7 @@ The following are the list of tools used that makes it shine:
 
 ## Pre-requisite
 
-- [ES2020] (_The element is compiled with features targeting ES2020, so it might not work properly without transpilation on older browsers._)
+- [ES2019] (_The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers._)
 - [lit-element][lit-element-url] >= 2.2.1
 
 ## Installation
@@ -243,7 +243,7 @@ Meantime, feel free to check the older version out at:
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
 [new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
-[ES2020]: https://kangax.github.io/compat-table/es2016plus
+[ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
 [awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
 [material-components-web-components]: https://github.com/material-components/material-components-web-components
 [mwc-dialog]: https://github.com/material-components/material-components-web-components/tree/master/packages/dialog

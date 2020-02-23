@@ -1,5 +1,6 @@
-import { AppDatepicker } from '../../app-datepicker.js';
-import { DatepickerFirstUpdated, DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { DatepickerFirstUpdated, DatepickerValueUpdated } from '../../custom_typings.js';
+import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {

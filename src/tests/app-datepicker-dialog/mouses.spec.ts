@@ -1,7 +1,7 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { AppDatepicker } from '../../app-datepicker.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { PrepareOptions } from '../custom_typings.js';
+import type { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { toSelector } from '../helpers/to-selector.js';
@@ -328,7 +328,7 @@ describe(`${elementName}::mouses`, () => {
     strictEqual(prop, '2020-02-20');
     strictEqual(prop2, '2020-02-13');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 13, 2020" aria-selected="true">
       <div class="calendar-day">13</div>
     </td>
     `);
@@ -438,7 +438,7 @@ describe(`${elementName}::mouses`, () => {
     strictEqual(cssDisplay, 'none');
     strictEqual(ariaHiddenAttr, 'true');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 13, 2020" aria-selected="true">
       <div class="calendar-day">13</div>
     </td>
     `);

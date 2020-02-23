@@ -1,9 +1,11 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { AppDatepicker } from '../../app-datepicker.js';
-import { DatepickerValueUpdated, KEY_CODES_MAP } from '../../custom_typings.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { DatepickerValueUpdated } from '../../custom_typings.js';
+import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
-  deepStrictEqual, strictEqual,
+  deepStrictEqual,
+  strictEqual,
 } from '../helpers/typed-assert.js';
 
 const elementName = 'app-datepicker-dialog';

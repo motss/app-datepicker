@@ -1,6 +1,7 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { DragOptions, interaction } from '../helpers/interaction.js';
+import type { DragOptions } from '../helpers/interaction.js';
+import { interaction } from '../helpers/interaction.js';
 import {
   allStrictEqual,
 } from '../helpers/typed-assert.js';

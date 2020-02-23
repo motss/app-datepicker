@@ -1,4 +1,4 @@
-import { AppDatepicker } from '../../app-datepicker.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   deepStrictEqual,

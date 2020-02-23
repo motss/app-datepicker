@@ -1,5 +1,4 @@
-
-import { AppDatepicker } from '../../app-datepicker.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
@@ -140,8 +139,8 @@ describe('edge cases', () => {
 
     allStrictEqual(props, '2020-05-01');
     allStrictEqual(focusedContents, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="May 1, 2020">
-    <div class="calendar-day">1</div>
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="May 1, 2020" aria-selected="true">
+      <div class="calendar-day">1</div>
     </td>
     `);
   });
@@ -163,8 +162,8 @@ describe('edge cases', () => {
 
     deepStrictEqual(props, ['2020-05-01', '2020-05-31']);
     deepStrictEqual(focusedContents, [1, 31].map(n => prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="May ${n}, 2020">
-    <div class="calendar-day">${n}</div>
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="May ${n}, 2020" aria-selected="true">
+      <div class="calendar-day">${n}</div>
     </td>
     `)));
   });
@@ -187,8 +186,8 @@ describe('edge cases', () => {
 
     deepStrictEqual(props, ['2020-06-01', '2020-04-01']);
     deepStrictEqual(focusedContents, ['Jun', 'Apr'].map(n => prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="${n} 1, 2020">
-    <div class="calendar-day">1</div>
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="${n} 1, 2020" aria-selected="true">
+      <div class="calendar-day">1</div>
     </td>
     `)));
   });
@@ -211,8 +210,8 @@ describe('edge cases', () => {
 
     deepStrictEqual(props, ['2021-05-01', '2019-05-01']);
     deepStrictEqual(focusedContents, [2021, 2019].map(n => prettyHtml(`
-    <td class="full-calendar__day day--focused" aria-label="May 1, ${n}">
-    <div class="calendar-day">1</div>
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="May 1, ${n}" aria-selected="true">
+      <div class="calendar-day">1</div>
     </td>
     `)));
   });

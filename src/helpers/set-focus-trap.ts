@@ -1,4 +1,5 @@
-import { FocusTrap, KEY_CODES_MAP } from '../custom_typings.js';
+import type { FocusTrap } from '../custom_typings.js';
+import { KEY_CODES_MAP } from '../custom_typings.js';
 import { findShadowTarget } from './find-shadow-target.js';
 
 export function setFocusTrap(

@@ -1,5 +1,5 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { StartView } from '../../custom_typings.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { deepStrictEqual } from '../helpers/typed-assert.js';
 

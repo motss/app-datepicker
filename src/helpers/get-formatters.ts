@@ -1,6 +1,6 @@
 import { getFormatter } from 'nodemod/dist/calendar/get-formatter.js';
 import { INTL_DATE_TIME_FORMAT } from '../CONSTANT.js';
-import { Formatters } from '../custom_typings.js';
+import type { Formatters } from '../custom_typings.js';
 
 export function getFormatters(locale: string): Formatters {
   const dateFmt = INTL_DATE_TIME_FORMAT(locale, {

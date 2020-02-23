@@ -1,6 +1,6 @@
-import { AppDatepicker } from '../../app-datepicker.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { PrepareOptions } from '../custom_typings.js';
+import type { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { interaction } from '../helpers/interaction.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -119,7 +119,7 @@ describe('mouses', () => {
 
     allStrictEqual([hasYearListView, hasCalendarView], true);
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 20, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 20, 2020" aria-selected="true">
       <div class="calendar-day">20</div>
     </td>
     `);
@@ -201,7 +201,7 @@ describe('mouses', () => {
 
     strictEqual(prop, '2020-02-13');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 13, 2020" aria-selected="true">
       <div class="calendar-day">13</div>
     </td>
     `);
@@ -233,7 +233,7 @@ describe('mouses', () => {
     }, elementName, toSelector('.day--focused'), toSelector('.calendar-label'));
 
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Mar 18, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Mar 18, 2020" aria-selected="true">
       <div class="calendar-day">18</div>
     </td>
     `);
@@ -493,7 +493,7 @@ describe('mouses', () => {
 
     strictEqual(prop, '2020-04-13');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Apr 13, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Apr 13, 2020" aria-selected="true">
       <div class="calendar-day">13</div>
     </td>
     `);
@@ -532,7 +532,7 @@ describe('mouses', () => {
 
     strictEqual(prop, '2020-04-25');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Apr 25, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Apr 25, 2020" aria-selected="true">
       <div class="calendar-day">25</div>
     </td>
     `);
@@ -563,7 +563,7 @@ describe('mouses', () => {
 
     strictEqual(prop, '2020-01-15');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
@@ -731,7 +731,7 @@ describe('mouses', () => {
 
     strictEqual(prop, '2020-02-13');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="2020年2月13日">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="2020年2月13日" aria-selected="true">
       <div class="calendar-day">13日</div>
     </td>
     `);

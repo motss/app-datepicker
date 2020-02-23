@@ -1,6 +1,6 @@
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { AppDatepicker } from '../../app-datepicker.js';
-import { HTMLElementPart } from '../../custom_typings.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { HTMLElementPart } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {

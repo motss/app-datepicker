@@ -1,5 +1,5 @@
-import { AppDatepicker } from '../../app-datepicker.js';
-import { PrepareOptions } from '../custom_typings.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { PrepareOptions } from '../custom_typings.js';
 import { toSelector } from './to-selector.js';
 
 // FIXME: Helper as a workaround until `browser.keys()` supports Alt

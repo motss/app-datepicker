@@ -1,14 +1,17 @@
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
-import { DateTimeFormatter, WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type {
+  Calendar,
+  CalendarWeekday,
+  DateTimeFormatter,
+  WeekNumberType,
+} from 'nodemod/dist/calendar/calendar_typing.js';
 import { getWeekdays } from 'nodemod/dist/calendar/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 
-type MultiCalendar = ReturnType<typeof calendar>;
-
-interface MultiCalendars extends NonNullable<Omit<MultiCalendar, 'calendar' | 'key'>> {
+interface MultiCalendars extends NonNullable<Omit<Calendar, 'calendar' | 'key'>> {
   key: string;
-  weekdays: ReturnType<typeof getWeekdays>;
-  calendars: Pick<ReturnType<typeof calendar>, 'calendar' | 'key'>[];
+  weekdays: CalendarWeekday[];
+  calendars: Pick<Calendar, 'calendar' | 'key'>[];
 }
 
 interface GetMultiCalendarsOption {
@@ -74,7 +77,7 @@ export function getMultiCalendars(
 
   const ify = selectedDate.getUTCFullYear();
   const im = selectedDate.getUTCMonth();
-  const calendarsList = [-1, 0, 1].map<MultiCalendar>((n) => {
+  const calendarsList = [-1, 0, 1].map<Calendar>((n) => {
     const firstDayOfMonth = toUTCDate(ify, im + n, 1);
     const lastDayOfMonthTime = +toUTCDate(ify, im + n + 1, 0);
     const key = getKey(firstDayOfMonth);
@@ -93,9 +96,9 @@ export function getMultiCalendars(
       return {
         key,
 
-        calendar: null,
-        disabledDatesSet: null,
-        disabledDaysSet: null,
+        calendar: [],
+        disabledDatesSet: new Set(),
+        disabledDaysSet: new Set(),
       };
     }
 
@@ -116,34 +119,36 @@ export function getMultiCalendars(
     return { ...calendarDays, key };
   });
 
-  const multiCalendars = calendarsList.reduce<MultiCalendars>((p, n) => {
+  const calendars: MultiCalendars['calendars'] = [];
+  const $disabledDatesSet: MultiCalendars['disabledDatesSet'] = new Set();
+  const $disabledDaysSet: MultiCalendars['disabledDaysSet'] = new Set();
+
+  for (const cal of calendarsList) {
     const {
       disabledDatesSet,
       disabledDaysSet,
       ...rest
-    } = n;
+    } = cal;
 
-    if (null != rest.calendar) {
-      if (disabledDaysSet) {
-        for (const o of disabledDaysSet) p.disabledDaysSet?.add(o);
+    if (rest.calendar.length > 0) {
+      if (disabledDaysSet.size > 0) {
+        for (const o of disabledDaysSet) $disabledDaysSet.add(o);
       }
 
-      if (disabledDatesSet) {
-        for (const o of disabledDatesSet) p.disabledDatesSet?.add(o);
+      if (disabledDatesSet.size > 0) {
+        for (const o of disabledDatesSet) $disabledDatesSet.add(o);
       }
     }
 
-    p.calendars.push(rest);
+    calendars.push(rest);
+  }
 
-    return p;
-  }, {
+  return {
+    calendars,
     weekdays,
+
+    disabledDatesSet: $disabledDatesSet,
+    disabledDaysSet: $disabledDaysSet,
     key: getKey(selectedDate),
-
-    calendars: [],
-    disabledDatesSet: new Set(),
-    disabledDaysSet: new Set(),
-  });
-
-  return multiCalendars;
+  };
 }

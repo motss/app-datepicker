@@ -1,7 +1,7 @@
-import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
-import { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import { AppDatepicker } from '../../app-datepicker.js';
-import { StartView } from '../../custom_typings.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   allStrictEqual,

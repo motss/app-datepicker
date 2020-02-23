@@ -1,5 +1,5 @@
-import { AppDatepicker } from '../../app-datepicker.js';
-import { HTMLElementPart, StartView } from '../../custom_typings.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { HTMLElementPart, StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -116,7 +116,7 @@ describe('initial render', () => {
         showToday: true,
         showFocused: false,
       }), prettyHtml(`
-      <td class="full-calendar__day day--today" aria-label="${formattedDate}">
+      <td class="full-calendar__day day--today" aria-disabled="false" aria-label="${formattedDate}" aria-selected="false">
         <div class="calendar-day">${now.getDate()}</div>
       </td>
       `));
@@ -132,7 +132,7 @@ describe('initial render', () => {
       }, elementName, toSelector('.day--focused'));
 
       strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-      <td class="full-calendar__day day--focused" aria-label="Feb 2, 2020">
+      <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 2, 2020" aria-selected="true">
         <div class="calendar-day">2</div>
       </td>
       `);

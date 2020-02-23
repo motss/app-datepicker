@@ -17,20 +17,20 @@ import { cache } from 'lit-html/directives/cache.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 
-import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
-import {
+import type {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   Formatters,
   HTMLElementPart,
-  KEY_CODES_MAP,
   MonthUpdateType,
   StartView,
 } from './custom_typings.js';
+import { KEY_CODES_MAP } from './custom_typings.js';
 import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { findShadowTarget } from './helpers/find-shadow-target.js';
@@ -47,7 +47,8 @@ import { targetScrollTo } from './helpers/target-scroll-to.js';
 import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
 import { toYearList } from './helpers/to-year-list.js';
 import { updateYearWithMinMax } from './helpers/update-year-with-min-max.js';
-import { Tracker, TrackerHandlers } from './tracker.js';
+import type { TrackerHandlers } from './tracker.js';
+import { Tracker } from './tracker.js';
 
 export class AppDatepicker extends LitElement {
   static get is() { return 'app-datepicker'; }
@@ -409,30 +410,30 @@ export class AppDatepicker extends LitElement {
 
   @property({ type: String, reflect: true })
   public get min() {
-    return this.__hasMin ? toFormattedDateString(this._min!) : '';
+    return this.#hasMin ? toFormattedDateString(this.#min!) : '';
   }
   public set min(val: string) {
     const valDate = getResolvedDate(val);
     const focusedDate = this._focusedDate;
     const isValidMin = isValidDate(val, valDate);
 
-    this._min = isValidMin ? valDate : this._todayDate;
-    this.__hasMin = isValidMin;
+    this.#min = isValidMin ? valDate : this.#todayDate;
+    this.#hasMin = isValidMin;
     this.value = toFormattedDateString(+focusedDate < +valDate ? valDate : focusedDate);
     this.updateComplete.then(() => this.requestUpdate('min'));
   }
 
   @property({ type: String, reflect: true })
   public get max() {
-    return this.__hasMax ? toFormattedDateString(this._max!) : '';
+    return this.#hasMax ? toFormattedDateString(this.#max!) : '';
   }
   public set max(val: string) {
     const valDate = getResolvedDate(val);
     const focusedDate = this._focusedDate;
     const isValidMax = isValidDate(val, valDate);
 
-    this._max = isValidMax ? valDate : this._maxDate;
-    this.__hasMax = isValidMax;
+    this.#max = isValidMax ? valDate : this.#maxDate;
+    this.#hasMax = isValidMax;
     this.value = toFormattedDateString(+focusedDate > +valDate ? valDate : focusedDate);
     this.updateComplete.then(() => this.requestUpdate('max'));
   }
@@ -446,7 +447,7 @@ export class AppDatepicker extends LitElement {
 
     if (isValidDate(val, valDate)) {
       this._focusedDate = new Date(valDate);
-      this._selectedDate = this._lastSelectedDate = new Date(valDate);
+      this._selectedDate = this.#lastSelectedDate = new Date(valDate);
       // this.valueAsDate = newDate;
       // this.valueAsNumber = +newDate;
     }
@@ -496,21 +497,21 @@ export class AppDatepicker extends LitElement {
   @query('.year-list-view__list-item')
   private _yearViewListItem?: HTMLButtonElement;
 
-  private _min?: Date;
-  private _max?: Date;
-  private __hasMin?: boolean = false;
-  private __hasMax?: boolean = false;
-  private _todayDate?: Date;
-  private _maxDate?: Date;
-  private _yearList: number[];
-  private _formatters?: Formatters;
-  private _disabledDaysSet: Set<number> | null = new Set();
-  private _disabledDatesSet: Set<number> | null = new Set();
-  private _lastSelectedDate?: Date;
-  private _tracker?: Tracker;
-  private _dx: number = -Infinity;
-  private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
-  private _updatingDateWithKey: boolean = false;
+  #min: Date;
+  #max: Date;
+  #hasMin: boolean = false;
+  #hasMax: boolean = false;
+  #todayDate: Date;
+  #maxDate: Date;
+  #yearList: number[];
+  #formatters: Formatters;
+  #disabledDaysSet: Set<number> = new Set();
+  #disabledDatesSet: Set<number> = new Set();
+  #lastSelectedDate?: Date;
+  #tracker?: Tracker;
+  #dx: number = -Infinity;
+  #hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
+  #updatingDateWithKey: boolean = false;
 
   public constructor() {
     super();
@@ -523,22 +524,22 @@ export class AppDatepicker extends LitElement {
     this.value = formattedTodayDate;
     this.startView = 'calendar';
 
-    this._min = new Date(todayDate);
-    this._max = new Date(max);
-    this._todayDate = todayDate;
-    this._maxDate = max;
-    this._yearList = toYearList(todayDate, max);
+    this.#min = new Date(todayDate);
+    this.#max = new Date(max);
+    this.#todayDate = todayDate;
+    this.#maxDate = max;
+    this.#yearList = toYearList(todayDate, max);
     this._selectedDate = new Date(todayDate);
     this._focusedDate = new Date(todayDate);
-    this._formatters = allFormatters;
+    this.#formatters = allFormatters;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (this._tracker) {
-      this._tracker.disconnect();
-      this._tracker = undefined;
+    if (this.#tracker) {
+      this.#tracker.disconnect();
+      this.#tracker = undefined;
     }
   }
 
@@ -546,7 +547,7 @@ export class AppDatepicker extends LitElement {
     /**
      * NOTE: Update `_formatters` when `locale` changes.
      */
-    if (this._formatters!.locale !== this.locale) this._formatters = getFormatters(this.locale);
+    if (this.#formatters.locale !== this.locale) this.#formatters = getFormatters(this.locale);
 
     /**
      * NOTE(motss): For perf reason, initialize all formatters for calendar rendering
@@ -570,9 +571,11 @@ export class AppDatepicker extends LitElement {
     let firstFocusableElement: HTMLElement;
 
     if ('calendar' === this._startView) {
-      firstFocusableElement = this.inline ?
-        this.shadowRoot!.querySelector<HTMLButtonElement>('.btn__month-selector')! :
-        this._buttonSelectorYear!;
+      firstFocusableElement = (
+        this.inline ?
+          this.shadowRoot!.querySelector<HTMLButtonElement>('.btn__month-selector') :
+          this._buttonSelectorYear
+      )!;
     } else {
       firstFocusableElement = this._yearViewListItem!;
     }
@@ -585,20 +588,20 @@ export class AppDatepicker extends LitElement {
     const startView = this._startView;
 
     if (changed.has('min') || changed.has('max')) {
-      this._yearList = toYearList(this._min!, this._max!);
+      this.#yearList = toYearList(this.#min, this.#max);
 
-      if ('yearList' === startView) this.requestUpdate('_yearList');
+      if ('yearList' === startView) this.requestUpdate();
     }
 
     if (changed.has('_startView') || changed.has('startView')) {
       if ('yearList' === startView) {
         const selectedYearScrollTop =
-          48 * (this._selectedDate.getUTCFullYear() - this._min!.getUTCFullYear() - 2);
+          48 * (this._selectedDate.getUTCFullYear() - this.#min.getUTCFullYear() - 2);
 
         targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
       }
 
-      if ('calendar' === startView && null == this._tracker) {
+      if ('calendar' === startView && null == this.#tracker) {
         const calendarsContainer = this.calendarsContainer;
 
         let $down = false;
@@ -611,12 +614,12 @@ export class AppDatepicker extends LitElement {
               if ($transitioning) return;
 
               $down = true;
-              this._dx = 0;
+              this.#dx = 0;
             },
             move : (pointer, oldPointer) => {
               if ($transitioning || !$down) return;
 
-              const dx = this._dx;
+              const dx = this.#dx;
               const hasMin =
                 (dx < 0 && hasClass(calendarsContainer, 'has-max-date')) ||
                 (dx > 0 && hasClass(calendarsContainer, 'has-min-date'));
@@ -626,11 +629,11 @@ export class AppDatepicker extends LitElement {
                 calendarsContainer.style.transform = `translateX(${makeNumberPrecise(dx)}px)`;
               }
 
-              this._dx = hasMin ? 0 : dx + (pointer.x - oldPointer.x);
+              this.#dx = hasMin ? 0 : dx + (pointer.x - oldPointer.x);
             },
             up: async (_$, _$$, ev) => {
               if ($down && $move) {
-                const dx = this._dx;
+                const dx = this.#dx;
                 const maxWidth = calendarsContainer.getBoundingClientRect().width / 3;
                 const didPassThreshold = Math.abs(dx) > (Number(this.dragRatio) * maxWidth);
                 const transitionDuration = 350;
@@ -641,7 +644,7 @@ export class AppDatepicker extends LitElement {
                 $transitioning = true;
 
                 await new Promise<void>((y) => {
-                  if (this._hasNativeWebAnimation) {
+                  if (this.#hasNativeWebAnimation) {
                     const animationEnd = calendarsContainer.animate([
                       { transform: `translateX(${dx}px)` },
                       {
@@ -671,7 +674,7 @@ export class AppDatepicker extends LitElement {
                 }
 
                 $down = $move = $transitioning = false;
-                this._dx = -Infinity;
+                this.#dx = -Infinity;
 
                 calendarsContainer.removeAttribute('style');
                 dispatchCustomEvent(this, 'datepicker-animation-finished');
@@ -679,12 +682,12 @@ export class AppDatepicker extends LitElement {
                 this._updateFocusedDate(ev as MouseEvent);
 
                 $down = $move = false;
-                this._dx = -Infinity;
+                this.#dx = -Infinity;
               }
             },
           };
 
-          this._tracker = new Tracker(calendarsContainer, handlers);
+          this.#tracker = new Tracker(calendarsContainer, handlers);
         }
       }
 
@@ -696,9 +699,9 @@ export class AppDatepicker extends LitElement {
      * Focus to new focused date when updating with keyboard.
      * It is to provide better support for screen reader.
      */
-    if (this._updatingDateWithKey) {
+    if (this.#updatingDateWithKey) {
       this._focusElement('[part="calendars"]:nth-of-type(2) .day--focused');
-      this._updatingDateWithKey = false;
+      this.#updatingDateWithKey = false;
     }
   }
 
@@ -709,7 +712,7 @@ export class AppDatepicker extends LitElement {
   }
 
   private _renderHeaderSelectorButton() {
-    const { yearFormat, dateFormat } = this._formatters!;
+    const { yearFormat, dateFormat } = this.#formatters!;
     const isCalendarView = this.startView === 'calendar';
     const focusedDate = this._focusedDate;
     const formattedDate = dateFormat(focusedDate);
@@ -733,13 +736,13 @@ export class AppDatepicker extends LitElement {
   }
 
   private _renderDatepickerYearList() {
-    const { yearFormat } = this._formatters!;
+    const { yearFormat } = this.#formatters;
     const focusedDateFy = this._focusedDate.getUTCFullYear();
 
     return html`
     <div class="datepicker-body__year-list-view" part="year-list-view">
       <div class="year-list-view__full-list" part="year-list" @click="${this._updateYear}">
-      ${this._yearList.map(n =>
+      ${this.#yearList.map(n =>
       html`<button
         class="${classMap({
           'year-list-view__list-item': true,
@@ -759,7 +762,7 @@ export class AppDatepicker extends LitElement {
       fullDateFormat,
       longWeekdayFormat,
       narrowWeekdayFormat,
-    } = this._formatters!;
+    } = this.#formatters;
     const disabledDays = splitString(this.disabledDays, Number);
     const disabledDates = splitString(this.disabledDates, getResolvedDate);
     const showWeekNumber = this.showWeekNumber;
@@ -780,12 +783,12 @@ export class AppDatepicker extends LitElement {
       selectedDate: this._selectedDate,
       showWeekNumber: this.showWeekNumber,
       weekNumberType: this.weekNumberType,
-      max: this._max!,
-      min: this._min!,
+      max: this.#max,
+      min: this.#min,
       weekLabel: this.weekLabel,
     });
-    const hasMinDate = null == calendars[0].calendar;
-    const hasMaxDate = null == calendars[2].calendar;
+    const hasMinDate = !calendars[0].calendar.length;
+    const hasMaxDate = !calendars[2].calendar.length;
 
     const weekdaysContent = weekdays.map(
       o => html`<th
@@ -798,17 +801,20 @@ export class AppDatepicker extends LitElement {
       </th>`
     );
     const calendarsContent = repeat(calendars, n => n.key, ({ calendar }, ci) => {
-      if (calendar == null) {
+      if (!calendar.length) {
         return html`<div class="calendar-container" part="calendar"></div>`;
       }
 
       const calendarAriaId = `calendarcaption${ci}`;
+      const midCalendarFullDate = calendar[1][1].fullDate;
 
       return html`
       <div class="calendar-container" part="calendar">
         <table class="calendar-table" part="table" role="grid" aria-labelledby="${calendarAriaId}">
           <caption id="${calendarAriaId}">
-            <div class="calendar-label" part="label">${longMonthYearFormat(new Date(calendar[1][1].fullDate!))}</div>
+            <div class="calendar-label" part="label">${
+              midCalendarFullDate ? longMonthYearFormat(midCalendarFullDate) : ''
+            }</div>
           </caption>
 
           <thead role="rowgroup">
@@ -851,7 +857,9 @@ export class AppDatepicker extends LitElement {
                     part="calendar-day"
                     role="gridcell"
                     tabindex="${isCurrentDate ? '0' : '-1'}"
+                    aria-disabled="${disabled ? 'true' : 'false'}"
                     aria-label="${label}"
+                    aria-selected="${isCurrentDate ? 'true' : 'false'}"
                     .fullDate="${fullDate}"
                     .day="${value}"
                   >
@@ -868,8 +876,8 @@ export class AppDatepicker extends LitElement {
     });
 
     /** NOTE: Updates disabled dates and days with computed Sets. */
-    this._disabledDatesSet = disabledDatesSet;
-    this._disabledDaysSet = disabledDaysSet;
+    this.#disabledDatesSet = disabledDatesSet;
+    this.#disabledDaysSet = disabledDaysSet;
 
     /**
      * FIXME(motss): Allow users to customize the aria-label for accessibility and i18n reason.
@@ -912,8 +920,8 @@ export class AppDatepicker extends LitElement {
   private _updateView(view: StartView) {
     const handleUpdateView = () => {
       if ('calendar' === view) {
-        this._selectedDate = this._lastSelectedDate =
-          new Date(updateYearWithMinMax(this._focusedDate, this._min!, this._max!));
+        this._selectedDate = this.#lastSelectedDate =
+          new Date(updateYearWithMinMax(this._focusedDate, this.#min, this.#max));
       }
 
       this._startView = view;
@@ -928,9 +936,9 @@ export class AppDatepicker extends LitElement {
 
       if (null ==  calendarsContainer) return this.updateComplete;
 
-      const dateDate = this._lastSelectedDate || this._selectedDate;
-      const minDate = this._min!;
-      const maxDate = this._max!;
+      const dateDate = this.#lastSelectedDate || this._selectedDate;
+      const minDate = this.#min;
+      const maxDate = this.#max;
 
       const isPreviousMonth = updateType === 'previous';
 
@@ -967,8 +975,8 @@ export class AppDatepicker extends LitElement {
        * the navigate next button 3 times, based on the expected mental model and behavior,
        * the calendar month should switch 3 times, e.g. Jan 2020 -> 3 clicks -> Apr 2020.
        */
-      this._lastSelectedDate = newSelectedDate;
-      this._selectedDate = this._lastSelectedDate!;
+      this.#lastSelectedDate = newSelectedDate;
+      this._selectedDate = this.#lastSelectedDate!;
 
       return this.updateComplete;
     };
@@ -980,7 +988,8 @@ export class AppDatepicker extends LitElement {
   private _updateYear(ev: MouseEvent) {
     const selectedYearEl = findShadowTarget(
       ev,
-      (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')) as HTMLButtonElement;
+      (n: HTMLElement) => hasClass(n, 'year-list-view__list-item')
+    ) as HTMLButtonElement;
 
     if (selectedYearEl == null) return;
 
@@ -990,10 +999,13 @@ export class AppDatepicker extends LitElement {
      *  - Update `_startView` to `START_VIEW.CALENDAR`
      */
 
-    const newFocusedDate = updateYearWithMinMax(new Date(
-      this._focusedDate!).setUTCFullYear(+selectedYearEl.year), this._min!, this._max!);
+    const newFocusedDate = updateYearWithMinMax(
+      new Date(this._focusedDate).setUTCFullYear(+selectedYearEl.year),
+      this.#min,
+      this.#max
+    );
 
-    this._selectedDate = this._lastSelectedDate = new Date(newFocusedDate);
+    this._selectedDate = this.#lastSelectedDate = new Date(newFocusedDate);
     this._focusedDate = new Date(newFocusedDate);
     this._startView = 'calendar';
   }
@@ -1001,7 +1013,8 @@ export class AppDatepicker extends LitElement {
   private _updateFocusedDate(ev: MouseEvent) {
     const selectedDayEl = findShadowTarget(
       ev,
-      (n: HTMLElement) => hasClass(n, 'full-calendar__day')) as HTMLTableCellElement;
+      (n: HTMLElement) => hasClass(n, 'full-calendar__day')
+    ) as HTMLTableCellElement;
 
     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
     if (selectedDayEl == null ||
@@ -1065,12 +1078,12 @@ export class AppDatepicker extends LitElement {
       keyCode,
       selectedDate,
 
-      disabledDatesSet: this._disabledDatesSet!,
-      disabledDaysSet: this._disabledDaysSet!,
+      disabledDatesSet: this.#disabledDatesSet,
+      disabledDaysSet: this.#disabledDaysSet,
       focusedDate: this._focusedDate,
       hasAltKey: ev.altKey,
-      maxTime: +this._max!,
-      minTime: +this._min!,
+      maxTime: +this.#max,
+      minTime: +this.#min,
     });
 
     const nextFocusedDateFy = nextFocusedDate.getUTCFullYear();
@@ -1082,11 +1095,11 @@ export class AppDatepicker extends LitElement {
      * new focused date is no longer in the same month or year.
      */
     if (nextFocusedDateFy !== selectedDateFY || nextFocusedDateM !== selectedDateM) {
-      this._selectedDate = this._lastSelectedDate = nextFocusedDate;
+      this._selectedDate = this.#lastSelectedDate = nextFocusedDate;
     }
 
     this._focusedDate = nextFocusedDate;
-    this._updatingDateWithKey = true;
+    this.#updatingDateWithKey = true;
 
     dispatchCustomEvent<DatepickerValueUpdated>(this, 'datepicker-value-updated', {
       keyCode,

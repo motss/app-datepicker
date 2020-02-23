@@ -1,7 +1,7 @@
-import { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 
-import { AppDatepicker } from '../../app-datepicker.js';
-import { StartView } from '../../custom_typings.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
+import type { StartView } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -95,12 +95,12 @@ describe('attributes', () => {
 
     allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(lastDisabledDateContent), prettyHtml`
-    <td class="full-calendar__day day--disabled" aria-label="Jan 14, 2020">
+    <td class="full-calendar__day day--disabled" aria-disabled="true" aria-label="Jan 14, 2020" aria-selected="false">
       <div class="calendar-day">14</div>
     </td>
     `);
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 17, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 17, 2020" aria-selected="true">
       <div class="calendar-day">17</div>
     </td>
     `);
@@ -138,12 +138,12 @@ describe('attributes', () => {
 
     allStrictEqual([prop, attr], '2020-01-17');
     strictEqual(cleanHtml(firstDisabledDateContent), prettyHtml`
-    <td class="full-calendar__day day--disabled" aria-label="Jan 18, 2020">
+    <td class="full-calendar__day day--disabled" aria-disabled="true" aria-label="Jan 18, 2020" aria-selected="false">
       <div class="calendar-day">18</div>
     </td>
     `);
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
@@ -176,7 +176,7 @@ describe('attributes', () => {
 
     allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
@@ -245,10 +245,12 @@ describe('attributes', () => {
     strictEqual(prop, 2);
     strictEqual(attr, '2');
     strictEqual(cleanHtml(firstWeekdayLabelContent), prettyHtml`
-      <th aria-label="Tuesday">T</th>
+    <th class="calendar-weekday" aria-label="Tuesday">
+      <div class="weekday">T</div>
+    </th>
     `);
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
@@ -285,19 +287,26 @@ describe('attributes', () => {
     },
     elementName,
     toSelector(`th[aria-label="Week"]`),
-    toSelector('tbody > tr > td:first-of-type'));
+    toSelector('tbody > tr > th'));
 
     strictEqual(prop, true);
     strictEqual(attr, '');
-    strictEqual(cleanHtml(weekNumberLabelContent), prettyHtml`<th aria-label="Week">Wk</th>`);
-    deepStrictEqual(weekNumbersContents.map(n => cleanHtml(n)), [
-      ...([1, 2, 3, 4, 5].map((n) => {
+    strictEqual(
+      cleanHtml(weekNumberLabelContent),
+      prettyHtml`
+      <th class="calendar-weekday" aria-label="Week">
+        <div class="weekday">Wk</div>
+      </th>
+      `
+    );
+    deepStrictEqual(
+      weekNumbersContents.map(n => cleanHtml(n)),
+      [1, 2, 3, 4, 5].map((n) => {
         return prettyHtml(
-          `<td class="full-calendar__day weekday-label" aria-label="Week ${n}">${n}</td>`
+        `<th class="full-calendar__day weekday-label" abbr="Week ${n}" aria-label="Week ${n}">${n}</th>`
         );
-      })),
-      `<td class="full-calendar__day day--empty"></td>`,
-    ]);
+      })
+    );
   });
 
   it(`renders with defined 'weeknumbertype'`, async () => {
@@ -324,17 +333,17 @@ describe('attributes', () => {
         n.getAttribute('weeknumbertype'),
         weekNumbers,
       ] as A);
-    }, elementName, toSelector('tbody > tr >td:first-of-type'));
+    }, elementName, toSelector('tbody > tr > th'));
 
     allStrictEqual<WeekNumberType>([prop, attr], 'first-full-week');
-    deepStrictEqual(weekNumbersContents.map(n => cleanHtml(n)), [
-      ...([52, 1, 2, 3, 4].map((n) => {
+    deepStrictEqual(
+      weekNumbersContents.map(n => cleanHtml(n)),
+      [52, 1, 2, 3, 4].map((n) => {
         return prettyHtml(
-          `<td class="full-calendar__day weekday-label" aria-label="Week ${n}">${n}</td>`
+        `<th class="full-calendar__day weekday-label" abbr="Week ${n}" aria-label="Week ${n}">${n}</th>`
         );
-      })),
-      `<td class="full-calendar__day day--empty"></td>`,
-    ]);
+      })
+    );
 
   });
 
@@ -397,7 +406,7 @@ describe('attributes', () => {
 
     allStrictEqual([prop, attr], 'ja-JP');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="2020年1月15日">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="2020年1月15日" aria-selected="true">
       <div class="calendar-day">15日</div>
     </td>
     `);
@@ -410,7 +419,11 @@ describe('attributes', () => {
       '金',
       '土',
     ].map((n) => {
-      return prettyHtml(`<th aria-label="${n}曜日">${n}</th>`);
+      return prettyHtml(
+      `<th class="calendar-weekday" aria-label="${n}曜日">
+        <div class="weekday">${n}</div>
+      </th>`
+      );
     }));
   });
 
@@ -445,7 +458,7 @@ describe('attributes', () => {
       disabledDatesContents.map(n => cleanHtml(n)),
       [3, 6, 10, 13, 17, 20, 24, 27, 31].map((n) => {
         return prettyHtml(`
-        <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
+        <td class="full-calendar__day day--disabled" aria-disabled="true" aria-label="Jan ${n}, 2020" aria-selected="false">
           <div class="calendar-day">${n}</div>
         </td>
         `);
@@ -488,7 +501,7 @@ describe('attributes', () => {
     allStrictEqual([prop, attr], disableddates);
     deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [3, 9, 21, 27].map((n) => {
       return prettyHtml(`
-      <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
+      <td class="full-calendar__day day--disabled" aria-disabled="true" aria-label="Jan ${n}, 2020" aria-selected="false">
         <div class="calendar-day">${n}</div>
       </td>
       `);
@@ -574,7 +587,13 @@ describe('attributes', () => {
     }, elementName, toSelector(`th[aria-label="${weekLabel}"]`), weekLabel);
 
     allStrictEqual([prop, attr], weekLabel);
-    strictEqual(cleanHtml(weekNumberLabelContent), prettyHtml`<th aria-label="周数">周数</th>`);
+    strictEqual(
+      cleanHtml(weekNumberLabelContent),
+      prettyHtml`
+      <th class="calendar-weekday" aria-label="周数">
+        <div class="weekday">周数</div>
+      </th>`
+    );
   });
 
   it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
@@ -620,7 +639,7 @@ describe('attributes', () => {
     strictEqual(attr, '2');
     allStrictEqual([prop2, attr2], '1,5');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 15, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
@@ -628,7 +647,7 @@ describe('attributes', () => {
       3, 6, 10, 13, 17, 20, 24, 27, 31,
     ].map((n) => {
       return prettyHtml(`
-      <td class="full-calendar__day day--disabled" aria-label="Jan ${n}, 2020">
+      <td class="full-calendar__day day--disabled" aria-disabled="true" aria-label="Jan ${n}, 2020" aria-selected="false">
         <div class="calendar-day">${n}</div>
       </td>
       `);

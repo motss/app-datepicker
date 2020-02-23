@@ -1,7 +1,7 @@
-import { AppDatepicker } from '../../app-datepicker.js';
+import type { AppDatepicker } from '../../app-datepicker.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
 import { APP_INDEX_URL } from '../constants.js';
-import { PrepareOptions } from '../custom_typings.js';
+import type { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { interaction } from '../helpers/interaction.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -27,11 +27,13 @@ describe('keyboards', () => {
     const [prop, content]: A = await browser.executeAsync(async (a, b, done) => {
       const n = document.body.querySelector<AppDatepicker>(a)!;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      await n.updateComplete;
+
+      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b);
 
       done([
         n.value,
-        focusedDate.outerHTML,
+        focusedDate?.outerHTML ?? '',
       ] as A);
     }, elementName, toSelector('.day--focused'));
 
@@ -74,7 +76,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-19`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 19, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 19, 2020" aria-selected="true">
       <div class="calendar-day">19</div>
     </td>
     `);
@@ -92,7 +94,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-18`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 18, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 18, 2020" aria-selected="true">
       <div class="calendar-day">18</div>
     </td>
     `);
@@ -103,7 +105,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-21`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 21, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 21, 2020" aria-selected="true">
       <div class="calendar-day">21</div>
     </td>
     `);
@@ -121,7 +123,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-22`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 22, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 22, 2020" aria-selected="true">
       <div class="calendar-day">22</div>
     </td>
     `);
@@ -132,7 +134,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-13`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 13, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 13, 2020" aria-selected="true">
       <div class="calendar-day">13</div>
     </td>
     `);
@@ -150,7 +152,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, `2020-02-14`);
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 14, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 14, 2020" aria-selected="true">
       <div class="calendar-day">14</div>
     </td>
     `);
@@ -161,7 +163,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-27');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 27, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 27, 2020" aria-selected="true">
       <div class="calendar-day">27</div>
     </td>
     `);
@@ -179,7 +181,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-26');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 26, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 26, 2020" aria-selected="true">
       <div class="calendar-day">26</div>
     </td>
     `);
@@ -190,7 +192,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-01-20');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 20, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 20, 2020" aria-selected="true">
       <div class="calendar-day">20</div>
     </td>
     `);
@@ -208,7 +210,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-01-21');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Jan 21, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 21, 2020" aria-selected="true">
       <div class="calendar-day">21</div>
     </td>
     `);
@@ -226,7 +228,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-02');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 2, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 2, 2020" aria-selected="true">
       <div class="calendar-day">2</div>
     </td>
     `);
@@ -237,7 +239,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-03-20');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Mar 20, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Mar 20, 2020" aria-selected="true">
       <div class="calendar-day">20</div>
     </td>
     `);
@@ -255,7 +257,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-03-19');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Mar 19, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Mar 19, 2020" aria-selected="true">
       <div class="calendar-day">19</div>
     </td>
     `);
@@ -273,7 +275,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-27');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 27, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 27, 2020" aria-selected="true">
       <div class="calendar-day">27</div>
     </td>
     `);
@@ -284,7 +286,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-01');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 1, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 1, 2020" aria-selected="true">
       <div class="calendar-day">1</div>
     </td>
     `);
@@ -302,7 +304,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-02');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 2, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 2, 2020" aria-selected="true">
       <div class="calendar-day">2</div>
     </td>
     `);
@@ -320,7 +322,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-17');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 17, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 17, 2020" aria-selected="true">
       <div class="calendar-day">17</div>
     </td>
     `);
@@ -331,7 +333,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-29');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 29, 2020" aria-selected="true">
       <div class="calendar-day">29</div>
     </td>
     `);
@@ -349,7 +351,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-28');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 28, 2020" aria-selected="true">
       <div class="calendar-day">28</div>
     </td>
     `);
@@ -367,7 +369,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-27');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 27, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 27, 2020" aria-selected="true">
       <div class="calendar-day">27</div>
     </td>
     `);
@@ -378,7 +380,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2019-02-20');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 20, 2019">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 20, 2019" aria-selected="true">
       <div class="calendar-day">20</div>
     </td>
     `);
@@ -398,7 +400,7 @@ describe('keyboards', () => {
 
       strictEqual(prop, '2019-02-21');
       strictEqual(focusedDateContent, prettyHtml`
-      <td class="full-calendar__day day--focused" aria-label="Feb 21, 2019">
+      <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 21, 2019" aria-selected="true">
         <div class="calendar-day">21</div>
       </td>
       `);
@@ -419,7 +421,7 @@ describe('keyboards', () => {
 
       strictEqual(prop, '2019-02-27');
       strictEqual(focusedDateContent, prettyHtml`
-      <td class="full-calendar__day day--focused" aria-label="Feb 27, 2019">
+      <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 27, 2019" aria-selected="true">
         <div class="calendar-day">27</div>
       </td>
       `);
@@ -433,7 +435,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2021-02-20');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 20, 2021">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 20, 2021" aria-selected="true">
       <div class="calendar-day">20</div>
     </td>
     `);
@@ -453,7 +455,7 @@ describe('keyboards', () => {
 
       strictEqual(prop, '2021-02-19');
       strictEqual(focusedDateContent, prettyHtml`
-      <td class="full-calendar__day day--focused" aria-label="Feb 19, 2021">
+      <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 19, 2021" aria-selected="true">
         <div class="calendar-day">19</div>
       </td>
       `);
@@ -474,7 +476,7 @@ describe('keyboards', () => {
 
       strictEqual(prop, '2021-02-17');
       strictEqual(focusedDateContent, prettyHtml`
-      <td class="full-calendar__day day--focused" aria-label="Feb 17, 2021">
+      <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 17, 2021" aria-selected="true">
         <div class="calendar-day">17</div>
       </td>
       `);
@@ -500,14 +502,14 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-29');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 29, 2020" aria-selected="true">
       <div class="calendar-day">29</div>
     </td>
     `);
 
     strictEqual(prop2, '2020-04-30');
     strictEqual(focusedDateContent2, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Apr 30, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Apr 30, 2020" aria-selected="true">
       <div class="calendar-day">30</div>
     </td>
     `);
@@ -532,14 +534,14 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2020-02-29');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 29, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 29, 2020" aria-selected="true">
       <div class="calendar-day">29</div>
     </td>
     `);
 
     strictEqual(prop2, '2020-04-30');
     strictEqual(focusedDateContent2, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Apr 30, 2020">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Apr 30, 2020" aria-selected="true">
       <div class="calendar-day">30</div>
     </td>
     `);
@@ -557,7 +559,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2021-02-28');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2021">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 28, 2021" aria-selected="true">
       <div class="calendar-day">28</div>
     </td>
     `);
@@ -575,7 +577,7 @@ describe('keyboards', () => {
 
     strictEqual(prop, '2019-02-28');
     strictEqual(focusedDateContent, prettyHtml`
-    <td class="full-calendar__day day--focused" aria-label="Feb 28, 2019">
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 28, 2019" aria-selected="true">
       <div class="calendar-day">28</div>
     </td>
     `);

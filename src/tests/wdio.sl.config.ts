@@ -1,4 +1,4 @@
-import {
+import type {
   SauceLabsCapability,
   WdioConfig,
 } from './custom_wdio.js';
