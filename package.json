@@ -25,6 +25,10 @@
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
+  "sideEffects": false,
+  "main": "dist/app-datepicker.js",
+  "module": "dist/app-datepicker.js",
+  "typings": "dist/app-datepicker.d.ts",
   "files": [
     "dist/*.*js.map",
     "dist/*.*js",
@@ -35,27 +39,25 @@
     "dist/helpers/*.d.ts.map",
     "dist/helpers/*.d.ts"
   ],
-  "sideEffects": false,
-  "main": "dist/app-datepicker.js",
-  "module": "dist/app-datepicker.js",
-  "typings": "dist/app-datepicker.d.ts",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "build:clean": "npm run lint && npm run clean && npm run build:test",
     "build:config": "tsc -p tsconfig.wdio.json",
-    "build:test": "npm run ts -- -p tsconfig.test.json && npm run build:config",
-    "build": "npm run ts -- -p tsconfig.prod.json",
+    "build:prod": "tsc -p tsconfig.prod.json",
+    "build:test": "tsc -p tsconfig.test.json",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
-    "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
-    "prepublishOnly": "npm run lint && npm run build",
+    "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
+    "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
-    "test:dev:all": "npm run build:test && npm t && npm run test:sl:dev",
-    "test:dev": "npm run build:test && npm t",
-    "test:sl:dev": "env-cmd -f ./.env npm run test:sl",
-    "test:sl": "node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
-    "test": "node ./run-tests.js --config-file ./dist/tests/wdio.config.js",
-    "ts": "npm run clean && npm run lint && tsc",
-    "tsc": "tsc",
-    "watch": "npm run ts -- --watch"
+    "test": "npm run build:config && npm run test:dev",
+    "test:clean": "npm run build:clean && npm t",
+    "test:dev": "node ./run-tests.js --config-file ./dist/tests/wdio.config.js",
+    "test:sl": "npm run build:config && npm run test:sl:dev",
+    "test:sl:clean": "npm run build:clean && npm run test:sl",
+    "test:sl:dev": "env-cmd ./.env node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
+    "ts": "tsc",
+    "watch": "tsc --watch"
   },
   "husky": {
     "hooks": {

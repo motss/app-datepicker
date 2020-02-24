@@ -31,6 +31,7 @@ import type {
   StartView,
 } from './custom_typings.js';
 import { KEY_CODES_MAP } from './custom_typings.js';
+import { animateElement } from './helpers/animate-element.js';
 import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { findShadowTarget } from './helpers/find-shadow-target.js';
@@ -643,30 +644,18 @@ export class AppDatepicker extends LitElement {
 
                 $transitioning = true;
 
-                await new Promise<void>((y) => {
-                  if (this.#hasNativeWebAnimation) {
-                    const animationEnd = calendarsContainer.animate([
-                      { transform: `translateX(${dx}px)` },
-                      {
-                        transform: `translateX(${transformTo}px)`,
-                      },
-                    ], {
-                      duration: transitionDuration,
-                      easing: transitionEasing,
-                    });
-
-                    animationEnd.onfinish = () => y();
-                  } else {
-                    const transitionEnd = () => {
-                      calendarsContainer.removeEventListener('transitionend', transitionEnd);
-                      y();
-                    };
-
-                    calendarsContainer.addEventListener('transitionend', transitionEnd);
-                    calendarsContainer.style.transitionDuration = `${transitionDuration}ms`;
-                    calendarsContainer.style.transitionTimingFunction = transitionEasing;
-                    calendarsContainer.style.transform = `translateX(${transformTo}px)`;
-                  }
+                await animateElement(calendarsContainer, {
+                  hasNativeWebAnimation: this.#hasNativeWebAnimation,
+                  keyframes: [
+                    { transform: `translateX(${dx}px)` },
+                    {
+                      transform: `translateX(${transformTo}px)`,
+                    },
+                  ],
+                  options: {
+                    duration: transitionDuration,
+                    easing: transitionEasing,
+                  },
                 });
 
                 if (didPassThreshold) {
