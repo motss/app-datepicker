@@ -1,5 +1,6 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { interaction } from '../helpers/interaction.js';
@@ -11,15 +12,13 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker';
-
 describe('edge cases', () => {
   const isSafari = browser.capabilities.browserName === 'Safari';
   const {
     browserKeys,
     clickElements,
     focusCalendarsContainer,
-  } = interaction({ elementName, isSafari });
+  } = interaction({ isSafari, elementName: DATEPICKER_NAME });
 
   before(async () => {
     await browser.url(APP_INDEX_URL);
@@ -27,7 +26,7 @@ describe('edge cases', () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a);
+      const el: Datepicker = document.createElement(a);
 
       el.min = '2000-01-01';
       el.value = '2020-02-02';
@@ -36,24 +35,24 @@ describe('edge cases', () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepicker>(a)!;
+      const el = document.body.querySelector<Datepicker>(a)!;
 
       document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   it(`updates month after navigating with keyboard and mouse`, async () => {
     type A = [string, string];
 
     const getValues = () => browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       const calendarLabel = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
@@ -61,7 +60,7 @@ describe('edge cases', () => {
         n.value,
         calendarLabel.outerHTML,
       ] as A);
-    }, elementName, toSelector('.calendar-label'));
+    }, DATEPICKER_NAME, toSelector('.calendar-label'));
 
     await focusCalendarsContainer();
     await browserKeys(KEY_CODES_MAP.PAGE_DOWN);
@@ -88,7 +87,7 @@ describe('edge cases', () => {
   type B = [string, string];
   const getValuesAfterKeys = async (key: number, altKey: boolean = false): Promise<B> => {
     await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-02-29';
@@ -96,7 +95,7 @@ describe('edge cases', () => {
       await n.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
 
     await clickElements(Array.from('123', () => (
       `.btn__month-selector[aria-label="Next month"]`
@@ -106,7 +105,7 @@ describe('edge cases', () => {
     await browserKeys(key, altKey);
 
     const [prop, content]: B = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
@@ -114,7 +113,7 @@ describe('edge cases', () => {
         n.value,
         focusedDate.outerHTML,
       ] as B);
-    }, elementName, toSelector('.day--focused'));
+    }, DATEPICKER_NAME, toSelector('.day--focused'));
 
     return [prop, cleanHtml(content)];
   };

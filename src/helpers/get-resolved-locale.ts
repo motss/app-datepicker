@@ -1,4 +1,4 @@
-import { INTL_DATE_TIME_FORMAT } from '../CONSTANT.js';
+import { INTL_DATE_TIME_FORMAT } from '../constants.js';
 
 export function getResolvedLocale() {
   return (

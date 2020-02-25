@@ -1,6 +1,11 @@
-import { AppDatepicker } from './datepicker.js';
+import { DATEPICKER_NAME } from './constants.js';
+import { Datepicker } from './datepicker.js';
 import { customElementsDefine } from './helpers/custom-elements-define.js';
 
-export * from './datepicker.js';
+customElementsDefine(DATEPICKER_NAME, Datepicker);
 
-customElementsDefine(AppDatepicker.is, AppDatepicker);
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-datepicker': Datepicker;
+  }
+}

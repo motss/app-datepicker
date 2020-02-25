@@ -1,6 +1,7 @@
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -12,14 +13,11 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker-dialog';
-const elementName2 = 'app-datepicker';
-
-describe(`${elementName}::keyboards`, () => {
+describe(`${DATEPICKER_DIALOG_NAME}::keyboards`, () => {
   const focusElement = async (selector: string, inDialog: boolean = false) => {
     return browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
       const n3 = (d ? n : n2).shadowRoot!.querySelector<HTMLElement>(c)!;
 
       n3.focus();
@@ -29,7 +27,7 @@ describe(`${elementName}::keyboards`, () => {
       await n.updateComplete;
 
       done();
-    }, elementName, elementName2, selector, inDialog);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, selector, inDialog);
   };
   const tapElements = async (
     selectors: string[],
@@ -47,7 +45,7 @@ describe(`${elementName}::keyboards`, () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepickerDialog = document.createElement(a);
+      const el: DatepickerDialog = document.createElement(a);
 
       // Reset `min` and `value` here before running tests
       el.min = '2000-01-01';
@@ -59,55 +57,55 @@ describe(`${elementName}::keyboards`, () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepickerDialog>(a);
+      const el = document.body.querySelector<DatepickerDialog>(a);
 
       if (el) document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   it(`switches to year list view`, async () => {
     await tapElements(['.btn__year-selector'], ['Space']);
 
     const hasYearListView: boolean = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
       done(yearListView != null);
-    }, elementName, elementName2, '.datepicker-body__year-list-view');
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, '.datepicker-body__year-list-view');
 
     ok(hasYearListView);
   });
 
   it(`switches to calendar view`, async () => {
     await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.startView = 'yearList';
 
       await n.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     await tapElements(['.btn__calendar-selector'], ['Space']);
 
     const hasCalendarView: boolean = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
       done(yearListView != null);
-    }, elementName, elementName2, '.datepicker-body__calendar-view');
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, '.datepicker-body__calendar-view');
 
     ok(hasCalendarView);
   });
@@ -121,13 +119,13 @@ describe(`${elementName}::keyboards`, () => {
     ], ['Space']);
 
     const hasYearListView: boolean = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const yearListView = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
       done(yearListView != null);
-    }, elementName, elementName2, '.datepicker-body__year-list-view');
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, '.datepicker-body__year-list-view');
 
     await tapElements([`.btn__calendar-selector`], ['Space']);
 
@@ -135,8 +133,8 @@ describe(`${elementName}::keyboards`, () => {
       hasCalendarView,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const root = n2.shadowRoot!;
 
@@ -148,8 +146,8 @@ describe(`${elementName}::keyboards`, () => {
         focusedDate.outerHTML,
       ] as A);
     },
-    elementName,
-    elementName2,
+    DATEPICKER_DIALOG_NAME,
+    DATEPICKER_NAME,
     '.datepicker-body__calendar-view',
     toSelector('.day--focused'));
 
@@ -169,14 +167,14 @@ describe(`${elementName}::keyboards`, () => {
       prop,
       prop2,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       done([
         n.value,
         n2.value,
       ] as A);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     await tapElements([
       '.btn__year-selector',
@@ -194,8 +192,8 @@ describe(`${elementName}::keyboards`, () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: B = await browser.executeAsync(async (a, b, c, d, e, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const root = n2.shadowRoot!;
 
@@ -212,8 +210,8 @@ describe(`${elementName}::keyboards`, () => {
         calendarDays,
       ] as B);
     },
-    elementName,
-    elementName2,
+    DATEPICKER_DIALOG_NAME,
+    DATEPICKER_NAME,
     '.btn__year-selector',
     toSelector('.calendar-label'),
     toSelector('.full-calendar__day'));
@@ -245,13 +243,13 @@ describe(`${elementName}::keyboards`, () => {
     await browser.keys(['Space']);
 
     // Wait for dialog closes
-    await (await $(elementName)).waitForDisplayed(undefined, true);
+    await (await $(DATEPICKER_DIALOG_NAME)).waitForDisplayed(undefined, true);
 
     const [
       cssDisplay,
       ariaHiddenAttr,
     ]: A = await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
 
       await n.updateComplete;
 
@@ -259,7 +257,7 @@ describe(`${elementName}::keyboards`, () => {
         getComputedStyle(n).display,
         n.getAttribute('aria-hidden'),
       ] as A);
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     strictEqual(cssDisplay, 'none');
     strictEqual(ariaHiddenAttr, 'true');
@@ -276,8 +274,8 @@ describe(`${elementName}::keyboards`, () => {
       prop2,
       focusedDateContent,
     ]: C = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n2.value = '2020-02-13';
 
@@ -290,20 +288,20 @@ describe(`${elementName}::keyboards`, () => {
         n2.value,
         focusedDate.outerHTML,
       ] as A);
-    }, elementName, elementName2, toSelector('.day--focused'));
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, toSelector('.day--focused'));
 
     await focusElement(`.actions-container > mwc-button[dialog-confirm]`, true);
 
     await browser.keys(['Space']);
 
-    await (await $(elementName)).waitForDisplayed(undefined, true);
+    await (await $(DATEPICKER_DIALOG_NAME)).waitForDisplayed(undefined, true);
 
     const [
       prop3,
       cssDisplay,
       ariaHiddenAttr,
     ]: B = await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
 
       await n.updateComplete;
 
@@ -313,7 +311,7 @@ describe(`${elementName}::keyboards`, () => {
         n.getAttribute('aria-hidden'),
         // === '2020-02-13'
       ] as B);
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     strictEqual(prop, '2020-02-20');
     allStrictEqual([prop2, prop3], '2020-02-13');
@@ -334,8 +332,8 @@ describe(`${elementName}::keyboards`, () => {
       initialVal,
       todayValue,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const padStart = (v: number) => `0${v}`.slice(-2);
       const today = new Date();
@@ -352,17 +350,17 @@ describe(`${elementName}::keyboards`, () => {
       await n.updateComplete;
 
       done([n2.value, todayVal] as A);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     await focusElement('mwc-button.clear', true);
     await browser.keys(['Space']);
 
     const prop: B = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       done(n2.value as B);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     strictEqual(initialVal, `${Number(todayValue.slice(0, 4)) - 1}-01-01`);
     strictEqual(prop, todayValue);
@@ -373,8 +371,8 @@ describe(`${elementName}::keyboards`, () => {
 
   const focusCalendarsContainer = async (): Promise<string> => {
     return await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
       const n3 = n2.shadowRoot!.querySelector<HTMLElement>(c)!;
 
       n3.focus();
@@ -392,7 +390,7 @@ describe(`${elementName}::keyboards`, () => {
       done(
         `.${Array.from(activeElement?.classList.values() ?? []).join('.')}`
       );
-    }, elementName, elementName2, '.calendars-container');
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, '.calendars-container');
   };
   // FIXME: Helper as a workaround until `browser.keys()` supports Alt
   // on all browsers on local and CI.
@@ -400,8 +398,8 @@ describe(`${elementName}::keyboards`, () => {
     await focusCalendarsContainer();
 
     return browser.executeAsync(async (a, b, c, d, e, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
       const n3 = n2.shadowRoot!.querySelector<HTMLDivElement>(c)!;
 
       const opt: any = { keyCode: d, altKey: e };
@@ -414,7 +412,7 @@ describe(`${elementName}::keyboards`, () => {
       n3.dispatchEvent(ev);
 
       done();
-    }, elementName, elementName2, '.calendars-container', keyCode, altKey);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, '.calendars-container', keyCode, altKey);
   };
   const getValuesAfterKeys = async (
     key: number,
@@ -425,8 +423,8 @@ describe(`${elementName}::keyboards`, () => {
     await browserKeys(key, altKey);
 
     const [prop, prop2, content]: C = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       const focusedDate = n2.shadowRoot!.querySelector<HTMLTableCellElement>(c)!;
 
@@ -435,7 +433,7 @@ describe(`${elementName}::keyboards`, () => {
         n2.value,
         focusedDate.outerHTML,
       ] as C);
-    }, elementName, elementName2, toSelector('.day--focused'));
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, toSelector('.day--focused'));
 
     return [prop, prop2, cleanHtml(content)];
   };

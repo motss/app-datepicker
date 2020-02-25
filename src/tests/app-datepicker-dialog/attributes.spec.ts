@@ -1,7 +1,8 @@
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   allStrictEqual,
@@ -9,17 +10,14 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker-dialog';
-const elementName2 = 'app-datepicker';
-
-describe(`${elementName}::attributes`, () => {
+describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
   });
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepickerDialog = document.createElement(a);
+      const el: DatepickerDialog = document.createElement(a);
 
       el.min = '2000-01-01';
 
@@ -29,27 +27,27 @@ describe(`${elementName}::attributes`, () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const el = document.body.querySelector<DatepickerDialog>(a)!;
 
       if (el) document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   it(`takes snapshot`, async () => {
     const browserName = browser.capabilities.browserName;
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/attributes-0-${browserName}.png`);
+      `./src/tests/snapshots/${DATEPICKER_DIALOG_NAME}/attributes-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const el = document.body.querySelector<DatepickerDialog>(a)!;
 
       el.setAttribute('min', '2020-01-15');
       el.setAttribute('value', '2020-01-17');
@@ -57,10 +55,10 @@ describe(`${elementName}::attributes`, () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/attributes-1-${browserName}.png`);
+      `./src/tests/snapshots/${DATEPICKER_DIALOG_NAME}/attributes-1-${browserName}.png`);
   });
 
   it(`renders with initial attributes`, async () => {
@@ -74,8 +72,8 @@ describe(`${elementName}::attributes`, () => {
     ];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       done([
         n.getAttribute('firstdayofweek'),
@@ -87,7 +85,7 @@ describe(`${elementName}::attributes`, () => {
         n.getAttribute('weeknumbertype'),
         n2.getAttribute('weeknumbertype'),
       ] as A);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     deepStrictEqual(values, [
       '0',
@@ -106,15 +104,15 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedMin = '2000-01-01';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('min', c);
 
       await n.updateComplete;
 
       done([n.getAttribute('min'), n2.getAttribute('min')] as A);
-    }, elementName, elementName2, expectedMin);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedMin);
 
     allStrictEqual(values, expectedMin);
   });
@@ -124,15 +122,15 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedMax = '2020-02-27';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('max', c);
 
       await n.updateComplete;
 
       done([n.getAttribute('max'), n2.getAttribute('max')] as A);
-    }, elementName, elementName2, expectedMax);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedMax);
 
     allStrictEqual(values, expectedMax);
   });
@@ -142,8 +140,8 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedValue = '2020-02-20';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('value', c);
 
@@ -156,7 +154,7 @@ describe(`${elementName}::attributes`, () => {
         n.value,
         n2.value,
       ] as A);
-    }, elementName, elementName2, expectedValue);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedValue);
 
     deepStrictEqual(values, [true, false, expectedValue, expectedValue]);
   });
@@ -166,15 +164,15 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedStartview: StartView = 'calendar';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('startview', c);
 
       await n.updateComplete;
 
       done([n.getAttribute('startview'), n2.getAttribute('startview')] as A);
-    }, elementName, elementName2, expectedStartview);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedStartview);
 
     allStrictEqual(values, expectedStartview);
   });
@@ -184,15 +182,15 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedFirstdayofweek = '1';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('firstdayofweek', c);
 
       await n.updateComplete;
 
       done([n.getAttribute('firstdayofweek'), n2.getAttribute('firstdayofweek')] as A);
-    }, elementName, elementName2, expectedFirstdayofweek);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedFirstdayofweek);
 
     allStrictEqual(values, expectedFirstdayofweek);
   });
@@ -201,15 +199,15 @@ describe(`${elementName}::attributes`, () => {
     type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('showweeknumber', '');
 
       await n.updateComplete;
 
       done([n.hasAttribute('showweeknumber'), n2.hasAttribute('showweeknumber')] as A);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     allStrictEqual(values, true);
   });
@@ -219,15 +217,15 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedWeeknumbertype: WeekNumberType = 'first-4-day-week';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('weeknumbertype', c);
 
       await n.updateComplete;
 
       done([n.getAttribute('weeknumbertype'), n2.getAttribute('weeknumbertype')] as A);
-    }, elementName, elementName2, expectedWeeknumbertype);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedWeeknumbertype);
 
     allStrictEqual(values, expectedWeeknumbertype);
   });
@@ -236,15 +234,15 @@ describe(`${elementName}::attributes`, () => {
     type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('landscape', '');
 
       await n.updateComplete;
 
       done([n.hasAttribute('landscape'), n2.hasAttribute('landscape')] as A);
-    }, elementName, elementName2);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
     allStrictEqual(values, true);
   });
@@ -254,8 +252,8 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedLocale: string = 'ja-JP';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('locale', c);
 
@@ -268,7 +266,7 @@ describe(`${elementName}::attributes`, () => {
         n.locale,
         n2.locale,
       ] as A);
-    }, elementName, elementName2, expectedLocale);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedLocale);
 
     deepStrictEqual(values, [expectedLocale, null, expectedLocale, expectedLocale] as A);
   });
@@ -278,8 +276,8 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedDisableddays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('disableddays', c);
 
@@ -292,7 +290,7 @@ describe(`${elementName}::attributes`, () => {
         n.disabledDays,
         n2.disabledDays,
       ] as A);
-    }, elementName, elementName2, expectedDisableddays);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedDisableddays);
 
     deepStrictEqual(values, [
       expectedDisableddays,
@@ -307,13 +305,13 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedDisableddates: string = '2020-02-02,2020-02-15';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
 
       n.setAttribute('disableddates', c);
 
       await n.updateComplete;
 
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       done([
         n.getAttribute('disableddates'),
@@ -322,7 +320,7 @@ describe(`${elementName}::attributes`, () => {
         n.disabledDates,
         n2.disabledDates,
       ] as A);
-    }, elementName, elementName2, expectedDisableddates);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedDisableddates);
 
     deepStrictEqual(values, [
       expectedDisableddates,
@@ -341,8 +339,8 @@ describe(`${elementName}::attributes`, () => {
       prop2,
       attr,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('dragratio', `${c}`);
 
@@ -353,7 +351,7 @@ describe(`${elementName}::attributes`, () => {
         n2.dragRatio,
         n.getAttribute('dragratio'),
       ] as A);
-    }, elementName, elementName2, dragRatio);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, dragRatio);
 
     allStrictEqual([prop, prop2], dragRatio);
     strictEqual(attr, `${dragRatio}`);
@@ -364,8 +362,8 @@ describe(`${elementName}::attributes`, () => {
 
     const expectedWeeklabel: string = '周数';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('weeklabel', c);
 
@@ -378,7 +376,7 @@ describe(`${elementName}::attributes`, () => {
         n.weekLabel,
         n2.weekLabel,
       ] as A);
-    }, elementName, elementName2, expectedWeeklabel);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedWeeklabel);
 
     deepStrictEqual(values, [
       expectedWeeklabel,
@@ -406,8 +404,8 @@ describe(`${elementName}::attributes`, () => {
     const expectedFirstdayofweek: string = '1';
     const expectedDisableddays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
       n.setAttribute('firstdayofweek', c);
       n.setAttribute('disableddays', d);
@@ -427,7 +425,7 @@ describe(`${elementName}::attributes`, () => {
         n.disabledDays,
         n2.disabledDays,
       ] as A);
-    }, elementName, elementName2, expectedFirstdayofweek, expectedDisableddays);
+    }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedFirstdayofweek, expectedDisableddays);
 
     deepStrictEqual(values, [
       expectedFirstdayofweek,

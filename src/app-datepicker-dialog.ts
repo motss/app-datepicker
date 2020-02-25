@@ -1,6 +1,12 @@
-import { AppDatepickerDialog } from './datepicker-dialog.js';
+import './app-datepicker.js';
+import { DATEPICKER_DIALOG_NAME } from './constants.js';
+import { DatepickerDialog } from './datepicker-dialog.js';
 import { customElementsDefine } from './helpers/custom-elements-define.js';
 
-export * from './datepicker-dialog.js';
+customElementsDefine(DATEPICKER_DIALOG_NAME, DatepickerDialog);
 
-customElementsDefine(AppDatepickerDialog.is, AppDatepickerDialog);
+declare global {
+  interface HTMLElementTagNameMap {
+    'app-datepicker-dialog': DatepickerDialog;
+  }
+}

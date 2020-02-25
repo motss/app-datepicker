@@ -1,4 +1,4 @@
-interface ParamUpdatedChanged extends Omit<AppDatepicker, keyof LitElement> {
+interface ParamUpdatedChanged extends Omit<Datepicker, keyof LitElement> {
   _selectedDate: Date;
   _focusedDate: Date;
   _startView: StartView;
@@ -21,7 +21,7 @@ import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
-import { ALL_NAV_KEYS_SET } from './CONSTANT.js';
+import { ALL_NAV_KEYS_SET } from './constants.js';
 import type {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
@@ -51,9 +51,7 @@ import { updateYearWithMinMax } from './helpers/update-year-with-min-max.js';
 import type { TrackerHandlers } from './tracker.js';
 import { Tracker } from './tracker.js';
 
-export class AppDatepicker extends LitElement {
-  static get is() { return 'app-datepicker'; }
-
+export class Datepicker extends LitElement {
   public static styles = [
     // tslint:disable:max-line-length
     datepickerVariables,
@@ -1115,10 +1113,6 @@ declare global {
     fullDate: string;
   }
   // #endregion HTML element type extensions
-
-  interface HTMLElementTagNameMap {
-    'app-datepicker': AppDatepicker;
-  }
 
   interface HTMLElementEventMap {
     'datepicker-first-updated': CustomEvent<DatepickerFirstUpdated>;

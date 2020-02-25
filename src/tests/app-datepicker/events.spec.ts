@@ -1,6 +1,7 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import type { DatepickerFirstUpdated, DatepickerValueUpdated } from '../../custom_typings.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
@@ -8,8 +9,6 @@ import {
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
-
-const elementName = 'app-datepicker';
 
 describe('events', () => {
   before(async () => {
@@ -28,7 +27,7 @@ describe('events', () => {
      */
     for (const inlineVal of [true, false]) {
       const [val, content]: A = await browser.executeAsync(async (a, b, done) => {
-        const n: AppDatepicker = document.createElement(a)!;
+        const n: Datepicker = document.createElement(a)!;
 
         const firstUpdated: Promise<A> = new Promise((yay) => {
           let timer = -1;
@@ -64,7 +63,7 @@ describe('events', () => {
         document.body.removeChild(n);
 
         done(firstUpdatedResult);
-      }, elementName, inlineVal);
+      }, DATEPICKER_NAME, inlineVal);
 
       resultValues.push(val);
       resultContents.push(content);
@@ -99,7 +98,7 @@ describe('events', () => {
           root.dispatchEvent(ev);
         };
 
-        const n: AppDatepicker = document.createElement(a);
+        const n: Datepicker = document.createElement(a);
 
         n.min = '2000-01-01';
         n.value = '2020-02-20';
@@ -139,7 +138,7 @@ describe('events', () => {
         document.body.removeChild(n);
 
         done((await enteredValue) === '2020-02-19');
-      }, elementName, k);
+      }, DATEPICKER_NAME, k);
 
       results.push(result);
     }
@@ -155,7 +154,7 @@ describe('events', () => {
       isKeypressVal,
       selectedVal,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n: AppDatepicker = document.createElement(a);
+      const n: Datepicker = document.createElement(a);
 
       n.min = '2000-01-01';
       n.value = '2020-02-02';
@@ -202,7 +201,7 @@ describe('events', () => {
         value,
       ] as A);
     },
-    elementName,
+    DATEPICKER_NAME,
     toSelector(`.full-calendar__day[aria-label="Feb 13, 2020"]`));
 
     allStrictEqual([prop, selectedVal], '2020-02-13');

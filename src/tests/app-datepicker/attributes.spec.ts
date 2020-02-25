@@ -1,7 +1,8 @@
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -13,8 +14,6 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker';
-
 describe('attributes', () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
@@ -22,7 +21,7 @@ describe('attributes', () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a);
+      const el: Datepicker = document.createElement(a);
 
       el.min = '2000-01-01';
 
@@ -31,24 +30,24 @@ describe('attributes', () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepicker>(a)!;
+      const el = document.body.querySelector<Datepicker>(a)!;
 
       document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   it(`takes snapshot (attributes)`, async () => {
     const browserName = browser.capabilities.browserName;
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/attributes-0-${browserName}.png`);
+      `./src/tests/snapshots/${DATEPICKER_NAME}/attributes-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
       const el = document.body.querySelector(a)!;
@@ -58,10 +57,10 @@ describe('attributes', () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/attributes-1-${browserName}.png`);
+      `./src/tests/snapshots/${DATEPICKER_NAME}/attributes-1-${browserName}.png`);
   });
 
   it(`renders with defined 'min'`, async () => {
@@ -72,7 +71,7 @@ describe('attributes', () => {
       lastDisabledDateContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.value = '2020-01-17';
       n.setAttribute('min', '2020-01-15');
@@ -91,7 +90,7 @@ describe('attributes', () => {
         lastDisabledDate.outerHTML,
         focusedDate.outerHTML,
       ] as A);
-    }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
+    }, DATEPICKER_NAME, toSelector('.day--disabled'), toSelector('.day--focused'));
 
     allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(lastDisabledDateContent), prettyHtml`
@@ -115,7 +114,7 @@ describe('attributes', () => {
       firstDisabledDateContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.value = '2020-01-15';
       n.min = '2000-01-01';
@@ -134,7 +133,7 @@ describe('attributes', () => {
         firstDisabledDate.outerHTML,
         focusedDate.outerHTML,
       ] as A);
-    }, elementName, toSelector('.day--disabled'), toSelector('.day--focused'));
+    }, DATEPICKER_NAME, toSelector('.day--disabled'), toSelector('.day--focused'));
 
     allStrictEqual([prop, attr], '2020-01-17');
     strictEqual(cleanHtml(firstDisabledDateContent), prettyHtml`
@@ -157,7 +156,7 @@ describe('attributes', () => {
       attr,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.max = '2020-12-31';
@@ -172,7 +171,7 @@ describe('attributes', () => {
         n.getAttribute('value'),
         focusedDate.outerHTML,
       ]);
-    }, elementName, toSelector('.day--focused'));
+    }, DATEPICKER_NAME, toSelector('.day--focused'));
 
     allStrictEqual([prop, attr], '2020-01-15');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
@@ -190,7 +189,7 @@ describe('attributes', () => {
       attr,
       hasYearListView,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.setAttribute('startview', 'yearList' as StartView);
 
@@ -203,7 +202,7 @@ describe('attributes', () => {
         n.getAttribute('startview'),
         yearListView != null,
       ] as A);
-    }, elementName, '.datepicker-body__year-list-view');
+    }, DATEPICKER_NAME, '.datepicker-body__year-list-view');
 
     allStrictEqual([prop, attr], 'yearList');
     ok(hasYearListView);
@@ -218,7 +217,7 @@ describe('attributes', () => {
       firstWeekdayLabelContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -238,7 +237,7 @@ describe('attributes', () => {
         focusedDate.outerHTML,
       ] as A);
     },
-    elementName,
+    DATEPICKER_NAME,
     toSelector('th'),
     toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'));
 
@@ -265,7 +264,7 @@ describe('attributes', () => {
       weekNumberLabelContent,
       weekNumbersContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.value = '2020-01-15';
       n.setAttribute('showweeknumber', '');
@@ -285,7 +284,7 @@ describe('attributes', () => {
         weekNumbers,
       ] as A);
     },
-    elementName,
+    DATEPICKER_NAME,
     toSelector(`th[aria-label="Week"]`),
     toSelector('tbody > tr > th'));
 
@@ -317,7 +316,7 @@ describe('attributes', () => {
       attr,
       weekNumbersContents,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
@@ -333,7 +332,7 @@ describe('attributes', () => {
         n.getAttribute('weeknumbertype'),
         weekNumbers,
       ] as A);
-    }, elementName, toSelector('tbody > tr > th'));
+    }, DATEPICKER_NAME, toSelector('tbody > tr > th'));
 
     allStrictEqual<WeekNumberType>([prop, attr], 'first-full-week');
     deepStrictEqual(
@@ -355,7 +354,7 @@ describe('attributes', () => {
       attr,
       cssDisplay,
     ]: A = await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.setAttribute('landscape', '');
 
@@ -366,7 +365,7 @@ describe('attributes', () => {
         n.getAttribute('landscape'),
         getComputedStyle(n).display,
       ] as A);
-    }, elementName);
+    }, DATEPICKER_NAME);
 
     strictEqual(prop, true);
     strictEqual(attr, '');
@@ -382,7 +381,7 @@ describe('attributes', () => {
       focusedDateContent,
       weekdayLabelsContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -402,7 +401,7 @@ describe('attributes', () => {
         focusedDate.outerHTML,
         weekdayLabels,
       ] as A);
-    }, elementName, toSelector('.day--focused'), toSelector('.calendar-weekdays > th'));
+    }, DATEPICKER_NAME, toSelector('.day--focused'), toSelector('.calendar-weekdays > th'));
 
     allStrictEqual([prop, attr], 'ja-JP');
     strictEqual(cleanHtml(focusedDateContent), prettyHtml`
@@ -435,7 +434,7 @@ describe('attributes', () => {
       attr,
       disabledDatesContents,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -451,7 +450,7 @@ describe('attributes', () => {
         n.getAttribute('disableddays'),
         disabledDates,
       ] as A);
-    }, elementName, toSelector('.day--disabled'));
+    }, DATEPICKER_NAME, toSelector('.day--disabled'));
 
     allStrictEqual([prop, attr], '1,5');
     deepStrictEqual(
@@ -480,7 +479,7 @@ describe('attributes', () => {
       attr,
       disabledDatesContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -496,7 +495,7 @@ describe('attributes', () => {
         n.getAttribute('disableddates'),
         disabledDates,
       ] as A);
-    }, elementName, toSelector('.day--disabled'), disableddates);
+    }, DATEPICKER_NAME, toSelector('.day--disabled'), disableddates);
 
     allStrictEqual([prop, attr], disableddates);
     deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [3, 9, 21, 27].map((n) => {
@@ -516,7 +515,7 @@ describe('attributes', () => {
       attr,
       noDatepickerHeader,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.setAttribute('inline', '');
 
@@ -529,7 +528,7 @@ describe('attributes', () => {
         n.getAttribute('inline'),
         datepickerHeader,
       ] as A);
-    }, elementName, '.datepicker-header');
+    }, DATEPICKER_NAME, '.datepicker-header');
 
     strictEqual(prop, true);
     strictEqual(attr, '');
@@ -544,7 +543,7 @@ describe('attributes', () => {
       prop,
       attr,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.setAttribute('dragratio', `${b}`);
 
@@ -554,7 +553,7 @@ describe('attributes', () => {
         n.dragRatio,
         n.getAttribute('dragratio'),
       ] as A);
-    }, elementName, dragRatio);
+    }, DATEPICKER_NAME, dragRatio);
 
     strictEqual(prop, dragRatio);
     strictEqual(attr, `${dragRatio}`);
@@ -569,7 +568,7 @@ describe('attributes', () => {
       attr,
       weekNumberLabelContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.value = '2020-01-15';
       n.showWeekNumber = true;
@@ -584,7 +583,7 @@ describe('attributes', () => {
         n.getAttribute('weeklabel'),
         weekNumberLabel.outerHTML,
       ] as A);
-    }, elementName, toSelector(`th[aria-label="${weekLabel}"]`), weekLabel);
+    }, DATEPICKER_NAME, toSelector(`th[aria-label="${weekLabel}"]`), weekLabel);
 
     allStrictEqual([prop, attr], weekLabel);
     strictEqual(
@@ -607,7 +606,7 @@ describe('attributes', () => {
       focusedDateContent,
       disabledDatesContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -631,7 +630,7 @@ describe('attributes', () => {
         disabledDates,
       ] as A);
     },
-    elementName,
+    DATEPICKER_NAME,
     toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'),
     toSelector('.day--disabled'));
 

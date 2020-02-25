@@ -1,17 +1,15 @@
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
 import type { DatepickerValueUpdated } from '../../custom_typings.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker-dialog';
-const elementName2 = 'app-datepicker';
-
-describe(`${elementName}::events`, () => {
+describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
   before(async () => {
     await browser.url(APP_INDEX_URL);
   });
@@ -33,7 +31,7 @@ describe(`${elementName}::events`, () => {
           root.dispatchEvent(ev);
         };
 
-        const n: AppDatepickerDialog = document.createElement(a);
+        const n: DatepickerDialog = document.createElement(a);
 
         n.min = '2000-01-01';
         n.value = '2020-02-20';
@@ -43,7 +41,7 @@ describe(`${elementName}::events`, () => {
         await n.open();
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+        const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
         const n3 = n2.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container')!;
 
         domTriggerKey(n3, KEY_CODES_MAP.ARROW_LEFT);
@@ -75,7 +73,7 @@ describe(`${elementName}::events`, () => {
         document.body.removeChild(n);
 
         done((await enteredValue) === '2020-02-19');
-      }, elementName, elementName2, k);
+      }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, k);
 
       results.push(result);
     }
@@ -85,7 +83,7 @@ describe(`${elementName}::events`, () => {
 
   it(`fires 'datepicker-dialog-first-updated'`, async () => {
     const result = await browser.executeAsync(async (a, done) => {
-      const n: AppDatepickerDialog = document.createElement(a);
+      const n: DatepickerDialog = document.createElement(a);
 
       const firstUpdated = new Promise((yay) => {
         let timer = -1;
@@ -109,14 +107,14 @@ describe(`${elementName}::events`, () => {
       document.body.removeChild(n);
 
       done(firstUpdatedResult);
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     strictEqual(result, true);
   });
 
   it(`fires 'datepicker-dialog-opened'`, async () => {
     const result = await browser.executeAsync(async (a, done) => {
-      const n: AppDatepickerDialog = document.createElement(a)!;
+      const n: DatepickerDialog = document.createElement(a)!;
 
       const dialogOpened = new Promise((yay) => {
         let timer = -1;
@@ -141,14 +139,14 @@ describe(`${elementName}::events`, () => {
       document.body.removeChild(n);
 
       done(dialogOpenedResult);
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     strictEqual(result, true);
   });
 
   it(`fires 'datepicker-dialog-closed'`, async () => {
     const result = await browser.executeAsync(async (a, done) => {
-      const n: AppDatepickerDialog = document.createElement(a)!;
+      const n: DatepickerDialog = document.createElement(a)!;
 
       const dialogClosed = new Promise((yay) => {
         let timer = -1;
@@ -176,7 +174,7 @@ describe(`${elementName}::events`, () => {
       document.body.removeChild(n);
 
       done(dialogClosedResult);
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
 
     strictEqual(result, true);
   });

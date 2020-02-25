@@ -1,5 +1,6 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { deepStrictEqual } from '../helpers/typed-assert.js';
 
@@ -15,7 +16,6 @@ interface A11yError {
 type A11yReport = A11ySuccess | A11yError;
 
 describe('a11y', () => {
-  const elementName = 'app-datepicker';
   const toError = (result: null | A11yReport) => {
     if (result?.type === 'success') return '';
 
@@ -35,24 +35,24 @@ describe('a11y', () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a)!;
+      const el: Datepicker = document.createElement(a)!;
 
       document.body.appendChild(el);
 
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<AppDatepicker>(a)!;
+      const el = document.body.querySelector<Datepicker>(a)!;
 
       if (el) document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   it(`is accessible`, async () => {
@@ -62,7 +62,7 @@ describe('a11y', () => {
     ].map<Promise<A11yReport>>(async (startView) => {
       const report = await browser.executeAsync(async (a, b, done) => {
         try {
-          const el = document.body.querySelector<AppDatepicker>(a)!;
+          const el = document.body.querySelector<Datepicker>(a)!;
 
           el.startView = b;
 
@@ -79,7 +79,7 @@ describe('a11y', () => {
             stack: e.stack,
           });
         }
-      }, elementName, startView);
+      }, DATEPICKER_NAME, startView);
 
       return report;
     });

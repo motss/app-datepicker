@@ -1,5 +1,6 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import { KEY_CODES_MAP } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import type { PrepareOptions } from '../custom_typings.js';
 import { cleanHtml } from '../helpers/clean-html.js';
@@ -10,8 +11,7 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker';
-const { focusCalendarsContainer, browserKeys } = interaction({ elementName });
+const { focusCalendarsContainer, browserKeys } = interaction({ elementName: DATEPICKER_NAME });
 
 describe('keyboards', () => {
   // #region helper
@@ -25,7 +25,7 @@ describe('keyboards', () => {
     await browserKeys(key, altKey);
 
     const [prop, content]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       await n.updateComplete;
 
@@ -35,7 +35,7 @@ describe('keyboards', () => {
         n.value,
         focusedDate?.outerHTML ?? '',
       ] as A);
-    }, elementName, toSelector('.day--focused'));
+    }, DATEPICKER_NAME, toSelector('.day--focused'));
 
     return [prop, cleanHtml(content)];
   };
@@ -47,7 +47,7 @@ describe('keyboards', () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a);
+      const el: Datepicker = document.createElement(a);
 
       // Reset `min` and `value` here before running tests
       el.min = '2000-01-01';
@@ -58,17 +58,17 @@ describe('keyboards', () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepicker>(a);
+      const el = document.body.querySelector<Datepicker>(a);
 
       if (el) document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   it(`focuses date (ArrowLeft)`, async () => {

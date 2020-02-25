@@ -1,6 +1,5 @@
-export interface DatepickerDialogClosed {
+export interface DatepickerDialogClosed extends Pick<DatepickerDialog, 'value'> {
   opened: boolean;
-  value: AppDatepickerDialog['value'];
 }
 export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpdated;
 
@@ -8,8 +7,6 @@ import '@material/mwc-button/mwc-button.js';
 import { css, html, LitElement, property, query } from 'lit-element';
 
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
-import type { AppDatepicker } from './app-datepicker.js';
-import './app-datepicker.js';
 import { datepickerVariables } from './common-styles.js';
 import type {
   DatepickerFirstUpdated,
@@ -19,6 +16,7 @@ import type {
   StartView,
 } from './custom_typings.js';
 import { KEY_CODES_MAP } from './custom_typings.js';
+import type { Datepicker } from './datepicker.js';
 import { animateElement } from './helpers/animate-element.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
@@ -26,9 +24,7 @@ import { getResolvedLocale } from './helpers/get-resolved-locale.js';
 import { setFocusTrap } from './helpers/set-focus-trap.js';
 import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
 
-export class AppDatepickerDialog extends LitElement {
-  static get is() { return 'app-datepicker-dialog'; }
-
+export class DatepickerDialog extends LitElement {
   static get styles() {
     // tslint:disable: max-line-length
     return [
@@ -353,7 +349,7 @@ export class AppDatepickerDialog extends LitElement {
   }
 
   private get _datepicker() {
-    return this.shadowRoot!.querySelector<AppDatepicker>('.datepicker');
+    return this.shadowRoot!.querySelector<Datepicker>('.datepicker');
   }
 
   private get _scrim() {
@@ -368,10 +364,6 @@ declare global {
     part: HTMLElementPart;
   }
   // #endregion HTML element type extension
-
-  interface HTMLElementTagNameMap {
-    'app-datepicker-dialog': AppDatepickerDialog;
-  }
 
   interface HTMLElementEventMap {
     'datepicker-dialog-closed': CustomEvent<DatepickerDialogClosed>;

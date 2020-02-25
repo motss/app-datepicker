@@ -1,5 +1,6 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
 import type { HTMLElementPart, StartView } from '../../custom_typings.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { cleanHtml } from '../helpers/clean-html.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
@@ -10,8 +11,6 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker';
-
 describe('initial render', () => {
   describe('calendar view', () => {
     before(async () => {
@@ -20,7 +19,7 @@ describe('initial render', () => {
 
     beforeEach(async () => {
       await browser.executeAsync(async (a, done) => {
-        const el: AppDatepicker = document.createElement(a);
+        const el: Datepicker = document.createElement(a);
 
         el.min = '2000-01-01';
         el.value = '2020-02-02';
@@ -30,33 +29,33 @@ describe('initial render', () => {
         await el.updateComplete;
 
         done();
-      }, elementName);
+      }, DATEPICKER_NAME);
     });
 
     afterEach(async () => {
       await browser.executeAsync((a, done) => {
-        const el = document.body.querySelector<AppDatepicker>(a)!;
+        const el = document.body.querySelector<Datepicker>(a)!;
 
         document.body.removeChild(el);
 
         done();
-      }, elementName);
+      }, DATEPICKER_NAME);
     });
 
     it(`takes snapshot`, async () => {
       const browserName = browser.capabilities.browserName;
 
       await browser.saveScreenshot(
-        `./src/tests/snapshots/${elementName}/initial-render-calendar-view-${browserName}.png`
+        `./src/tests/snapshots/${DATEPICKER_NAME}/initial-render-calendar-view-${browserName}.png`
       );
     });
 
     it(`renders initial content`, async () => {
       const prop: string = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
 
         done(n.locale);
-      }, elementName);
+      }, DATEPICKER_NAME);
 
       strictEqual(prop, 'en-US');
     });
@@ -68,7 +67,7 @@ describe('initial render', () => {
         calendarLabelContent,
         calendarDaysContents,
       ]: A = await browser.executeAsync(async (a, b, c, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
 
         const root = n.shadowRoot!;
 
@@ -80,7 +79,7 @@ describe('initial render', () => {
           calendarLabel.outerHTML,
           calendarDays,
         ] as A);
-      }, elementName, toSelector('.calendar-label'), toSelector('.full-calendar__day'));
+      }, DATEPICKER_NAME, toSelector('.calendar-label'), toSelector('.full-calendar__day'));
 
       strictEqual(
         cleanHtml(calendarLabelContent),
@@ -106,11 +105,11 @@ describe('initial render', () => {
       }).format(now);
 
       const todayDateContent: string = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
         const n2 = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
         done(n2.outerHTML);
-      }, elementName, ['.day--today']);
+      }, DATEPICKER_NAME, ['.day--today']);
 
       strictEqual(cleanHtml(todayDateContent, {
         showToday: true,
@@ -124,12 +123,12 @@ describe('initial render', () => {
 
     it(`focuses date based on 'value'`, async () => {
       const focusedDateContent: string = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
 
         const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
         done(focusedDate.outerHTML);
-      }, elementName, toSelector('.day--focused'));
+      }, DATEPICKER_NAME, toSelector('.day--focused'));
 
       strictEqual(cleanHtml(focusedDateContent), prettyHtml`
       <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 2, 2020" aria-selected="true">
@@ -147,7 +146,7 @@ describe('initial render', () => {
 
     beforeEach(async () => {
       await browser.executeAsync(async (a, done) => {
-        const el: AppDatepicker = document.createElement(a);
+        const el: Datepicker = document.createElement(a);
 
         el.min = '2000-01-01';
         el.startView = 'yearList';
@@ -158,7 +157,7 @@ describe('initial render', () => {
         await el.updateComplete;
 
         done();
-      }, elementName);
+      }, DATEPICKER_NAME);
     });
 
     afterEach(async () => {
@@ -168,26 +167,26 @@ describe('initial render', () => {
         document.body.removeChild(el);
 
         done();
-      }, elementName);
+      }, DATEPICKER_NAME);
     });
 
     it(`takes snapshot`, async () => {
       const browserName = browser.capabilities.browserName;
 
       await browser.saveScreenshot(
-        `./src/tests/snapshots/${elementName}/initial-render-year-view-${browserName}.png`
+        `./src/tests/snapshots/${DATEPICKER_NAME}/initial-render-year-view-${browserName}.png`
       );
     });
 
     it(`renders initial content`, async () => {
       const yearListItemsContents: string[] = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
 
         const yearListItems = Array.from(
           n.shadowRoot!.querySelectorAll<HTMLButtonElement>(b), o => o.textContent);
 
         done(yearListItems);
-      }, elementName, '.year-list-view__list-item');
+      }, DATEPICKER_NAME, '.year-list-view__list-item');
 
       deepStrictEqual(
         yearListItemsContents.map(n => n.trim()),
@@ -197,12 +196,12 @@ describe('initial render', () => {
 
     it(`focuses this year`, async () => {
       const focusedYearContent: string = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
 
         const focusedYear = n.shadowRoot!.querySelector<HTMLButtonElement>(b)!;
 
         done(focusedYear.outerHTML);
-      }, elementName, '.year-list-view__list-item.year--selected');
+      }, DATEPICKER_NAME, '.year-list-view__list-item.year--selected');
 
       strictEqual(cleanHtml(focusedYearContent), prettyHtml`
       <button class="year-list-view__list-item year--selected">2020</button>
@@ -252,7 +251,7 @@ describe('initial render', () => {
 
       for (const part of parts) {
         const result: A = await browser.executeAsync(async (a, [b, c], done) => {
-          const n = document.body.querySelector<AppDatepicker>(a)!;
+          const n = document.body.querySelector<Datepicker>(a)!;
 
           n.startView = c;
           await n.updateComplete;
@@ -261,7 +260,7 @@ describe('initial render', () => {
             (b as HTMLElementPart[]).map(o => n.shadowRoot!.querySelector(`[part="${o}"]`));
 
           done(partContents.every(o => o instanceof HTMLElement) as A);
-        }, elementName, part);
+        }, DATEPICKER_NAME, part);
 
         results.push(result);
       }

@@ -1,5 +1,6 @@
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import { DATEPICKER_DIALOG_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { deepStrictEqual } from '../helpers/typed-assert.js';
 
@@ -14,9 +15,7 @@ interface A11yError {
 }
 type A11yReport = A11ySuccess | A11yError;
 
-const elementName = 'app-datepicker-dialog';
-
-describe(`${elementName}::a11y`, () => {
+describe(`${DATEPICKER_DIALOG_NAME}::a11y`, () => {
   const toError = (result: null | A11yReport) => {
     if (result?.type === 'success') return '';
 
@@ -36,24 +35,24 @@ describe(`${elementName}::a11y`, () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepickerDialog = document.createElement(a)!;
+      const el: DatepickerDialog = document.createElement(a)!;
 
       document.body.appendChild(el);
 
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<AppDatepickerDialog>(a)!;
+      const el = document.body.querySelector<DatepickerDialog>(a)!;
 
       if (el) document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_DIALOG_NAME);
   });
 
   it(`is accessible`, async () => {
@@ -63,7 +62,7 @@ describe(`${elementName}::a11y`, () => {
     ].map<Promise<A11yReport>>(async (startView) => {
       const report = await browser.executeAsync(async (a, b, done) => {
         try {
-          const el: AppDatepickerDialog = document.body.querySelector(a)!;
+          const el: DatepickerDialog = document.body.querySelector(a)!;
 
           el.startView = b;
 
@@ -80,7 +79,7 @@ describe(`${elementName}::a11y`, () => {
             stack: e.stack,
           });
         }
-      }, elementName, startView);
+      }, DATEPICKER_DIALOG_NAME, startView);
 
       return report;
     });

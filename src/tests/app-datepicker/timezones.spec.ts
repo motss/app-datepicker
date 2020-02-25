@@ -1,11 +1,10 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_NAME } from '../../constants.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import {
   deepStrictEqual,
 } from '../helpers/typed-assert.js';
 import { getAllDateStrings } from '../timezones.js';
-
-const elementName = 'app-datepicker';
 
 describe('timezones', () => {
   before(async () => {
@@ -14,7 +13,7 @@ describe('timezones', () => {
 
   beforeEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el: AppDatepicker = document.createElement(a);
+      const el: Datepicker = document.createElement(a);
 
       // Reset `min` and `value` here before running tests
       el.min = '2000-01-01';
@@ -25,24 +24,24 @@ describe('timezones', () => {
       await el.updateComplete;
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<AppDatepicker>(a)!;
+      const el = document.body.querySelector<Datepicker>(a)!;
 
       document.body.removeChild(el);
 
       done();
-    }, elementName);
+    }, DATEPICKER_NAME);
   });
 
   it(`takes snapshot`, async () => {
     const browserName = browser.capabilities.browserName;
 
     await browser.saveScreenshot(
-      `./src/tests/snapshots/${elementName}/timezones-${browserName}.png`);
+      `./src/tests/snapshots/${DATEPICKER_NAME}/timezones-${browserName}.png`);
   });
 
   it(`resolves to the correct 'value' in different timezones`, async function timezoneTests() {
@@ -60,7 +59,7 @@ describe('timezones', () => {
     for (const n of allDateStrings) {
       const valueProp = await browser.executeAsync(
         async (a: string, b: string, done: (a: string) => void) => {
-          const el = document.body.querySelector<AppDatepicker>(a)!;
+          const el = document.body.querySelector<Datepicker>(a)!;
 
           el.value = b;
 
@@ -68,7 +67,7 @@ describe('timezones', () => {
 
           return done(el.value);
         },
-        elementName,
+        DATEPICKER_NAME,
         n[1].date
       );
 

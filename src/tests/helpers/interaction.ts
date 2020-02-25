@@ -1,4 +1,4 @@
-import type { AppDatepicker } from '../../app-datepicker.js';
+import type { Datepicker } from '../../datepicker.js';
 import type { PrepareOptions } from '../custom_typings.js';
 import { toSelector } from './to-selector.js';
 
@@ -7,7 +7,7 @@ import { toSelector } from './to-selector.js';
 const browserKeys = (elementName: string) =>
 async (keyCode: number, altKey: boolean = false) => {
   return browser.executeAsync(async (a, b, c, d, done) => {
-    const n = document.body.querySelector<AppDatepicker>(a)!;
+    const n = document.body.querySelector<Datepicker>(a)!;
     const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
 
     const opt: any = { keyCode: c, altKey: d };
@@ -27,7 +27,7 @@ const clickElements = (elementName: string, isSafari: boolean) =>
 async (classes: string[], prepareOptions?: PrepareOptions) => {
   if (prepareOptions) {
     await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<AppDatepicker>(a)!;
+      const n = document.body.querySelector<Datepicker>(a)!;
 
       const { props, attrs }: PrepareOptions = b;
 
@@ -63,7 +63,7 @@ async (classes: string[], prepareOptions?: PrepareOptions) => {
   for (const cls of classes) {
     if (isSafari) {
       await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepicker>(a)!;
+        const n = document.body.querySelector<Datepicker>(a)!;
         const n2: HTMLElement = n.shadowRoot!.querySelector(b)!;
 
         if (n2 instanceof HTMLButtonElement || n2.tagName === 'MWC-BUTTON') {
@@ -92,7 +92,7 @@ async (classes: string[], prepareOptions?: PrepareOptions) => {
 const focusCalendarsContainer = (elementName: string) =>
 async (prepareOptions?: PrepareOptions): Promise<string> => {
   return await browser.executeAsync(async (a, b, c, done) => {
-    const a1 = document.body.querySelector<AppDatepicker>(a)!;
+    const a1 = document.body.querySelector<Datepicker>(a)!;
 
     if (c) {
       const { props, attrs }: PrepareOptions = c;
@@ -328,10 +328,10 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
           };
         };
 
-        const a1 = document.body.querySelector<AppDatepicker>(a)!;
+        const a1 = document.body.querySelector<Datepicker>(a)!;
         const a2 = b == null ?
           a1 :
-          a1.shadowRoot!.querySelector<AppDatepicker>(b)!;
+          a1.shadowRoot!.querySelector<Datepicker>(b)!;
         const root = a2.shadowRoot!;
 
         if (f) {

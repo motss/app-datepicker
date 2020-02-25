@@ -23,3 +23,6 @@ export const ALL_NAV_KEYS_SET = new Set([
   ...UP_KEYS,
   ...DOWN_KEYS,
 ]);
+
+export const DATEPICKER_NAME = 'app-datepicker';
+export const DATEPICKER_DIALOG_NAME = 'app-datepicker-dialog';

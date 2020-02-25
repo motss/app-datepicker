@@ -1,5 +1,5 @@
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
-import { NEXT_DAY_KEY_CODES_SET, PREV_DAY_KEY_CODES_SET } from '../CONSTANT.js';
+import { NEXT_DAY_KEY_CODES_SET, PREV_DAY_KEY_CODES_SET } from '../constants.js';
 
 interface ParamsGetNextSelectableDate {
   keyCode: KeyboardEvent['keyCode'];

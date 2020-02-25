@@ -1,5 +1,5 @@
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
-import { NEXT_KEY_CODES_SET, PREV_KEY_CODES_SET } from '../CONSTANT.js';
+import { NEXT_KEY_CODES_SET, PREV_KEY_CODES_SET } from '../constants.js';
 import { KEY_CODES_MAP } from '../custom_typings.js';
 import { getNextSelectableDate } from './get-selectable-date.js';
 

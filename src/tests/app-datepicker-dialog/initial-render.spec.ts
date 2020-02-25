@@ -1,6 +1,7 @@
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
-import type { AppDatepicker } from '../../app-datepicker.js';
+import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
 import type { HTMLElementPart } from '../../custom_typings.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
+import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
 import { sanitizeText } from '../helpers/sanitize-text.js';
 import {
@@ -9,10 +10,7 @@ import {
   strictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker-dialog';
-const elementName2 = 'app-datepicker';
-
-describe(`${elementName}::initial_render`, () => {
+describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
   describe('calendar view', () => {
     before(async () => {
       await browser.url(APP_INDEX_URL);
@@ -20,40 +18,40 @@ describe(`${elementName}::initial_render`, () => {
 
     beforeEach(async () => {
       await browser.executeAsync(async (a, done) => {
-        const el: AppDatepickerDialog = document.createElement(a);
+        const el: DatepickerDialog = document.createElement(a);
 
         document.body.appendChild(el);
 
         await el.updateComplete;
 
         done();
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
     });
 
     afterEach(async () => {
       await browser.executeAsync((a, done) => {
-        const el = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const el = document.body.querySelector<DatepickerDialog>(a)!;
 
         if (el) document.body.removeChild(el);
 
         done();
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
     });
 
     it(`takes snapshot`, async () => {
       const browserName = browser.capabilities.browserName;
 
       await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
 
         await n.open();
         await n.updateComplete;
 
         done();
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
 
       await browser.saveScreenshot(
-        `./src/tests/snapshots/${elementName}/initial-render-calendar-view-${browserName}.png`
+        `./src/tests/snapshots/${DATEPICKER_DIALOG_NAME}/initial-render-calendar-view-${browserName}.png`
       );
     });
 
@@ -61,7 +59,7 @@ describe(`${elementName}::initial_render`, () => {
       type A = [string, string, string, string];
 
       const values: A = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
 
         done([
           n.getAttribute('role'),
@@ -69,7 +67,7 @@ describe(`${elementName}::initial_render`, () => {
           n.getAttribute('aria-modal'),
           n.getAttribute('aria-hidden'),
         ] as A);
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
 
       deepStrictEqual(values, [
         'dialog',
@@ -80,7 +78,7 @@ describe(`${elementName}::initial_render`, () => {
     });
 
     it(`has 'display: none'`, async () => {
-      const el = await $(elementName);
+      const el = await $(DATEPICKER_DIALOG_NAME);
 
       const displayValue = await el.getCSSProperty('display');
 
@@ -91,15 +89,15 @@ describe(`${elementName}::initial_render`, () => {
       type A = [boolean, boolean];
 
       const values: A = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
-        const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b);
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n2 = n.shadowRoot!.querySelector<Datepicker>(b);
         const n3 = n.shadowRoot!.querySelector<HTMLDivElement>('.scrim')!;
 
         done([
           n2 == null,
           getComputedStyle(n3).visibility === 'hidden',
         ] as A);
-      }, elementName, elementName2);
+      }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
       allStrictEqual(values, true);
     });
@@ -114,29 +112,29 @@ describe(`${elementName}::initial_render`, () => {
           .join('-');
 
       const prop: string = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
 
         done(n.value);
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
 
       strictEqual(prop, today);
     });
 
     it(`renders year list view`, async () => {
       const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
 
         n.startView = 'yearList';
 
         await n.open();
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<AppDatepicker>(b)!;
+        const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
         done(
           n2.shadowRoot!.querySelector('.datepicker-body__year-list-view') == null
         );
-      }, elementName, elementName2);
+      }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
       strictEqual(hasYearListView, false);
     });
@@ -149,7 +147,7 @@ describe(`${elementName}::initial_render`, () => {
         hasActionButtons,
         actionLabels,
       ]: A = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+        const n = document.body.querySelector<DatepickerDialog>(a)!;
 
         await n.open();
         await n.updateComplete;
@@ -163,7 +161,7 @@ describe(`${elementName}::initial_render`, () => {
           n3s.length === 3,
           n3s.map(o => o.textContent),
         ]);
-      }, elementName);
+      }, DATEPICKER_DIALOG_NAME);
 
       allStrictEqual([hasVisibleScrim, hasActionButtons], true);
       deepStrictEqual(actionLabels.map(n => sanitizeText(n)), ['clear', 'cancel', 'set']);
@@ -190,7 +188,7 @@ describe(`${elementName}::initial_render`, () => {
 
       for (const part of parts) {
         const result: A = await browser.executeAsync(async (a, [b, c], done) => {
-          const n = document.body.querySelector<AppDatepickerDialog>(a)!;
+          const n = document.body.querySelector<DatepickerDialog>(a)!;
 
           if (c) {
             await n.open();
@@ -201,7 +199,7 @@ describe(`${elementName}::initial_render`, () => {
             (b as HTMLElementPart[]).map(o => n.shadowRoot!.querySelector(`[part="${o}"]`));
 
           done(partContents.every(o => o instanceof HTMLElement) as A);
-        }, elementName, part);
+        }, DATEPICKER_DIALOG_NAME, part);
 
         results.push(result);
       }

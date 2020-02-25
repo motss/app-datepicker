@@ -1,4 +1,5 @@
-import type { AppDatepickerDialog } from '../../app-datepicker-dialog.js';
+import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
+import type { DatepickerDialog } from '../../datepicker-dialog.js';
 import { APP_INDEX_URL } from '../constants.js';
 import type { DragOptions } from '../helpers/interaction.js';
 import { interaction } from '../helpers/interaction.js';
@@ -6,14 +7,11 @@ import {
   allStrictEqual,
 } from '../helpers/typed-assert.js';
 
-const elementName = 'app-datepicker-dialog';
-const elementName2 = 'app-datepicker';
-
 describe('gestures', () => {
   const isSafari = browser.capabilities.browserName === 'Safari';
   const actionTypes: DragOptions['type'][] = ['mouse', 'touch'];
   const setup = () => browser.executeAsync(async (a, done) => {
-    const el: AppDatepickerDialog = document.createElement(a);
+    const el: DatepickerDialog = document.createElement(a);
 
     document.body.appendChild(el);
 
@@ -21,16 +19,20 @@ describe('gestures', () => {
     await el.updateComplete;
 
     done();
-  }, elementName);
+  }, DATEPICKER_DIALOG_NAME);
   const cleanup = () => browser.executeAsync((a, done) => {
-    const el = document.body.querySelector<AppDatepickerDialog>(a);
+    const el = document.body.querySelector<DatepickerDialog>(a);
 
     if (el) document.body.removeChild(el);
 
     done();
-  }, elementName);
+  }, DATEPICKER_DIALOG_NAME);
 
-  const { dragCalendarsContainer } = interaction({ elementName, elementName2, isSafari });
+  const { dragCalendarsContainer } = interaction({
+    isSafari,
+    elementName: DATEPICKER_DIALOG_NAME,
+    elementName2: DATEPICKER_NAME,
+  });
 
   before(async () => {
     await browser.url(APP_INDEX_URL);
