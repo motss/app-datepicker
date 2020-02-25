@@ -177,19 +177,19 @@ export class DatepickerDialog extends LitElement {
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm?: HTMLElement;
 
-  #hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
-  #focusable?: HTMLElement;
-  #focusTrap?: FocusTrap;
-  #opened: boolean = false;
+  private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
+  private _focusable?: HTMLElement;
+  private _focusTrap?: FocusTrap;
+  private _opened: boolean = false;
 
   public async open(): Promise<void> {
     await this.updateComplete;
 
-    if (this.#opened) return;
+    if (this._opened) return;
 
     this.removeAttribute('aria-hidden');
     this.style.display = 'block';
-    this.#opened = true;
+    this._opened = true;
 
     await this.requestUpdate();
 
@@ -198,7 +198,7 @@ export class DatepickerDialog extends LitElement {
     this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
 
     await animateElement(contentContainer, {
-      hasNativeWebAnimation: this.#hasNativeWebAnimation,
+      hasNativeWebAnimation: this._hasNativeWebAnimation,
       keyframes: [
         { opacity: '0' },
         { opacity: '1' },
@@ -207,10 +207,10 @@ export class DatepickerDialog extends LitElement {
 
     contentContainer.style.opacity = '1';
 
-    const focusable = this.#focusable!;
+    const focusable = this._focusable!;
 
     if (!this.noFocusTrap) {
-      this.#focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
+      this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
     }
 
     focusable.focus();
@@ -225,15 +225,15 @@ export class DatepickerDialog extends LitElement {
   public async close(): Promise<void> {
     await this.updateComplete;
 
-    if (!this.#opened) return;
+    if (!this._opened) return;
 
-    this.#opened = false;
+    this._opened = false;
     this._scrim!.style.visibility = '';
 
     const contentContainer = this._contentContainer!;
 
     await animateElement(contentContainer, {
-      hasNativeWebAnimation: this.#hasNativeWebAnimation,
+      hasNativeWebAnimation: this._hasNativeWebAnimation,
       keyframes: [
         { opacity: '1' },
         { opacity: '0' },
@@ -246,7 +246,7 @@ export class DatepickerDialog extends LitElement {
     this.setAttribute('aria-hidden', 'true');
     this.style.display = 'none';
 
-    if (!this.noFocusTrap) this.#focusTrap!.disconnect();
+    if (!this.noFocusTrap) this._focusTrap!.disconnect();
 
     dispatchCustomEvent<DatepickerDialogClosed>(
       this, 'datepicker-dialog-closed', { opened: false, value: this.value });
@@ -267,7 +267,7 @@ export class DatepickerDialog extends LitElement {
 
     dispatchCustomEvent<DatepickerFirstUpdated>(this, 'datepicker-dialog-first-updated', {
       value: this.value,
-      firstFocusableElement: this.#focusable!,
+      firstFocusableElement: this._focusable!,
     });
   }
 
@@ -284,7 +284,7 @@ export class DatepickerDialog extends LitElement {
     return html`
     <div class="scrim" part="scrim" @click="${this.close}"></div>
 
-    ${this.#opened ? html`<div class="content-container" part="dialog-content">
+    ${this._opened ? html`<div class="content-container" part="dialog-content">
     <app-datepicker class="datepicker"
       .min="${this.min}"
       .max="${this.max}"
@@ -344,7 +344,7 @@ export class DatepickerDialog extends LitElement {
   }
 
   private _setFocusable(ev: CustomEvent<DatepickerFirstUpdated>) {
-    this.#focusable = ev.detail && ev.detail.firstFocusableElement;
+    this._focusable = ev.detail && ev.detail.firstFocusableElement;
     this._updateValue();
   }
 
