@@ -84,7 +84,7 @@
     "@wdio/spec-reporter": "^5.18.7",
     "axe-core": "^3.5.1",
     "env-cmd": "^10.1.0",
-    "es-dev-server": "^1.40.0",
+    "es-dev-server": "^1.40.1",
     "husky": "^4.2.3",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
