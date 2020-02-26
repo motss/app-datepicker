@@ -41,14 +41,16 @@ _None_
 | --- | --- | --- |
 | `--app-datepicker-accent-color` | `#1a73e8` | Accent color. |
 | `--app-datepicker-bg-color` | `#fff` | Background color. |
-| `--app-datepicker-border-bottom-left-radius` | `8px` | Radius of outer bottom-left border edge. |
-| `--app-datepicker-border-bottom-right-radius` | `8px` | Radius of outer bottom-right border edge. |
-| `--app-datepicker-border-top-left-radius` | `8px` | Radius of outer top-left border edge. |
-| `--app-datepicker-border-top-right-radius` | `8px` | Radius of outer top-right border edge. |
+| `--app-datepicker-border-bottom-left-radius` | `0` | Radius of outer bottom-left border edge. |
+| `--app-datepicker-border-bottom-right-radius` | `0` | Radius of outer bottom-right border edge. |
+| `--app-datepicker-border-top-left-radius` | `0` | Radius of outer top-left border edge. |
+| `--app-datepicker-border-top-right-radius` | `0` | Radius of outer top-right border edge. |
 | `--app-datepicker-color` | `#000` | Text color. |
 | `--app-datepicker-disabled-day-color` | `rgba(0, 0, 0, .55)` | Text color of disabled day. |
 | `--app-datepicker-focused-day-color` | `#fff` | Text color of focused day. |
 | `--app-datepicker-focused-year-bg-color` | `#000` | Background color of focused year. |
+| `--app-datepicker-scrollbar-thumb-bg-color` | `rgba(0, 0, 0, .35)` | Background color of scrollbar thumb in year list view. |
+| `--app-datepicker-scrollbar-thumb-hover-bg-color` | `rgba(0, 0, 0, .5)` | Background color of scrollbar thumb in year list view when hovered. |
 | `--app-datepicker-selector-color` | `rgba(0, 0, 0, .55)` | Text color of selector buttons. |
 | `--app-datepicker-separator-color` | `#ddd` | Separator color between selector and calendar. |
 | `--app-datepicker-weekday-color` | `rgba(0, 0, 0, .55)` | Text color of weekday. |

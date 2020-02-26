@@ -103,21 +103,30 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
     });
 
     it(`renders today's date`, async () => {
-      const now = new Date();
-      const today =
-        [`${now.getFullYear()}`]
-          .concat(
-            [1 + now.getMonth(), now.getDate()].map(n => `0${n}`.slice(-2))
-          )
-          .join('-');
+      type A = [string, string];
 
-      const prop: string = await browser.executeAsync(async (a, done) => {
+      const [
+        prop,
+        todayValue,
+      ]: A = await browser.executeAsync(async (a, done) => {
         const n = document.body.querySelector<DatepickerDialog>(a)!;
 
-        done(n.value);
+        /**
+         * NOTE: Get the today's date from the browser instead of
+         * from the environment where the testing command is run.
+         */
+        const now = new Date();
+        const today = [`${now.getFullYear()}`]
+          .concat([1 + now.getMonth(), now.getDate()].map(o => `0${o}`.slice(-2)))
+          .join('-');
+
+        done([
+          n.value,
+          today,
+        ] as A);
       }, DATEPICKER_DIALOG_NAME);
 
-      strictEqual(prop, today);
+      strictEqual(prop, todayValue);
     });
 
     it(`renders year list view`, async () => {

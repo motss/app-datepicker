@@ -64,10 +64,10 @@ export class Datepicker extends LitElement {
       background-color: var(--app-datepicker-bg-color, #fff);
       color: var(--app-datepicker-color, #000);
       border-radius:
-        var(--app-datepicker-border-top-left-radius, 8px)
-        var(--app-datepicker-border-top-right-radius, 8px)
-        var(--app-datepicker-border-bottom-right-radius, 8px)
-        var(--app-datepicker-border-bottom-left-radius, 8px);
+        var(--app-datepicker-border-top-left-radius, 0)
+        var(--app-datepicker-border-top-right-radius, 0)
+        var(--app-datepicker-border-bottom-right-radius, 0)
+        var(--app-datepicker-border-bottom-left-radius, 0);
       contain: content;
       overflow: hidden;
     }
@@ -193,6 +193,20 @@ export class Datepicker extends LitElement {
     .year-list-view__full-list {
       max-height: calc(48px * 7);
       overflow-y: auto;
+
+      scrollbar-color: var(--app-datepicker-scrollbar-thumb-bg-color, rgba(0, 0, 0, .35)) rgba(0, 0, 0, 0);
+      scrollbar-width: thin;
+    }
+    .year-list-view__full-list::-webkit-scrollbar {
+      width: 8px;
+      background-color: rgba(0, 0, 0, 0);
+    }
+    .year-list-view__full-list::-webkit-scrollbar-thumb {
+      background-color: var(--app-datepicker-scrollbar-thumb-bg-color, rgba(0, 0, 0, .35));
+      border-radius: 50px;
+    }
+    .year-list-view__full-list::-webkit-scrollbar-thumb:hover {
+      background-color: var(--app-datepicker-scrollbar-thumb-hover-bg-color, rgba(0, 0, 0, .5));
     }
 
     .calendar-weekdays > th,

@@ -97,26 +97,40 @@ describe('initial render', () => {
     });
 
     it(`renders today's date`, async () => {
-      const now = new Date();
-      const formattedDate = Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      }).format(now);
+      type A = [string, string, number];
 
-      const todayDateContent: string = await browser.executeAsync(async (a, b, done) => {
+      const [
+        todayDateContent,
+        dateLabel,
+        calendarDay,
+      ]: A = await browser.executeAsync(async (a, b, done) => {
         const n = document.body.querySelector<Datepicker>(a)!;
         const n2 = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
-        done(n2.outerHTML);
+        /**
+         * NOTE: Get the today's date from the browser instead of
+         * from the environment where the testing command is run.
+         */
+        const now = new Date();
+        const formattedDate = Intl.DateTimeFormat('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        }).format(now);
+
+        done([
+          n2.outerHTML,
+          formattedDate,
+          now.getDate(),
+        ] as A);
       }, DATEPICKER_NAME, ['.day--today']);
 
       strictEqual(cleanHtml(todayDateContent, {
         showToday: true,
         showFocused: false,
       }), prettyHtml(`
-      <td class="full-calendar__day day--today" aria-disabled="false" aria-label="${formattedDate}" aria-selected="false">
-        <div class="calendar-day">${now.getDate()}</div>
+      <td class="full-calendar__day day--today" aria-disabled="false" aria-label="${dateLabel}" aria-selected="false">
+        <div class="calendar-day">${calendarDay}</div>
       </td>
       `));
     });

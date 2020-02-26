@@ -16,18 +16,28 @@ describe('events', () => {
   });
 
   it(`fires 'datepicker-first-updated'`, async () => {
-    type A = [string, string];
+    type A = [string, string, string];
 
     const resultValues: string[] = [];
     const resultContents: string[] = [];
+    let todayDateValue: string = '';
 
     /**
      * This ensures the datepicker returns the correct first focusable element
      * when it renders in inline mode and in normal mode.
      */
     for (const inlineVal of [true, false]) {
-      const [val, content]: A = await browser.executeAsync(async (a, b, done) => {
+      const [val, todayVal, content]: A = await browser.executeAsync(async (a, b, done) => {
         const n: Datepicker = document.createElement(a)!;
+
+        /**
+         * NOTE: Get the today's date from the browser instead of
+         * from the environment where the testing command is run.
+         */
+        const now = new Date();
+        const today = [`${now.getFullYear()}`]
+          .concat([1 + now.getMonth(), now.getDate()].map(o => `0${o}`.slice(-2)))
+          .join('-');
 
         const firstUpdated: Promise<A> = new Promise((yay) => {
           let timer = -1;
@@ -43,12 +53,13 @@ describe('events', () => {
             clearTimeout(timer);
             yay([
               value,
+              today,
               `${elementTag}${selectorCls ? `.${selectorCls}` : ''}`,
             ] as A);
             n.removeEventListener('datepicker-first-updated', handler);
           });
 
-          timer = window.setTimeout(() => yay(['', '']), 15e3);
+          timer = window.setTimeout(() => yay(['', '', '']), 15e3);
         });
 
         n.min = '2000-01-01';
@@ -67,14 +78,10 @@ describe('events', () => {
 
       resultValues.push(val);
       resultContents.push(content);
+      todayDateValue = todayVal;
     }
 
-    const todayDate = new Date();
-    const fy = todayDate.getFullYear();
-    const m = todayDate.getMonth();
-    const d = todayDate.getDate();
-
-    allStrictEqual(resultValues, `${fy}-${`0${1 + m}`.slice(-2)}-${`0${d}`.slice(-2)}`);
+    allStrictEqual(resultValues, todayDateValue);
     deepStrictEqual(resultContents, [
       `button.btn__month-selector`,
       `button.btn__year-selector`,

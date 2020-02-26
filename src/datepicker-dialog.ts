@@ -83,8 +83,8 @@ export class DatepickerDialog extends LitElement {
       }
 
       .datepicker {
-        --app-datepicker-border-bottom-left-radius: 0;
-        --app-datepicker-border-bottom-right-radius: 0;
+        --app-datepicker-border-top-left-radius: 8px;
+        --app-datepicker-border-top-right-radius: 8px;
       }
 
       .actions-container {
