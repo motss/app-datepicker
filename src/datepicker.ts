@@ -243,7 +243,7 @@ export class Datepicker extends LitElement {
       outline: none;
       text-align: center;
     }
-    .full-calendar__day:focus {
+    .full-calendar__day:not(.day--disabled):focus {
       outline: #000 dotted 1px;
       outline: -webkit-focus-ring-color auto 1px;
     }
