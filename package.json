@@ -69,7 +69,7 @@
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.2",
     "nodemod": "^2.4.0",
-    "tslib": "^1.11.0"
+    "tslib": "^1.11.1"
   },
   "devDependencies": {
     "@reallyland/tsconfig": "^2.0.0",
@@ -84,14 +84,14 @@
     "@wdio/spec-reporter": "^5.18.7",
     "axe-core": "^3.5.1",
     "env-cmd": "^10.1.0",
-    "es-dev-server": "^1.40.1",
+    "es-dev-server": "^1.41.0",
     "husky": "^4.2.3",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
     "reify": "^0.20.12",
     "shx": "^0.3.2",
     "tslint": "^6.0.0",
-    "typescript": "^3.8.2",
+    "typescript": "^3.8.3",
     "webdriverio": "^5.18.7"
   },
   "engines": {
