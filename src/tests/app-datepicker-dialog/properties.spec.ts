@@ -117,6 +117,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::properties`, () => {
       const n = document.body.querySelector<DatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
+      n.min = '2000-01-01';
       n.max = c;
 
       await n.updateComplete;
@@ -138,6 +139,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::properties`, () => {
       const n = document.body.querySelector<DatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
 
+      n.min = '2000-01-01';
+      n.max = '2020-12-31';
       n.value = c;
 
       await n.updateComplete;

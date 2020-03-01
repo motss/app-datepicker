@@ -22,9 +22,9 @@ describe('gestures', () => {
     done();
   }, DATEPICKER_NAME);
   const cleanup = () => browser.executeAsync((a, done) => {
-    const el = document.body.querySelector<Datepicker>(a);
+    const els = document.body.querySelectorAll<Datepicker>(a);
 
-    if (el) document.body.removeChild(el);
+    els.forEach(n => document.body.removeChild(n));
 
     done();
   }, DATEPICKER_NAME);

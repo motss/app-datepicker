@@ -8,7 +8,7 @@ export const config: WdioConfig = {
     // './dist/tests/app-datepicker-dialog/tests.js',
   ],
   exclude: [],
-  maxInstances: 45,
+  maxInstances: 36,
   capabilities: [
     {
       browserName: 'chrome',
@@ -23,7 +23,7 @@ export const config: WdioConfig = {
         ],
         w3c: true,
       },
-      maxInstances: 9,
+      maxInstances: 18,
     },
     {
       browserName: 'firefox',
@@ -33,7 +33,7 @@ export const config: WdioConfig = {
           '--headless',
         ],
       },
-      maxInstances: 9,
+      maxInstances: 18,
     },
   ],
   logLevel: 'error',

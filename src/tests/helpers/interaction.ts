@@ -384,7 +384,7 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
         await transitionComplete;
         await a1.updateComplete;
 
-        done(root.querySelector<HTMLDivElement>(d)!.textContent);
+        done(root.querySelector<HTMLDivElement>(d)?.textContent ?? '');
       } catch (err) {
         done(err.stack);
       }

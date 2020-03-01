@@ -23,6 +23,7 @@ const sauceLabsAccessKey = process.env.SAUCE_ACCESS_KEY || '';
 
 export const config: WdioConfig = {
   ...baseConfig,
+  maxInstances: 72,
   services: ['sauce'],
   specs: [],
   region: 'us',

@@ -35,6 +35,7 @@ import { animateElement } from './helpers/animate-element.js';
 import { computeNextFocusedDate } from './helpers/compute-next-focus-date.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { findShadowTarget } from './helpers/find-shadow-target.js';
+import { getDateRange } from './helpers/get-date-range.js';
 import { getFormatters } from './helpers/get-formatters.js';
 import { getMultiCalendars } from './helpers/get-multi-calendars.js';
 import { getResolvedDate } from './helpers/get-resolved-date.js';
@@ -427,13 +428,11 @@ export class Datepicker extends LitElement {
   }
   public set min(val: string) {
     const valDate = getResolvedDate(val);
-    const focusedDate = this._focusedDate;
     const isValidMin = isValidDate(val, valDate);
 
     this._min = isValidMin ? valDate : this._todayDate;
     this._hasMin = isValidMin;
-    this.value = toFormattedDateString(+focusedDate < +valDate ? valDate : focusedDate);
-    this.updateComplete.then(() => this.requestUpdate('min'));
+    this.requestUpdate('min');
   }
 
   @property({ type: String, reflect: true })
@@ -442,13 +441,11 @@ export class Datepicker extends LitElement {
   }
   public set max(val: string) {
     const valDate = getResolvedDate(val);
-    const focusedDate = this._focusedDate;
     const isValidMax = isValidDate(val, valDate);
 
     this._max = isValidMax ? valDate : this._maxDate;
     this._hasMax = isValidMax;
-    this.value = toFormattedDateString(+focusedDate > +valDate ? valDate : focusedDate);
-    this.updateComplete.then(() => this.requestUpdate('max'));
+    this.requestUpdate('max');
   }
 
   @property({ type: String })
@@ -457,13 +454,12 @@ export class Datepicker extends LitElement {
   }
   public set value(val: string) {
     const valDate = getResolvedDate(val);
+    const validValue = isValidDate(val, valDate) ? valDate : this._todayDate;
 
-    if (isValidDate(val, valDate)) {
-      this._focusedDate = new Date(valDate);
-      this._selectedDate = this._lastSelectedDate = new Date(valDate);
-      // this.valueAsDate = newDate;
-      // this.valueAsNumber = +newDate;
-    }
+    this._focusedDate = new Date(validValue);
+    this._selectedDate = this._lastSelectedDate = new Date(validValue);
+    // this.valueAsDate = newDate;
+    // this.valueAsNumber = +newDate;
   }
 
   @property({ type: String })
@@ -604,6 +600,27 @@ export class Datepicker extends LitElement {
       this._yearList = toYearList(this._min, this._max);
 
       if ('yearList' === startView) this.requestUpdate();
+
+      /**
+       * Reset 'value' when 'value' is not withing the date range.
+       *
+       * 1. Check if there is valid date range which has >= 1 day
+       * 2. Check if 'value' < 'min'. If true, set to 'min'. Else, proceed to 3..
+       * 3. Check if 'value' > 'max'. If true, set to 'max'.
+       */
+      const minTime = +this._min;
+      const maxTime = +this._max;
+
+      if (getDateRange(minTime, maxTime) > 864e5) {
+        const focusedDateTime = +this._focusedDate;
+
+        let newValue = focusedDateTime;
+
+        if (focusedDateTime < minTime) newValue = minTime;
+        if (focusedDateTime > maxTime) newValue = maxTime;
+
+        this.value = toFormattedDateString(new Date(newValue));
+      }
     }
 
     if (changed.has('_startView') || changed.has('startView')) {
@@ -767,9 +784,12 @@ export class Datepicker extends LitElement {
     const disabledDays = splitString(this.disabledDays, Number);
     const disabledDates = splitString(this.disabledDates, getResolvedDate);
     const showWeekNumber = this.showWeekNumber;
-    const focusedDate = this._focusedDate;
+    const $focusedDate = this._focusedDate;
     const firstDayOfWeek = this.firstDayOfWeek;
     const todayDate = getResolvedDate();
+    const $selectedDate = this._selectedDate;
+    const $max = this._max;
+    const $min = this._min;
 
     const { calendars, disabledDaysSet, disabledDatesSet, weekdays } = getMultiCalendars({
       dayFormat,
@@ -781,11 +801,11 @@ export class Datepicker extends LitElement {
       disabledDays,
       disabledDates,
       locale: this.locale,
-      selectedDate: this._selectedDate,
+      selectedDate: $selectedDate,
       showWeekNumber: this.showWeekNumber,
       weekNumberType: this.weekNumberType,
-      max: this._max,
-      min: this._min,
+      max: $max,
+      min: $min,
       weekLabel: this.weekLabel,
     });
     const hasMinDate = !calendars[0].calendar.length;
@@ -808,6 +828,18 @@ export class Datepicker extends LitElement {
 
       const calendarAriaId = `calendarcaption${ci}`;
       const midCalendarFullDate = calendar[1][1].fullDate;
+      const $newFocusedDate: Date = ci === 1 ?
+        computeNextFocusedDate({
+          disabledDaysSet,
+          disabledDatesSet,
+          hasAltKey: false,
+          keyCode: KEY_CODES_MAP.HOME,
+          focusedDate: $focusedDate,
+          selectedDate: $selectedDate,
+          minTime: +$min,
+          maxTime: +$max,
+        }) :
+        new Date('lol');
 
       return html`
       <div class="calendar-container" part="calendar">
@@ -828,12 +860,13 @@ export class Datepicker extends LitElement {
                 calendarRow.map((calendarCol, i) => {
                   const { disabled, fullDate, label, value } = calendarCol;
 
-                  if (fullDate == null && value == null) {
+                  /** Empty day */
+                  if (value == null) {
                     return html`<td class="full-calendar__day day--empty" part="calendar-day"></td>`;
                   }
 
-                  /** NOTE(motss): Could be week number labeling */
-                  if (fullDate == null && showWeekNumber && i < 1) {
+                  /** Week label, if any */
+                  if (fullDate == null && value && showWeekNumber && i < 1) {
                     return html`<th
                       class="full-calendar__day weekday-label"
                       part="calendar-day"
@@ -845,7 +878,10 @@ export class Datepicker extends LitElement {
                   }
 
                   const curTime = +new Date(fullDate!);
-                  const isCurrentDate = +focusedDate === curTime;
+                  const isCurrentDate = +$focusedDate === curTime;
+                  const shouldTab = ci === 1 && $newFocusedDate ?
+                    $newFocusedDate.getUTCDate() === Number(value) :
+                    false;
 
                   return html`
                   <td
@@ -857,7 +893,7 @@ export class Datepicker extends LitElement {
                     })}"
                     part="calendar-day"
                     role="gridcell"
-                    tabindex="${isCurrentDate ? '0' : '-1'}"
+                    tabindex="${shouldTab ? '0' : '-1'}"
                     aria-disabled="${disabled ? 'true' : 'false'}"
                     aria-label="${label}"
                     aria-selected="${isCurrentDate ? 'true' : 'false'}"
@@ -935,7 +971,7 @@ export class Datepicker extends LitElement {
     const handleUpdateMonth = () => {
       const calendarsContainer = this.calendarsContainer;
 
-      if (null ==  calendarsContainer) return this.updateComplete;
+      if (null == calendarsContainer) return this.updateComplete;
 
       const dateDate = this._lastSelectedDate || this._selectedDate;
       const minDate = this._min;
@@ -1068,6 +1104,18 @@ export class Datepicker extends LitElement {
         isKeypress: true,
         value: this.value,
       });
+
+      /**
+       * Always update focused date to avoid the following scenario:
+       *
+       * 1. Navigate to March 2020 via mouse clicks
+       * 2. Click to select '2020-03-30'
+       * 3. Navigate to February 2020 via mouse clicks
+       * 4. Tab to first focusable calendar day and hit Enter or Space
+       * 5. Focused date should update to first focusable calendar day instead of '2020-03-20'
+       */
+      this._focusedDate = new Date(this._selectedDate);
+
       return;
     }
 
@@ -1087,15 +1135,11 @@ export class Datepicker extends LitElement {
       minTime: +this._min,
     });
 
-    const nextFocusedDateFy = nextFocusedDate.getUTCFullYear();
-    const nextFocusedDateM = nextFocusedDate.getUTCMonth();
-    const selectedDateFY = selectedDate.getUTCFullYear();
-    const selectedDateM = selectedDate.getUTCMonth();
     /**
      * NOTE: Update `_selectedDate` and `_lastSelectedDate` if
      * new focused date is no longer in the same month or year.
      */
-    if (nextFocusedDateFy !== selectedDateFY || nextFocusedDateM !== selectedDateM) {
+    if (!this._isInVisibleMonth(nextFocusedDate, selectedDate)) {
       this._selectedDate = this._lastSelectedDate = nextFocusedDate;
     }
 
@@ -1108,6 +1152,15 @@ export class Datepicker extends LitElement {
       isKeypress: true,
       value: this.value,
     });
+  }
+
+  private _isInVisibleMonth(dateA: Date, dateB: Date) {
+    const dateAFy = dateA.getUTCFullYear();
+    const dateAM = dateA.getUTCMonth();
+    const dateBFY = dateB.getUTCFullYear();
+    const dateBM = dateB.getUTCMonth();
+
+    return dateAFy === dateBFY && dateAM === dateBM;
   }
 
 }

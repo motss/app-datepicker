@@ -1,5 +1,6 @@
 import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
 import { NEXT_DAY_KEY_CODES_SET, PREV_DAY_KEY_CODES_SET } from '../constants.js';
+import { getDateRange } from './get-date-range.js';
 
 interface ParamsGetNextSelectableDate {
   keyCode: KeyboardEvent['keyCode'];
@@ -17,10 +18,14 @@ export function getNextSelectableDate({
   focusedDate,
   maxTime,
   minTime,
-}: ParamsGetNextSelectableDate) {
+}: ParamsGetNextSelectableDate): Date {
   const focusedDateTime = +focusedDate;
+
   let isLessThanMinTime = focusedDateTime < minTime;
   let isMoreThanMaxTime = focusedDateTime > maxTime;
+
+  // Bail when there is no valid date range (< 1 day).
+  if (getDateRange(minTime, maxTime) < 864e5) return focusedDate;
 
   let isDisabledDay =
     isLessThanMinTime ||
