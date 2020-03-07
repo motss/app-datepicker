@@ -23,7 +23,7 @@ export const config: WdioConfig = {
         ],
         w3c: true,
       },
-      maxInstances: 11,
+      maxInstances: 10,
     },
     {
       browserName: 'firefox',
@@ -33,7 +33,7 @@ export const config: WdioConfig = {
           '--headless',
         ],
       },
-      maxInstances: 11,
+      maxInstances: 10,
     },
   ],
   logLevel: 'error',
