@@ -171,6 +171,9 @@ export class DatepickerDialog extends LitElement {
   @property({ type: Boolean })
   public noFocusTrap: boolean = false;
 
+  @property({ type: Boolean })
+  public alwaysResetValue: boolean = false;
+
   @query('.content-container')
   private _contentContainer?: HTMLDivElement;
 
@@ -190,6 +193,8 @@ export class DatepickerDialog extends LitElement {
     this.removeAttribute('aria-hidden');
     this.style.display = 'block';
     this._opened = true;
+
+    if (this.alwaysResetValue && this._datepicker) this._datepicker.value = this.value;
 
     await this.requestUpdate();
 

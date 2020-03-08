@@ -92,9 +92,10 @@ It inherits all the properties, events, and custom properties from [AppDatepicke
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
+| `alwaysResetValue` | Boolean | `false` | If true, the datepicker always resets to the `value` when opened. |
 | `clearLabel` | String | `clear` | Label of clear button. |
-| `dismissLabel` | String | `cancel` | Label of dismiss button. |
 | `confirmLabel` | String | `set` | Label of confirm button. |
+| `dismissLabel` | String | `cancel` | Label of dismiss button. |
 | `noFocusTrap` | Boolean | `false` | If true, focus will be _trapped_ inside the datepicker dialog. |
 
 ### Methods

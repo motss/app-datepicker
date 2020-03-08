@@ -4,6 +4,9 @@ import type { StartView } from '../../custom_typings.js';
 import type { DatepickerDialog } from '../../datepicker-dialog.js';
 import type { Datepicker } from '../../datepicker.js';
 import { APP_INDEX_URL } from '../constants.js';
+import { cleanHtml } from '../helpers/clean-html.js';
+import { prettyHtml } from '../helpers/pretty-html.js';
+import { toSelector } from '../helpers/to-selector.js';
 import {
   allStrictEqual,
   deepStrictEqual,
@@ -357,19 +360,22 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     strictEqual(attr, `${dragRatio}`);
   });
 
-  it(`renders with defined 'weekLabel'`, async () => {
-    type A = [string, null, string, string];
+  it(`renders with defined 'weeklabel'`, async () => {
+    type A = [string, string, null, string, string];
 
     const expectedWeeklabel: string = '周数';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
       const n = document.body.querySelector<DatepickerDialog>(a)!;
       const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const initialLabel = n.weekLabel;
 
       n.setAttribute('weeklabel', c);
 
       await n.updateComplete;
 
       done([
+        initialLabel,
+
         n.getAttribute('weeklabel'),
         n2.getAttribute('weeklabel'),
 
@@ -379,11 +385,212 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME, expectedWeeklabel);
 
     deepStrictEqual(values, [
+      'Wk',
       expectedWeeklabel,
       null,
       expectedWeeklabel,
       expectedWeeklabel,
     ] as A);
+  });
+
+  it(`renders with defined 'clearlabel'`, async () => {
+    type A = [string, string, string, string];
+
+    const expectedClearLabel: string = '重設';
+    const [
+      initialClearLabel,
+      ...others
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const root = n.shadowRoot!;
+      const initialLabel = n.clearLabel;
+
+      n.setAttribute('clearlabel', c);
+
+      await n.updateComplete;
+
+      const clearButton = root.querySelector<HTMLElement>(b);
+
+      done([
+        initialLabel,
+        n.getAttribute('clearlabel'),
+        n.clearLabel,
+        clearButton?.textContent ?? '',
+      ] as A);
+    }, DATEPICKER_DIALOG_NAME, `[part="clear"]`, expectedClearLabel);
+
+    strictEqual(initialClearLabel, 'clear');
+    allStrictEqual(others, expectedClearLabel);
+  });
+
+  it(`renders with defined 'dismisslabel'`, async () => {
+    type A = [string, string, string, string];
+
+    const expectedDismissLabel: string = '取消';
+    const [
+      initialDismissLabel,
+      ...others
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const root = n.shadowRoot!;
+      const initialLabel = n.dismissLabel;
+
+      n.setAttribute('dismisslabel', c);
+
+      await n.updateComplete;
+
+      const clearButton = root.querySelector<HTMLElement>(b);
+
+      done([
+        initialLabel,
+        n.getAttribute('dismisslabel'),
+        n.dismissLabel,
+        clearButton?.textContent ?? '',
+      ] as A);
+    }, DATEPICKER_DIALOG_NAME, `[part="dismiss"]`, expectedDismissLabel);
+
+    strictEqual(initialDismissLabel, 'cancel');
+    allStrictEqual(others, expectedDismissLabel);
+  });
+
+  it(`renders with defined 'confirmlabel'`, async () => {
+    type A = [string, string, string, string];
+
+    const expectedConfirmLabel: string = '取消';
+    const [
+      initialConfirmLabel,
+      ...others
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const root = n.shadowRoot!;
+      const initialLabel = n.confirmLabel;
+
+      n.setAttribute('confirmlabel', c);
+
+      await n.updateComplete;
+
+      const clearButton = root.querySelector<HTMLElement>(b);
+
+      done([
+        initialLabel,
+        n.getAttribute('confirmlabel'),
+        n.confirmLabel,
+        clearButton?.textContent ?? '',
+      ] as A);
+    }, DATEPICKER_DIALOG_NAME, `[part="confirm"]`, expectedConfirmLabel);
+
+    strictEqual(initialConfirmLabel, 'set');
+    allStrictEqual(others, expectedConfirmLabel);
+  });
+
+  it(`renders with defined 'nofocustrap'`, async () => {
+    type A = [boolean, boolean, boolean, string];
+
+    const expectedNoFocusTap: boolean = true;
+    const [
+      initialProp,
+      attr,
+      prop,
+      activeElementContent,
+    ]: A = await browser.executeAsync(async (a, b, c, done) => {
+      const getDeepActiveElement = () => {
+        let $n = document.activeElement;
+        while ($n?.shadowRoot) { $n = $n.shadowRoot.activeElement; }
+        return $n;
+      };
+
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const initialNoFocusTrap = n.noFocusTrap;
+
+      n.min = '2000-01-01';
+      n.value = '2020-02-02';
+      n.setAttribute('nofocustrap', c);
+
+      await n.updateComplete;
+
+      const confirmButton = n.querySelector<HTMLElement>(b);
+
+      confirmButton?.focus();
+
+      const tabEvent = new CustomEvent('keyup');
+
+      Object.defineProperty(tabEvent, 'keyCode', { value: 9 });
+      n.dispatchEvent(tabEvent);
+
+      await n.updateComplete;
+
+      done([
+        initialNoFocusTrap,
+        n.hasAttribute('nofocustrap'),
+        n.noFocusTrap,
+
+        getDeepActiveElement()?.outerHTML ?? '',
+      ] as A);
+    }, DATEPICKER_DIALOG_NAME, `[part="confirm"]`, expectedNoFocusTap);
+
+    strictEqual(initialProp, false);
+    allStrictEqual([attr, prop], expectedNoFocusTap);
+    strictEqual(
+      cleanHtml(activeElementContent),
+      prettyHtml`<button class="btn__year-selector" data-view="yearList">2020</button>`
+    );
+  });
+
+  it(`renders with defined 'alwaysresetvalue'`, async () => {
+    type A = [boolean, boolean, boolean, string, string, string];
+
+    const expectedAlwaysResetValue: boolean = true;
+    const [
+      initialProp,
+      attr,
+      prop,
+
+      value,
+      value2,
+
+      focusedDateContent,
+    ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
+      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const root = n.shadowRoot!;
+      const n2 = root.querySelector<Datepicker>(b)!;
+      const initialAlwaysResetValue = n.alwaysResetValue;
+
+      n.min = '2000-01-01';
+      n.value = '2020-02-02';
+      n.setAttribute('alwaysresetvalue', d);
+      n2.value = '2020-02-20';
+
+      await n2.updateComplete;
+      await n.updateComplete;
+
+      await n.close();
+      await n.open();
+      await n.updateComplete;
+
+      const focusedDate = n2.shadowRoot!.querySelector<HTMLTableCellElement>(c);
+
+      done([
+        initialAlwaysResetValue,
+        n.hasAttribute('alwaysresetvalue'),
+        n.alwaysResetValue,
+
+        n.value,
+        n2.value,
+        focusedDate?.outerHTML ?? '<nil>',
+      ] as A);
+    },
+    DATEPICKER_DIALOG_NAME,
+    DATEPICKER_NAME,
+    toSelector('.day--focused'),
+    expectedAlwaysResetValue);
+
+    strictEqual(initialProp, false);
+    allStrictEqual([prop, attr], expectedAlwaysResetValue);
+    allStrictEqual([value, value2], '2020-02-02');
+    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
+    <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 2, 2020" aria-selected="true">
+      <div class="calendar-day">2</div>
+    </td>`);
   });
 
   it(`renders with different 'firstdayofweek' and 'disableddays'`, async () => {
