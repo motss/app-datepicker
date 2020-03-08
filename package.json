@@ -39,28 +39,27 @@
   },
   "dependencies": {
     "@polymer/iron-iconset-svg": "^3.0.1",
-    "@polymer/iron-list": "^3.0.1",
+    "@polymer/iron-list": "^3.1.0",
     "@polymer/iron-selector": "^3.0.1",
     "@polymer/neon-animation": "^3.0.1",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-dialog-behavior": "^3.0.1",
-    "@polymer/paper-icon-button": "^3.0.1",
-    "@polymer/polymer": "^3.1.0",
-    "web-animations-js": "^2.3.1"
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/polymer": "^3.3.1"
   },
   "devDependencies": {
     "@polymer/iron-component-page": "^4.0.1",
-    "@polymer/iron-demo-helpers": "^3.0.2",
+    "@polymer/iron-demo-helpers": "^3.1.0",
     "@polymer/iron-test-helpers": "^3.0.1",
     "@polymer/iron-validator-behavior": "^3.0.1",
     "@polymer/paper-button": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
     "@polymer/paper-dialog": "^3.0.1",
-    "@polymer/paper-input": "^3.0.1",
-    "@webcomponents/webcomponentsjs": "^2.2.1",
+    "@polymer/paper-input": "^3.2.0",
+    "@webcomponents/webcomponentsjs": "^2.4.2",
     "intl": "^1.2.5",
     "wct-browser-legacy": "^1.0.2",
-    "web-animations-js": "^2.3.1",
+    "web-animations-js": "^2.3.2",
     "whatwg-fetch": "^3.0.0"
   },
   "engines": {
