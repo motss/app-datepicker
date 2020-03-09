@@ -8,6 +8,7 @@ import { interaction } from '../helpers/interaction.js';
 import { prettyHtml } from '../helpers/pretty-html.js';
 import { toSelector } from '../helpers/to-selector.js';
 import {
+  deepStrictEqual,
   strictEqual,
 } from '../helpers/typed-assert.js';
 
@@ -579,6 +580,50 @@ describe('keyboards', () => {
     strictEqual(focusedDateContent, prettyHtml`
     <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 28, 2019" aria-selected="true">
       <div class="calendar-day">28</div>
+    </td>
+    `);
+  });
+
+  it(`updates 'tabindex' on all affected dates (ArrowLeft)`, async () => {
+    const focusedDateSelector = toSelector('.day--focused');
+    const getFocusedDate = (s: string): Promise<string> =>
+      browser.executeAsync(async (a, b, done) => {
+        const n = document.body.querySelector<Datepicker>(a)!;
+
+        done(n.shadowRoot?.querySelector<HTMLTableCellElement>(b)?.outerHTML ?? '');
+      }, DATEPICKER_NAME, s);
+
+    const initialFocusedDateContent = await getFocusedDate(focusedDateSelector);
+
+    await focusCalendarsContainer();
+    await browserKeys(KEY_CODES_MAP.ARROW_LEFT);
+
+    const [
+      oldFocusedDateContent,
+      newFocusedDateContent,
+    ]: [string, string] = await Promise.all([
+      getFocusedDate(toSelector(`[aria-label="Feb 20, 2020"]`)),
+      getFocusedDate(focusedDateSelector),
+    ]);
+
+    deepStrictEqual(
+      [
+        initialFocusedDateContent,
+        oldFocusedDateContent,
+      ].map(n => cleanHtml(n, { showTabindex: true })),
+      ['0', '-1'].map((n) => {
+        const isTab = '0' === n;
+
+        return prettyHtml(`
+        <td tabindex="${n}" class="full-calendar__day${isTab ? ' day--focused' : ''}" aria-disabled="false" aria-label="Feb 20, 2020" aria-selected="${isTab ? 'true' : 'false'}">
+          <div class="calendar-day">20</div>
+        </td>
+        `);
+      })
+    );
+    strictEqual(cleanHtml(newFocusedDateContent, { showTabindex: true }), prettyHtml`
+    <td tabindex="0" class="full-calendar__day day--focused" aria-disabled="false" aria-label="Feb 19, 2020" aria-selected="true">
+      <div class="calendar-day">19</div>
     </td>
     `);
   });

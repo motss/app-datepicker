@@ -828,18 +828,20 @@ export class Datepicker extends LitElement {
 
       const calendarAriaId = `calendarcaption${ci}`;
       const midCalendarFullDate = calendar[1][1].fullDate;
-      const $newFocusedDate: Date = ci === 1 ?
-        computeNextFocusedDate({
-          disabledDaysSet,
-          disabledDatesSet,
-          hasAltKey: false,
-          keyCode: KEY_CODES_MAP.HOME,
-          focusedDate: $focusedDate,
-          selectedDate: $selectedDate,
-          minTime: +$min,
-          maxTime: +$max,
-        }) :
-        new Date('lol');
+      const isMidCalendar = ci === 1;
+      const $newFocusedDate: Date =
+        isMidCalendar && !this._isInVisibleMonth($focusedDate, $selectedDate) ?
+          computeNextFocusedDate({
+            disabledDaysSet,
+            disabledDatesSet,
+            hasAltKey: false,
+            keyCode: KEY_CODES_MAP.HOME,
+            focusedDate: $focusedDate,
+            selectedDate: $selectedDate,
+            minTime: +$min,
+            maxTime: +$max,
+          }) :
+          $focusedDate;
 
       return html`
       <div class="calendar-container" part="calendar">
@@ -879,12 +881,11 @@ export class Datepicker extends LitElement {
 
                   const curTime = +new Date(fullDate!);
                   const isCurrentDate = +$focusedDate === curTime;
-                  const shouldTab = ci === 1 && $newFocusedDate ?
-                    $newFocusedDate.getUTCDate() === Number(value) :
-                    false;
+                  const shouldTab = isMidCalendar && $newFocusedDate.getUTCDate() === Number(value);
 
                   return html`
                   <td
+                    tabindex="${shouldTab ? '0' : '-1'}"
                     class="${classMap({
                       'full-calendar__day': true,
                       'day--disabled': disabled,
@@ -893,7 +894,6 @@ export class Datepicker extends LitElement {
                     })}"
                     part="calendar-day"
                     role="gridcell"
-                    tabindex="${shouldTab ? '0' : '-1'}"
                     aria-disabled="${disabled ? 'true' : 'false'}"
                     aria-label="${label}"
                     aria-selected="${isCurrentDate ? 'true' : 'false'}"
