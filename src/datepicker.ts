@@ -709,8 +709,13 @@ export class Datepicker extends LitElement {
         }
       }
 
-      // Focus year selector button when switches to calendar view.
-      if ('calendar' === startView) this._focusElement('[part="year-selector"]');
+      /**
+       * When `_startView` is previously defined which means not first updated but switching from
+       * another view, focus year selector button.
+       */
+      if (changed.get('_startView') && 'calendar' === startView) {
+        this._focusElement('[part="year-selector"]');
+      }
     }
 
     /**
