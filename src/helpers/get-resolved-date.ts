@@ -1,4 +1,4 @@
-import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
+import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 export function getResolvedDate(date?: number | Date | string | undefined): Date {
   const dateDate = date == null ? new Date() : new Date(date);

@@ -18,7 +18,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
-import { toUTCDate } from 'nodemod/dist/calendar/to-utc-date.js';
+import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './constants.js';
@@ -868,12 +868,12 @@ export class Datepicker extends LitElement {
                   const { disabled, fullDate, label, value } = calendarCol;
 
                   /** Empty day */
-                  if (value == null) {
+                  if (!value) {
                     return html`<td class="full-calendar__day day--empty" part="calendar-day"></td>`;
                   }
 
                   /** Week label, if any */
-                  if (fullDate == null && value && showWeekNumber && i < 1) {
+                  if (!fullDate && value && showWeekNumber && i < 1) {
                     return html`<th
                       class="full-calendar__day weekday-label"
                       part="calendar-day"

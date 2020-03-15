@@ -607,51 +607,73 @@ describe('properties', () => {
     );
   });
 
-  it(`renders with different 'firstDayOfWeek' and 'disabledDays'`, async () => {
-    type A = [number, string, string, string, string[]];
+  it(`renders with different 'showWeekNumber', 'firstDayOfWeek', and 'disabledDays'`, async () => {
+    type A = [number, string, string, boolean, string, string[]];
 
-    const [
-      prop,
-      attr,
-      prop2,
-      focusedDateContent,
-      disabledDatesContents,
-    ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
-      const root = n.shadowRoot!;
+    const props: number[] = [];
+    const attrs: string[] = [];
+    const props2: string[] = [];
+    const showWeekNumberProps: boolean[] = [];
+    const focusedDateContents: string[] = [];
+    const disabledDatesContents: string[][] = [];
 
-      n.min = '2000-01-01';
-      n.value = '2020-01-15';
-      n.firstDayOfWeek = 2;
-      n.disabledDays = '1,5';
+    for (const showWeekNumber of [true, false]) {
+      const [
+        prop,
+        attr,
+        prop2,
+        prop3,
+        focusedDateContent,
+        disabledDatesContent,
+      ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
+        const n = document.body.querySelector<Datepicker>(a)!;
+        const root = n.shadowRoot!;
 
-      await n.updateComplete;
+        n.min = '2000-01-01';
+        n.value = '2020-01-15';
+        n.firstDayOfWeek = 2;
+        n.disabledDays = '1,5';
+        n.showWeekNumber = b;
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
-      const disabledDates = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(c), o => o.outerHTML);
+        await n.updateComplete;
 
-      done([
-        n.firstDayOfWeek,
-        n.getAttribute('firstdayofweek'),
-        n.disabledDays,
-        focusedDate.outerHTML,
-        disabledDates,
-      ] as A);
-    },
-    DATEPICKER_NAME,
-    toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'),
-    toSelector('.day--disabled'));
+        const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+        const disabledDates = Array.from(
+          root.querySelectorAll<HTMLTableCellElement>(d), o => o.outerHTML);
 
-    strictEqual(prop, 2);
-    strictEqual(attr, '2');
-    strictEqual(prop2, '1,5');
-    strictEqual(cleanHtml(focusedDateContent), prettyHtml`
+        done([
+          n.firstDayOfWeek,
+          n.getAttribute('firstdayofweek'),
+          n.disabledDays,
+          n.showWeekNumber,
+          focusedDate.outerHTML,
+          disabledDates,
+        ] as A);
+      },
+      DATEPICKER_NAME,
+      showWeekNumber,
+      toSelector('tbody > tr:nth-of-type(3) > td:nth-of-type(2)'),
+      toSelector('.day--disabled'));
+
+      props.push(prop);
+      attrs.push(attr);
+      props2.push(prop2);
+      showWeekNumberProps.push(prop3);
+      focusedDateContents.push(focusedDateContent);
+      disabledDatesContents.push(disabledDatesContent);
+    }
+
+    allStrictEqual(props, 2);
+    allStrictEqual(attrs, '2');
+    allStrictEqual(props2, '1,5');
+    deepStrictEqual(showWeekNumberProps, [true, false]);
+    allStrictEqual(focusedDateContents.map(n => cleanHtml(n)), prettyHtml`
     <td class="full-calendar__day day--focused" aria-disabled="false" aria-label="Jan 15, 2020" aria-selected="true">
       <div class="calendar-day">15</div>
     </td>
     `);
-    deepStrictEqual(disabledDatesContents.map(n => cleanHtml(n)), [
+
+    const expectedDisabledDatesContent = [
       3,
       6,
       10,
@@ -667,7 +689,9 @@ describe('properties', () => {
         <div class="calendar-day">${n}</div>
       </td>
       `);
-    }));
+    });
+    deepStrictEqual(disabledDatesContents[0].map(n => cleanHtml(n)), expectedDisabledDatesContent);
+    deepStrictEqual(disabledDatesContents[1].map(n => cleanHtml(n)), expectedDisabledDatesContent);
   });
 
 });
