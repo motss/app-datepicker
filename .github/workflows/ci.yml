@@ -18,9 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install global dependencies
-        run: |
-          npm i -g npm@latest --quiet
+      # - name: Install global dependencies
+      #   run: |
+      #     npm i -g npm@latest --quiet
 
       - name: Install dependencies
         run: |
