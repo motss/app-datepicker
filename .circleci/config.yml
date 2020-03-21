@@ -54,6 +54,13 @@ jobs:
           paths:
             - "*"
 
+  success:
+    steps:
+      - run:
+          name: Success
+          command: |
+            echo "Success"
+
   test_local:
     <<: *defaults
     steps:
@@ -84,10 +91,11 @@ workflows:
   version: 2
   multi-build-n-test:
     jobs:
-      - build
-      - test_local:
-          requires:
-            - build
-      - test_sauce_labs:
-          requires:
-            - build
+      - success
+      # - build
+      # - test_local:
+      #     requires:
+      #       - build
+      # - test_sauce_labs:
+      #     requires:
+      #       - build
