@@ -1,0 +1,128 @@
+name: ci
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04, windows-2019]
+        node-version: [13.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install global dependencies
+        run: |
+          npm i -g npm@latest --quiet
+
+      - name: Install dependencies
+        run: |
+          npm ci --quiet
+
+      - name: Lint
+        run: |
+          npm run lint
+
+      - name: Build
+        run: |
+          npm run build:test && npm run build:config
+
+      - name: Check build
+        run: |
+          pwd && ls -la
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: build-${{ matrix.os }}-${{ matrix.target }}
+          path: dist
+
+  test:
+    name: Test ${{ matrix.os }} ${{ matrix.target }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-18.04, windows-2019]
+        node-version: [13.x]
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: build-${{ matrix.os }}-${{ matrix.target }}
+      - name: List versions
+        run: |
+          pwd && ls -la && node -v && npm -v && which npm
+      - name: Install dependencies
+        run: |
+          npm ci --quiet
+      - name: Run Test
+        run: |
+          npm run test:dev
+
+  # test:
+  #   name: ${{ matrix.os }} ${{ matrix.target }}
+  #   runs-on: ${{ matrix.os }}
+  #   timeout-minutes: 120
+  #   strategy:
+  #     matrix:
+
+  #       include:
+  #         - os: macos-latest
+  #           target: x86_64-apple-darwin
+  #         - os: ubuntu-18.04
+  #           target: x86_64-unknown-linux-gnu
+  #         - os: windows-2019
+  #           target: x86_64-pc-windows-msvc
+
+  #   steps:
+  #     - name: Config git
+  #       run: git config --global core.symlinks true
+
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Cache cargo registry
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: ~/.cargo/registry
+  #         key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+
+  #     - name: Cache cargo index
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: ~/.cargo/git
+  #         key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+
+  #     - name: Cache cargo build
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: target
+  #         key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+  #     - name: List versions
+  #       run: |
+  #         pwd && cargo -V && rustc -V
+  #     - name: Run cargo check
+  #       run: |
+  #         cargo check
+  #     - name: Run cargo fmt
+  #       run: |
+  #         cargo fmt --all -- --check
+  #     - name: Run cargo clippy
+  #       run: |
+  #         cargo clippy --all-targets --locked --target ${{ matrix.target }} -- -D clippy::all
+  #       # cargo clippy --all-targets --locked --target ${{ matrix.target }}
+
+  #     - name: Run cargo test
+  #       run: |
+  #         cargo test -vv --all-targets --locked --target ${{ matrix.target }}
