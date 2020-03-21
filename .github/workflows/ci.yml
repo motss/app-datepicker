@@ -22,6 +22,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.target }}
+
+      - name: List versions
+        run: |
+          node -v && npm -v && which npm
+
       # - name: Install global dependencies
       #   run: |
       #     npm i -g npm@latest --quiet
@@ -39,8 +44,9 @@ jobs:
           npm run build:test && npm run build:config
 
       - name: Check build
+        shell: bash
         run: |
-          if [ "$RUNNER_OS" == "Windows"]; then
+          if [ "$RUNNER_OS" == "Windows" ]; then
             pwd && ls -la
           else
             pwd && ls
