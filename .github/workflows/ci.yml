@@ -36,12 +36,11 @@ jobs:
 
       - name: Check build
         run: |
-          pwd && ls -la
-
-      - name: Check build
-        if: ${{ runner.os }} == 'windows-2019'
-        run: |
-          pwd && ls
+          if [ "$RUNNER_OS" == "Windows"]; then
+            pwd && ls -la
+          else
+            pwd && ls
+          fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v1
