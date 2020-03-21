@@ -18,6 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Setup node@${{ target.os }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.target }}
       # - name: Install global dependencies
       #   run: |
       #     npm i -g npm@latest --quiet
@@ -59,16 +63,24 @@ jobs:
         target: [13.x]
 
     steps:
+      - name: Setup node@${{ target.os }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.target }}
+
       - name: Download build artifact
         uses: actions/download-artifact@v1
         with:
           name: build-${{ matrix.os }}-${{ matrix.target }}
+
       - name: List versions
         run: |
           pwd && ls -la && node -v && npm -v && which npm
+
       - name: Install dependencies
         run: |
           npm ci --quiet
+
       - name: Run Test
         run: |
           npm run test:dev
