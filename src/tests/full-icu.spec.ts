@@ -31,14 +31,14 @@ describe('timezones', () => {
     );
     strictEqual(getResolvedLocale(), 'en-US');
 
-    const content = await browser.executeAsync(async () => {
+    const content = await browser.executeAsync(async (done) => {
       const a = document.createElement('app-datepicker');
 
       document.body.appendChild(a);
 
       await a.updateComplete;
 
-      return (
+      done(
         Array.from(
           a.shadowRoot?.querySelectorAll('.full-calendar__day') ?? []
         )[2]?.outerHTML ?? 'nil'
