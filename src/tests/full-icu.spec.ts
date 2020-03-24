@@ -46,6 +46,7 @@ describe('timezones', () => {
         [
           a.locale,
           (a as any)._formatters.fullDateFormat(new Date('2020-03-03')),
+          JSON.stringify(Intl.DateTimeFormat().resolvedOptions(), null, 2),
         ]
         // a.locale,
         // Array.from(
