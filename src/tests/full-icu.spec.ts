@@ -19,7 +19,7 @@ describe('timezones', () => {
     }
   }
 
-  it(`supports full ICU`, () => {
+  it(`supports full ICU`, async () => {
     ok(hasFullICU());
     strictEqual(
       Intl.DateTimeFormat('en-US', {
@@ -30,6 +30,23 @@ describe('timezones', () => {
       'Feb 2, 2020'
     );
     strictEqual(getResolvedLocale(), 'en-US');
+
+    const content = await browser.executeAsync(async () => {
+      const a = document.createElement('app-datepicker');
+
+      document.body.appendChild(a);
+
+      await a.updateComplete;
+
+      return (
+        Array.from(
+          a.shadowRoot?.querySelectorAll('.full-calendar__day') ?? []
+        )[2]?.outerHTML ?? 'nil'
+      );
+    });
+
+    console.debug('1', content);
+    strictEqual(content, '');
   });
 
 });
