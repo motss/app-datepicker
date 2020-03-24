@@ -1,6 +1,6 @@
 import { APP_INDEX_URL } from './constants.js';
 import {
-  ok,
+  ok, strictEqual,
 } from './helpers/typed-assert.js';
 
 describe('timezones', () => {
@@ -20,6 +20,14 @@ describe('timezones', () => {
 
   it(`supports full ICU`, () => {
     ok(hasFullICU());
+    strictEqual(
+      Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }).format(new Date('2020-02-02')),
+      'Feb 2, 2020'
+    );
   });
 
 });
