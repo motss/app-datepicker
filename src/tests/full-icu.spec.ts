@@ -1,7 +1,9 @@
 import { getResolvedLocale } from '../helpers/get-resolved-locale.js';
 import { APP_INDEX_URL } from './constants.js';
 import {
-  ok, strictEqual,
+  deepStrictEqual,
+  ok,
+  strictEqual,
 } from './helpers/typed-assert.js';
 
 describe('timezones', () => {
@@ -39,7 +41,10 @@ describe('timezones', () => {
       await a.updateComplete;
 
       done(
-        (a as any)._formatters.fullDateFormat(new Date('2020-03-03'))
+        [
+          a.locale,
+          (a as any)._formatters.fullDateFormat(new Date('2020-03-03')),
+        ]
         // a.locale,
         // Array.from(
         //   a.shadowRoot?.querySelectorAll('.full-calendar__day') ?? []
@@ -53,7 +58,7 @@ describe('timezones', () => {
       month: 'short',
       day: 'numeric',
     }).format(new Date('2020-03-03')));
-    strictEqual(content, '');
+    deepStrictEqual(content, []);
   });
 
 });
