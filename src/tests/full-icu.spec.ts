@@ -38,7 +38,9 @@ describe('timezones', () => {
 
       document.body.appendChild(a);
 
-      await a.updateComplete;
+      a.locale = 'en-US';
+
+      while (!await a.updateComplete) { /** no-op */ }
 
       done(
         [
