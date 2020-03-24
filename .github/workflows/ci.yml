@@ -25,7 +25,7 @@ jobs:
 
       - name: List versions
         run: |
-          node -v && npm -v && which npm
+          node -v && npm -v && which npm && npx envinfo
 
       # - name: Install global dependencies
       #   run: |

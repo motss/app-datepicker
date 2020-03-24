@@ -42,7 +42,7 @@ jobs:
       - save_cache: *save-cache-dependencies
       - run:
           name: Versions
-          command: node -v && npm version && which npm && pwd
+          command: node -v && npm version && which npm && pwd && npx envinfo
       - run:
           name: Lint
           command: npm run lint
