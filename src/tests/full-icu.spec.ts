@@ -39,13 +39,20 @@ describe('timezones', () => {
       await a.updateComplete;
 
       done(
-        Array.from(
-          a.shadowRoot?.querySelectorAll('.full-calendar__day') ?? []
-        )[2]?.outerHTML ?? 'nil'
+        (a as any)._formatters.fullDateFormat(new Date('2020-03-03'))
+        // a.locale,
+        // Array.from(
+        //   a.shadowRoot?.querySelectorAll('.full-calendar__day') ?? []
+        // )[2]?.outerHTML ?? 'nil'
       );
     });
 
-    console.debug('1', content);
+    console.debug('1', content, Intl.DateTimeFormat('en-US', {
+      timeZone: 'UTC',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date('2020-03-03')));
     strictEqual(content, '');
   });
 
