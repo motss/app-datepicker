@@ -1,3 +1,4 @@
+import { getResolvedLocale } from '../helpers/get-resolved-locale.js';
 import { APP_INDEX_URL } from './constants.js';
 import {
   ok, strictEqual,
@@ -28,6 +29,7 @@ describe('timezones', () => {
       }).format(new Date('2020-02-02')),
       'Feb 2, 2020'
     );
+    strictEqual(getResolvedLocale(), 'en-US');
   });
 
 });
