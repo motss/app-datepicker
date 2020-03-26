@@ -52,6 +52,11 @@ jobs:
         run: |
           pwd && ls -la
 
+      - name: Setup Environment Variables for Sauce Labs
+        run: |
+          ::set-env SAUCE_ACCESS_KEY=${{ secrets.SAUCE_ACCESS_KEY }}
+          ::set-env SAUCE_USERNAME=${{ secrets.SAUCE_USERNAME }}
+
       - name: Run Test
         run: |
           npm run test:sl:dev
