@@ -1,8 +1,16 @@
-name: ci
+name: test-local
 
 on:
-  - push
-  - pull_request
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
 
 jobs:
   build:
@@ -24,12 +32,9 @@ jobs:
           node-version: ${{ matrix.target }}
 
       - name: List versions
+        continue-on-error: true
         run: |
-          node -v && npm -v && which npm
-
-      # - name: Install global dependencies
-      #   run: |
-      #     npm i -g npm@latest --quiet
+          node -v && npm version && which npm && pwd && npx envinfo
 
       - name: Install dependencies
         run: |
@@ -49,7 +54,6 @@ jobs:
           pwd && ls -la
 
       - name: Run Test
-        continue-on-error: true
         run: |
           npm run test:dev
 
