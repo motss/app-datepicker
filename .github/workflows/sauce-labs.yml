@@ -13,28 +13,28 @@ on:
       - '*'
 
 jobs:
-  check_ci:
-    name: ${{ matrix.os }} ${{ matrix.target }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    strategy:
-      matrix:
-        os: [ubuntu-18.04]
-        target: [13.x]
+  # env.SKIP_CI == 'true' is not supported at job level
+  # check_ci:
+  #   name: ${{ matrix.os }} ${{ matrix.target }}
+  #   runs-on: ${{ matrix.os }}
+  #   timeout-minutes: 120
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-18.04]
+  #       target: [13.x]
 
-    steps:
-      - name: Git log
-        run: |
-          echo '::set-env name=SKIP_CI::true'
+  #   steps:
+  #     - name: Git log
+  #       run: |
+  #         echo '::set-env name=SKIP_CI::true'
 
-          if [ -z "$(git describe --exact-match HEAD)" ] && [ -z git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+') ]; then
-            echo '::set-env name=SKIP_CI::false'
-          fi
+  #         if [ -z "$(git describe --exact-match HEAD)" ] && [ -z git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+') ]; then
+  #           echo '::set-env name=SKIP_CI::false'
+  #         fi
 
   test:
-    if: "env.SKIP_CI == 'false' && !contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, 'doc:')"
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, 'doc:')"
     name: ${{ matrix.os }} ${{ matrix.target }}
-    needs: check_ci
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
