@@ -62,6 +62,7 @@ describe('events', () => {
           timer = window.setTimeout(() => yay(['', '', '']), 15e3);
         });
 
+        n.locale = 'en-US';
         n.min = '2000-01-01';
         n.inline = b;
 
@@ -107,6 +108,7 @@ describe('events', () => {
 
         const n: Datepicker = document.createElement(a);
 
+        n.locale = 'en-US';
         n.min = '2000-01-01';
         n.value = '2020-02-20';
 
@@ -163,6 +165,7 @@ describe('events', () => {
     ]: A = await browser.executeAsync(async (a, b, done) => {
       const n: Datepicker = document.createElement(a);
 
+      n.locale = 'en-US';
       n.min = '2000-01-01';
       n.value = '2020-02-02';
 

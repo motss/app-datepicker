@@ -29,6 +29,7 @@ describe('edge cases', () => {
     await browser.executeAsync(async (a, done) => {
       const el: Datepicker = document.createElement(a);
 
+      el.locale = 'en-US';
       el.min = '2000-01-01';
       el.value = '2020-02-02';
 

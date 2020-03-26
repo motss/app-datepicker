@@ -17,6 +17,8 @@ describe('gestures', () => {
 
     document.body.appendChild(el);
 
+    el.locale = 'en-US';
+
     await el.updateComplete;
 
     done();

@@ -22,9 +22,10 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     await browser.executeAsync(async (a, done) => {
       const el: DatepickerDialog = document.createElement(a);
 
-      el.min = '2000-01-01';
-
       document.body.appendChild(el);
+
+      el.locale = 'en-US';
+      el.min = '2000-01-01';
 
       await el.open();
       await el.updateComplete;

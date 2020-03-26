@@ -33,6 +33,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
 
         const n: DatepickerDialog = document.createElement(a);
 
+        n.locale = 'en-US';
         n.min = '2000-01-01';
         n.value = '2020-02-20';
 
@@ -100,6 +101,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
 
       document.body.appendChild(n);
 
+      n.locale = 'en-US';
+
       await n.updateComplete;
 
       const firstUpdatedResult = await firstUpdated;
@@ -130,6 +133,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
       });
 
       document.body.appendChild(n);
+
+      n.locale = 'en-US';
 
       await n.open();
       await n.updateComplete;
@@ -162,6 +167,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
       });
 
       document.body.appendChild(n);
+
+      n.locale = 'en-US';
 
       await n.open();
       await n.updateComplete;

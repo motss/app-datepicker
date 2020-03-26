@@ -39,6 +39,8 @@ describe('a11y', () => {
 
       document.body.appendChild(el);
 
+      el.locale = 'en-US';
+
       await el.updateComplete;
 
       done();
