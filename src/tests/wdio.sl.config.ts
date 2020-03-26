@@ -24,7 +24,7 @@ const sauceLabsAccessKey = process.env.SAUCE_ACCESS_KEY || '';
 
 export const config: WdioConfig = {
   ...baseConfig,
-  maxInstances: 72,
+  // maxInstances: 72,
   services: ['sauce'],
   specs: [],
   region: 'us',
@@ -36,16 +36,16 @@ export const config: WdioConfig = {
     accessKey: sauceLabsAccessKey,
   },
   capabilities: [
-    {
-      ...baseCapability,
-      'goog:chromeOptions': {
-        w3c: true,
-      },
-    },
-    {
-      ...baseCapability,
-      browserName: 'firefox',
-    },
+    // {
+    //   ...baseCapability,
+    //   'goog:chromeOptions': {
+    //     w3c: true,
+    //   },
+    // },
+    // {
+    //   ...baseCapability,
+    //   browserName: 'firefox',
+    // },
     {
       ...baseCapability,
       browserName: 'safari',

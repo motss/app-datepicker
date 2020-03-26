@@ -254,7 +254,6 @@ export class Datepicker extends LitElement {
       width: calc(100% / 7);
       height: 0;
       padding: calc(100% / 7 / 2) 0;
-      line-height: 0;
       outline: none;
       text-align: center;
     }
@@ -300,9 +299,6 @@ export class Datepicker extends LitElement {
       opacity: 0;
       pointer-events: none;
     }
-    .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label).day--focused::after {
-      opacity: 1;
-    }
     .full-calendar__day:not(.day--empty):not(.day--disabled):not(.weekday-label) {
       cursor: pointer;
       pointer-events: auto;
@@ -325,6 +321,7 @@ export class Datepicker extends LitElement {
       width: 90%;
       height: 90%;
       color: currentColor;
+      font-size: 14px;
       pointer-events: none;
       z-index: 1;
     }
@@ -867,11 +864,6 @@ export class Datepicker extends LitElement {
                 calendarRow.map((calendarCol, i) => {
                   const { disabled, fullDate, label, value } = calendarCol;
 
-                  /** Empty day */
-                  if (!value) {
-                    return html`<td class="full-calendar__day day--empty" part="calendar-day"></td>`;
-                  }
-
                   /** Week label, if any */
                   if (!fullDate && value && showWeekNumber && i < 1) {
                     return html`<th
@@ -881,10 +873,15 @@ export class Datepicker extends LitElement {
                       role="rowheader"
                       abbr="${label}"
                       aria-label="${label}"
-                    >${value}</td>`;
+                    >${value}</th>`;
                   }
 
-                  const curTime = +new Date(fullDate!);
+                  /** Empty day */
+                  if (!value || !fullDate) {
+                    return html`<td class="full-calendar__day day--empty" part="calendar-day"></td>`;
+                  }
+
+                  const curTime = +new Date(fullDate);
                   const isCurrentDate = +$focusedDate === curTime;
                   const shouldTab = isMidCalendar && $newFocusedDate.getUTCDate() === Number(value);
 
@@ -1182,7 +1179,7 @@ declare global {
 
   interface HTMLTableCellElement {
     day: string;
-    fullDate: string;
+    fullDate: Date;
   }
   // #endregion HTML element type extensions
 

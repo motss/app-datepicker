@@ -1,4 +1,3 @@
-import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import type {
   Calendar,
   CalendarWeekday,
@@ -7,6 +6,7 @@ import type {
 } from 'nodemod/dist/calendar/calendar_typing.js';
 import { getWeekdays } from 'nodemod/dist/calendar/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { calendar } from 'nodemod/dist/calendar/index.js';
 
 interface MultiCalendars extends NonNullable<Omit<Calendar, 'calendar' | 'key'>> {
   key: string;
