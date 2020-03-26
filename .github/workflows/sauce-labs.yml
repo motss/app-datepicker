@@ -1,4 +1,4 @@
-name: test-sauce-labs
+name: Sauce Labs
 
 on:
   push:

@@ -1,0 +1,76 @@
+name: publish
+
+on:
+  push:
+    branches-ignore:
+      - '*'
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: ${{ matrix.os }} ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        target: [13.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node@${{ matrix.target }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.target }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: List versions
+        run: |
+          node -v && npm -v && which npm
+
+      - name: Install dependencies
+        run: |
+          npm ci --quiet
+
+      - name: Publish to npm (RC)
+        if: contains(github.ref, '-rc') == true
+        run: |
+          npm config list
+          npm publish . --tag=next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npm
+        if: contains(github.ref, '-rc') == false
+        run: |
+          npm config list
+          npm publish .
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # See https://github.com/actions/setup-node/issues/73.
+      # - name: Setup node@${{ matrix.target }}
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: ${{ matrix.target }}
+      #     registry-url: 'https://npm.pkg.github.com/'
+      #     scope: '@motss'
+
+      # - name: Publish to GPR (RC)
+      #   if: success() && contains(github.ref, '-rc') == true
+      #   run: |
+      #     npm config list
+      #     npm publish . --tag=next
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{github.token}}
+
+      # - name: Publish to GPR
+      #   if: success() && contains(github.ref, '-rc') == false
+      #   run: |
+      #     npm config list
+      #     npm publish .
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{github.token}}
