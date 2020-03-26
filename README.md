@@ -20,7 +20,8 @@
 [![Packagephobia][packagephobia-badge]][packagephobia-url]
 [![Bundlephobia][bundlephobia-badge]][bundlephobia-url]
 
-[![CircleCI][circleci-badge]][circleci-url]
+[![ci][ga-ci-badge]][ga-ci-url]
+[![Sauce Labs][ga-sl-badge]][ga-sl-url]
 [![Dependency Status][daviddm-badge]][daviddm-url]
 
 [![codebeat badge][codebeat-badge]][codebeat-url]
@@ -275,7 +276,8 @@ Meantime, feel free to check the older version out at:
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40next
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
 
-[circleci-badge]: https://flat.badgen.net/circleci/github/motss/app-datepicker?icon=circleci
+[ga-ci-badge]: https://github.com/motss/app-datepicker/workflows/ci/badge.svg
+[ga-sl-badge]: https://github.com/motss/app-datepicker/workflows/Sauce%20Labs/badge.svg
 [daviddm-badge]: https://flat.badgen.net/david/dep/motss/app-datepicker
 
 [codebeat-badge]: https://codebeat.co/badges/3a212108-43cd-4a1f-ab2c-fe890ad734b6
@@ -294,7 +296,8 @@ Meantime, feel free to check the older version out at:
 [packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[circleci-url]: https://circleci.com/gh/motss/app-datepicker/tree/master?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[ga-ci-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3Aci
+[ga-sl-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3A%22Sauce+Labs%22
 [daviddm-url]: https://david-dm.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
