@@ -45,8 +45,8 @@
     "build:config": "tsc -p tsconfig.wdio.json",
     "build:prod": "tsc -p tsconfig.prod.json",
     "build:test": "tsc -p tsconfig.test.json",
-    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
+    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
@@ -77,9 +77,9 @@
     "@types/mocha": "^7.0.2",
     "@types/pretty": "^2.0.0",
     "@types/request": "^2.48.4",
-    "@wdio/cli": "5.22.3",
-    "@wdio/local-runner": "5.22.3",
-    "@wdio/mocha-framework": "5.16.10",
+    "@wdio/cli": "^5.22.4",
+    "@wdio/local-runner": "^5.22.4",
+    "@wdio/mocha-framework": "^5.18.7",
     "@wdio/sauce-service": "^5.22.1",
     "@wdio/selenium-standalone-service": "^5.16.10",
     "@wdio/spec-reporter": "^5.22.4",
@@ -93,7 +93,7 @@
     "shx": "^0.3.2",
     "tslint": "^6.1.0",
     "typescript": "^3.8.3",
-    "webdriverio": "5.22.3"
+    "webdriverio": "^5.22.4"
   },
   "engines": {
     "node": ">= 10.18.1",
