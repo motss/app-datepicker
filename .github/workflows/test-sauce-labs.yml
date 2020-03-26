@@ -1,0 +1,58 @@
+name: test-sauce-labs
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+
+jobs:
+  build:
+    name: ${{ matrix.os }} ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        os: [ubuntu-18.04]
+        target: [13.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup node@${{ matrix.target }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.target }}
+
+      - name: List versions
+        run: |
+          node -v && npm version && which npm && pwd && npx envinfo
+
+      - name: Install dependencies
+        run: |
+          npm ci --quiet
+
+      - name: Lint
+        run: |
+          npm run lint
+
+      - name: Build
+        run: |
+          npm run build:test && npm run build:config
+
+      - name: Check build
+        shell: bash
+        run: |
+          pwd && ls -la
+
+      - name: Run Test
+        run: |
+          npm run test:sl:dev
+
