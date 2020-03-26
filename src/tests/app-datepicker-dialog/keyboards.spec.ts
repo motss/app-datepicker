@@ -47,6 +47,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::keyboards`, () => {
     await browser.executeAsync(async (a, done) => {
       const el: DatepickerDialog = document.createElement(a);
 
+      el.locale = 'en-US';
       // Reset `min` and `value` here before running tests
       el.min = '2000-01-01';
       el.value = '2020-02-20';

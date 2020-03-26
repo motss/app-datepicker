@@ -39,6 +39,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::a11y`, () => {
 
       document.body.appendChild(el);
 
+      el.locale = 'en-US';
+
       await el.updateComplete;
 
       done();

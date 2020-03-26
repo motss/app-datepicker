@@ -23,6 +23,7 @@ describe('attributes', () => {
     await browser.executeAsync(async (a, done) => {
       const el: Datepicker = document.createElement(a);
 
+      el.locale = 'en-US';
       el.min = '2000-01-01';
 
       document.body.appendChild(el);

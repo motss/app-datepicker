@@ -22,6 +22,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
 
         document.body.appendChild(el);
 
+        el.locale = 'en-US';
+
         await el.updateComplete;
 
         done();
