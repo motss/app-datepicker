@@ -228,16 +228,6 @@ export class Datepicker extends LitElement {
       padding: 0 16px 16px;
     }
 
-    .calendar-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      height: 56px;
-      font-weight: 500;
-      text-align: center;
-    }
-
     .calendar-table {
       -moz-user-select: none;
       -webkit-user-select: none;
@@ -245,6 +235,20 @@ export class Datepicker extends LitElement {
 
       border-collapse: collapse;
       border-spacing: 0;
+      text-align: center;
+    }
+
+    .calendar-table > caption {
+      height: 56px;
+    }
+
+    .calendar-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 100%;
+      font-weight: 500;
       text-align: center;
     }
 
