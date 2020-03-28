@@ -225,6 +225,7 @@ export class Datepicker extends LitElement {
     }
 
     .calendar-container {
+      position: relative;
       padding: 0 16px 16px;
     }
 
@@ -238,16 +239,12 @@ export class Datepicker extends LitElement {
       text-align: center;
     }
 
-    .calendar-table > caption {
-      height: 56px;
-    }
-
     .calendar-label {
       display: flex;
       align-items: center;
       justify-content: center;
 
-      height: 100%;
+      height: 56px;
       font-weight: 500;
       text-align: center;
     }
@@ -384,6 +381,20 @@ export class Datepicker extends LitElement {
       }
       .year-list-view__list-item:hover::after {
         opacity: .05;
+      }
+    }
+
+    @supports (background: -webkit-canvas(squares)) {
+      .calendar-container {
+        padding: 56px 16px 16px;
+      }
+
+      table > caption {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate3d(-50%, 0, 0);
+        will-change: transform;
       }
     }
     `,
