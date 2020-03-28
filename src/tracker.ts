@@ -1,3 +1,5 @@
+import { supportsPassiveEventListener } from '@material/mwc-base/utils.js';
+
 type PointerType = MouseEvent | TouchEvent | PointerEvent | TouchInit;
 interface ResolvedPointer {
   x: PointerEvent['pageX'];
@@ -16,25 +18,6 @@ export interface TrackerHandlers {
   move(startPointer: ResolvedPointer, oldPointer: ResolvedPointer, ev: PointerType): void;
   up(startPointer: ResolvedPointer, oldPointer: ResolvedPointer, ev: PointerType): void;
 }
-
-const supportsPassive = (() => {
-  let supportsPassiveFlag = false;
-
-  try {
-    const noop = () => void 0;
-    const opts = Object.defineProperty({}, 'passive', {
-      get() {
-        supportsPassiveFlag = true;
-      },
-    });
-    window.addEventListener('testPassive' as any, noop, opts);
-    window.removeEventListener('testPassive' as any, noop, opts);
-
-    return supportsPassiveFlag;
-  } catch (_) {
-    return supportsPassiveFlag;
-  }
-})();
 
 function toPointer(ev: PointerType): ResolvedPointer {
   const { clientX, clientY, pageX, pageY } = ev as PointerEvent;
@@ -75,7 +58,7 @@ function addPassiveEventListener(
   node.addEventListener(
     event,
     callback as EventListenerOrEventListenerObject,
-    supportsPassive ? { passive: true } : false
+    supportsPassiveEventListener ? { passive: true } : false
   );
 }
 
