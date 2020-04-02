@@ -106,6 +106,12 @@ describe('initial render', () => {
         calendarDay,
       ]: A = await browser.executeAsync(async (a, b, done) => {
         const n = document.body.querySelector<Datepicker>(a)!;
+
+        // Reset focused date
+        n.value = '';
+
+        await n.updateComplete;
+
         const n2 = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
 
         /**
@@ -124,13 +130,13 @@ describe('initial render', () => {
           formattedDate,
           now.getDate(),
         ] as A);
-      }, DATEPICKER_NAME, ['.day--today']);
+      }, DATEPICKER_NAME, toSelector('.day--today'));
 
       strictEqual(cleanHtml(todayDateContent, {
         showToday: true,
         showFocused: false,
       }), prettyHtml(`
-      <td class="full-calendar__day day--today" aria-disabled="false" aria-label="${dateLabel}" aria-selected="false">
+      <td class="full-calendar__day day--today" aria-disabled="false" aria-label="${dateLabel}" aria-selected="true">
         <div class="calendar-day">${calendarDay}</div>
       </td>
       `));
