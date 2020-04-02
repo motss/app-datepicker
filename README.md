@@ -30,8 +30,6 @@
 
 > A different way of `datepicker`-ing on the web.
 >
-> 🛠 While it is still in RC release, feel free to try it out.
-> 
 > 💯 Also, featured in [awesome-lit-html].
 
 This marks another completion of an important milestone of `app-datepicker` with all the love from the [Web Components community][web-components-community-url] in making this element great and wonderful. As Web Components getting more and more traction and better at providing a web standard way of creating shareable components, it plays an important role in the JavaScript community as many developers depend on a plethora of development tools written in JavaScript for the web to create a better developer experience when developing a library, a component, or even a large scalable application.
@@ -42,7 +40,7 @@ Today, `app-datepicker` has been completely rewritten to adapt to the best of bo
 
 The following are the list of tools used that makes it shine:
 
-  1. [TypeScript][typescript-url]
+  1. [TypeScript]
   2. [lit-element][lit-element-url]
 
 ## Table of contents <!-- omit in toc -->
@@ -59,15 +57,16 @@ The following are the list of tools used that makes it shine:
 
 ## Pre-requisite
 
-- [ES2019] (_The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers._)
+- [ES2019] _(The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers.)_
 - [lit-element][lit-element-url] >= 2.2.1
+- [OPTIONAL] [TypeScript] >= 3.8.3 _(TypeScript users only)_
 
 ## Installation
 
 - NPM
 
   ```sh
-  $ npm i app-datepicker@next
+  $ npm i app-datepicker
   ```
 
 - Alternatively, it can be downloaded from any of the following awesome CDNs:
@@ -91,17 +90,17 @@ The following snippet shows a simple script used in the demo to load polyfills v
   if (null == Array.prototype.find) {
     Object.defineProperty(Array.prototype, 'find', {
       value: function arrayFind(cb) {
-        const filtered = this.filter(cb);
+        var filtered = this.filter(cb);
         return !filtered.length ? void 0 : filtered[0];
-      }
+      },
     });
   }
 
   if (!window.Intl) {
-    const wa = document.createElement('script');
+    var wa = document.createElement('script');
     /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
     wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
-    wa.onload = () => console.info('🌐 Intl polyfill loaded');
+    wa.onload = function onLoad() { console.info('🌐 Intl polyfill loaded'); };
     wa.onerror = console.error;
     document.head.appendChild(wa);
   }
@@ -183,7 +182,7 @@ Tested on the following browsers:
 
 For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-datepicker` inside [mwc-dialog].
 
-Feasible source code can be viewed [here][mwc-date-picker-url].
+<!-- Feasible source code can be viewed [here][mwc-date-picker-url]. -->
 
 ```ts
 // Simplified code snippet
@@ -230,16 +229,13 @@ Meantime, feel free to check the older version out at:
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 [Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker/app-datepicker.html
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[node-js-url]: https://nodejs.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[node-releases-url]: https://nodejs.org/en/download/releases?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[npm-url]: https://www.npmjs.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[typescript-url]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[unpkg-url]: https://unpkg.com/app-datepicker@next/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[TypeScript]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[unpkg-url]: https://unpkg.com/app-datepicker@latest/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
 [wre-url]: https://developers.google.com/search/docs/guides/rendering
@@ -266,15 +262,15 @@ Meantime, feel free to check the older version out at:
 [tippin-me-badge]: https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@igarshmyb/F0918E
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 
-[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next?icon=npm
+[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/latest?icon=npm
 [lit-element-version-badge]: https://flat.badgen.net/npm/v/lit-element/latest?icon=npm&label=lit-element
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
 [downloads-badge]: https://flat.badgen.net/npm/dm/app-datepicker
 [total-downloads-badge]: https://flat.badgen.net/npm/dt/app-datepicker?label=total%20downloads
-[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40next
-[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
+[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40latest
+[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@latest
 
 [ga-ci-badge]: https://github.com/motss/app-datepicker/workflows/ci/badge.svg
 [ga-sl-badge]: https://github.com/motss/app-datepicker/workflows/Sauce%20Labs/badge.svg
@@ -288,13 +284,13 @@ Meantime, feel free to check the older version out at:
 [tippin-me-url]: https://tippin.me/@igarshmyb
 [follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[version-url]: https://www.npmjs.com/package/app-datepicker/v/next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[version-url]: https://www.npmjs.com/package/app-datepicker/v/latest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [node-version-url]: https://nodejs.org/en/download?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40latest&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [ga-ci-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3Aci
 [ga-sl-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3A%22Sauce+Labs%22
