@@ -49,7 +49,7 @@ The following are the list of tools used that makes it shine:
 - [Installation](#installation)
 - [How to use](#how-to-use)
 - [Browser compatibility](#browser-compatibility)
-- [Works well with `mwc-dialog>`](#works-well-with-mwc-dialog)
+- [Q&A](#qa)
 - [API references](#api-references)
 - [Demo](#demo)
 - [Older versions](#older-versions)
@@ -178,28 +178,46 @@ Tested on the following browsers:
 | Safari 10.1 | Mac OS 10.12 |
 | Safari 9 | Mac OS X 10.11 | -->
 
-## Works well with `mwc-dialog>`
+## Q&A
 
-For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-datepicker` inside [mwc-dialog].
+1. Does it work well with [material-components-web-components]?
 
-<!-- Feasible source code can be viewed [here][mwc-date-picker-url]. -->
+    For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-datepicker` inside [mwc-dialog].
 
-```ts
-// Simplified code snippet
+    <!-- Feasible source code can be viewed [here][mwc-date-picker-url]. -->
 
-class MWCDatePicker extends LitElement {
-  render() {
-    return html`
-    <mwc-dialog>
-      <app-datepicker></app-datepicker>
+    ```ts
+    // Simplified code snippet
 
-      <mwc-button slot="secondaryAction" dialogAction="cancel">cancel</mwc-button>
-      <mwc-button slot="primaryAction" dialogAction="set">set</mwc-button>
-    </mwc-dialog>
-    `;
-  }
-}
-```
+    class MWCDatePicker extends LitElement {
+      render() {
+        return html`
+        <mwc-dialog>
+          <app-datepicker></app-datepicker>
+
+          <mwc-button slot="secondaryAction" dialogAction="cancel">cancel</mwc-button>
+          <mwc-button slot="primaryAction" dialogAction="set">set</mwc-button>
+        </mwc-dialog>
+        `;
+      }
+    }
+    ```
+
+2. How can I hide the focus outline?
+
+    For a11y reason, focus outline is shown when a calendar day is being focused. However, this can be modified via [CSS Shadow Parts].
+
+    ```css
+    /**
+     * Hide focus ring.
+     * 
+     * NOTE: It is recommended to come up with alternative styling for focus state
+     * instead of just hiding the focus ring.
+     */
+    app-datepicker::part(calendar-day):focus {
+      outline: none;
+    }
+    ```
 
 ## API references
 
@@ -245,6 +263,7 @@ Meantime, feel free to check the older version out at:
 [material-components-web-components]: https://github.com/material-components/material-components-web-components
 [mwc-dialog]: https://github.com/material-components/material-components-web-components/tree/master/packages/dialog
 [mwc-date-picker-url]: https://motss-app.web.app/demo/app-datepicker/mwc-date-picker.js
+[CSS Shadow Parts]: https://developer.mozilla.org/en-US/docs/Web/CSS/::part
 
 <!-- Browsers logo -->
 [ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
