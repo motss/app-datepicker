@@ -245,7 +245,7 @@ Meantime, feel free to check the older version out at:
 [app-datepicker-api-reference-url]: /api-references.md#appdatepicker
 [app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-[Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker/app-datepicker.html
+[Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker.html
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
