@@ -14,8 +14,8 @@ jobs:
     timeout-minutes: 120
     strategy:
       matrix:
-        os: [ubuntu-18.04]
-        target: [13.x]
+        os: [ubuntu-latest]
+        target: [14.x]
 
     steps:
       - name: Checkout

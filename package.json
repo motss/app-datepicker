@@ -25,7 +25,6 @@
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
-  "type": "module",
   "exports": {
     ".": "./dist/app-datepicker.js",
     "./helpers/*": "./dist/helpers/*.js",
