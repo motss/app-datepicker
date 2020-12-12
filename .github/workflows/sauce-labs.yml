@@ -37,39 +37,39 @@ jobs:
           fi
 
       - name: Setup node@${{ matrix.target }}
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.target }}
 
       - name: List versions
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         run: |
           node -v && npm version && which npm && pwd && npx envinfo
 
       - name: Install dependencies
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         run: |
           npm ci --quiet
 
       - name: Lint
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         run: |
           npm run lint
 
       - name: Build
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         run: |
           npm run build:test && npm run build:config
 
       - name: Check build
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         shell: bash
         run: |
           pwd && ls -la
 
       - name: Run Test
-        if: "$CI_SKIP == 'false'"
+        if: "env.CI_SKIP == 'false'"
         env:
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
