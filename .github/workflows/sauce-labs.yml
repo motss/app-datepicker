@@ -33,43 +33,43 @@ jobs:
       - name: Git log
         run: |
           if [ -n "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]; then
-            echo '::set-env name=CI_SKIP::true'
+            echo "CI_SKIP=true" >> $GITHUB_ENV
           fi
 
       - name: Setup node@${{ matrix.target }}
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.target }}
 
       - name: List versions
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         run: |
           node -v && npm version && which npm && pwd && npx envinfo
 
       - name: Install dependencies
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         run: |
           npm ci --quiet
 
       - name: Lint
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         run: |
           npm run lint
 
       - name: Build
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         run: |
           npm run build:test && npm run build:config
 
       - name: Check build
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         shell: bash
         run: |
           pwd && ls -la
 
       - name: Run Test
-        if: "env.CI_SKIP == 'false'"
+        if: "$CI_SKIP == 'false'"
         env:
           SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
           SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
