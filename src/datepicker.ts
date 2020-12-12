@@ -191,6 +191,10 @@ export class Datepicker extends LitElement {
       /* outline: none; */
     }
 
+    [dir="rtl"].calendars-container, .calendars-container[dir="rtl"] {
+      left: calc(100%);
+    }
+
     .year-list-view__full-list {
       max-height: calc(48px * 7);
       overflow-y: auto;
