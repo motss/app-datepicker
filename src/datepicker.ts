@@ -669,9 +669,15 @@ export class Datepicker extends LitElement {
               if ($transitioning || !$down) return;
 
               const dx = this._dx;
-              const hasMin =
+              let hasMin =
                 (dx < 0 && hasClass(calendarsContainer, 'has-max-date')) ||
                 (dx > 0 && hasClass(calendarsContainer, 'has-min-date'));
+
+              if (this.dir && this.dir === 'rtl') {
+                hasMin =
+                (dx < 0 && hasClass(calendarsContainer, 'has-min-date')) ||
+                (dx > 0 && hasClass(calendarsContainer, 'has-max-date'));
+              }
 
               if (!hasMin && Math.abs(dx) > 0 && $down) {
                 $move = true;
