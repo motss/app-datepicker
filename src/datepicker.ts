@@ -72,6 +72,9 @@ export class Datepicker extends LitElement {
       contain: content;
       overflow: hidden;
     }
+    :host([dir="rtl"]) .calendars-container {
+      left: calc(100%);
+    }
     :host([landscape]) {
       display: flex;
 
@@ -480,6 +483,9 @@ export class Datepicker extends LitElement {
 
   @property({ type: String })
   public locale: string = getResolvedLocale();
+
+  @property({ type: String })
+  public dir: string = 'ltr';
 
   @property({ type: String })
   public disabledDays: string = '';
