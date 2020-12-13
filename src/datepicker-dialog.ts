@@ -147,6 +147,9 @@ export class DatepickerDialog extends LitElement {
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
+  @property({ type: String, reflect: true })
+  public dir: string = 'ltr';
+
   @property({ type: String })
   public disabledDays: string = '';
 
@@ -300,6 +303,7 @@ export class DatepickerDialog extends LitElement {
       .disabledDates="${this.disabledDates}"
       .landscape="${this.landscape}"
       .locale="${this.locale}"
+      .dir="${this.dir}"
       .startView="${this.startView}"
       .value="${this.value}"
       .weekLabel="${this.weekLabel}"

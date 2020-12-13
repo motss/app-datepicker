@@ -481,7 +481,7 @@ export class Datepicker extends LitElement {
   @property({ type: String })
   public locale: string = getResolvedLocale();
 
-  @property({ type: String })
+  @property({ type: String, reflect: true })
   public dir: string = 'ltr';
 
   @property({ type: String })
