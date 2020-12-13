@@ -19,7 +19,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
-import { iconChevronLeft, iconChevronRight } from './app-datepicker-icons.js';
+import { iconChevronLeft as iconChevronLeftBase, iconChevronRight as iconChevronRightBase } from './app-datepicker-icons.js';
 import { datepickerVariables, resetButton } from './common-styles.js';
 import { ALL_NAV_KEYS_SET } from './constants.js';
 import type {
@@ -817,6 +817,14 @@ export class Datepicker extends LitElement {
     const $selectedDate = this._selectedDate;
     const $max = this._max;
     const $min = this._min;
+
+    let iconChevronLeft = iconChevronLeftBase;
+    let iconChevronRight = iconChevronRightBase;
+
+    if (this.dir && this.dir === 'rtl') {
+      iconChevronLeft = iconChevronRightBase;
+      iconChevronRight = iconChevronLeftBase;
+    }
 
     const { calendars, disabledDaysSet, disabledDatesSet, weekdays } = getMultiCalendars({
       dayFormat,
