@@ -707,7 +707,11 @@ export class Datepicker extends LitElement {
                 });
 
                 if (didPassThreshold) {
-                  this._updateMonth(dx < 0 ? 'next' : 'previous').handleEvent();
+                  if (this.dir && this.dir === 'rtl') {
+                    this._updateMonth(dx > 0 ? 'next' : 'previous').handleEvent();
+                  } else {
+                    this._updateMonth(dx < 0 ? 'next' : 'previous').handleEvent();
+                  }
                 }
 
                 $down = $move = $transitioning = false;
