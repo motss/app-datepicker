@@ -145,7 +145,7 @@ export class Datepicker extends LitElement {
     .calendar-view__month-selector {
       display: flex;
       align-items: center;
-
+      justify-content: space-between;
       position: absolute;
       top: 0;
       left: 0;
@@ -157,9 +157,6 @@ export class Datepicker extends LitElement {
     .month-selector-container {
       max-height: 56px;
       height: 100%;
-    }
-    .month-selector-container + .month-selector-container {
-      margin: 0 0 0 auto;
     }
 
     .btn__month-selector {
@@ -957,7 +954,7 @@ export class Datepicker extends LitElement {
     return html`
     <div class="datepicker-body__calendar-view" part="calendar-view">
       <div class="calendar-view__month-selector" part="month-selectors">
-        <div class="month-selector-container">${hasMinDate ? null : html`
+        <div class="month-selector-container 1st">${hasMinDate ? null : html`
           <button
             class="btn__month-selector"
             part="month-selector"
@@ -966,7 +963,7 @@ export class Datepicker extends LitElement {
           >${iconChevronLeft}</button>
         `}</div>
 
-        <div class="month-selector-container">${hasMaxDate ? null : html`
+        <div class="month-selector-container 2nd">${hasMaxDate ? null : html`
           <button
             class="btn__month-selector"
             part="month-selector"
