@@ -27,7 +27,7 @@
   },
   "exports": {
     ".": "./dist/app-datepicker.js",
-    "./helpers/*": "./dist/helpers/*.js",
+    "./dist/*": "./dist/*",
     "./app-datepicker": "./dist/app-datepicker.js",
     "./app-datepicker-dialog": "./dist/app-datepicker-dialog.js",
     "./datepicker": "./dist/datepicker.js",
