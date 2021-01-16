@@ -4,6 +4,7 @@ export interface SanitizeTextOptions {
   showRole?: boolean;
   showTabindex?: boolean;
   showToday?: boolean;
+  showType?: boolean;
 }
 
 export function sanitizeText(content: string, options?: SanitizeTextOptions): string {
@@ -13,6 +14,7 @@ export function sanitizeText(content: string, options?: SanitizeTextOptions): st
     showRole,
     showTabindex,
     showToday,
+    showType,
   } = options ?? {};
 
   let content2 = content;
@@ -26,15 +28,20 @@ export function sanitizeText(content: string, options?: SanitizeTextOptions): st
   }
 
   if (!(showRole ?? false)) {
-    content2 = content2.replace(/(\s?role=".+?"|role=".+?"\s?)/gi, ''); // role attributes
+    content2 = content2.replace(/(\s?role=".+?"|role=".+?"\s?)/gi, ''); // role attribute
   }
 
   if (!(showTabindex ?? false)) {
-    content2 = content2.replace(/(\s?tabindex=".+?"|tabindex=".+?"\s?)/gi, ''); // role attributes
+    // tabindex attribute
+    content2 = content2.replace(/(\s?tabindex=".+?"|tabindex=".+?"\s?)/gi, '');
   }
 
   if (!(showToday ?? false)) {
     content2 = content2.replace(/(\s?day--today|day--today\s?)/gi, ''); // .day--today class
+  }
+
+  if (!(showType ?? false)) {
+    content2 = content2.replace(/(\s?type=".+?"|type=".+?"\s?)/gi, ''); // type attribute
   }
 
   return content2

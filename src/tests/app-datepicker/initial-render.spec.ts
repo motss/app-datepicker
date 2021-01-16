@@ -226,7 +226,7 @@ describe('initial render', () => {
       }, DATEPICKER_NAME, '.year-list-view__list-item.year--selected');
 
       strictEqual(cleanHtml(focusedYearContent), prettyHtml`
-      <button class="year-list-view__list-item year--selected" type="button">2020</button>
+      <button class="year-list-view__list-item year--selected">2020</button>
       `);
     });
 
