@@ -755,6 +755,7 @@ export class Datepicker extends LitElement {
 
     return html`
     <button
+      type="button"
       class="${classMap({ 'btn__year-selector': true, selected: !isCalendarView })}"
       part="year-selector"
       data-view="${'yearList' as StartView}"
@@ -762,6 +763,7 @@ export class Datepicker extends LitElement {
 
     <div class="datepicker-toolbar" part="toolbar">
       <button
+        type="button"
         class="${classMap({ 'btn__calendar-selector': true, selected: isCalendarView })}"
         part="calendar-selector"
         data-view="${'calendar' as StartView}"
@@ -779,6 +781,7 @@ export class Datepicker extends LitElement {
       <div class="year-list-view__full-list" part="year-list" @click="${this._updateYear}">
       ${this._yearList.map(n =>
       html`<button
+        type="button"
         class="${classMap({
           'year-list-view__list-item': true,
           'year--selected': focusedDateFy === n,
@@ -941,6 +944,7 @@ export class Datepicker extends LitElement {
       <div class="calendar-view__month-selector" part="month-selectors">
         <div class="month-selector-container">${hasMinDate ? null : html`
           <button
+            type="button"
             class="btn__month-selector"
             part="month-selector"
             aria-label="Previous month"
@@ -950,6 +954,7 @@ export class Datepicker extends LitElement {
 
         <div class="month-selector-container">${hasMaxDate ? null : html`
           <button
+            type="button"
             class="btn__month-selector"
             part="month-selector"
             aria-label="Next month"

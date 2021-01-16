@@ -533,7 +533,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     allStrictEqual([attr, prop], expectedNoFocusTap);
     strictEqual(
       cleanHtml(activeElementContent),
-      prettyHtml`<button class="btn__year-selector" data-view="yearList">2020</button>`
+      prettyHtml`<button type="button" class="btn__year-selector" data-view="yearList">2020</button>`
     );
   });
 

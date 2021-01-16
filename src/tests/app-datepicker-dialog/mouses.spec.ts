@@ -196,7 +196,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::mouses`, () => {
     strictEqual(prop2, '2022-02-20');
 
     strictEqual(cleanHtml(yearSelectorButtonContent), prettyHtml`
-    <button class="btn__year-selector" data-view="yearList">2022</button>
+    <button type="button" class="btn__year-selector" data-view="yearList">2022</button>
     `);
     strictEqual(cleanHtml(calendarLabelContent), prettyHtml`
     <div class="calendar-label">February 2022</div>
