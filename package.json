@@ -81,7 +81,7 @@
     "tslib": "^2.0.3"
   },
   "devDependencies": {
-    "@reallyland/tsconfig": "^2.0.0",
+    "@reallyland/tsconfig": "^3.0.2",
     "@reallyland/tslint-config": "^1.1.1",
     "@skypack/package-check": "^0.2.2",
     "@types/mocha": "^7.0.2",
