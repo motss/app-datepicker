@@ -22,8 +22,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-18.04]
-        target: [13.x]
+        os: [macos-latest, ubuntu-latest]
+        target: [14.x]
     timeout-minutes: 120
 
     steps:
@@ -33,7 +33,7 @@ jobs:
       - name: Git log
         run: |
           if [ -n "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]; then
-            echo '::set-env name=CI_SKIP::true'
+            echo "CI_SKIP=true" >> $GITHUB_ENV
           fi
 
       - name: Setup node@${{ matrix.target }}

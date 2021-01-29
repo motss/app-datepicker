@@ -1,6 +1,6 @@
 {
   "name": "app-datepicker",
-  "version": "4.3.0",
+  "version": "4.5.1",
   "description": "A custom datepicker element based on Google's Material Design built from scratch with lit-element",
   "keywords": [
     "cal",
@@ -25,9 +25,18 @@
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
-  "main": "dist/app-datepicker.js",
-  "module": "dist/app-datepicker.js",
-  "typings": "dist/app-datepicker.d.ts",
+  "exports": {
+    ".": "./dist/app-datepicker.js",
+    "./dist/*": "./dist/*",
+    "./app-datepicker": "./dist/app-datepicker.js",
+    "./app-datepicker-dialog": "./dist/app-datepicker-dialog.js",
+    "./datepicker": "./dist/datepicker.js",
+    "./datepicker-dialog": "./dist/datepicker-dialog.js",
+    "./typings": "./dist/custom_typings.d.ts"
+  },
+  "main": "./dist/app-datepicker.js",
+  "module": "./dist/app-datepicker.js",
+  "typings": "./dist/app-datepicker.d.ts",
   "files": [
     "dist/*.*js.map",
     "dist/*.*js",
@@ -44,8 +53,9 @@
     "build:config": "tsc -p tsconfig.wdio.json",
     "build:prod": "tsc -p tsconfig.prod.json",
     "build:test": "tsc -p tsconfig.test.json",
-    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
+    "check": "package-check",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
+    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
     "prepare": "tsc -p tsconfig.prod.json",
     "prepublishOnly": "npm run lint && npm run build:prod",
@@ -61,19 +71,20 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && tsc --noEmit"
+      "pre-commit": "npm run check && npm run lint && tsc --noEmit"
     }
   },
   "dependencies": {
-    "@material/mwc-button": "^0.19.1",
+    "@material/mwc-button": "^0.20.0",
     "lit-element": "^2.4.0",
     "lit-html": "^1.3.0",
-    "nodemod": "^2.6.1",
-    "tslib": "^2.0.2"
+    "nodemod": "^2.7.2",
+    "tslib": "^2.0.3"
   },
   "devDependencies": {
-    "@reallyland/tsconfig": "^2.0.0",
+    "@reallyland/tsconfig": "^3.0.2",
     "@reallyland/tslint-config": "^1.1.1",
+    "@skypack/package-check": "^0.2.2",
     "@types/mocha": "^7.0.2",
     "@types/pretty": "^2.0.0",
     "@types/request": "^2.48.5",
@@ -85,7 +96,7 @@
     "@wdio/spec-reporter": "^5.23.0",
     "axe-core": "^4.0.2",
     "env-cmd": "^10.1.0",
-    "es-dev-server": "^1.57.7",
+    "es-dev-server": "^2.0.2",
     "husky": "^4.3.0",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",

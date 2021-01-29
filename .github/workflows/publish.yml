@@ -14,8 +14,8 @@ jobs:
     timeout-minutes: 120
     strategy:
       matrix:
-        os: [ubuntu-18.04]
-        target: [13.x]
+        os: [ubuntu-latest]
+        target: [14.x]
 
     steps:
       - name: Checkout
@@ -35,8 +35,8 @@ jobs:
         run: |
           npm ci --quiet
 
-      - name: Publish to npm (RC)
-        if: contains(github.ref, '-rc') == true
+      - name: Publish to npm (Prerelease)
+        if: contains(github.ref, '-') == true
         run: |
           npm config list
           npm publish . --tag=next
@@ -44,7 +44,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to npm
-        if: contains(github.ref, '-rc') == false
+        if: contains(github.ref, '-') == false
         run: |
           npm config list
           npm publish .
@@ -59,16 +59,16 @@ jobs:
       #     registry-url: 'https://npm.pkg.github.com/'
       #     scope: '@motss'
 
-      # - name: Publish to GPR (RC)
-      #   if: success() && contains(github.ref, '-rc') == true
+      # - name: Publish to GPR (Prerelease)
+      #   if: success() && contains(github.ref, '-') == true
       #   run: |
       #     npm config list
       #     npm publish . --tag=next
       #   env:
       #     NODE_AUTH_TOKEN: ${{github.token}}
 
-      # - name: Publish to GPR
-      #   if: success() && contains(github.ref, '-rc') == false
+      # - name: Publish to GPR (Prerelease)
+      #   if: success() && contains(github.ref, '-') == false
       #   run: |
       #     npm config list
       #     npm publish .

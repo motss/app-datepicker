@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>app-datepicker</title>
-    <script type="module">
-      import "./dist/app-datepicker.js";
-      import "./dist/app-datepicker-dialog.js";
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>app-datepicker</title>
+  <script type="module">
+    import './dist/app-datepicker.js';
+    import './dist/app-datepicker-dialog.js';
 
-      function onLoad() {
-        function onClick() {
-          const datepickerDialog = document.body.querySelector(
-            ".datepicker-dialog"
-          );
+    function onLoad() {
+      function onClick() {
+        const datepickerDialog = document.body.querySelector('.datepicker-dialog');
 
-          if (datepickerDialog == null) return;
+        if (datepickerDialog == null) return;
 
-          datepickerDialog.open();
-        }
-
-        const button = document.body.querySelector(".open-btn");
-
-        button.addEventListener("click", onClick);
+        datepickerDialog.open();
       }
 
-      window.onload = onLoad();
-    </script>
-  </head>
-  <body>
-    <app-datepicker></app-datepicker>
+      const button = document.body.querySelector('.open-btn');
 
-    <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog>
-    <button class="open-btn">Open datepicker</button>
-  </body>
+      button.addEventListener('click', onClick);
+    }
+
+    window.onload = onLoad();
+  </script>
+
+</head>
+<body>
+  <app-datepicker></app-datepicker>
+
+  <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog>
+  <button class="open-btn" type="button">Open datepicker</button>
+</body>
 </html>
