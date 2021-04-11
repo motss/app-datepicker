@@ -4,7 +4,12 @@ export interface DatepickerDialogClosed extends Pick<DatepickerDialog, 'value'> 
 export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpdated;
 
 import '@material/mwc-button/mwc-button.js';
-import { css, html, LitElement, property, query } from 'lit-element';
+import {
+  css,
+  html,
+  LitElement,
+} from 'lit';
+import { property, query } from 'lit/decorators.js';
 
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { datepickerVariables } from './common-styles.js';
@@ -276,13 +281,10 @@ export class DatepickerDialog extends LitElement {
     });
   }
 
-  // tslint:disable-next-line: function-name
-  protected _getUpdateComplete() {
-    const datepicker = this._datepicker;
+  protected async getUpdateComplete(): Promise<boolean> {
+    await this._datepicker?.updateComplete;
 
-    return (
-      datepicker ? datepicker.updateComplete : Promise.resolve()
-    ).then(() => super._getUpdateComplete());
+    return super.getUpdateComplete();
   }
 
   protected render() {

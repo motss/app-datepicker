@@ -23,6 +23,7 @@
     }
 
     window.onload = onLoad();
+    window.onunhandledrejection = (...args) => console.error(args);
   </script>
 
 </head>

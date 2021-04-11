@@ -6,16 +6,18 @@ interface ParamUpdatedChanged extends Omit<Datepicker, keyof LitElement> {
 
 import {
   css,
-  eventOptions,
   html,
   LitElement,
+  TemplateResult,
+} from 'lit';
+import {
+  eventOptions,
   property,
   query,
-  TemplateResult,
-} from 'lit-element';
-import { cache } from 'lit-html/directives/cache.js';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { repeat } from 'lit-html/directives/repeat.js';
+} from 'lit/decorators.js';
+import { cache } from 'lit/directives/cache.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { repeat } from 'lit/directives/repeat.js';
 
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
@@ -438,7 +440,7 @@ export class Datepicker extends LitElement {
   public get min() {
     return this._hasMin ? toFormattedDateString(this._min!) : '';
   }
-  public set min(val: string) {
+  public set min(val: string | undefined) {
     const valDate = getResolvedDate(val);
     const isValidMin = isValidDate(val, valDate);
 
@@ -451,7 +453,7 @@ export class Datepicker extends LitElement {
   public get max() {
     return this._hasMax ? toFormattedDateString(this._max!) : '';
   }
-  public set max(val: string) {
+  public set max(val: string |undefined) {
     const valDate = getResolvedDate(val);
     const isValidMax = isValidDate(val, valDate);
 
@@ -481,7 +483,7 @@ export class Datepicker extends LitElement {
   public disabledDays: string = '';
 
   @property({ type: String })
-  public disabledDates: string = '';
+  public disabledDates: string | undefined = '';
 
   @property({ type: String })
   public weekLabel: string = 'Wk';

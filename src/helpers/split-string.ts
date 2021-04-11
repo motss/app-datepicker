@@ -1,8 +1,8 @@
 type SplitStringFn<T> = (n: string, i: number, a: string[]) => T;
 
-export function splitString(dateString: string): string[];
-export function splitString<T>(dateString: string, cb: SplitStringFn<T>): T[];
-export function splitString<T, U extends string = string>(
+export function splitString(dateString: string | undefined): string[];
+export function splitString<T>(dateString: string | undefined, cb: SplitStringFn<T>): T[];
+export function splitString<T, U extends string | undefined = string | undefined>(
   dateString: U,
   cb?: SplitStringFn<T>
 ): any[] {
