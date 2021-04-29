@@ -185,7 +185,7 @@ export class DatepickerDialog extends LitElement {
   @query('mwc-button[dialog-confirm]')
   private _dialogConfirm: null | HTMLElement = null;
 
-  @query('.datapicker')
+  @query('.datepicker')
   private _datepicker: null | Datepicker = null;
 
   @query('.scrim')
