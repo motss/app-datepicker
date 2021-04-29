@@ -54,6 +54,7 @@ export function sanitizeText(content: string, options?: SanitizeTextOptions): st
       (_, p1, p2) => `abbr="${p2}" aria-label="${p1}"`
     ) // Swap abbr and aria-label of th in MS Edge
     .replace(/<!---->/g, '') // lit-html template placeholder
+    .replace(/\n\n\s*<!--\?lit\$\d+\$-->([\w\d]+)\n\s*/g, '$1') // lit2.0 template placeholder
     .replace(/\r?\n/gi, '') // new lines in text
     .replace(/(\s?style-scope app-datepicker\s?)/gi, '') // ShadyDOM specific classes
     .replace(/(\s?scope="row"|scope="row"\s?)/g, '') // scope="row" attribute in all week labels
