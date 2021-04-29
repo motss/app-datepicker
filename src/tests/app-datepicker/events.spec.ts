@@ -46,9 +46,10 @@ describe('events', () => {
             ev: CustomEvent<DatepickerFirstUpdated>
           ) {
             const { firstFocusableElement, value } = ev.detail;
-            const elementTag = firstFocusableElement.localName;
-            const selectorCls =
-              Array.from(firstFocusableElement.classList).find(o => o.indexOf('selector') >= 0);
+            const elementTag = firstFocusableElement?.localName;
+            const selectorCls = Array.from(
+              firstFocusableElement?.classList ?? []
+            ).find(o => o.indexOf('selector') >= 0);
 
             clearTimeout(timer);
             yay([

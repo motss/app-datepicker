@@ -91,5 +91,5 @@ export interface DatepickerValueUpdated {
 }
 
 export interface DatepickerFirstUpdated extends Pick<DatepickerValueUpdated, 'value'> {
-  firstFocusableElement: HTMLElement;
+  firstFocusableElement: null | HTMLElement;
 }

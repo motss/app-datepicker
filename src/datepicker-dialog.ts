@@ -131,64 +131,70 @@ export class DatepickerDialog extends LitElement {
   @property({ type: Boolean, reflect: true })
   public showWeekNumber: boolean = false;
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public weekNumberType: WeekNumberType = 'first-4-day-week';
 
   @property({ type: Boolean, reflect: true })
   public landscape: boolean = false;
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public startView: StartView = 'calendar';
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public min?: string;
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public max?: string;
 
-  @property({ type: String })
+  @property()
   public value: string = toFormattedDateString(getResolvedDate());
 
-  @property({ type: String })
+  @property()
   public locale: string = getResolvedLocale();
 
-  @property({ type: String })
-  public disabledDays: string = '';
+  @property()
+  public disabledDays = '';
 
-  @property({ type: String })
-  public disabledDates?: string;
+  @property()
+  public disabledDates = '';
 
-  @property({ type: String })
-  public weekLabel: string = 'Wk';
+  @property()
+  public weekLabel = 'Wk';
 
   @property({ type: Number })
-  public dragRatio: number = .15;
+  public dragRatio = .15;
 
-  @property({ type: String })
-  public clearLabel: string = 'clear';
+  @property()
+  public clearLabel = 'clear';
 
-  @property({ type: String })
-  public dismissLabel: string = 'cancel';
+  @property()
+  public dismissLabel = 'cancel';
 
-  @property({ type: String })
-  public confirmLabel: string = 'set';
-
-  @property({ type: Boolean })
-  public noFocusTrap: boolean = false;
+  @property()
+  public confirmLabel = 'set';
 
   @property({ type: Boolean })
-  public alwaysResetValue: boolean = false;
+  public noFocusTrap = false;
+
+  @property({ type: Boolean })
+  public alwaysResetValue = false;
 
   @query('.content-container')
-  private _contentContainer?: HTMLDivElement;
+  private _contentContainer: null | HTMLDivElement = null;
 
   @query('mwc-button[dialog-confirm]')
-  private _dialogConfirm?: HTMLElement;
+  private _dialogConfirm: null | HTMLElement = null;
+
+  @query('.datapicker')
+  private _datepicker: null | Datepicker = null;
+
+  @query('.scrim')
+  private _scrim: null | HTMLElement = null;
 
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
-  private _focusable?: HTMLElement;
+  private _focusable: null | HTMLElement = null;
   private _focusTrap?: FocusTrap;
-  private _opened: boolean = false;
+  private _opened = false;
 
   public async open(): Promise<void> {
     await this.updateComplete;
@@ -201,29 +207,36 @@ export class DatepickerDialog extends LitElement {
 
     if (this.alwaysResetValue && this._datepicker) this._datepicker.value = this.value;
 
-    await this.requestUpdate();
+    this.requestUpdate();
+    await this.updateComplete;
 
-    const contentContainer = this._contentContainer!;
+    const contentContainer = this._contentContainer;
 
-    this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
+    if (contentContainer) {
+      if (this._scrim) {
+        this._scrim.style.visibility = contentContainer.style.visibility = 'visible';
+      }
 
-    await animateElement(contentContainer, {
-      hasNativeWebAnimation: this._hasNativeWebAnimation,
-      keyframes: [
-        { opacity: '0' },
-        { opacity: '1' },
-      ],
-    });
+      await animateElement(contentContainer, {
+        hasNativeWebAnimation: this._hasNativeWebAnimation,
+        keyframes: [
+          { opacity: '0' },
+          { opacity: '1' },
+        ],
+      });
 
-    contentContainer.style.opacity = '1';
-
-    const focusable = this._focusable!;
-
-    if (!this.noFocusTrap) {
-      this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm!])!;
+      contentContainer.style.opacity = '1';
     }
 
-    focusable.focus();
+    const focusable = this._focusable;
+
+    if (focusable) {
+      if (!this.noFocusTrap && this._dialogConfirm) {
+        this._focusTrap = setFocusTrap(this, [focusable, this._dialogConfirm]);
+      }
+
+      focusable.focus();
+    }
 
     dispatchCustomEvent<DatepickerDialogOpened>(this, 'datepicker-dialog-opened', {
       firstFocusableElement: focusable,
@@ -238,25 +251,30 @@ export class DatepickerDialog extends LitElement {
     if (!this._opened) return;
 
     this._opened = false;
-    this._scrim!.style.visibility = '';
 
-    const contentContainer = this._contentContainer!;
+    if (this._scrim) {
+      this._scrim.style.visibility = '';
+    }
 
-    await animateElement(contentContainer, {
-      hasNativeWebAnimation: this._hasNativeWebAnimation,
-      keyframes: [
-        { opacity: '1' },
-        { opacity: '0' },
-      ],
-    });
+    const contentContainer = this._contentContainer;
 
-    contentContainer.style.opacity =
-    contentContainer.style.visibility = '';
+    if (contentContainer) {
+      await animateElement(contentContainer, {
+        hasNativeWebAnimation: this._hasNativeWebAnimation,
+        keyframes: [
+          { opacity: '1' },
+          { opacity: '0' },
+        ],
+      });
+
+      contentContainer.style.opacity =
+      contentContainer.style.visibility = '';
+    }
 
     this.setAttribute('aria-hidden', 'true');
     this.style.display = 'none';
 
-    if (!this.noFocusTrap) this._focusTrap!.disconnect();
+    if (!this.noFocusTrap) this._focusTrap?.disconnect();
 
     dispatchCustomEvent<DatepickerDialogClosed>(
       this, 'datepicker-dialog-closed', { opened: false, value: this.value });
@@ -277,7 +295,7 @@ export class DatepickerDialog extends LitElement {
 
     dispatchCustomEvent<DatepickerFirstUpdated>(this, 'datepicker-dialog-first-updated', {
       value: this.value,
-      firstFocusableElement: this._focusable!,
+      firstFocusableElement: this._focusable,
     });
   }
 
@@ -324,16 +342,20 @@ export class DatepickerDialog extends LitElement {
   }
 
   private _setToday() {
+    if (!this._datepicker) return;
+
     const today = getResolvedDate();
     const fy = today.getFullYear();
     const m = today.getMonth();
     const d = today.getDate();
 
-    this._datepicker!.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
+    this._datepicker.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
   }
 
   private _updateValue() {
-    this.value = this._datepicker!.value;
+    if (!this._datepicker) return;
+
+    this.value = this._datepicker.value;
   }
 
   private _update() {
@@ -353,14 +375,6 @@ export class DatepickerDialog extends LitElement {
   private _setFocusable(ev: CustomEvent<DatepickerFirstUpdated>) {
     this._focusable = ev.detail && ev.detail.firstFocusableElement;
     this._updateValue();
-  }
-
-  private get _datepicker() {
-    return this.shadowRoot!.querySelector<Datepicker>('.datepicker');
-  }
-
-  private get _scrim() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.scrim');
   }
 
 }

@@ -14,6 +14,7 @@ import {
   eventOptions,
   property,
   query,
+  state,
 } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
 import { classMap } from 'lit/directives/class-map.js';
@@ -404,20 +405,20 @@ export class Datepicker extends LitElement {
   ];
 
   @property({ type: Number, reflect: true })
-  public firstDayOfWeek: number = 0;
+  public firstDayOfWeek = 0;
 
   @property({ type: Boolean, reflect: true })
-  public showWeekNumber: boolean = false;
+  public showWeekNumber = false;
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public weekNumberType: WeekNumberType = 'first-4-day-week';
 
   @property({ type: Boolean, reflect: true })
-  public landscape: boolean = false;
+  public landscape = false;
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public get startView() {
-    return this._startView!;
+    return this._startView;
   }
   public set startView(val: StartView) {
     /**
@@ -436,9 +437,9 @@ export class Datepicker extends LitElement {
     this.requestUpdate('startView', oldVal);
   }
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public get min() {
-    return this._hasMin ? toFormattedDateString(this._min!) : '';
+    return this._hasMin ? toFormattedDateString(this._min) : '';
   }
   public set min(val: string | undefined) {
     const valDate = getResolvedDate(val);
@@ -449,9 +450,9 @@ export class Datepicker extends LitElement {
     this.requestUpdate('min');
   }
 
-  @property({ type: String, reflect: true })
+  @property({ reflect: true })
   public get max() {
-    return this._hasMax ? toFormattedDateString(this._max!) : '';
+    return this._hasMax ? toFormattedDateString(this._max) : '';
   }
   public set max(val: string |undefined) {
     const valDate = getResolvedDate(val);
@@ -462,7 +463,7 @@ export class Datepicker extends LitElement {
     this.requestUpdate('max');
   }
 
-  @property({ type: String })
+  @property()
   public get value() {
     return toFormattedDateString(this._focusedDate);
   }
@@ -476,54 +477,55 @@ export class Datepicker extends LitElement {
     // this.valueAsNumber = +newDate;
   }
 
-  @property({ type: String })
+  @property()
   public locale: string = getResolvedLocale();
 
-  @property({ type: String })
-  public disabledDays: string = '';
+  @property()
+  public disabledDays = '';
 
-  @property({ type: String })
-  public disabledDates: string | undefined = '';
+  @property()
+  public disabledDates = '';
 
-  @property({ type: String })
-  public weekLabel: string = 'Wk';
+  @property()
+  public weekLabel = 'Wk';
 
   @property({ type: Boolean })
-  public inline: boolean = false;
+  public inline = false;
 
   @property({ type: Number })
-  public dragRatio: number = .15;
+  public dragRatio = .15;
 
   public get datepickerBodyCalendarView() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
+    return this.shadowRoot?.querySelector<HTMLDivElement>('.datepicker-body__calendar-view') ||
+      null;
   }
 
   public get calendarsContainer() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
+    return this.shadowRoot?.querySelector<HTMLDivElement>('.calendars-container') || null;
   }
 
-  @property({ type: Date, attribute: false })
+  @state()
   private _selectedDate: Date;
 
-  @property({ type: Date, attribute: false })
+  @state()
   private _focusedDate: Date;
 
-  @property({ type: String, attribute: false })
-  private _startView?: StartView;
+  @state()
+  private _startView: StartView = 'calendar';
 
   @query('.year-list-view__full-list')
-  private _yearViewFullList?: HTMLDivElement;
+  private _yearViewFullList: null | HTMLDivElement = null;
 
   @query('.btn__year-selector')
-  private _buttonSelectorYear?: HTMLButtonElement;
+  private _buttonSelectorYear: null | HTMLButtonElement = null;
 
   @query('.year-list-view__list-item')
-  private _yearViewListItem?: HTMLButtonElement;
+  private _yearViewListItem: null | HTMLButtonElement = null;
 
   private _min: Date;
   private _max: Date;
-  private _hasMin: boolean = false;
-  private _hasMax: boolean = false;
+  private _hasMin = false;
+  private _hasMax = false;
   private _todayDate: Date;
   private _maxDate: Date;
   private _yearList: number[];
@@ -534,7 +536,7 @@ export class Datepicker extends LitElement {
   private _tracker?: Tracker;
   private _dx: number = -Infinity;
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
-  private _updatingDateWithKey: boolean = false;
+  private _updatingDateWithKey = false;
 
   public constructor() {
     super();
@@ -591,16 +593,16 @@ export class Datepicker extends LitElement {
   }
 
   protected firstUpdated() {
-    let firstFocusableElement: HTMLElement;
+    let firstFocusableElement: null | HTMLElement;
 
     if ('calendar' === this._startView) {
       firstFocusableElement = (
         this.inline ?
-          this.shadowRoot!.querySelector<HTMLButtonElement>('.btn__month-selector') :
+          this.shadowRoot?.querySelector<HTMLButtonElement>('.btn__month-selector') :
           this._buttonSelectorYear
-      )!;
+      ) || null;
     } else {
-      firstFocusableElement = this._yearViewListItem!;
+      firstFocusableElement = this._yearViewListItem;
     }
 
     dispatchCustomEvent<DatepickerFirstUpdated>(
@@ -642,7 +644,7 @@ export class Datepicker extends LitElement {
         const selectedYearScrollTop =
           48 * (this._selectedDate.getUTCFullYear() - this._min.getUTCFullYear() - 2);
 
-        targetScrollTo(this._yearViewFullList!, { top: selectedYearScrollTop, left: 0 });
+        targetScrollTo(this._yearViewFullList, { top: selectedYearScrollTop, left: 0 });
       }
 
       if ('calendar' === startView && null == this._tracker) {
@@ -743,13 +745,13 @@ export class Datepicker extends LitElement {
   }
 
   private _focusElement(selector: string) {
-    const focusedTarget = this.shadowRoot!.querySelector<HTMLElement>(selector);
+    const focusedTarget = this.shadowRoot?.querySelector<HTMLElement>(selector);
 
     if (focusedTarget) focusedTarget.focus();
   }
 
   private _renderHeaderSelectorButton() {
-    const { yearFormat, dateFormat } = this._formatters!;
+    const { yearFormat, dateFormat } = this._formatters;
     const isCalendarView = this.startView === 'calendar';
     const focusedDate = this._focusedDate;
     const formattedDate = dateFormat(focusedDate);
@@ -1036,8 +1038,7 @@ export class Datepicker extends LitElement {
        * the navigate next button 3 times, based on the expected mental model and behavior,
        * the calendar month should switch 3 times, e.g. Jan 2020 -> 3 clicks -> Apr 2020.
        */
-      this._lastSelectedDate = newSelectedDate;
-      this._selectedDate = this._lastSelectedDate!;
+      this._selectedDate = this._lastSelectedDate = newSelectedDate;
 
       return this.updateComplete;
     };
@@ -1212,27 +1213,5 @@ declare global {
   }
 }
 
-// FIXED: To look into `passive` event listener option in future.
-// FIXED: To reflect value on certain properties according to specs/ browser impl: min, max, value.
-// FIXED: `disabledDates` are not supported
-// FIXED: Updating `min` via attribute or property breaks entire UI
-// FIXED: To improve date navigation using keyboard. Disabled date are selectable with Left, Right
-//        arrows.
-// FIXED: To add support for labels such week number for better i18n
-// FIXED: To fix hardcoded `_yearList` when `min` has no initial value.
-// FIXED: PgUp/ PgDown on new date that does not exist should fallback to last day of month.
-// FIXED: Update year should update `_lastSelectedDate`
-// FIXED: Showing blank calendar when updating year
-// FIXED: Buggy condition check for max date when updating month
-// FIXED: Gestures are broken on landscape mode.
-// FIXED: `landscape` attribute breaks layout.
-// FIXED: Do not update focused date while dragging/ swiping calendar
-// FIXED: app-datepicker's initial-render.spec.ts fails for unknown reason
-// FIXED: `disabledDays` is broken with `firstDayOfWeek`
-// FIXED: When a new property is set, it re-renders the calendar to last focused date but
-// FIXED: Add test for custom events never updates the selected date
-// FIXED: Replace Web Animations for better support for animations on older browsers.
-// FIXED: Keyboard navigate to next month (Mar) and click on left arrow, (Jan) is shown.
-// FIXED: To finalize cases where focused date does not exist in current month for each key pressed
 // TODO: To support `valueAsDate` and `valueAsNumber`.
 // TODO: To support RTL layout.

@@ -3,14 +3,19 @@
   "version": "5.0.0-rc.0",
   "description": "A custom datepicker element based on Google's Material Design built from scratch with lit-element",
   "keywords": [
+    "app-datepicker",
+    "builtwithlit",
     "cal",
     "calendar",
-    "date",
     "date-picker",
+    "date",
     "datepicker",
     "lit-element",
     "lit-html",
+    "lit",
     "picker",
+    "polymer-project",
+    "polymer",
     "web-component",
     "web-components"
   ],
@@ -25,6 +30,7 @@
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
+  "type": "module",
   "exports": {
     ".": "./dist/app-datepicker.js",
     "./dist/*": "./dist/*",

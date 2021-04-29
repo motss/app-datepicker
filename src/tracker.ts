@@ -63,76 +63,66 @@ function addPassiveEventListener(
 }
 
 export class Tracker {
+  public disconnect: () => void;
+
   private _startPointer: ResolvedPointer | null = null;
-  private readonly _down: PointerHandler['handler'];
   private readonly _move: PointerHandler['handler'];
   private readonly _up: PointerHandler['handler'];
 
   constructor(private _element: HTMLElement, handlers: TrackerHandlers) {
     const { down, move, up } = handlers;
 
-    this._down = this._onDown(down);
-    this._move = this._onMove(move);
-    this._up = this._onUp(up);
+    const _down = this._updatePointers('down', down);
+    this._move = this._updatePointers('move', move);
+    this._up = this._updatePointers('up', up);
+    this.disconnect = () => {
+      if (_element && _element.removeEventListener) {
+        _element.removeEventListener('mousedown', _down);
+        _element.removeEventListener('touchstart', _down);
+        _element.removeEventListener('touchmove', this._move);
+        _element.removeEventListener('touchend', this._up);
+      }
+    };
 
     if (_element && _element.addEventListener) {
-      _element.addEventListener('mousedown', this._down);
+      _element.addEventListener('mousedown', _down);
 
-      addPassiveEventListener(_element, 'touchstart', this._down);
+      addPassiveEventListener(_element, 'touchstart', _down);
       addPassiveEventListener(_element, 'touchmove', this._move);
       addPassiveEventListener(_element, 'touchend', this._up);
     }
   }
 
-  public disconnect() {
-    const rootEl = this._element;
+  private _updatePointers(
+    type: keyof TrackerHandlers,
+    cb: TrackerHandlers['down'] | TrackerHandlers['move'] | TrackerHandlers['up']
+  ) {
+    const element = this._element;
 
-    if (rootEl && rootEl.removeEventListener) {
-      rootEl.removeEventListener('mousedown', this._down);
-      rootEl.removeEventListener('touchstart', this._down);
-      rootEl.removeEventListener('touchmove', this._move);
-      rootEl.removeEventListener('touchend', this._up);
-    }
-  }
-
-  private _onDown(down: TrackerHandlers['down']) {
     return (ev: PointerType) => {
-      if (ev instanceof MouseEvent) {
-        this._element.addEventListener('mousemove', this._move);
-        this._element.addEventListener('mouseup', this._up);
-        this._element.addEventListener('mouseleave', this._up);
+      const isUp = type === 'up';
+      const startPointer = this._startPointer;
+      const { newPointer, oldPointer } = getFirstTouch(startPointer, ev);
+
+      if (type === 'down') {
+        if (ev instanceof MouseEvent) {
+          element.addEventListener('mousemove', this._move);
+          element.addEventListener('mouseup', this._up);
+          element.addEventListener('mouseleave', this._up);
+        }
+
+        (cb as TrackerHandlers['down'])(newPointer, ev);
+      } else {
+        if (isUp && ev instanceof MouseEvent) {
+          element.removeEventListener('mousemove', this._move);
+          element.removeEventListener('mouseup', this._up);
+          element.removeEventListener('mouseleave', this._up);
+        }
+
+        (cb as TrackerHandlers['up'])(newPointer, oldPointer as ResolvedPointer, ev);
       }
 
-      const { newPointer } = getFirstTouch(this._startPointer, ev);
-
-      down(newPointer, ev);
-      this._startPointer = newPointer;
+      this._startPointer = isUp ? null : newPointer;
     };
-  }
-
-  private _onMove(move: TrackerHandlers['move']) {
-    return (ev: PointerType) => {
-      this._updatePointers(move, ev);
-    };
-  }
-
-  private _onUp(up: TrackerHandlers['up']) {
-    return (ev: PointerType) => {
-      this._updatePointers(up, ev, true);
-    };
-  }
-
-  private _updatePointers(cb: (...args: any[]) => void, ev: PointerType, shouldReset?: boolean) {
-    if (shouldReset && ev instanceof MouseEvent) {
-      this._element.removeEventListener('mousemove', this._move);
-      this._element.removeEventListener('mouseup', this._up);
-      this._element.removeEventListener('mouseleave', this._up);
-    }
-
-    const { newPointer, oldPointer } = getFirstTouch(this._startPointer, ev);
-
-    cb(newPointer, oldPointer, ev);
-
-    this._startPointer = shouldReset ? null : newPointer;
   }
 }

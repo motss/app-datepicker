@@ -5,8 +5,8 @@ import { findShadowTarget } from './find-shadow-target.js';
 export function setFocusTrap(
   target: HTMLElement,
   focusableElements: HTMLElement[]
-): FocusTrap | null {
-  if (target == null || focusableElements == null) return null;
+): undefined | FocusTrap {
+  if (target == null || focusableElements == null) return;
 
   const [firstEl, lastEl] = focusableElements;
   const keydownCallback = (ev: KeyboardEvent) => {

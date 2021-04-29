@@ -1,4 +1,9 @@
-export function targetScrollTo(target: HTMLElement, scrollToOptions: ScrollToOptions) {
+export function targetScrollTo(
+  target: null | HTMLElement,
+  scrollToOptions: ScrollToOptions
+): void {
+  if (!target) return;
+
   /**
    * NOTE: Due to `Element.scrollTo` and `ScrollToOptions` are not widely supported,
    * this helper can fallback to old school way of updating scrolling position.
