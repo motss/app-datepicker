@@ -180,16 +180,16 @@ export class DatepickerDialog extends LitElement {
   public alwaysResetValue = false;
 
   @query('.content-container')
-  private _contentContainer: null | HTMLDivElement = null;
+  private _contentContainer?: null | HTMLDivElement;
 
   @query('mwc-button[dialog-confirm]')
-  private _dialogConfirm: null | HTMLElement = null;
+  private _dialogConfirm?: null | HTMLElement;
 
   @query('.datepicker')
-  private _datepicker: null | Datepicker = null;
+  private _datepicker?: null | Datepicker;
 
   @query('.scrim')
-  private _scrim: null | HTMLElement = null;
+  private _scrim?: null | HTMLElement;
 
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
   private _focusable: null | HTMLElement = null;

@@ -514,13 +514,13 @@ export class Datepicker extends LitElement {
   private _startView: StartView = 'calendar';
 
   @query('.year-list-view__full-list')
-  private _yearViewFullList: null | HTMLDivElement = null;
+  private _yearViewFullList?: null | HTMLDivElement;
 
   @query('.btn__year-selector')
-  private _buttonSelectorYear: null | HTMLButtonElement = null;
+  private _buttonSelectorYear?: null | HTMLButtonElement;
 
   @query('.year-list-view__list-item')
-  private _yearViewListItem: null | HTMLButtonElement = null;
+  private _yearViewListItem?: null | HTMLButtonElement;
 
   private _min: Date;
   private _max: Date;
@@ -602,7 +602,7 @@ export class Datepicker extends LitElement {
           this._buttonSelectorYear
       ) || null;
     } else {
-      firstFocusableElement = this._yearViewListItem;
+      firstFocusableElement = this._yearViewListItem || null;
     }
 
     dispatchCustomEvent<DatepickerFirstUpdated>(
@@ -644,7 +644,7 @@ export class Datepicker extends LitElement {
         const selectedYearScrollTop =
           48 * (this._selectedDate.getUTCFullYear() - this._min.getUTCFullYear() - 2);
 
-        targetScrollTo(this._yearViewFullList, { top: selectedYearScrollTop, left: 0 });
+        targetScrollTo(this._yearViewFullList || null, { top: selectedYearScrollTop, left: 0 });
       }
 
       if ('calendar' === startView && null == this._tracker) {
