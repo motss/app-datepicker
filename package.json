@@ -76,7 +76,7 @@
   "dependencies": {
     "@material/mwc-button": "^0.20.0",
     "lit-element": "^2.4.0",
-    "lit-html": "^1.3.0",
+    "lit-html": "^1.4.0",
     "nodemod": "^2.7.2",
     "tslib": "^2.0.3"
   },
@@ -95,7 +95,7 @@
     "@wdio/spec-reporter": "^5.23.0",
     "axe-core": "^4.0.2",
     "env-cmd": "^10.1.0",
-    "es-dev-server": "^2.0.2",
+    "es-dev-server": "^2.1.0",
     "husky": "^4.3.0",
     "pretty": "^2.0.0",
     "pwa-helpers": "^0.9.1",
