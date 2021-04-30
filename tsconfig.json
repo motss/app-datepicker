@@ -6,12 +6,7 @@
     "declarationDir": "dist",
     "target": "ES2019",
     "sourceMap": false,
-    "inlineSources": false,
-    "types": [
-      "@wdio/mocha-framework",
-      "node",
-      "webdriverio"
-    ]
+    "inlineSources": false
   },
   "include": [
     "src/**/*.ts"

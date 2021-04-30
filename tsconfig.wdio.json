@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.test.json",
-  "compilerOptions": {
-    "module": "CommonJS"
-  },
-  "include": [
-    "src/tests/*.config.ts"
-  ]
-}
