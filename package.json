@@ -29,6 +29,7 @@
     "email": "wes.ngrongsen@gmail.com",
     "url": "https://github.com/motss"
   },
+  "type": "module",
   "exports": {
     ".": "./dist/app-datepicker.js",
     "./dist/*": "./dist/*",
@@ -62,16 +63,15 @@
     "ts": "tsc",
     "watch": "tsc --watch"
   },
-  "type": "module",
-  "dependencies": {
-    "lit": "^2.0.0-rc.1",
-    "nodemod": "^2.7.3",
-    "tslib": "^2.2.0"
-  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "dependencies": {
+    "lit": "^2.0.0-rc.1",
+    "nodemod": "^2.7.3",
+    "tslib": "^2.2.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^12.1.1",
