@@ -55,22 +55,37 @@
     "build": "tsc -p tsconfig.prod.json",
     "check": "package-check",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
-    "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
-    "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
+    "lint": "eslint src/**/*.ts --ext .js,.jsx,.ts,.tsx",
+    "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
     "ts": "tsc",
     "watch": "tsc --watch"
   },
+  "type": "module",
   "dependencies": {
     "lit": "^2.0.0-rc.1",
     "nodemod": "^2.7.3",
     "tslib": "^2.2.0"
   },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "devDependencies": {
+    "@commitlint/config-conventional": "^12.1.1",
     "@reallyland/tsconfig": "^3.0.2",
     "@skypack/package-check": "^0.2.2",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "commitlint": "^12.1.1",
     "eslint": "^7.25.0",
+    "eslint-plugin-lit": "^1.3.0",
+    "eslint-plugin-lit-a11y": "^1.0.1",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-regexp": "^0.9.0",
+    "husky": "^6.0.0",
     "typescript": "^4.2.4"
   },
   "engines": {
