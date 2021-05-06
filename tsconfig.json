@@ -6,7 +6,27 @@
     "declarationDir": "dist",
     "target": "ES2019",
     "sourceMap": false,
-    "inlineSources": false
+    "inlineSources": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "allowUnusedLabels": true,
+    "types": [
+      "lit/decorators.js",
+      "lit/directives/async-append.js",
+      "lit/directives/async-replace.js",
+      "lit/directives/cache.js",
+      "lit/directives/class-map.js",
+      "lit/directives/guard.js",
+      "lit/directives/if-defined.js",
+      "lit/directives/live.js",
+      "lit/directives/ref.js",
+      "lit/directives/repeat.js",
+      "lit/directives/style-map.js",
+      "lit/directives/template-content.js",
+      "lit/directives/unsafe-html.js",
+      "lit/directives/unsafe-svg.js",
+      "lit/directives/until.js"
+    ]
   },
   "include": [
     "src/**/*.ts"
