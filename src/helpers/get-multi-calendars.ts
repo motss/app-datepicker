@@ -4,7 +4,7 @@ import type {
   DateTimeFormatter,
   WeekNumberType,
 } from 'nodemod/dist/calendar/calendar_typing.js';
-import { getWeekdays } from 'nodemod/dist/calendar/get-weekdays.js';
+import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { calendar } from 'nodemod/dist/calendar/index.js';
 

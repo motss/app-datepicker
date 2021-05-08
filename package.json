@@ -74,11 +74,11 @@
     }
   },
   "dependencies": {
-    "@material/mwc-button": "^0.20.0",
-    "lit-element": "^2.4.0",
-    "lit-html": "^1.4.0",
-    "nodemod": "^2.7.2",
-    "tslib": "^2.0.3"
+    "@material/mwc-button": "^0.21.0",
+    "lit-element": "^2.5.1",
+    "lit-html": "^1.4.1",
+    "nodemod": "^2.8.1",
+    "tslib": "^2.2.0"
   },
   "devDependencies": {
     "@reallyland/tsconfig": "^3.0.2",
