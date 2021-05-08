@@ -12,6 +12,10 @@ import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
 import { resetShadowRoot } from './ stylings.js';
+import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
+import { adjustOutOfRangeValue } from './helpers/adjust-out-of-range-value.js';
+import { toDateString } from './helpers/to-date-string.js';
+import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
 
 export class DatePicker extends DatePickerMixin(LitElement) implements DatePickerInterface {
   //#region public properties
@@ -19,7 +23,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
 
   //#region private states
   @state()
-  private _focusedDate!: Date;
+  private _currentDate!: Date;
 
   @state()
   private _hasMax!: boolean;
@@ -47,9 +51,9 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
   //#endregion private states
 
   //#region private properties
-  private _formatters: Formatters;
+  #formatters: Formatters;
+  #yearList: number[];
   private _TODAY_DATE: Date;
-  private _yearList: number[];
   //#endregion private properties
 
   public static styles = [
@@ -66,24 +70,17 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
     this._min = new Date(todayDate);
     this._max = new Date(MAX_DATE);
     this._TODAY_DATE = todayDate;
-    this._yearList = toYearList(todayDate, MAX_DATE);
+    this.#yearList = toYearList(todayDate, MAX_DATE);
     this._selectedDate = new Date(todayDate);
-    this._focusedDate = new Date(todayDate);
-    this._formatters = toFormatters(this.locale);
+    this._currentDate = new Date(todayDate);
+    this.#formatters = toFormatters(this.locale);
   }
 
-  protected update(changedProperties: ChangeProperties<DatePickerInterface>): void {
-    const hasMax = changedProperties.has('max');
+  protected update(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+    super.update(changedProperties);
 
-    if (hasMax || changedProperties.has('min')) {
-      const oldValue = toResolvedDate(
-        changedProperties.get(hasMax ? 'max' : 'min') as string
-      ) || (hasMax ? MAX_DATE: this._TODAY_DATE);
-      const value = this[hasMax ? 'max' : 'min'] as MaybeDate;
-      const { date, isValid } = dateValidator(value, oldValue);
-
-      this[hasMax ? '_max' : '_min'] = date;
-      this[hasMax ? '_hasMax' : '_hasMin'] = isValid;
+    if (changedProperties.has('locale')) {
+      this.#formatters = toFormatters(this.locale);
     }
 
     if (changedProperties.has('startView')) {
@@ -100,16 +97,79 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
       ) || this._TODAY_DATE;
       const { date } = dateValidator(this.value, oldValue);
 
-      this._focusedDate = new Date(date);
+      this._currentDate = new Date(date);
       this._selectedDate = this._lastSelectedDate = new Date(date);
       // this.valueAsDate = newDate;
       // this.valueAsNumber = +newDate;
     }
 
-    super.update(changedProperties);
+    const hasMax = changedProperties.has('max');
+    const hasMin = changedProperties.has('min');
+
+    if (hasMax || hasMin) {
+      const update = (isMax = false) => {
+        const oldValue = toResolvedDate(
+          changedProperties.get(isMax ? 'max' : 'min') as string
+        ) || (isMax ? MAX_DATE: this._TODAY_DATE);
+        const value = this[isMax ? 'max' : 'min'] as MaybeDate;
+        const { date, isValid } = dateValidator(value, oldValue);
+
+        this[isMax ? '_max' : '_min'] = date;
+        this[isMax ? '_hasMax' : '_hasMin'] = isValid;
+      };
+
+      if (hasMax) update(true);
+      if (hasMin) update();
+
+      const min = this._min;
+      const max = this._max;
+      const adjustedCurrentDate = adjustOutOfRangeValue(min, max, this._currentDate);
+
+      this.#yearList = toYearList(min, max);
+      this._currentDate = adjustedCurrentDate;
+      this._selectedDate = this._lastSelectedDate = new Date(adjustedCurrentDate);
+      this.value = toDateString(adjustedCurrentDate);
+    }
+  }
+
+  protected firstUpdated(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+    super.firstUpdated(changedProperties);
+
+    const focusableElements: HTMLElement[] = [];
+
+    // TODO: focus element
+    if (this._startView === 'calendar') {
+      // TODO: query select elements in calendar
+    } else {
+      // TODO: query select elements in year list
+    }
+
+    // dispatch updated event
+    dispatchCustomEvent(this, 'first-updated', {
+      focusableElements,
+      value: this.value,
+    });
+  }
+
+  protected updated(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+    super.updated(changedProperties);
+
+    if (this._startView === 'calendar') {
+      // TODO: Do stuff for calendar
+    } else if (this._startView === 'yearList') {
+      // TODO: Do stuff for year list
+    }
   }
 
   protected render(): TemplateResult {
+    const {
+      longMonthFormat,
+      yearFormat,
+    } = this.#formatters;
+    const currentDate = this._currentDate;
+    const selectedMonth = longMonthFormat(currentDate);
+    const selectedYear = yearFormat(currentDate);
+
     return html`
     <div>
       ${JSON.stringify({
@@ -129,6 +189,24 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
         weekNumberType: this.weekNumberType,
       } as DatePickerElementInterface, null, 2)}
     </div>
+
+    <div class="header">
+      <div class="month-and-year-selector">
+        <div class="selected-month">${selectedMonth}</div>
+        <div class="selected-year">${selectedYear}</div>
+      </div>
+
+      <div class="month-dropdown">
+        <mwc-icon-button label=${this.yearDropdownLabel}>${iconArrowDropdown}</mwc-icon-button>
+      </div>
+
+      <div class="month-pagination">
+        <mwc-icon-button label=${this.previousMonthLabel}>${iconChevronLeft}</mwc-icon-button>
+        <mwc-icon-button label=${this.nextMonthLabel}>${iconChevronRight}</mwc-icon-button>
+      </div>
+    </div>
+
+    <div class="body"></div>
     `;
   }
 }

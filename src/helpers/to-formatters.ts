@@ -23,6 +23,7 @@ export function toFormatters(locale: string): Formatters {
     month: 'long',
   });
   const longWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'long' });
+  const longMonthFmt = DateTimeFormat(locale, { timeZone: 'UTC', month: 'long' });
   const narrowWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'narrow' });
   const yearFmt = DateTimeFormat(locale, { timeZone: 'UTC', year: 'numeric' });
 
@@ -32,6 +33,7 @@ export function toFormatters(locale: string): Formatters {
     dateFormat: getFormatter(dateFmt),
     dayFormat: getFormatter(dayFmt),
     fullDateFormat: getFormatter(fullDateFmt),
+    longMonthFormat: getFormatter(longMonthFmt),
     longMonthYearFormat: getFormatter(longMonthYearFmt),
     longWeekdayFormat: getFormatter(longWeekdayFmt),
     narrowWeekdayFormat: getFormatter(narrowWeekdayFmt),

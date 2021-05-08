@@ -8,6 +8,11 @@ export type CalendarView = CalendarViewTuple[number];
 
 export type CalendarViewTuple = ['calendar', 'yearList'];
 
+export interface ChangedEvent {
+  isKeypress: boolean;
+  value: DatePickerElementInterface['value'];
+}
+
 export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,22 +28,32 @@ export interface DatePickerElementInterface {
   locale: string;
   max?: string;
   min?: string;
+  nextMonthLabel: string;
+  previousMonthLabel: string;
+  selectedDateLabel: string;
   showWeekNumber: number;
   startView: CalendarView;
   value: string;
   weekLabel: string;
   weekNumberType: WeekNumberType;
+  yearDropdownLabel: string;
 }
 
-export interface DatePickerInterface extends DatePicker, DatePickerElementInterface {}
+export type DatePickerInterface = DatePicker & DatePickerElementInterface;
 
-export type DatePickerMixinInteface = ReturnType<typeof DatePickerMixin>;
+export type DatePickerMixinInterface = ReturnType<typeof DatePickerMixin>;
+
+export interface FirstUpdatedEvent {
+  focusableElements: HTMLElement[];
+  value: DatePickerElementInterface['value'];
+}
 
 export interface Formatters extends Pick<DatePickerElementInterface, 'locale'> {
   dayFormat: DateTimeFormatter;
   fullDateFormat: DateTimeFormatter;
   longWeekdayFormat: DateTimeFormatter;
   narrowWeekdayFormat: DateTimeFormatter;
+  longMonthFormat: DateTimeFormatter;
   longMonthYearFormat: DateTimeFormatter;
   dateFormat: DateTimeFormatter;
   yearFormat: DateTimeFormatter;
@@ -47,4 +62,10 @@ export interface Formatters extends Pick<DatePickerElementInterface, 'locale'> {
 export type MixinReturnType<
   BaseConstructor extends Constructor<LitElement>,
   Mixin
-> = BaseConstructor & Constructor<Mixin>;
+> = BaseConstructor & Constructor<Mixin>
+
+export interface SupportedCustomEvent {
+  ['animation-finished']: null;
+  ['changed']: ChangedEvent;
+  ['first-updated']: FirstUpdatedEvent;
+}
