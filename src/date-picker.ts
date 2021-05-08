@@ -11,6 +11,7 @@ import { toFormatters } from './helpers/to-formatters.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
+import { resetShadowRoot } from './ stylings.js';
 
 export class DatePicker extends DatePickerMixin(LitElement) implements DatePickerInterface {
   //#region public properties
@@ -22,7 +23,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
 
   @state()
   private _hasMax!: boolean;
-  
+
   @state()
   private _hasMin!: boolean;
 
@@ -44,7 +45,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
   @state()
   private _startView: CalendarView = 'calendar';
   //#endregion private states
-  
+
   //#region private properties
   private _formatters: Formatters;
   private _TODAY_DATE: Date;
@@ -52,7 +53,9 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
   //#endregion private properties
 
   public static styles = [
-    css``,
+    resetShadowRoot,
+    css`
+    `,
   ];
 
   constructor() {

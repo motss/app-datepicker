@@ -25,7 +25,8 @@
       "lit/directives/template-content.js",
       "lit/directives/unsafe-html.js",
       "lit/directives/unsafe-svg.js",
-      "lit/directives/until.js"
+      "lit/directives/until.js",
+      "lit/static-html.js",
     ]
   },
   "include": [
