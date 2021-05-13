@@ -1,5 +1,4 @@
 import type { LitElement } from 'lit';
-
 import { property } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 
@@ -7,6 +6,7 @@ import { nullishAttributeConverter } from './helpers/nullish-attribute-converter
 import { toDateString } from './helpers/to-date-string.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toResolvedLocale } from './helpers/to-resolved-locale.js';
+
 import type { CalendarView, Constructor, DatePickerElementInterface, MixinReturnType } from './typings.js';
 
 export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>(

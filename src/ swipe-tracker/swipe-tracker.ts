@@ -1,6 +1,6 @@
 import { supportsPassiveEventListener } from '@material/mwc-base/utils.js';
 
-import type { PointerType, ResolvedPointer, FirstTouch, PointerHandler, TrackerHandlers, SupportedEventKey } from './typings.js';
+import type { FirstTouch, PointerHandler, PointerType, ResolvedPointer, SupportedEventKey, TrackerHandlers } from './typings.js';
 
 function toPointer(ev: PointerType): ResolvedPointer {
   const { clientX, clientY, pageX, pageY } = ev as PointerEvent;

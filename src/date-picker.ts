@@ -1,21 +1,22 @@
 import type { TemplateResult } from 'lit';
-import type { CalendarView, ChangeProperties, DatePickerElementInterface, DatePickerInterface, Formatters } from './typings.js';
-
-import { LitElement, css, html } from 'lit';
+import { css, html,LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
+import { calendar } from 'nodemod/dist/calendar/calendar.js';
 
-import { MAX_DATE, calendarViews } from './constants.js';
+import { resetShadowRoot } from './ stylings.js';
+import { calendarViews,MAX_DATE } from './constants.js';
 import { DatePickerMixin } from './date-picker-mixin.js';
+import { adjustOutOfRangeValue } from './helpers/adjust-out-of-range-value.js';
 import { dateValidator } from './helpers/date-validator.js';
+import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
+import { splitString } from './helpers/split-string.js';
+import { toDateString } from './helpers/to-date-string.js';
 import { toFormatters } from './helpers/to-formatters.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
-import { resetShadowRoot } from './ stylings.js';
-import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
-import { adjustOutOfRangeValue } from './helpers/adjust-out-of-range-value.js';
-import { toDateString } from './helpers/to-date-string.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
+import type { CalendarView, ChangeProperties, DatePickerElementInterface, DatePickerInterface, Formatters } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(LitElement) implements DatePickerInterface {
   //#region public properties
@@ -163,12 +164,30 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
 
   protected render(): TemplateResult {
     const {
+      dayFormat,
+      fullDateFormat,
       longMonthFormat,
       yearFormat,
     } = this.#formatters;
     const currentDate = this._currentDate;
     const selectedMonth = longMonthFormat(currentDate);
     const selectedYear = yearFormat(currentDate);
+    const cldr = calendar({
+      dayFormat,
+      fullDateFormat,
+      locale: this.locale,
+      selectedDate: this._selectedDate,
+      disabledDates: splitString(this.disabledDates, toResolvedDate),
+      disabledDays: splitString(this.disabledDays, Number),
+      firstDayOfWeek: this.firstDayOfWeek,
+      max: this._max,
+      min: this._min,
+      showWeekNumber: Boolean(this.showWeekNumber),
+      weekLabel: this.weekLabel,
+      weekNumberType: this.weekNumberType,
+    });
+
+    console.debug(cldr);
 
     return html`
     <div>

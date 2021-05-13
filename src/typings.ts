@@ -1,8 +1,8 @@
 import type { LitElement } from 'lit';
-
 import type { DateTimeFormatter, WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
-import type { DatePickerMixin } from './date-picker-mixin.js';
+
 import type { DatePicker } from './date-picker.js';
+import type { DatePickerMixin } from './date-picker-mixin.js';
 
 export type CalendarView = CalendarViewTuple[number];
 
@@ -31,7 +31,7 @@ export interface DatePickerElementInterface {
   nextMonthLabel: string;
   previousMonthLabel: string;
   selectedDateLabel: string;
-  showWeekNumber: number;
+  showWeekNumber: boolean;
   startView: CalendarView;
   value: string;
   weekLabel: string;

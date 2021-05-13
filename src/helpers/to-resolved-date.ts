@@ -1,4 +1,5 @@
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+
 import type { MaybeDate } from './typings.js';
 
 export function toResolvedDate(date?: MaybeDate): Date {
