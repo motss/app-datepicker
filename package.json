@@ -62,6 +62,7 @@
     "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
     "ts": "tsc",
     "watch": "tsc --watch",
+    "prepare": "npm x --no -- husky install",
     "postinstall": "npm dedupe"
   },
   "commitlint": {
