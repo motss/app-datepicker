@@ -24,24 +24,8 @@ export const datePickerStyling = css`
   display: flex;
 }
 
-.pagination-next-month {
+[data-navigation="next"] {
   margin: 0 0 0 24px;
 }
 /** #endregion header */
-`;
-
-export const monthCalendarStyling = css`
-.month-calendar {
-  display: grid;
-  gap: 12px 0;
-}
-
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 32px);
-}
-
-.weeks {
-  grid-template-rows: repeat(7, 32px);
-}
 `;

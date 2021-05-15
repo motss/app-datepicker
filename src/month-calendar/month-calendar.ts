@@ -4,15 +4,22 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
+import { resetShadowRoot } from '../ stylings.js';
 import { keyCodesRecord } from '../constants.js';
 import { computeNextFocusedDate } from '../helpers/compute-next-focused-date.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
 export class MonthCalendar extends LitElement implements MonthCalendarProperties {
   @property({ attribute: false })
   public data: MonthCalendarData;
+
+  public static styles = [
+    resetShadowRoot,
+    monthCalendarStyling,
+  ];
 
   public constructor() {
     super();

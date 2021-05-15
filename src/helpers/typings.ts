@@ -34,6 +34,7 @@ Partial<Pick<
   DatePickerElementProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
 >>,
 Pick<DatePickerElementProperties, 'locale'> {
+  count?: number;
   disabledDates?: Date[];
   disabledDays?: number[];
   max?: Date;

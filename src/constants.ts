@@ -5,7 +5,7 @@ import type { CalendarViewTuple } from './typings.js';
 export const APP_DATE_PICKER_DIALOG_NAME = 'app-date-picker-dialog';
 export const APP_DATE_PICKER_INPUT_NAME = 'app-date-picker-input';
 export const APP_DATE_PICKER_NAME = 'app-date-picker';
-
+export const APP_HORIZONTAL_SWIPER_NAME = 'app-horizontal-swiper';
 export const APP_MONTH_CALENDAR_NAME = 'app-month-calendar';
 export const DEFAULT_LOCALE = 'en-US';
 export const MAX_DATE = toResolvedDate('2100-12-31');

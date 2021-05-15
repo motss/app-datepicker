@@ -24,8 +24,11 @@ export function toMultiCalendars(
     showWeekNumber,
     weekLabel,
     weekNumberType,
+    count,
   } = options;
 
+  const countValue = count || 0;
+  const calendarCount = countValue + +!(countValue & 1);
   const minTime = min == null ? Number.MIN_SAFE_INTEGER : +min;
   const maxTime = max == null ? Number.MAX_SAFE_INTEGER : +max;
   const weekdays = getWeekdays({
@@ -50,7 +53,9 @@ export function toMultiCalendars(
 
   const ify = selectedDate.getUTCFullYear();
   const im = selectedDate.getUTCMonth();
-  const calendarsList = [-1, 0, 1].map<Calendar>((n) => {
+  const calendarCountInitialValue = Math.floor(calendarCount / 2) * -1;
+  const calendarCountArray = Array.from(Array(calendarCount), (_, i) => calendarCountInitialValue + i);
+  const calendarsList = calendarCountArray.map<Calendar>((n) => {
     const firstDayOfMonth = toUTCDate(ify, im + n, 1);
     const lastDayOfMonthTime = +toUTCDate(ify, im + n + 1, 0);
     const key = getKey(firstDayOfMonth);

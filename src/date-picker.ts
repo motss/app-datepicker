@@ -1,10 +1,12 @@
 import '@material/mwc-icon-button';
 import './month-calendar/app-month-calendar.js';
+import './horizontal-swiper/app-horizontal-swiper.js';
 
 import type { TemplateResult } from 'lit';
 import { html,LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { resetShadowRoot } from './ stylings.js';
 import { calendarViews,MAX_DATE } from './constants.js';
@@ -52,9 +54,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   private _selectedDate!: Date;
 
   @state()
-  private _lastSelectedDate!: Date;
-
-  @state()
   private _startView: CalendarView = 'calendar';
   //#endregion private states
 
@@ -74,7 +73,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     const todayDate = toResolvedDate();
 
-    this._min = new Date(todayDate);
+    // this._min = new Date(todayDate);
+    this._min = new Date('1900-01-01');
     this._max = new Date(MAX_DATE);
     this._TODAY_DATE = todayDate;
     this.#yearList = toYearList(todayDate, MAX_DATE);
@@ -105,7 +105,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       const { date } = dateValidator(this.value, oldValue);
 
       this._currentDate = new Date(date);
-      this._selectedDate = this._lastSelectedDate = new Date(date);
+      this._selectedDate = new Date(date);
       // this.valueAsDate = newDate;
       // this.valueAsNumber = +newDate;
     }
@@ -134,7 +134,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
       this.#yearList = toYearList(min, max);
       this._currentDate = adjustedCurrentDate;
-      this._selectedDate = this._lastSelectedDate = new Date(adjustedCurrentDate);
+      this._selectedDate = new Date(adjustedCurrentDate);
       this.value = toDateString(adjustedCurrentDate);
     }
   }
@@ -199,7 +199,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       max,
       min,
       narrowWeekdayFormat,
-      selectedDate,
+      selectedDate: currentDate,
       showWeekNumber: Boolean(this.showWeekNumber),
       weekLabel: this.weekLabel,
       weekNumberType: this.weekNumberType,
@@ -219,13 +219,22 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       </div>
 
       <div class="month-pagination">
-        <mwc-icon-button label=${this.previousMonthLabel}>${iconChevronLeft}</mwc-icon-button>
-        <mwc-icon-button class="pagination-next-month" label=${this.nextMonthLabel}>${iconChevronRight}</mwc-icon-button>
+        <mwc-icon-button
+          data-navigation="previous"
+          label=${this.previousMonthLabel}
+          @click=${this.#navigateMonth}
+        >${iconChevronLeft}</mwc-icon-button>
+        <mwc-icon-button
+          data-navigation="next"
+          label=${this.nextMonthLabel}
+          @click=${this.#navigateMonth}
+        >${iconChevronRight}</mwc-icon-button>
       </div>
     </div>
 
     <div class="body">${
       repeat(multiCldr.calendars, ({ key }) => key, (calendar, idx) => {
+        const isVisibleCalendar = idx === 1;
         const data: MonthCalendarData = {
           calendar: calendar.calendar,
           date: selectedDate,
@@ -234,7 +243,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
           currentDate,
           max,
           min,
-          showCaption: idx === 1,
+          showCaption: isVisibleCalendar,
           showWeekNumber,
           todayDate,
           weekdays: multiCldr.weekdays,
@@ -244,10 +253,26 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         return html`
         <app-month-calendar
           .data=${data}
+          tabindex=${isVisibleCalendar ? '0' : '-1'}
         ></app-month-calendar>
         `;
       })
     }</div>
     `;
   }
+
+  #navigateMonth = (ev: MouseEvent): void => {
+    const currentDate = this._currentDate;
+    const isPreviousNavigation = (
+      ev.currentTarget as HTMLButtonElement
+    ).getAttribute('data-navigation') === 'previous';
+
+    const newCurrentDate = toUTCDate(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth() + (isPreviousNavigation ? -1 : 1),
+      1
+    );
+
+    this._currentDate = newCurrentDate;
+  };
 }
