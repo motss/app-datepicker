@@ -10,7 +10,6 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { resetShadowRoot } from './ stylings.js';
 import { calendarViews,MAX_DATE } from './constants.js';
-import { DatePickerMixin } from './date-picker-mixin.js';
 import { adjustOutOfRangeValue } from './helpers/adjust-out-of-range-value.js';
 import { dateValidator } from './helpers/date-validator.js';
 import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
@@ -22,12 +21,13 @@ import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
-import { DatePickerMinMaxMixin } from './min-max-mixin.js';
+import { DatePickerMinMaxMixin } from './mixins/date-picker-min-max-mixin.js';
+import { DatePickerMixin } from './mixins/date-picker-mixin.js';
 import type { MonthCalendarData } from './month-calendar/typings.js';
 import { datePickerStyling } from './stylings.js';
-import type { CalendarView, ChangeProperties, DatePickerInterface, Formatters } from './typings.js';
+import type { CalendarView, ChangeProperties, DatePickerProperties, Formatters } from './typings.js';
 
-export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerInterface {
+export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
   //#region public properties
   //#endregion public properties
 
@@ -83,7 +83,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     this.#formatters = toFormatters(this.locale);
   }
 
-  protected update(changedProperties: ChangeProperties<DatePickerInterface>): void {
+  protected update(changedProperties: ChangeProperties<DatePickerProperties>): void {
     super.update(changedProperties);
 
     if (changedProperties.has('locale')) {
@@ -139,7 +139,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     }
   }
 
-  protected firstUpdated(changedProperties: ChangeProperties<DatePickerInterface>): void {
+  protected firstUpdated(changedProperties: ChangeProperties<DatePickerProperties>): void {
     super.firstUpdated(changedProperties);
 
     const focusableElements: HTMLElement[] = [];
@@ -158,7 +158,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     });
   }
 
-  protected updated(changedProperties: ChangeProperties<DatePickerInterface>): void {
+  protected updated(changedProperties: ChangeProperties<DatePickerProperties>): void {
     super.updated(changedProperties);
 
     if (this._startView === 'calendar') {

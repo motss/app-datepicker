@@ -1,8 +1,7 @@
-import type { LitElement } from 'lit';
-import type { DateTimeFormatter, WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
+import type { DateTimeFormatter } from 'nodemod/dist/calendar/calendar_typing';
 
 import type { keyCodesRecord } from './constants.js';
-import type { DatePickerMixin } from './date-picker-mixin.js';
+import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mixins/typings.js';
 
 export type CalendarView = CalendarViewTuple[number];
 
@@ -10,7 +9,7 @@ export type CalendarViewTuple = ['calendar', 'yearList'];
 
 export interface ChangedEvent {
   isKeypress: boolean;
-  value: DatePickerElementProperties['value'];
+  value: DatePickerMixinProperties['value'];
 }
 
 export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
@@ -18,40 +17,14 @@ export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
-export interface DatePickerElementProperties {
-  disabledDates: string;
-  disabledDays: string;
-  dragRatio: number;
-  firstDayOfWeek: number;
-  inline: boolean;
-  landscape: boolean;
-  locale: string;
-  nextMonthLabel: string;
-  previousMonthLabel: string;
-  selectedDateLabel: string;
-  showWeekNumber: boolean;
-  startView: CalendarView;
-  value: string;
-  weekLabel: string;
-  weekNumberType: WeekNumberType;
-  yearDropdownLabel: string;
-}
-
-export type DatePickerInterface = DatePickerElementProperties & DatePickerMinMaxInterface;
-
-export interface DatePickerMinMaxInterface {
-  max?: string;
-  min?: string;
-}
-
-export type DatePickerMixinInterface = ReturnType<typeof DatePickerMixin>;
+export type DatePickerProperties = DatePickerMixinProperties & DatePickerMinMaxProperties;
 
 export interface FirstUpdatedEvent {
   focusableElements: HTMLElement[];
-  value: DatePickerElementProperties['value'];
+  value: DatePickerMixinProperties['value'];
 }
 
-export interface Formatters extends Pick<DatePickerElementProperties, 'locale'> {
+export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
   dayFormat: DateTimeFormatter;
   fullDateFormat: DateTimeFormatter;
   longWeekdayFormat: DateTimeFormatter;
@@ -62,10 +35,7 @@ export interface Formatters extends Pick<DatePickerElementProperties, 'locale'> 
   yearFormat: DateTimeFormatter;
 }
 
-export type MixinReturnType<
-  BaseConstructor extends Constructor<LitElement>,
-  Mixin
-> = BaseConstructor & Constructor<Mixin>
+
 
 export interface SupportedCustomEvent {
   ['animation-finished']: null;

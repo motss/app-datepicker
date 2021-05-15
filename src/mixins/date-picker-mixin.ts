@@ -2,21 +2,22 @@ import type { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 
-import { nullishAttributeConverter } from './helpers/nullish-attribute-converter.js';
-import { toDateString } from './helpers/to-date-string.js';
-import { toResolvedDate } from './helpers/to-resolved-date.js';
-import { toResolvedLocale } from './helpers/to-resolved-locale.js';
-import type { CalendarView, Constructor, DatePickerElementProperties, MixinReturnType } from './typings.js';
+import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
+import { toDateString } from '../helpers/to-date-string.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { toResolvedLocale } from '../helpers/to-resolved-locale.js';
+import type { CalendarView, Constructor } from '../typings.js';
+import type { DatePickerMixinProperties, MixinReturnType } from './typings.js';
 
 export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>(
   SuperClass: BaseConstructor
-): MixinReturnType<BaseConstructor, DatePickerElementProperties> => {
-  class DatePickerElement extends SuperClass {
+): MixinReturnType<BaseConstructor, DatePickerMixinProperties> => {
+  class DatePickerMixinClass extends SuperClass implements DatePickerMixinProperties {
     @property()
-    public disabledDays?: string;
+    public disabledDays = '';
 
     @property()
-    public disabledDates?: string;
+    public disabledDates = '';
 
     @property({ type: Number })
     public dragRatio = .15;
@@ -61,8 +62,8 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
     public yearDropdownLabel = 'Choose year and month';
   }
 
-  return DatePickerElement as unknown as MixinReturnType<
+  return DatePickerMixinClass as unknown as MixinReturnType<
     BaseConstructor,
-    DatePickerElementProperties
+    DatePickerMixinProperties
   >;
 };

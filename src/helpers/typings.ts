@@ -3,7 +3,7 @@ import type {
   CalendarWeekday,
 } from 'nodemod/dist/calendar/calendar_typing.js';
 
-import type { DatePickerElementProperties, Formatters, SupportedKeyCode } from '../typings.js';
+import type { DatePickerProperties, Formatters, SupportedKeyCode } from '../typings.js';
 
 export interface ComputeNextFocusedDateInit {
   hasAltKey: boolean;
@@ -31,9 +31,9 @@ export interface MultiCalendars extends Omit<Calendar, 'calendar'> {
 export interface ToMultiCalendarsInit extends
 Pick<Formatters, 'dayFormat' | 'fullDateFormat' | 'longWeekdayFormat' | 'narrowWeekdayFormat'>,
 Partial<Pick<
-  DatePickerElementProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
+  DatePickerProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
 >>,
-Pick<DatePickerElementProperties, 'locale'> {
+Pick<DatePickerProperties, 'locale'> {
   count?: number;
   disabledDates?: Date[];
   disabledDays?: number[];
