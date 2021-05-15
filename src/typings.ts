@@ -5,19 +5,28 @@ import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mi
 
 export type CalendarView = CalendarViewTuple[number];
 
-export type CalendarViewTuple = ['calendar', 'yearList'];
+export type CalendarViewTuple = ['calendar', 'yearGrid'];
 
 export interface ChangedEvent {
   isKeypress: boolean;
   value: DatePickerMixinProperties['value'];
 }
 
-export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
+export type ChangedProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
-export type DatePickerProperties = DatePickerMixinProperties & DatePickerMinMaxProperties;
+export interface DatePickerProperties extends DatePickerMixinProperties,
+DatePickerMinMaxProperties {}
+
+export type DatePickerChangedProperties = ChangedProperties<DatePickerProperties & {
+  _currentDate: Date;
+  _max: Date;
+  _min: Date;
+  _selectedDate: Date;
+  _startView: DatePickerMixinProperties['startView'];
+}>;
 
 export interface FirstUpdatedEvent {
   focusableElements: HTMLElement[];
@@ -41,6 +50,11 @@ export interface SupportedCustomEvent {
   ['animation-finished']: null;
   ['changed']: ChangedEvent;
   ['first-updated']: FirstUpdatedEvent;
+  ['year-updated']: YearUpdatedEvent;
 }
 
 export type SupportedKeyCode = typeof keyCodesRecord[keyof typeof keyCodesRecord];
+
+export interface YearUpdatedEvent {
+  year: number;
+}

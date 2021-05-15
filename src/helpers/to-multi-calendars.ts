@@ -14,7 +14,7 @@ export function toMultiCalendars(
     locale,
     longWeekdayFormat,
     narrowWeekdayFormat,
-    selectedDate,
+    currentDate,
 
     disabledDates,
     disabledDays,
@@ -51,8 +51,8 @@ export function toMultiCalendars(
     weekNumberType,
   ].filter(Boolean).join(':');
 
-  const ify = selectedDate.getUTCFullYear();
-  const im = selectedDate.getUTCMonth();
+  const ify = currentDate.getUTCFullYear();
+  const im = currentDate.getUTCMonth();
   const calendarCountInitialValue = Math.floor(calendarCount / 2) * -1;
   const calendarCountArray = Array.from(Array(calendarCount), (_, i) => calendarCountInitialValue + i);
   const calendarsList = calendarCountArray.map<Calendar>((n) => {
@@ -127,6 +127,6 @@ export function toMultiCalendars(
 
     disabledDatesSet: $disabledDatesSet,
     disabledDaysSet: $disabledDaysSet,
-    key: getKey(selectedDate),
+    key: getKey(currentDate),
   };
 }

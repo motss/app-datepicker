@@ -72,6 +72,7 @@
   },
   "dependencies": {
     "@material/mwc-base": "^0.21.0",
+    "@material/mwc-button": "^0.21.0",
     "@material/mwc-icon-button": "^0.21.0",
     "lit": "^2.0.0-rc.2",
     "nodemod": "^2.8.3",
@@ -83,7 +84,7 @@
     "@skypack/package-check": "^0.2.2",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
-    "eslint-plugin-lit": "^1.4.0",
+    "eslint-plugin-lit": "^1.4.1",
     "eslint-plugin-lit-a11y": "^1.0.1",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-regexp": "^0.10.0",

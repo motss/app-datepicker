@@ -42,6 +42,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     };
   }
 
+  protected shouldUpdate(): boolean {
+    return this.data.formatters != null;
+  }
+
   protected render(): TemplateResult | typeof nothing {
     const {
       calendar,

@@ -1,7 +1,7 @@
-export function adjustOutOfRangeValue(min: Date, max: Date, currentDate: Date): Date {
+export function adjustOutOfRangeValue(min: Date, max: Date, date: Date): Date {
   const minTime = min.getTime();
   const maxTime = max.getTime();
-  const currentTime = currentDate.getTime();
+  const currentTime = date.getTime();
 
   let newValue = currentTime;
 

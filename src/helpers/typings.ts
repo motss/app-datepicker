@@ -1,5 +1,6 @@
 import type {
   Calendar,
+  CalendarOptions,
   CalendarWeekday,
 } from 'nodemod/dist/calendar/calendar_typing.js';
 
@@ -33,13 +34,10 @@ Pick<Formatters, 'dayFormat' | 'fullDateFormat' | 'longWeekdayFormat' | 'narrowW
 Partial<Pick<
   DatePickerProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
 >>,
-Pick<DatePickerProperties, 'locale'> {
+Pick<DatePickerProperties, 'locale'>,
+Pick<CalendarOptions, 'disabledDates' | 'disabledDays' | 'max' | 'min'> {
   count?: number;
-  disabledDates?: Date[];
-  disabledDays?: number[];
-  max?: Date;
-  min?: Date;
-  selectedDate: Date;
+  currentDate: CalendarOptions['selectedDate'];
 }
 
 export interface ToNextSelectableDateInit {

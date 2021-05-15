@@ -1,6 +1,6 @@
 import '@material/mwc-icon-button';
 import './month-calendar/app-month-calendar.js';
-import './horizontal-swiper/app-horizontal-swiper.js';
+import './year-grid/app-year-grid.js';
 
 import type { TemplateResult } from 'lit';
 import { html,LitElement } from 'lit';
@@ -18,14 +18,14 @@ import { toDateString } from './helpers/to-date-string.js';
 import { toFormatters } from './helpers/to-formatters.js';
 import { toMultiCalendars } from './helpers/to-multi-calendars.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
-import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
 import { DatePickerMinMaxMixin } from './mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from './mixins/date-picker-mixin.js';
 import type { MonthCalendarData } from './month-calendar/typings.js';
 import { datePickerStyling } from './stylings.js';
-import type { CalendarView, ChangeProperties, DatePickerProperties, Formatters } from './typings.js';
+import type { CalendarView, DatePickerChangedProperties, DatePickerProperties, Formatters, YearUpdatedEvent } from './typings.js';
+import type { YearGridData } from './year-grid/typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
   //#region public properties
@@ -33,7 +33,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   //#region private states
   @state()
-  private _currentDate!: Date;
+  private _currentDate: Date;
 
   @state()
   private _hasMax!: boolean;
@@ -42,16 +42,16 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   private _hasMin!: boolean;
 
   @state()
-  private _max!: Date;
+  private _max: Date;
 
   @state()
   private _maxDate!: Date;
 
   @state()
-  private _min!: Date;
+  private _min: Date;
 
   @state()
-  private _selectedDate!: Date;
+  private _selectedDate: Date;
 
   @state()
   private _startView: CalendarView = 'calendar';
@@ -59,7 +59,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   //#region private properties
   #formatters: Formatters;
-  #yearList: number[];
   private _TODAY_DATE: Date;
   //#endregion private properties
 
@@ -77,13 +76,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     this._min = new Date('1900-01-01');
     this._max = new Date(MAX_DATE);
     this._TODAY_DATE = todayDate;
-    this.#yearList = toYearList(todayDate, MAX_DATE);
     this._selectedDate = new Date(todayDate);
     this._currentDate = new Date(todayDate);
     this.#formatters = toFormatters(this.locale);
   }
 
-  protected update(changedProperties: ChangeProperties<DatePickerProperties>): void {
+  protected update(changedProperties: DatePickerChangedProperties): void {
     super.update(changedProperties);
 
     if (changedProperties.has('locale')) {
@@ -132,14 +130,24 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       const max = this._max;
       const adjustedCurrentDate = adjustOutOfRangeValue(min, max, this._currentDate);
 
-      this.#yearList = toYearList(min, max);
       this._currentDate = adjustedCurrentDate;
       this._selectedDate = new Date(adjustedCurrentDate);
       this.value = toDateString(adjustedCurrentDate);
     }
+
+    if (changedProperties.has('_startView') && this._startView === 'calendar') {
+      const newSelectedYear = adjustOutOfRangeValue(
+        this._min,
+        this._max,
+        this._selectedDate
+      );
+
+      this._selectedDate = newSelectedYear;
+      this._currentDate = new Date(newSelectedYear);
+    }
   }
 
-  protected firstUpdated(changedProperties: ChangeProperties<DatePickerProperties>): void {
+  protected firstUpdated(changedProperties: DatePickerChangedProperties): void {
     super.firstUpdated(changedProperties);
 
     const focusableElements: HTMLElement[] = [];
@@ -158,13 +166,13 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     });
   }
 
-  protected updated(changedProperties: ChangeProperties<DatePickerProperties>): void {
+  protected updated(changedProperties: DatePickerChangedProperties): void {
     super.updated(changedProperties);
 
     if (this._startView === 'calendar') {
       // TODO: Do stuff for calendar
-    } else if (this._startView === 'yearList') {
-      // TODO: Do stuff for year list
+    } else if (this._startView === 'yearGrid') {
+      // TODO: Do stuff for year grid
     }
   }
 
@@ -199,64 +207,79 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       max,
       min,
       narrowWeekdayFormat,
-      selectedDate: currentDate,
+      currentDate,
       showWeekNumber: Boolean(this.showWeekNumber),
       weekLabel: this.weekLabel,
       weekNumberType: this.weekNumberType,
     });
 
-    console.debug(multiCldr);
-
     return html`
-    <div class="header">
-      <div class="month-and-year-selector">
-        <div class="selected-month">${selectedMonth}</div>
-        <div class="selected-year">${selectedYear}</div>
+    <div class=header>
+      <div class=month-and-year-selector>
+        <div class=selected-month>${selectedMonth}</div>
+        <div class=selected-year>${selectedYear}</div>
 
-        <div class="month-dropdown">
-          <mwc-icon-button label=${this.yearDropdownLabel}>${iconArrowDropdown}</mwc-icon-button>
+        <div class=month-dropdown>
+          <mwc-icon-button
+            label=${this.yearDropdownLabel}
+            @click=${this.#updateStartView}
+          >${iconArrowDropdown}</mwc-icon-button>
         </div>
       </div>
 
-      <div class="month-pagination">
+      <div class=month-pagination>
         <mwc-icon-button
-          data-navigation="previous"
+          data-navigation=previous
           label=${this.previousMonthLabel}
           @click=${this.#navigateMonth}
         >${iconChevronLeft}</mwc-icon-button>
         <mwc-icon-button
-          data-navigation="next"
+          data-navigation=next
           label=${this.nextMonthLabel}
           @click=${this.#navigateMonth}
         >${iconChevronRight}</mwc-icon-button>
       </div>
     </div>
 
-    <div class="body">${
-      repeat(multiCldr.calendars, ({ key }) => key, (calendar, idx) => {
-        const isVisibleCalendar = idx === 1;
-        const data: MonthCalendarData = {
-          calendar: calendar.calendar,
-          date: selectedDate,
-          disabledDatesSet: multiCldr.disabledDatesSet,
-          disabledDaysSet: multiCldr.disabledDaysSet,
-          currentDate,
-          max,
-          min,
-          showCaption: isVisibleCalendar,
-          showWeekNumber,
-          todayDate,
-          weekdays: multiCldr.weekdays,
-          formatters,
-        };
+    <div class=body>${
+      this._startView === 'yearGrid' ?
+        html`
+        <app-year-grid
+          .data=${{
+            date: selectedDate,
+            max,
+            min,
+            formatters,
+          } as YearGridData}
+          @year-updated=${this.#updateYear}
+        ></app-year-grid>
+        ` :
+        html`${
+          repeat(multiCldr.calendars, ({ key }) => key, (calendar, idx) => {
+            const isVisibleCalendar = idx === 1;
+            const data: MonthCalendarData = {
+              calendar: calendar.calendar,
+              date: selectedDate,
+              disabledDatesSet: multiCldr.disabledDatesSet,
+              disabledDaysSet: multiCldr.disabledDaysSet,
+              currentDate,
+              max,
+              min,
+              showCaption: isVisibleCalendar,
+              showWeekNumber,
+              todayDate,
+              weekdays: multiCldr.weekdays,
+              formatters,
+            };
 
-        return html`
-        <app-month-calendar
-          .data=${data}
-          tabindex=${isVisibleCalendar ? '0' : '-1'}
-        ></app-month-calendar>
-        `;
-      })
+            return html`
+            <app-month-calendar
+              .data=${data}
+              tabindex=${isVisibleCalendar ? '0' : '-1'}
+            ></app-month-calendar>
+            `;
+          })
+        }`
     }</div>
     `;
   }
@@ -274,5 +297,18 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     );
 
     this._currentDate = newCurrentDate;
+  };
+
+  #updateStartView = (): void => {
+    const isYearGrid = this._startView === 'yearGrid';
+
+    this._startView = isYearGrid ? 'calendar' : 'yearGrid';
+  };
+
+  #updateYear = (ev: CustomEvent<YearUpdatedEvent>): void => {
+    const { year } = ev.detail;
+
+    this._selectedDate = new Date(this._selectedDate.setUTCFullYear(year));
+    this._startView = 'calendar';
   };
 }
