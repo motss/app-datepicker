@@ -3,7 +3,18 @@ import type {
   CalendarWeekday,
 } from 'nodemod/dist/calendar/calendar_typing.js';
 
-import type { DatePickerElementInterface, Formatters } from '../typings.js';
+import type { DatePickerElementProperties, Formatters, SupportedKeyCode } from '../typings.js';
+
+export interface ComputeNextFocusedDateInit {
+  hasAltKey: boolean;
+  keyCode: SupportedKeyCode;
+  focusedDate: Date;
+  selectedDate: Date;
+  disabledDaysSet: Set<number>;
+  disabledDatesSet: Set<number>;
+  minTime: number;
+  maxTime: number;
+}
 
 export interface DateValidatorResult {
   date: Date;
@@ -20,12 +31,21 @@ export interface MultiCalendars extends Omit<Calendar, 'calendar'> {
 export interface ToMultiCalendarsInit extends
 Pick<Formatters, 'dayFormat' | 'fullDateFormat' | 'longWeekdayFormat' | 'narrowWeekdayFormat'>,
 Partial<Pick<
-  DatePickerElementInterface, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
+  DatePickerElementProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
 >>,
-Pick<DatePickerElementInterface, 'locale'> {
+Pick<DatePickerElementProperties, 'locale'> {
   disabledDates?: Date[];
   disabledDays?: number[];
   max?: Date;
   min?: Date;
   selectedDate: Date;
+}
+
+export interface ToNextSelectableDateInit {
+  keyCode: SupportedKeyCode;
+  disabledDaysSet: Set<number>;
+  disabledDatesSet: Set<number>;
+  focusedDate: Date;
+  maxTime: number;
+  minTime: number;
 }

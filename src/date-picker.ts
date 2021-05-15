@@ -1,7 +1,10 @@
+import '@material/mwc-icon-button';
+import './month-calendar/app-month-calendar.js';
+
 import type { TemplateResult } from 'lit';
-import { css, html,LitElement } from 'lit';
+import { html,LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
-import { calendar } from 'nodemod/dist/calendar/calendar.js';
+import { repeat } from 'lit/directives/repeat.js';
 
 import { resetShadowRoot } from './ stylings.js';
 import { calendarViews,MAX_DATE } from './constants.js';
@@ -12,13 +15,17 @@ import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
 import { splitString } from './helpers/split-string.js';
 import { toDateString } from './helpers/to-date-string.js';
 import { toFormatters } from './helpers/to-formatters.js';
+import { toMultiCalendars } from './helpers/to-multi-calendars.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toYearList } from './helpers/to-year-list.js';
 import type { MaybeDate } from './helpers/typings.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
-import type { CalendarView, ChangeProperties, DatePickerElementInterface, DatePickerInterface, Formatters } from './typings.js';
+import { DatePickerMinMaxMixin } from './min-max-mixin.js';
+import type { MonthCalendarData } from './month-calendar/typings.js';
+import { datePickerStyling } from './stylings.js';
+import type { CalendarView, ChangeProperties, DatePickerInterface, Formatters } from './typings.js';
 
-export class DatePicker extends DatePickerMixin(LitElement) implements DatePickerInterface {
+export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerInterface {
   //#region public properties
   //#endregion public properties
 
@@ -59,8 +66,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
 
   public static styles = [
     resetShadowRoot,
-    css`
-    `,
+    datePickerStyling,
   ];
 
   constructor() {
@@ -77,7 +83,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
     this.#formatters = toFormatters(this.locale);
   }
 
-  protected update(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+  protected update(changedProperties: ChangeProperties<DatePickerInterface>): void {
     super.update(changedProperties);
 
     if (changedProperties.has('locale')) {
@@ -133,7 +139,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
     }
   }
 
-  protected firstUpdated(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+  protected firstUpdated(changedProperties: ChangeProperties<DatePickerInterface>): void {
     super.firstUpdated(changedProperties);
 
     const focusableElements: HTMLElement[] = [];
@@ -152,7 +158,7 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
     });
   }
 
-  protected updated(changedProperties: ChangeProperties<DatePickerElementInterface>): void {
+  protected updated(changedProperties: ChangeProperties<DatePickerInterface>): void {
     super.updated(changedProperties);
 
     if (this._startView === 'calendar') {
@@ -163,69 +169,85 @@ export class DatePicker extends DatePickerMixin(LitElement) implements DatePicke
   }
 
   protected render(): TemplateResult {
+    const formatters = this.#formatters;
+    const currentDate = this._currentDate;
+    const selectedDate = this._selectedDate;
+    const max = this._max;
+    const min = this._min;
+    const locale = this.locale;
+    const todayDate = this._TODAY_DATE;
+    const showWeekNumber = this.showWeekNumber;
+
     const {
       dayFormat,
       fullDateFormat,
       longMonthFormat,
       yearFormat,
-    } = this.#formatters;
-    const currentDate = this._currentDate;
+      longWeekdayFormat,
+      narrowWeekdayFormat,
+    } = formatters;
     const selectedMonth = longMonthFormat(currentDate);
     const selectedYear = yearFormat(currentDate);
-    const cldr = calendar({
+    const multiCldr = toMultiCalendars({
       dayFormat,
-      fullDateFormat,
-      locale: this.locale,
-      selectedDate: this._selectedDate,
       disabledDates: splitString(this.disabledDates, toResolvedDate),
       disabledDays: splitString(this.disabledDays, Number),
       firstDayOfWeek: this.firstDayOfWeek,
-      max: this._max,
-      min: this._min,
+      fullDateFormat,
+      locale,
+      longWeekdayFormat,
+      max,
+      min,
+      narrowWeekdayFormat,
+      selectedDate,
       showWeekNumber: Boolean(this.showWeekNumber),
       weekLabel: this.weekLabel,
       weekNumberType: this.weekNumberType,
     });
 
-    console.debug(cldr);
+    console.debug(multiCldr);
 
     return html`
-    <div>
-      ${JSON.stringify({
-        max: this.max,
-        min: this.min,
-        disabledDates: this.disabledDates,
-        disabledDays: this.disabledDays,
-        dragRatio: this.dragRatio,
-        firstDayOfWeek: this.firstDayOfWeek,
-        inline: this.inline,
-        landscape: this.landscape,
-        locale: this.locale,
-        showWeekNumber: this.showWeekNumber,
-        startView: this.startView,
-        value: this.value,
-        weekLabel: this.weekLabel,
-        weekNumberType: this.weekNumberType,
-      } as DatePickerElementInterface, null, 2)}
-    </div>
-
     <div class="header">
       <div class="month-and-year-selector">
         <div class="selected-month">${selectedMonth}</div>
         <div class="selected-year">${selectedYear}</div>
-      </div>
 
-      <div class="month-dropdown">
-        <mwc-icon-button label=${this.yearDropdownLabel}>${iconArrowDropdown}</mwc-icon-button>
+        <div class="month-dropdown">
+          <mwc-icon-button label=${this.yearDropdownLabel}>${iconArrowDropdown}</mwc-icon-button>
+        </div>
       </div>
 
       <div class="month-pagination">
         <mwc-icon-button label=${this.previousMonthLabel}>${iconChevronLeft}</mwc-icon-button>
-        <mwc-icon-button label=${this.nextMonthLabel}>${iconChevronRight}</mwc-icon-button>
+        <mwc-icon-button class="pagination-next-month" label=${this.nextMonthLabel}>${iconChevronRight}</mwc-icon-button>
       </div>
     </div>
 
-    <div class="body"></div>
+    <div class="body">${
+      repeat(multiCldr.calendars, ({ key }) => key, (calendar, idx) => {
+        const data: MonthCalendarData = {
+          calendar: calendar.calendar,
+          date: selectedDate,
+          disabledDatesSet: multiCldr.disabledDatesSet,
+          disabledDaysSet: multiCldr.disabledDaysSet,
+          currentDate,
+          max,
+          min,
+          showCaption: idx === 1,
+          showWeekNumber,
+          todayDate,
+          weekdays: multiCldr.weekdays,
+          formatters,
+        };
+
+        return html`
+        <app-month-calendar
+          .data=${data}
+        ></app-month-calendar>
+        `;
+      })
+    }</div>
     `;
   }
 }

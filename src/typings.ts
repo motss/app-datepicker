@@ -1,7 +1,7 @@
 import type { LitElement } from 'lit';
 import type { DateTimeFormatter, WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
 
-import type { DatePicker } from './date-picker.js';
+import type { keyCodesRecord } from './constants.js';
 import type { DatePickerMixin } from './date-picker-mixin.js';
 
 export type CalendarView = CalendarViewTuple[number];
@@ -10,7 +10,7 @@ export type CalendarViewTuple = ['calendar', 'yearList'];
 
 export interface ChangedEvent {
   isKeypress: boolean;
-  value: DatePickerElementInterface['value'];
+  value: DatePickerElementProperties['value'];
 }
 
 export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
@@ -18,7 +18,7 @@ export type ChangeProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
-export interface DatePickerElementInterface {
+export interface DatePickerElementProperties {
   disabledDates: string;
   disabledDays: string;
   dragRatio: number;
@@ -26,8 +26,6 @@ export interface DatePickerElementInterface {
   inline: boolean;
   landscape: boolean;
   locale: string;
-  max?: string;
-  min?: string;
   nextMonthLabel: string;
   previousMonthLabel: string;
   selectedDateLabel: string;
@@ -39,16 +37,21 @@ export interface DatePickerElementInterface {
   yearDropdownLabel: string;
 }
 
-export type DatePickerInterface = DatePicker & DatePickerElementInterface;
+export type DatePickerInterface = DatePickerElementProperties & DatePickerMinMaxInterface;
+
+export interface DatePickerMinMaxInterface {
+  max?: string;
+  min?: string;
+}
 
 export type DatePickerMixinInterface = ReturnType<typeof DatePickerMixin>;
 
 export interface FirstUpdatedEvent {
   focusableElements: HTMLElement[];
-  value: DatePickerElementInterface['value'];
+  value: DatePickerElementProperties['value'];
 }
 
-export interface Formatters extends Pick<DatePickerElementInterface, 'locale'> {
+export interface Formatters extends Pick<DatePickerElementProperties, 'locale'> {
   dayFormat: DateTimeFormatter;
   fullDateFormat: DateTimeFormatter;
   longWeekdayFormat: DateTimeFormatter;
@@ -69,3 +72,5 @@ export interface SupportedCustomEvent {
   ['changed']: ChangedEvent;
   ['first-updated']: FirstUpdatedEvent;
 }
+
+export type SupportedKeyCode = typeof keyCodesRecord[keyof typeof keyCodesRecord];

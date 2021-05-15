@@ -6,12 +6,11 @@ import { nullishAttributeConverter } from './helpers/nullish-attribute-converter
 import { toDateString } from './helpers/to-date-string.js';
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { toResolvedLocale } from './helpers/to-resolved-locale.js';
-
-import type { CalendarView, Constructor, DatePickerElementInterface, MixinReturnType } from './typings.js';
+import type { CalendarView, Constructor, DatePickerElementProperties, MixinReturnType } from './typings.js';
 
 export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>(
   SuperClass: BaseConstructor
-): MixinReturnType<BaseConstructor, DatePickerElementInterface> => {
+): MixinReturnType<BaseConstructor, DatePickerElementProperties> => {
   class DatePickerElement extends SuperClass {
     @property()
     public disabledDays?: string;
@@ -33,12 +32,6 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
 
     @property()
     public locale: string = toResolvedLocale();
-
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
-    public max?: string;
-
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
-    public min?: string;
 
     @property()
     public nextMonthLabel = 'Next month';
@@ -70,6 +63,6 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
 
   return DatePickerElement as unknown as MixinReturnType<
     BaseConstructor,
-    DatePickerElementInterface
+    DatePickerElementProperties
   >;
 };
