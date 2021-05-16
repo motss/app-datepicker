@@ -25,8 +25,12 @@ export type DatePickerChangedProperties = ChangedProperties<DatePickerProperties
   _max: Date;
   _min: Date;
   _selectedDate: Date;
-  _startView: DatePickerMixinProperties['startView'];
 }>;
+
+export interface DateUpdatedEvent {
+  isKeypress: boolean;
+  value: Date;
+}
 
 export interface FirstUpdatedEvent {
   focusableElements: HTMLElement[];
@@ -49,11 +53,17 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
 export interface SupportedCustomEvent {
   ['animation-finished']: null;
   ['changed']: ChangedEvent;
+  ['date-updated']: DateUpdatedEvent;
   ['first-updated']: FirstUpdatedEvent;
+  ['value-updated']: ValueUpdatedEvent;
   ['year-updated']: YearUpdatedEvent;
 }
 
 export type SupportedKeyCode = typeof keyCodesRecord[keyof typeof keyCodesRecord];
+
+export interface ValueUpdatedEvent extends Pick<DateUpdatedEvent, 'isKeypress'> {
+  value: string;
+}
 
 export interface YearUpdatedEvent {
   year: number;

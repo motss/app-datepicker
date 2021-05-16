@@ -9,6 +9,7 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { resetShadowRoot } from '../ stylings.js';
 import { MAX_DATE } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
 import { APP_YEAR_GRID_BUTTON_NAME } from '../year-grid-button/constants.js';
@@ -73,17 +74,20 @@ export class YearGrid extends LitElement implements YearGridProperties {
     `;
   }
 
-  #updateYear = (ev: MouseEvent): void => {
-    const selectedYearGridButton = Array.from(
-      ev.composedPath() as HTMLElement[]
-    ).find(
-      element =>
-        element.localName === APP_YEAR_GRID_BUTTON_NAME &&
-        element.hasAttribute('data-year')
-    );
+  #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
+    /** Do nothing when keyup.key is neither Enter nor ' ' (or Spacebar on older browsers) */
+    if (
+      (ev as KeyboardEvent).type === 'keyup' &&
+      !['Enter', ' ', 'Spacebar'].includes((ev as KeyboardEvent).key)
+    ) return;
+
+    const selectedYearGridButton = toClosestTarget(ev, `${APP_YEAR_GRID_BUTTON_NAME}[data-year]`);
+
+    /** Do nothing when not tapping on the year button */
+    if (selectedYearGridButton == null) return;
+
     const year = Number(
-      selectedYearGridButton?.getAttribute('data-year') ??
-      this.data.date.getUTCFullYear()
+      selectedYearGridButton.getAttribute('data-year')
     );
 
     dispatchCustomEvent(this, 'year-updated', { year });

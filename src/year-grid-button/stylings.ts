@@ -9,6 +9,7 @@ export const yearGridButtonStyling = css`
 
   width: 56px;
   height: 32px;
+  pointer-events: none;
 }
 
 .mdc-button {
@@ -17,6 +18,9 @@ export const yearGridButtonStyling = css`
   width: 52px;
   height: 28px;
   padding: 0;
+  font: inherit;
+  font-size: 14px;
   border-radius: 52px;
+  pointer-events: auto;
 }
 `;
