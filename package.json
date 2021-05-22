@@ -56,7 +56,7 @@
     "build": "tsc -p tsconfig.prod.json",
     "check": "package-check",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
-    "lint": "eslint src/**/*.ts* --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "npm x --no @web/dev-server@latest -- wds --node-resolve -dw -p 4343 -a index.html",
