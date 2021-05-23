@@ -272,8 +272,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         ></app-year-grid>
         ` :
         multiCldr ? html`${
-          repeat(multiCldr.calendars, ({ key }) => key, (calendar, idx) => {
-            const isVisibleCalendar = idx === 1;
+          repeat(multiCldr.calendars, ({ key }) => key, (calendar) => {
             const data: MonthCalendarData = {
               calendar: calendar.calendar,
               date: selectedDate,
@@ -282,7 +281,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
               currentDate,
               max,
               min,
-              showCaption: isVisibleCalendar,
               showWeekNumber,
               todayDate,
               weekdays: multiCldr.weekdays,
@@ -293,7 +291,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
             <app-month-calendar
               class=calendar
               .data=${data}
-              tabindex=${isVisibleCalendar ? '0' : '-1'}
               @date-updated=${this.#updateSelectedDate}
             ></app-month-calendar>
             `;

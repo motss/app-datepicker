@@ -49,14 +49,18 @@ export const navigationKeyCodes = {
 } as const;
 
 export const navigationKeyCodeSet = {
-  whenFocusedDateIsMinDatePrevious: new Set([keyCodesRecord.ARROW_LEFT, ...navigationKeyCodes.previous]),
-  whenFocusedDateIsMaxDateNext: new Set([keyCodesRecord.ARROW_RIGHT, ...navigationKeyCodes.next]),
-  dayPrevious: new Set([keyCodesRecord.ARROW_LEFT, ...navigationKeyCodes.previous]),
-  dayNext: new Set([keyCodesRecord.ARROW_RIGHT, ...navigationKeyCodes.next]),
   all: new Set([
     ...navigationKeyCodes.next,
     ...navigationKeyCodes.previous,
     keyCodesRecord.ARROW_LEFT,
     keyCodesRecord.ARROW_RIGHT,
   ]),
+  dayNext: new Set([keyCodesRecord.ARROW_RIGHT, ...navigationKeyCodes.next]),
+  dayPrevious: new Set([keyCodesRecord.ARROW_LEFT, ...navigationKeyCodes.previous]),
 } as const;
+
+export const calendarKeyCodeSet = new Set([
+  ...navigationKeyCodeSet.all,
+  keyCodesRecord.ENTER,
+  keyCodesRecord.SPACE,
+]);

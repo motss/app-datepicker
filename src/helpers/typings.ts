@@ -6,15 +6,15 @@ import type {
 
 import type { DatePickerProperties, Formatters, SupportedKeyCode } from '../typings.js';
 
-export interface ComputeNextFocusedDateInit {
+export interface ComputeNextSelectedDateInit {
+  currentDate: Date;
+  date: Date;
+  disabledDatesSet: Set<number>;
+  disabledDaysSet: Set<number>;
   hasAltKey: boolean;
   keyCode: SupportedKeyCode;
-  focusedDate: Date;
-  selectedDate: Date;
-  disabledDaysSet: Set<number>;
-  disabledDatesSet: Set<number>;
-  minTime: number;
   maxTime: number;
+  minTime: number;
 }
 
 export interface DateValidatorResult {
@@ -41,10 +41,10 @@ Pick<CalendarOptions, 'disabledDates' | 'disabledDays' | 'max' | 'min'> {
 }
 
 export interface ToNextSelectableDateInit {
-  keyCode: SupportedKeyCode;
-  disabledDaysSet: Set<number>;
+  date: Date;
   disabledDatesSet: Set<number>;
-  focusedDate: Date;
+  disabledDaysSet: Set<number>;
+  keyCode: SupportedKeyCode;
   maxTime: number;
   minTime: number;
 }

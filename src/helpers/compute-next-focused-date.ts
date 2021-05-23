@@ -3,7 +3,7 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { keyCodesRecord, navigationKeyCodeSet } from '../constants.js';
 import type { SupportedKeyCode } from '../typings.js';
 import { toNextSelectableDate } from './to-next-selectable-date.js';
-import type { ComputeNextFocusedDateInit } from './typings.js';
+import type { ComputeNextSelectedDateInit as ComputeNextSelectedDateInit } from './typings.js';
 
 const {
   ARROW_DOWN,
@@ -16,16 +16,16 @@ const {
   PAGE_UP,
 } = keyCodesRecord;
 
-export function computeNextFocusedDate({
+export function computeNextSelectedDate({
+  currentDate,
+  date,
+  disabledDatesSet,
+  disabledDaysSet,
   hasAltKey,
   keyCode,
-  focusedDate,
-  selectedDate,
-  disabledDaysSet,
-  disabledDatesSet,
-  minTime,
   maxTime,
-}: ComputeNextFocusedDateInit): Date {
+  minTime,
+}: ComputeNextSelectedDateInit): Date {
   /**
    * To update focused date,
    *
@@ -49,13 +49,13 @@ export function computeNextFocusedDate({
    *        c. If new focused date is either `min` or `max`, reverse order `d += 1` -> `d -= 1` and
    *         continue the loop until new selectable focused date.
    */
-  const oldFy = focusedDate.getUTCFullYear();
-  const oldM = focusedDate.getUTCMonth();
-  const oldD = focusedDate.getUTCDate();
-  const focusedDateTime = +focusedDate;
+  const oldFy = currentDate.getUTCFullYear();
+  const oldM = currentDate.getUTCMonth();
+  const oldD = currentDate.getUTCDate();
+  const focusedDateTime = +currentDate;
 
-  const sdFy = selectedDate.getUTCFullYear();
-  const sdM = selectedDate.getUTCMonth();
+  const sdFy = date.getUTCFullYear();
+  const sdM = date.getUTCMonth();
 
   const notInCurrentMonth = sdM !== oldM || sdFy !== oldFy;
 
@@ -81,8 +81,8 @@ export function computeNextFocusedDate({
   }
 
   switch (shouldRunSwitch) {
-    case focusedDateTime === minTime && (navigationKeyCodeSet.whenFocusedDateIsMinDatePrevious as Set<SupportedKeyCode>).has(keyCode):
-    case focusedDateTime === maxTime && (navigationKeyCodeSet.whenFocusedDateIsMaxDateNext as Set<SupportedKeyCode>).has(keyCode):
+    case focusedDateTime === minTime && (navigationKeyCodeSet.dayPrevious as Set<SupportedKeyCode>).has(keyCode):
+    case focusedDateTime === maxTime && (navigationKeyCodeSet.dayNext as Set<SupportedKeyCode>).has(keyCode):
       break;
     case keyCode === ARROW_UP: {
       d -= 7;
@@ -135,14 +135,14 @@ export function computeNextFocusedDate({
   }
 
   /** Get next selectable focused date */
-  const newFocusedDate = toNextSelectableDate({
+  const nextSelectableDate = toNextSelectableDate({
+    date: toUTCDate(fy, m, d),
     disabledDatesSet,
     disabledDaysSet,
-    focusedDate: toUTCDate(fy, m, d),
     keyCode,
     maxTime,
     minTime,
   });
 
-  return newFocusedDate;
+  return nextSelectableDate;
 }

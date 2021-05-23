@@ -55,6 +55,11 @@ td {
   padding-top: 32px;
   outline: none;
 }
+@media (any-hover: hover) {
+  .calendar-day:not([aria-hidden="true"]) :not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
 .calendar-day::after {
   content: '';
   display: block;
@@ -72,10 +77,19 @@ td {
   background-color: #1d1d1d;
   opacity: 1;
 }
+.calendar-day.day--today::after,
 .calendar-day:hover::after,
 .calendar-day:focus::after {
-  outline: 1px solid #1d1d1d;
   opacity: 1;
+  outline-width: 1px;
+  outline-style: solid
+}
+.calendar-day.day--today::after {
+  outline-color: #1d1d1d;
+}
+.calendar-day:hover::after,
+.calendar-day:focus::after {
+  outline-color: #b5b5b5;
 }
 .calendar-day[aria-disabled="true"],
 .calendar-day.day--empty {

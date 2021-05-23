@@ -1,27 +1,37 @@
 import { property } from '@lit/reactive-element/decorators/property.js';
+import { queryAsync } from '@lit/reactive-element/decorators/query-async.js';
 import type { TemplateResult } from 'lit';
 import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { resetShadowRoot } from '../ stylings.js';
-import { keyCodesRecord } from '../constants.js';
-import { computeNextFocusedDate } from '../helpers/compute-next-focused-date.js';
+import type { navigationKeyCodeSet } from '../constants.js';
+import { calendarKeyCodeSet, keyCodesRecord } from '../constants.js';
+import { computeNextSelectedDate } from '../helpers/compute-next-focused-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { monthCalendarStyling } from './stylings.js';
-import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
+import type { MonthCalendarChangedProperties, MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
 export class MonthCalendar extends LitElement implements MonthCalendarProperties {
   @property({ attribute: false })
   public data: MonthCalendarData;
 
+  public static shadowRootOptions = {
+    ...LitElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+
   public static styles = [
     resetShadowRoot,
     monthCalendarStyling,
   ];
+
+  @queryAsync('.calendar-day[aria-selected="true"]')
+  public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
   public constructor() {
     super();
@@ -48,17 +58,27 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     return this.data.formatters != null;
   }
 
+  protected async updated(changedProperties: MonthCalendarChangedProperties): Promise<void> {
+    super.updated(changedProperties);
+
+    const selectedCalendarDay = await this.selectedCalendarDay;
+
+    if (selectedCalendarDay) {
+      selectedCalendarDay.focus();
+    }
+  }
+
   protected render(): TemplateResult | typeof nothing {
     const {
       calendar,
       date,
       disabledDatesSet,
       disabledDaysSet,
-      currentDate: focusedDate,
+      currentDate,
       max,
       min,
-      showCaption,
-      showWeekNumber,
+      showCaption = false,
+      showWeekNumber = false,
       todayDate,
       weekdays,
       formatters,
@@ -75,19 +95,18 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       const calendarCaptionId = `calendar-caption-${id}`;
       const [, [, secondMonthSecondCalendarDay]] = calendar;
       const secondMonthSecondCalendarDayFullDate = secondMonthSecondCalendarDay.fullDate;
-      const $newFocusedDate: Date =
-      showCaption && !isInTargetMonth(focusedDate, date) ?
-        computeNextFocusedDate({
-          disabledDaysSet,
+      const selectedDate: Date = isInTargetMonth(currentDate, date) ?
+        date :
+        computeNextSelectedDate({
+          currentDate,
+          date,
           disabledDatesSet,
+          disabledDaysSet,
           hasAltKey: false,
           keyCode: keyCodesRecord.HOME,
-          focusedDate: focusedDate,
-          selectedDate: date,
-          minTime: +min,
           maxTime: +max,
-        }) :
-        focusedDate;
+          minTime: +min,
+        });
 
       calendarContent = html`
       <table
@@ -98,13 +117,17 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         @click=${this.#updateSelectedDate}
         @keyup=${this.#updateSelectedDate}
       >
-        <caption id=${calendarCaptionId}>
-          <div class=calendar-caption part=caption>${
-            showCaption && secondMonthSecondCalendarDayFullDate ?
-              longMonthYearFormat(secondMonthSecondCalendarDayFullDate) :
-              ''
-          }</div>
-        </caption>
+        ${
+          showCaption ? html`
+          <caption id=${calendarCaptionId}>
+            <div class=calendar-caption part=caption>${
+              secondMonthSecondCalendarDayFullDate ?
+                longMonthYearFormat(secondMonthSecondCalendarDayFullDate) :
+                ''
+            }</div>
+          </caption>
+          ` : nothing
+        }
 
         <thead>
           <tr class=weekdays part=weekdays role=row>${
@@ -142,17 +165,17 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                 }
                 /** Empty day */
                 if (!value || !fullDate) {
-                  return html`<td class="calendar-day day--empty" part=calendar-day></td>`;
+                  return html`<td class="calendar-day day--empty" aria-hidden="true" part=calendar-day></td>`;
                 }
                 const curTime = +new Date(fullDate);
-                const isCurrentDate = +focusedDate === curTime;
-                const shouldTab = showCaption && $newFocusedDate.getUTCDate() === Number(value);
+                const isSelectedDate = +selectedDate === curTime;
+                const shouldTab = selectedDate.getUTCDate() === Number(value);
                 /** NOTE: lit-plugin does not like this */
                 const calendarDayClasses = classMap({
                   'calendar-day': true,
                   'day--disabled': disabled,
                   'day--today': +todayDate === curTime,
-                  'day--focused': !disabled && isCurrentDate,
+                  'day--selected': !disabled && isSelectedDate,
                 }) as unknown as string;
 
                 return html`
@@ -163,7 +186,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                   role=gridcell
                   aria-disabled=${disabled ? 'true' : 'false'}
                   aria-label=${label}
-                  aria-selected=${isCurrentDate ? 'true' : 'false'}
+                  aria-selected=${isSelectedDate ? 'true' : 'false'}
                   .fullDate=${fullDate}
                   .day=${value}
                 >
@@ -182,30 +205,59 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   }
 
   #updateSelectedDate = (ev: MouseEvent | KeyboardEvent): void => {
-    /** Do nothing when keyup.key is neither Enter nor ' ' (or Spacebar on older browsers) */
-    if (
-      (ev as KeyboardEvent).type === 'keyup' &&
-      !['Enter', ' ', 'Spacebar'].includes((ev as KeyboardEvent).key)
-    ) return;
+    let newSelectedDate: Date | undefined = undefined;
 
-    const selectedCalendarDay = toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
+    if (ev.type === 'keyup') {
+      const { altKey, keyCode } = ev as KeyboardEvent;
+      const keyCodeNum = keyCode as typeof navigationKeyCodeSet.all extends Set<infer T> ? T : never;
 
-    /** NOTE: Required condition check else these will trigger unwanted re-rendering */
-    if (
-      selectedCalendarDay == null ||
-      [
-        'day--empty',
-        'day--disabled',
-        'day--focused',
-        'weekday-label',
-      ].some(className => selectedCalendarDay.classList.contains(className))
-    ) return;
+      if (!calendarKeyCodeSet.has(keyCodeNum)) return;
 
-    const { fullDate } = selectedCalendarDay;
+      const {
+        currentDate,
+        date,
+        disabledDatesSet,
+        disabledDaysSet,
+        max,
+        min,
+      } = this.data;
+
+      newSelectedDate = isInTargetMonth(currentDate, date) ?
+        computeNextSelectedDate({
+          currentDate,
+          date,
+          disabledDatesSet,
+          disabledDaysSet,
+          hasAltKey: altKey,
+          keyCode: keyCodeNum,
+          maxTime: +max,
+          minTime: +min,
+        }) :
+        currentDate;
+    } else {
+      const selectedCalendarDay = toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
+
+      /** NOTE: Required condition check else these will trigger unwanted re-rendering */
+      if (
+        selectedCalendarDay == null ||
+        [
+          'day--empty',
+          'day--disabled',
+          'day--focused',
+          'weekday-label',
+        ].some(className => selectedCalendarDay.classList.contains(className))
+      ) {
+        return;
+      }
+
+      newSelectedDate = selectedCalendarDay.fullDate;
+    }
+
+    if (newSelectedDate == null) return;
 
     dispatchCustomEvent(this, 'date-updated', {
       isKeypress: false,
-      value: new Date(fullDate),
+      value: new Date(newSelectedDate),
     });
 
     return;
