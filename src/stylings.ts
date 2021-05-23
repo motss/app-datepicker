@@ -13,6 +13,8 @@ export const datePickerStyling = css`
   --date-picker-width: var(--date-picker-base-width);
   --date-picker-height: var(--date-picker-base-height);
 
+  display: flex;
+  flex-direction: column;
   min-width: var(--date-picker-width);
   max-width: var(--date-picker-width);
   min-height: var(--date-picker-height);
@@ -42,11 +44,15 @@ export const datePickerStyling = css`
 .month-and-year-selector {
   display: flex;
   align-items: center;
+  font-size: 13px;
 }
 
-.selected-year,
-.month-dropdown {
+.selected-year {
   margin: 0 0 0 4px;
+}
+
+.month-dropdown {
+  margin: 0 0 0 -8px;
 }
 
 .month-pagination {

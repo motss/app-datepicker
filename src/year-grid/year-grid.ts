@@ -1,6 +1,7 @@
 import '../year-grid-button/app-year-grid-button.js';
 
 import { property } from '@lit/reactive-element/decorators/property.js';
+import { queryAsync } from '@lit/reactive-element/decorators/query-async.js';
 import type { TemplateResult } from 'lit';
 import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
@@ -19,6 +20,9 @@ import type { YearGridData, YearGridProperties } from './typings.js';
 export class YearGrid extends LitElement implements YearGridProperties {
   @property({ attribute: false })
   public data: YearGridData;
+
+  @queryAsync('app-year-grid-button[data-year][unelevated]')
+  public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
 
   public static styles = [
     resetShadowRoot,
@@ -40,6 +44,14 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
   protected shouldUpdate(): boolean {
     return this.data.formatters != null;
+  }
+
+  protected async updated(): Promise<void> {
+    const selectedYearGridButton = await this.selectedYearGridButton;
+
+    if (selectedYearGridButton) {
+      selectedYearGridButton.scrollIntoView();
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {

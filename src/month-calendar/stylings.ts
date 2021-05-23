@@ -19,7 +19,7 @@ export const monthCalendarStyling = css`
 .calendar-day-value,
 .weekday-value {
   position: relative;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 th,
@@ -27,9 +27,16 @@ td {
   padding: 0;
 }
 
+.weekday {
+  max-height: 28px;
+  height: 28px;
+}
+
 .weekday-value {
-  padding: 0 0 9px;
+  max-height: 16px;
+  height: 16px;
   color: #8c8c8c;
+  line-height: 1;
 }
 
 .calendar-day::after,

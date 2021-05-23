@@ -92,8 +92,9 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     if (changedProperties.has('startView')) {
       const oldStartView = changedProperties.get('startView') as CalendarView;
+      const newStartView = this.startView;
 
-      if (!calendarViews.includes(this.startView)) {
+      if (!calendarViews.includes(newStartView)) {
         this.startView = this.startView = oldStartView;
       }
     }
@@ -171,11 +172,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   protected updated(changedProperties: DatePickerChangedProperties): void {
     super.updated(changedProperties);
 
-    if (this.startView === 'calendar') {
-      // TODO: Do stuff for calendar
-    } else if (this.startView === 'yearGrid') {
-      // TODO: Do stuff for year grid
-    }
+    // FIXME: focus element based on start view
+    // if (this.startView === 'calendar') {
+    //   // TODO: Do stuff for calendar
+    // } else if (this.startView === 'yearGrid') {
+    //   // TODO: Do stuff for year grid
+    // }
   }
 
   protected render(): TemplateResult {
@@ -223,12 +225,11 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         <div class=selected-month>${selectedMonth}</div>
         <div class=selected-year>${selectedYear}</div>
 
-        <div class=month-dropdown>
-          <mwc-icon-button
-            label=${this.yearDropdownLabel}
-            @click=${this.#updateStartView}
-          >${iconArrowDropdown}</mwc-icon-button>
-        </div>
+        <mwc-icon-button
+          class=month-dropdown
+          label=${this.yearDropdownLabel}
+          @click=${this.#updateStartView}
+        >${iconArrowDropdown}</mwc-icon-button>
       </div>
 
       ${
