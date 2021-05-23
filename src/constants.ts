@@ -64,3 +64,14 @@ export const calendarKeyCodeSet = new Set([
   keyCodesRecord.ENTER,
   keyCodesRecord.SPACE,
 ]);
+
+export const yearGridKeyCodeSet = new Set([
+  keyCodesRecord.ARROW_DOWN,
+  keyCodesRecord.ARROW_LEFT,
+  keyCodesRecord.ARROW_RIGHT,
+  keyCodesRecord.ARROW_UP,
+  keyCodesRecord.END,
+  keyCodesRecord.ENTER,
+  keyCodesRecord.HOME,
+  keyCodesRecord.SPACE,
+]);

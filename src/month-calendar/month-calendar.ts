@@ -8,7 +8,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { resetShadowRoot } from '../ stylings.js';
 import type { navigationKeyCodeSet } from '../constants.js';
 import { calendarKeyCodeSet, keyCodesRecord } from '../constants.js';
-import { computeNextSelectedDate } from '../helpers/compute-next-focused-date.js';
+import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
