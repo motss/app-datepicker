@@ -56,10 +56,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   @state()
   private _selectedDate: Date;
 
-  // @state()
-  // private startView: CalendarView = 'calendar';
-  //#endregion private states
-
   //#region private properties
   #formatters: Formatters;
   private _TODAY_DATE: Date;

@@ -53,17 +53,18 @@ export class YearGrid extends LitElement implements YearGridProperties {
     return this.data.formatters != null;
   }
 
+  public willUpdate(changedProperties: YearGridChangedProperties): void {
+    if (changedProperties.has('data')) {
+      this.#selectedYear = this.data.date.getUTCFullYear();
+    }
+  }
+
   protected async firstUpdated(): Promise<void> {
     const selectedYearGridButton = await this.selectedYearGridButton;
 
     if (selectedYearGridButton) {
+      selectedYearGridButton.focus();
       selectedYearGridButton.scrollIntoView();
-    }
-  }
-
-  public willUpdate(changedProperties: YearGridChangedProperties): void {
-    if (changedProperties.has('data')) {
-      this.#selectedYear = this.data.date.getUTCFullYear();
     }
   }
 
@@ -110,8 +111,6 @@ export class YearGrid extends LitElement implements YearGridProperties {
   }
 
   #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
-
-
     if (['keydown', 'keyup'].includes(ev.type)) {
       const { keyCode } = ev as KeyboardEvent;
       const keyCodeNum = keyCode as typeof keyCode extends Set<infer U> ? U : never;
@@ -119,6 +118,9 @@ export class YearGrid extends LitElement implements YearGridProperties {
       if (
         !(yearGridNavigationKeyCodeSet.has(keyCodeNum) && ev.type === 'keydown')
       ) return;
+
+      // Stop scrolling with arrow keys
+      ev.preventDefault();
 
       // Focus new year with Home, End, and arrow keys
       const {
@@ -136,12 +138,11 @@ export class YearGrid extends LitElement implements YearGridProperties {
         `button[data-year="${selectedYear}"]`
       );
 
+      this.#selectedYear = selectedYear;
+
       if (selectedYearGridButton) {
         selectedYearGridButton.focus();
-        selectedYearGridButton.scrollIntoView();
       }
-
-      this.#selectedYear = selectedYear;
     } else {
       const selectedYearGridButton = toClosestTarget(ev, `button[data-year]`);
 
