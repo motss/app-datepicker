@@ -55,13 +55,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "check": "package-check",
-    "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
+    "clean": "rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "npm x --no @web/dev-server@latest -- wds --node-resolve -dw -p 4343 -a index.html",
     "ts": "tsc",
-    "watch": "tsc --watch",
+    "watch": "npm run clean && tsc --watch",
     "prepare": "npm x --no -- husky install",
     "postinstall": "npm dedupe"
   },

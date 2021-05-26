@@ -1,6 +1,6 @@
 import '@material/mwc-icon-button';
-import './month-calendar/app-month-calendar.js';
-import './year-grid/app-year-grid.js';
+import '../month-calendar/app-month-calendar.js';
+import '../year-grid/app-year-grid.js';
 
 import type { TemplateResult } from 'lit';
 import { nothing } from 'lit';
@@ -10,24 +10,25 @@ import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { resetShadowRoot } from './ stylings.js';
-import { calendarViews,MAX_DATE } from './constants.js';
-import { adjustOutOfRangeValue } from './helpers/adjust-out-of-range-value.js';
-import { dateValidator } from './helpers/date-validator.js';
-import { dispatchCustomEvent } from './helpers/dispatch-custom-event.js';
-import { splitString } from './helpers/split-string.js';
-import { toDateString } from './helpers/to-date-string.js';
-import { toFormatters } from './helpers/to-formatters.js';
-import { toMultiCalendars } from './helpers/to-multi-calendars.js';
-import { toResolvedDate } from './helpers/to-resolved-date.js';
-import type { MaybeDate } from './helpers/typings.js';
-import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from './icons.js';
-import { DatePickerMinMaxMixin } from './mixins/date-picker-min-max-mixin.js';
-import { DatePickerMixin } from './mixins/date-picker-mixin.js';
-import type { MonthCalendarData } from './month-calendar/typings.js';
+import { calendarViews,MAX_DATE } from '../constants.js';
+import { adjustOutOfRangeValue } from '../helpers/adjust-out-of-range-value.js';
+import { dateValidator } from '../helpers/date-validator.js';
+import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { splitString } from '../helpers/split-string.js';
+import { toDateString } from '../helpers/to-date-string.js';
+import { toFormatters } from '../helpers/to-formatters.js';
+import { toMultiCalendars } from '../helpers/to-multi-calendars.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import type { MaybeDate } from '../helpers/typings.js';
+import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
+import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
+import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import type { MonthCalendarData } from '../month-calendar/typings.js';
+import { resetShadowRoot } from '../stylings.js';
+import type { CalendarView, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
+import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
-import type { CalendarView, DatePickerChangedProperties, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from './typings.js';
-import type { YearGridData } from './year-grid/typings.js';
+import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
   //#region public properties
@@ -83,9 +84,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     this.#formatters = toFormatters(this.locale);
   }
 
-  protected update(changedProperties: DatePickerChangedProperties): void {
-    super.update(changedProperties);
-
+  public willUpdate(changedProperties: DatePickerChangedProperties): void {
     if (changedProperties.has('locale')) {
       this.#formatters = toFormatters(this.locale);
     }

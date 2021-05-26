@@ -5,7 +5,6 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { resetShadowRoot } from '../ stylings.js';
 import type { navigationKeyCodeSet } from '../constants.js';
 import { calendarKeyCodeSet, keyCodesRecord } from '../constants.js';
 import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
@@ -13,6 +12,7 @@ import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { baseStyling, resetShadowRoot } from '../stylings.js';
 import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarChangedProperties, MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
@@ -26,6 +26,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   };
 
   public static styles = [
+    baseStyling,
     resetShadowRoot,
     monthCalendarStyling,
   ];
@@ -173,9 +174,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                 /** NOTE: lit-plugin does not like this */
                 const calendarDayClasses = classMap({
                   'calendar-day': true,
-                  'day--disabled': disabled,
                   'day--today': +todayDate === curTime,
-                  'day--selected': !disabled && isSelectedDate,
                 }) as unknown as string;
 
                 return html`
@@ -187,10 +186,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                   aria-disabled=${disabled ? 'true' : 'false'}
                   aria-label=${label}
                   aria-selected=${isSelectedDate ? 'true' : 'false'}
+                  data-day=${value}
                   .fullDate=${fullDate}
-                  .day=${value}
                 >
-                  <div class=calendar-day-value part=day>${value}</div>
+                  <div class=calendar-day-value>${value}</div>
                 </td>
                 `;
               })

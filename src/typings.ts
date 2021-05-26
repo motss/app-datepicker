@@ -20,13 +20,6 @@ export type Constructor<T> = new (...args: any[]) => T;
 export interface DatePickerProperties extends DatePickerMixinProperties,
 DatePickerMinMaxProperties {}
 
-export type DatePickerChangedProperties = ChangedProperties<DatePickerProperties & {
-  _currentDate: Date;
-  _max: Date;
-  _min: Date;
-  _selectedDate: Date;
-}>;
-
 export interface DateUpdatedEvent {
   isKeypress: boolean;
   value: Date;
@@ -47,8 +40,6 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
   dateFormat: DateTimeFormatter;
   yearFormat: DateTimeFormatter;
 }
-
-
 
 export interface SupportedCustomEvent {
   ['animation-finished']: null;

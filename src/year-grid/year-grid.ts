@@ -7,13 +7,12 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { resetShadowRoot } from '../ stylings.js';
 import { keyCodesRecord, MAX_DATE, yearGridKeyCodeSet } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
-import { APP_YEAR_GRID_BUTTON_NAME } from '../year-grid-button/constants.js';
+import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
 import { toNextSelectedYear } from './ to-next-selected-year.js';
 import { yearGridStyling } from './stylings.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties } from './typings.js';
@@ -22,10 +21,12 @@ export class YearGrid extends LitElement implements YearGridProperties {
   @property({ attribute: false })
   public data: YearGridData;
 
-  @queryAsync('app-year-grid-button[data-year][unelevated]')
+  @queryAsync('button[data-year][aria-selected="true"]')
   public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
 
   public static styles = [
+    baseStyling,
+    resetButton,
     resetShadowRoot,
     yearGridStyling,
   ];
@@ -58,9 +59,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
     }
   }
 
-  protected update(changedProperties: YearGridChangedProperties): void {
-    super.update(changedProperties);
-
+  public willUpdate(changedProperties: YearGridChangedProperties): void {
     if (changedProperties.has('data')) {
       this.#selectedYear = this.data.date.getUTCFullYear();
     }
@@ -89,13 +88,23 @@ export class YearGrid extends LitElement implements YearGridProperties {
         const isYearSelected = fullYear === date.getUTCFullYear();
 
         return html`
-        <app-year-grid-button
+        <button
+          class="year-grid-button"
           tabindex=${isYearSelected ? '0' : '-1'}
           data-year=${fullYear}
           label=${yearLabel}
-          ?unelevated=${isYearSelected}
-        ></app-year-grid-button>
+          aria-selected=${isYearSelected ? 'true' : 'false'}
+        ></button>
         `;
+
+        // return html`
+        // <app-year-grid-button
+        //   tabindex=${isYearSelected ? '0' : '-1'}
+        //   data-year=${fullYear}
+        //   label=${yearLabel}
+        //   ?unelevated=${isYearSelected}
+        // ></app-year-grid-button>
+        // `;
       })
     }</div>
     `;
@@ -125,7 +134,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
         });
 
         const selectedYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
-          `${APP_YEAR_GRID_BUTTON_NAME}[data-year="${selectedYear}"]`
+          `button[data-year="${selectedYear}"]`
         );
 
         if (selectedYearGridButton) {
@@ -138,7 +147,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
         return;
       }
     } else {
-      const selectedYearGridButton = toClosestTarget(ev, `${APP_YEAR_GRID_BUTTON_NAME}[data-year]`);
+      const selectedYearGridButton = toClosestTarget(ev, `button[data-year]`);
 
       /** Do nothing when not tapping on the year button */
       if (selectedYearGridButton == null) return;

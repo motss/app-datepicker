@@ -4,7 +4,6 @@ import type { CalendarViewTuple } from './typings.js';
 //#region constants
 export const APP_DATE_PICKER_DIALOG_NAME = 'app-date-picker-dialog';
 export const APP_DATE_PICKER_INPUT_NAME = 'app-date-picker-input';
-export const APP_DATE_PICKER_NAME = 'app-date-picker';
 export const DEFAULT_LOCALE = 'en-US';
 export const MAX_DATE = toResolvedDate('2100-12-31');
 export const ONE_DAY_IN_SECONDS = 864e5;
