@@ -31,11 +31,31 @@ export const yearGridStyling = css`
   color: var(--year-grid-color, var(--base-selected-color));
 }
 
+.year-grid > .year-grid-button:focus::before,
+.year-grid > .year-grid-button:hover::before,
+.year-grid > .year-grid-button.year--today:not([aria-selected="true"])::after {
+  border-style: solid;
+  border-width: 1px;
+}
+
 .year-grid > .year-grid-button::before {
   content: attr(data-year);
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 26px;
+  border-radius: 50px;
   z-index: 1;
 }
+.year-grid > .year-grid-button:focus::before {
+  border-color: var(--year-grid-focus-color, var(--base-focus-color));
+}
+.year-grid > .year-grid-button:hover::before {
+  border-color: var(--year-grid-hover-color, var(--base-hover-color));
+}
+
 .year-grid > .year-grid-button::after {
   content: '';
   position: absolute;
@@ -46,15 +66,12 @@ export const yearGridStyling = css`
 .year-grid > .year-grid-button[aria-selected="true"]::after {
   background-color: var(--year-grid-background-color, var(--base-selected-background-color));
 }
-.year-grid > .year-grid-button:focus::after,
-.year-grid > .year-grid-button:hover::after {
-  border-style: solid;
-  border-width: 1px;
+.year-grid > .year-grid-button.year--today:not([aria-selected="true"])::after {
+  border-color: var(--year-grid-today-color, var(--base-today-color));
 }
-.year-grid > .year-grid-button:focus::after {
-  border-color: var(--year-grid-focus-color, var(--base-focus-color));
-}
-.year-grid > .year-grid-button:hover::after {
-  border-color: var(--year-grid-hover-color, var(--base-hover-color));
+.year-grid > .year-grid-button.year--today:not([aria-selected="true"]):focus::after,
+.year-grid > .year-grid-button.year--today:not([aria-selected="true"]):hover::after {
+  width: 48px;
+  height: 24px;
 }
 `;

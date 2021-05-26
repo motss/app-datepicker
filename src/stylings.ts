@@ -7,9 +7,10 @@ export const baseStyling = css`
   --base-focus-color: #b5b5b5;
   --base-hover-color: #b5b5b5;
   --base-primary-color: #000;
-  --base-selected-color: #fff;
   --base-selected-background-color: #1d1d1d;
+  --base-selected-color: #fff;
   --base-text-color: #000;
+  --base-today-color: #000;
   --base-weekday-color: #8c8c8c;
 }
 `;

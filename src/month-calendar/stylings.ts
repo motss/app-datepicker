@@ -89,7 +89,7 @@ td {
   opacity: 1;
 }
 .calendar-day.day--today::after {
-  border-color: var(--date-picker-today-color, var(--base-selected-background-color));
+  border-color: var(--date-picker-today-color, var(--base-today-color));
 }
 .calendar-day:focus::after {
   border-color: var(--date-picker-focus-color, var(--base-focus-color));

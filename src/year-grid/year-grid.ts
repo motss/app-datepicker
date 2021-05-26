@@ -5,7 +5,7 @@ import { queryAsync } from '@lit/reactive-element/decorators/query-async.js';
 import type { TemplateResult } from 'lit';
 import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { classMap } from 'lit/directives/class-map.js';
 
 import { keyCodesRecord, MAX_DATE, yearGridKeyCodeSet } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
@@ -32,6 +32,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
   ];
 
   #selectedYear: number;
+  #todayYear: number;
 
   constructor() {
     super();
@@ -45,6 +46,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
       min: todayDate,
     };
     this.#selectedYear = todayDate.getUTCFullYear();
+    this.#todayYear = todayDate.getUTCFullYear();
   }
 
   protected shouldUpdate(): boolean {
@@ -81,17 +83,18 @@ export class YearGrid extends LitElement implements YearGridProperties {
     return html`
     <div class="year-grid" @click=${this.#updateYear} @keyup=${this.#updateYear}>${
       yearList.map((year) => {
-        const yearDate = toUTCDate(year, 1, 1);
-        const yearLabel = yearFormat(yearDate);
-        const fullYear = yearDate.getUTCFullYear();
+        const yearLabel = yearFormat(year);
         // FIXME: To update tabindex
-        const isYearSelected = fullYear === date.getUTCFullYear();
+        const isYearSelected = year === date.getUTCFullYear();
 
         return html`
         <button
-          class="year-grid-button"
+          class=${classMap({
+            'year-grid-button': true,
+            'year--today': this.#todayYear === year,
+          })}
           tabindex=${isYearSelected ? '0' : '-1'}
-          data-year=${fullYear}
+          data-year=${year}
           label=${yearLabel}
           aria-selected=${isYearSelected ? 'true' : 'false'}
         ></button>
