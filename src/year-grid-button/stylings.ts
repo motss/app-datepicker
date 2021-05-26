@@ -23,7 +23,7 @@ export const yearGridButtonStyling = css`
   background-color: inherit;
   color: inherit;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   border-radius: 52px;
   pointer-events: auto;
 }

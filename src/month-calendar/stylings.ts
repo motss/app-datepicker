@@ -43,7 +43,6 @@ td {
   width: 32px;
   height: 32px;
   color: var(--year-grid-color, var(--base-primary-color));
-  font-size: 14px;
 }
 @media (any-hover: hover) {
   .calendar-day:not([aria-hidden="true"]):not([aria-disabled="true"]):hover {

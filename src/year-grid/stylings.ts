@@ -20,7 +20,7 @@ export const yearGridStyling = css`
   width: 56px;
   height: 32px;
   color: var(--year-grid-color, var(--base-primary-color));
-  font-size: 14px;
+  font-size: 13px;
 }
 @media (any-hover: hover) {
   .year-grid > .year-grid-button:not([aria-disabled="true"]):hover {
