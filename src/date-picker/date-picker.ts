@@ -24,7 +24,7 @@ import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.j
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { MonthCalendarData } from '../month-calendar/typings.js';
-import { resetShadowRoot } from '../stylings.js';
+import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { CalendarView, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
 import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
@@ -68,6 +68,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   public static styles = [
     resetShadowRoot,
     datePickerStyling,
+    webkitScrollbarStyling,
   ];
 
   constructor() {

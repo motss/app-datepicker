@@ -73,3 +73,35 @@ svg {
   pointer-events: none;
 }
 `;
+
+export const webkitScrollbarStyling = css`
+/**
+ * NOTE: Webkit-specific scrollbar styling
+ */
+::-webkit-scrollbar {
+  width: 8px;
+  background: none;
+}
+::-webkit-scrollbar-thumb {
+  width: inherit;
+  background-color: #cdcdcd;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, .35);
+}
+::-webkit-scrollbar-thumb:active {
+  background-color: rgba(0, 0, 0, .55);
+}
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: #686868;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #494949;
+  }
+  ::-webkit-scrollbar-thumb:active {
+    background-color: #5a5a5a;
+  }
+}
+`;

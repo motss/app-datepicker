@@ -189,7 +189,6 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                   data-day=${value}
                   .fullDate=${fullDate}
                 >
-                  <div class=calendar-day-value>${value}</div>
                 </td>
                 `;
               })

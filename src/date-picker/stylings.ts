@@ -53,6 +53,11 @@ export const datePickerStyling = css`
 
 .month-dropdown {
   margin: 0 0 0 -8px;
+  transition: transform 300ms cubic-bezier(0, 0, .4, 1);
+  will-change: transform;
+}
+:host([startview="yearGrid"]) .month-dropdown {
+  transform: rotateZ(180deg);
 }
 
 .month-pagination {
@@ -66,6 +71,7 @@ export const datePickerStyling = css`
   height: 100%;
   padding: 4px 20px 8px 12px;
   overflow: auto;
+  scrollbar-width: thin;
 }
 
 .calendar {

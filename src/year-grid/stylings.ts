@@ -27,9 +27,6 @@ export const yearGridStyling = css`
     cursor: pointer;
   }
 }
-.year-grid > .year-grid-button[aria-selected="true"] {
-  color: var(--year-grid-color, var(--base-selected-color));
-}
 
 .year-grid > .year-grid-button:focus::before,
 .year-grid > .year-grid-button:hover::before,
@@ -48,6 +45,9 @@ export const yearGridStyling = css`
   height: 26px;
   border-radius: 50px;
   z-index: 1;
+}
+.year-grid > .year-grid-button[aria-selected="true"]::before {
+  color: var(--year-grid-color, var(--base-selected-color));
 }
 .year-grid > .year-grid-button:focus::before {
   border-color: var(--year-grid-focus-color, var(--base-focus-color));

@@ -39,16 +39,6 @@ td {
   line-height: 1;
 }
 
-.calendar-day::after,
-.calendar-day-value {
-  top: calc((32px - 28px) / 2);
-  right: 0;
-  bottom: 0;
-  left: calc((32px - 28px) / 2);
-  width: 28px;
-  height: 28px;
-}
-
 .calendar-day {
   width: 32px;
   height: 32px;
@@ -60,57 +50,57 @@ td {
     cursor: pointer;
   }
 }
-.calendar-day[aria-selected="true"] {
-  color: var(--date-picker-calendar-day-color, var(--base-selected-color));
-}
 
-.calendar-day::after {
-  content: '';
-  display: block;
+.calendar-day:not([aria-hidden="true"])::before,
+.calendar-day:not([aria-hidden="true"])::after {
+  content: attr(data-day);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
+  top: calc((32px - 28px) / 2);
+  left: calc((32px - 28px) / 2);
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  opacity: 0;
   pointer-events: none;
-  will-change: opacity;
 }
-.calendar-day.day--today::after,
+.calendar-day.day--today:not([aria-selected="true"])::before,
 .calendar-day:hover::after,
 .calendar-day:focus::after {
   width: 26px;
   height: 26px;
-  opacity: 1;
   border-style: solid;
   border-width: 1px;
 }
+
+.calendar-day::before {
+  z-index: 1;
+}
+.calendar-day[aria-selected="true"]::before {
+  color: var(--date-picker-calendar-day-color, var(--base-selected-color));
+}
+.calendar-day.day--today:not([aria-selected="true"])::before {
+  border-color: var(--date-picker-today-color, var(--base-today-color));
+}
+.calendar-day.day--today:not([aria-selected="true"]):focus::before,
+.calendar-day.day--today:not([aria-selected="true"]):hover::before {
+  top: calc((32px - 26px) / 2);
+  left: calc((32px - 26px) / 2);
+  width: 24px;
+  height: 24px;
+}
+
+.calendar-day:not([aria-hidden="true"])::after {
+  content: '';
+}
 .calendar-day[aria-selected="true"]::after {
   background-color: var(--date-picker-selected-background-color, var(--base-selected-background-color));
-  opacity: 1;
-}
-.calendar-day.day--today::after {
-  border-color: var(--date-picker-today-color, var(--base-today-color));
 }
 .calendar-day:focus::after {
   border-color: var(--date-picker-focus-color, var(--base-focus-color));
 }
 .calendar-day:hover::after {
   border-color: var(--date-picker-hover-color, var(--base-hover-color));
-}
-.calendar-day[aria-disabled="true"],
-.calendar-day.day--empty {
-  background-color: none;
-  outline: none;
-  opacity: 0;
-}
-
-.calendar-day > .calendar-day-value {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  position: absolute;
-  color: currentColor;
-  z-index: 1;
 }
 `;
