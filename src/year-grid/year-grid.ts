@@ -1,5 +1,3 @@
-import '../year-grid-button/app-year-grid-button.js';
-
 import { property } from '@lit/reactive-element/decorators/property.js';
 import { queryAsync } from '@lit/reactive-element/decorators/query-async.js';
 import type { TemplateResult } from 'lit';
