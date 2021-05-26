@@ -7,7 +7,7 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { keyCodesRecord, MAX_DATE, yearGridKeyCodeSet } from '../constants.js';
+import { MAX_DATE, yearGridNavigationKeyCodeSet } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -81,7 +81,12 @@ export class YearGrid extends LitElement implements YearGridProperties {
     const yearList = toYearList(min, max);
 
     return html`
-    <div class="year-grid" @click=${this.#updateYear} @keyup=${this.#updateYear}>${
+    <div
+      class="year-grid"
+      @click=${this.#updateYear}
+      @keydown=${this.#updateYear}
+      @keyup=${this.#updateYear}
+    >${
       yearList.map((year) => {
         const yearLabel = yearFormat(year);
         // FIXME: To update tabindex
@@ -99,65 +104,53 @@ export class YearGrid extends LitElement implements YearGridProperties {
           aria-selected=${isYearSelected ? 'true' : 'false'}
         ></button>
         `;
-
-        // return html`
-        // <app-year-grid-button
-        //   tabindex=${isYearSelected ? '0' : '-1'}
-        //   data-year=${fullYear}
-        //   label=${yearLabel}
-        //   ?unelevated=${isYearSelected}
-        // ></app-year-grid-button>
-        // `;
       })
     }</div>
     `;
   }
 
   #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
-    const {
-      date,
-      max,
-      min,
-    } = this.data;
 
-    let year = date.getUTCFullYear();
 
-    if (ev.type === 'keyup') {
+    if (['keydown', 'keyup'].includes(ev.type)) {
       const { keyCode } = ev as KeyboardEvent;
       const keyCodeNum = keyCode as typeof keyCode extends Set<infer U> ? U : never;
 
-      if (keyCodeNum === keyCodesRecord.TAB) return;
+      if (
+        !(yearGridNavigationKeyCodeSet.has(keyCodeNum) && ev.type === 'keydown')
+      ) return;
 
-      if (yearGridKeyCodeSet.has(keyCodeNum)) {
-        const selectedYear = toNextSelectedYear({
-          keyCode: keyCodeNum,
-          max,
-          min,
-          year: this.#selectedYear,
-        });
+      // Focus new year with Home, End, and arrow keys
+      const {
+        max,
+        min,
+      } = this.data;
+      const selectedYear = toNextSelectedYear({
+        keyCode: keyCodeNum,
+        max,
+        min,
+        year: this.#selectedYear,
+      });
 
-        const selectedYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
-          `button[data-year="${selectedYear}"]`
-        );
+      const selectedYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
+        `button[data-year="${selectedYear}"]`
+      );
 
-        if (selectedYearGridButton) {
-          selectedYearGridButton.focus();
-          selectedYearGridButton.scrollIntoView();
-        }
-
-        this.#selectedYear = selectedYear;
-
-        return;
+      if (selectedYearGridButton) {
+        selectedYearGridButton.focus();
+        selectedYearGridButton.scrollIntoView();
       }
+
+      this.#selectedYear = selectedYear;
     } else {
       const selectedYearGridButton = toClosestTarget(ev, `button[data-year]`);
 
       /** Do nothing when not tapping on the year button */
       if (selectedYearGridButton == null) return;
 
-      year = Number(selectedYearGridButton.getAttribute('data-year'));
-    }
+      const year = Number(selectedYearGridButton.getAttribute('data-year'));
 
-    dispatchCustomEvent(this, 'year-updated', { year });
+      dispatchCustomEvent(this, 'year-updated', { year });
+    }
   };
 }

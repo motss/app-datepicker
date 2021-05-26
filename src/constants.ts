@@ -34,6 +34,13 @@ export const keyCodesRecord = {
   ARROW_DOWN: 40,
 } as const;
 
+export const confirmKeyCodeList = [
+  keyCodesRecord.ENTER,
+  keyCodesRecord.SPACE,
+] as const;
+
+export const confirmKeyCodeSet = new Set(confirmKeyCodeList);
+
 export const navigationKeyCodes = {
   next: [
     keyCodesRecord.ARROW_DOWN,
@@ -60,17 +67,14 @@ export const navigationKeyCodeSet = {
 
 export const calendarKeyCodeSet = new Set([
   ...navigationKeyCodeSet.all,
-  keyCodesRecord.ENTER,
-  keyCodesRecord.SPACE,
+  ...confirmKeyCodeList,
 ]);
 
-export const yearGridKeyCodeSet = new Set([
+export const yearGridNavigationKeyCodeSet = new Set([
   keyCodesRecord.ARROW_DOWN,
   keyCodesRecord.ARROW_LEFT,
   keyCodesRecord.ARROW_RIGHT,
   keyCodesRecord.ARROW_UP,
   keyCodesRecord.END,
-  keyCodesRecord.ENTER,
   keyCodesRecord.HOME,
-  keyCodesRecord.SPACE,
 ]);
