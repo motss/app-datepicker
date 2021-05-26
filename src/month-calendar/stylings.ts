@@ -63,26 +63,30 @@ td {
 .calendar-day[aria-selected="true"] {
   color: var(--date-picker-calendar-day-color, var(--base-selected-color));
 }
+
 .calendar-day::after {
   content: '';
   display: block;
-  content: '';
   position: absolute;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   opacity: 0;
   pointer-events: none;
   will-change: opacity;
 }
-.calendar-day[aria-selected="true"]::after {
-  background-color: var(--date-picker-selected-background-color, var(--base-selected-background-color));
-  opacity: 1;
-}
 .calendar-day.day--today::after,
 .calendar-day:hover::after,
 .calendar-day:focus::after {
+  width: 26px;
+  height: 26px;
   opacity: 1;
   border-style: solid;
   border-width: 1px;
+}
+.calendar-day[aria-selected="true"]::after {
+  background-color: var(--date-picker-selected-background-color, var(--base-selected-background-color));
+  opacity: 1;
 }
 .calendar-day.day--today::after {
   border-color: var(--date-picker-today-color, var(--base-selected-background-color));
