@@ -7,6 +7,8 @@ import { nothing } from 'lit';
 import { html,LitElement } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { calendar } from 'nodemod/dist/calendar/calendar.js';
+import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { calendarViews,MAX_DATE } from '../constants.js';
@@ -16,13 +18,11 @@ import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { splitString } from '../helpers/split-string.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
-import { toMultiCalendars } from '../helpers/to-multi-calendars.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import type { MaybeDate } from '../helpers/typings.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
-import type { MonthCalendarData } from '../month-calendar/typings.js';
 import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { CalendarView, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
 import type { YearGridData } from '../year-grid/typings.js';
@@ -176,6 +176,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     }
   }
 
+  //  FIXME: To not render min and max buttons
   protected render(): TemplateResult {
     const formatters = this.#formatters;
     const currentDate = this._currentDate;
@@ -232,77 +233,78 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       'show-week-number': showWeekNumber,
     })}>${
       isStartViewYearGrid ?
-        html`
-        <app-year-grid
-          class=year-grid
-          .data=${{
-            date: selectedDate,
-            max,
-            min,
-            formatters,
-          } as YearGridData}
-          @year-updated=${this.#updateYear}
-        ></app-year-grid>
-        ` :
-        this.#renderCalendar()
+      html`
+      <app-year-grid
+        class=year-grid
+        .data=${{
+          date: selectedDate,
+          max,
+          min,
+          formatters,
+        } as YearGridData}
+        @year-updated=${this.#updateYear}
+      ></app-year-grid>
+      ` :
+      this.#renderCalendar()
     }</div>
     `;
   }
 
-  // FIXME: Optimize this code
   #renderCalendar = (): TemplateResult => {
-    const currentDate = this._currentDate;
+    const firstDayOfWeek = this.firstDayOfWeek;
+    const formatters = this.#formatters;
     const max = this._max;
     const min = this._min;
+    const selectedDate = this._selectedDate;
     const showWeekNumber = this.showWeekNumber;
-    const formatters = this.#formatters;
     const {
       dayFormat,
       fullDateFormat,
       longWeekdayFormat,
       narrowWeekdayFormat,
-    } = formatters;
+    } = this.#formatters;
 
+    const weekdays = getWeekdays({
+      longWeekdayFormat,
+      narrowWeekdayFormat,
+      firstDayOfWeek: this.firstDayOfWeek,
+      showWeekNumber,
+      weekLabel: this.weekLabel,
+    });
     const {
-      calendars,
+      calendar: calendarMonth,
       disabledDatesSet,
       disabledDaysSet,
-      weekdays,
-    } = toMultiCalendars({
+    } = calendar({
       dayFormat,
-      disabledDates: splitString(this.disabledDates, toResolvedDate),
-      disabledDays: splitString(this.disabledDays, Number),
-      firstDayOfWeek: this.firstDayOfWeek,
       fullDateFormat,
       locale: this.locale,
-      longWeekdayFormat,
-      max,
-      min,
-      narrowWeekdayFormat,
-      currentDate,
-      showWeekNumber: Boolean(this.showWeekNumber),
-      weekLabel: this.weekLabel,
-      weekNumberType: this.weekNumberType,
-    });
-    const [{ calendar }] = calendars;
-    const data: MonthCalendarData = {
-      calendar,
-      date: this._selectedDate,
-      disabledDatesSet,
-      disabledDaysSet,
-      currentDate,
+      disabledDates: splitString(this.disabledDates, toResolvedDate),
+      disabledDays: splitString(this.disabledDays, Number),
+      firstDayOfWeek,
       max,
       min,
       showWeekNumber,
-      todayDate: this._TODAY_DATE,
-      weekdays,
-      formatters,
-    };
+      weekNumberType: this.weekNumberType,
+      selectedDate,
+    });
 
     return html`
     <app-month-calendar
       class=calendar
-      .data=${data}
+      .data=${{
+        calendar: calendarMonth,
+        currentDate: this._currentDate,
+        date: selectedDate,
+        disabledDatesSet,
+        disabledDaysSet,
+        formatters,
+        max,
+        min,
+        showWeekNumber,
+        todayDate: this._TODAY_DATE,
+        weekdays,
+      }}
       @date-updated=${this.#updateSelectedDate}
     ></app-month-calendar>
     `;
@@ -321,6 +323,13 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     );
 
     this._currentDate = newCurrentDate;
+  };
+
+  #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {
+    const newSelectedDate = new Date(maybeDate);
+
+    this._selectedDate = newSelectedDate;
+    this._currentDate = new Date(newSelectedDate);
   };
 
   #updateSelectedDate = ({
@@ -342,12 +351,5 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   }: CustomEvent<YearUpdatedEvent>): void => {
     this.#updateSelectedAndCurrentDate(this._selectedDate.setUTCFullYear(year));
     this.startView = 'calendar';
-  };
-
-  #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {
-    const newSelectedDate = new Date(maybeDate);
-
-    this._selectedDate = newSelectedDate;
-    this._currentDate = new Date(newSelectedDate);
   };
 }
