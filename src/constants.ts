@@ -65,10 +65,7 @@ export const navigationKeyCodeSet = {
   dayPrevious: new Set([keyCodesRecord.ARROW_LEFT, ...navigationKeyCodes.previous]),
 } as const;
 
-export const calendarKeyCodeSet = new Set([
-  ...navigationKeyCodeSet.all,
-  ...confirmKeyCodeList,
-]);
+export const calendarKeyCodeSet = new Set(navigationKeyCodeSet.all);
 
 export const yearGridNavigationKeyCodeSet = new Set([
   keyCodesRecord.ARROW_DOWN,

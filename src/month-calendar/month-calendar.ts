@@ -5,8 +5,7 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
-import type { navigationKeyCodeSet } from '../constants.js';
-import { calendarKeyCodeSet, keyCodesRecord } from '../constants.js';
+import { keyCodesRecord, navigationKeyCodeSet } from '../constants.js';
 import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
@@ -14,11 +13,20 @@ import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import { monthCalendarStyling } from './stylings.js';
-import type { MonthCalendarChangedProperties, MonthCalendarData, MonthCalendarProperties } from './typings.js';
+import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
 export class MonthCalendar extends LitElement implements MonthCalendarProperties {
   @property({ attribute: false })
   public data: MonthCalendarData;
+
+  @queryAsync('.calendar-day[aria-selected="true"]')
+  public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
+
+  /**
+   * NOTE(motss): This is required to avoid selected date being focused on each update.
+   * Selected date should ONLY be focused during navigation with keyboard.
+   */
+  #shouldFocusSelectedDate = false;
 
   public static shadowRootOptions = {
     ...LitElement.shadowRootOptions,
@@ -30,9 +38,6 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     resetShadowRoot,
     monthCalendarStyling,
   ];
-
-  @queryAsync('.calendar-day[aria-selected="true"]')
-  public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
   public constructor() {
     super();
@@ -59,13 +64,15 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     return this.data.formatters != null;
   }
 
-  protected async updated(changedProperties: MonthCalendarChangedProperties): Promise<void> {
-    super.updated(changedProperties);
+  protected async updated(): Promise<void> {
+    if (this.#shouldFocusSelectedDate) {
+      const selectedCalendarDay = await this.selectedCalendarDay;
 
-    const selectedCalendarDay = await this.selectedCalendarDay;
+      if (selectedCalendarDay) {
+        selectedCalendarDay.focus();
+      }
 
-    if (selectedCalendarDay) {
-      selectedCalendarDay.focus();
+      this.#shouldFocusSelectedDate = false;
     }
   }
 
@@ -96,7 +103,12 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       const calendarCaptionId = `calendar-caption-${id}`;
       const [, [, secondMonthSecondCalendarDay]] = calendar;
       const secondMonthSecondCalendarDayFullDate = secondMonthSecondCalendarDay.fullDate;
-      const selectedDate: Date = isInTargetMonth(currentDate, date) ?
+      /**
+       * NOTE(motss): Tabbable date is the date to be tabbed when switching between months.
+       * When there is a selected date in the current month, tab to focus on selected date.
+       * Otherwise, set the first day of month tabbable so that tapping on Tab focuses that.
+       */
+      const tabbableDate = isInTargetMonth(date, currentDate) ?
         date :
         computeNextSelectedDate({
           currentDate,
@@ -116,6 +128,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         role=grid
         aria-labelledby=${calendarCaptionId}
         @click=${this.#updateSelectedDate}
+        @keydown=${this.#updateSelectedDate}
         @keyup=${this.#updateSelectedDate}
       >
         ${
@@ -169,8 +182,8 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                   return html`<td class="calendar-day day--empty" aria-hidden="true" part=calendar-day></td>`;
                 }
                 const curTime = +new Date(fullDate);
-                const isSelectedDate = +selectedDate === curTime;
-                const shouldTab = selectedDate.getUTCDate() === Number(value);
+                const isSelectedDate = +date === curTime;
+                const shouldTab = tabbableDate.getUTCDate() === Number(value);
                 /** NOTE: lit-plugin does not like this */
                 const calendarDayClasses = classMap({
                   'calendar-day': true,
@@ -205,11 +218,16 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   #updateSelectedDate = (ev: MouseEvent | KeyboardEvent): void => {
     let newSelectedDate: Date | undefined = undefined;
 
-    if (ev.type === 'keyup') {
+    if (['keydown', 'keyup'].includes(ev.type)) {
       const { altKey, keyCode } = ev as KeyboardEvent;
       const keyCodeNum = keyCode as typeof navigationKeyCodeSet.all extends Set<infer T> ? T : never;
 
-      if (!calendarKeyCodeSet.has(keyCodeNum)) return;
+      if (
+        !(navigationKeyCodeSet.all.has(keyCodeNum) && ev.type === 'keydown')
+      ) return;
+
+      // Stop scrolling with arrow keys
+      ev.preventDefault();
 
       const {
         currentDate,
@@ -220,7 +238,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         min,
       } = this.data;
 
-      newSelectedDate = isInTargetMonth(currentDate, date) ?
+      newSelectedDate = isInTargetMonth(date, currentDate) ?
         computeNextSelectedDate({
           currentDate,
           date,
@@ -232,6 +250,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
           minTime: +min,
         }) :
         currentDate;
+        this.#shouldFocusSelectedDate = true;
     } else {
       const selectedCalendarDay = toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
 
@@ -257,8 +276,6 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       isKeypress: false,
       value: new Date(newSelectedDate),
     });
-
-    return;
   };
 }
 

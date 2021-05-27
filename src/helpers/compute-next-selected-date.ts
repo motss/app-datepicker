@@ -49,19 +49,19 @@ export function computeNextSelectedDate({
    *        c. If new focused date is either `min` or `max`, reverse order `d += 1` -> `d -= 1` and
    *         continue the loop until new selectable focused date.
    */
-  const oldFy = currentDate.getUTCFullYear();
-  const oldM = currentDate.getUTCMonth();
-  const oldD = currentDate.getUTCDate();
-  const focusedDateTime = +currentDate;
+  const dateFullYear = date.getUTCFullYear();
+  const dateMonth = date.getUTCMonth();
+  const dateDate = date.getUTCDate();
+  const dateTime = +date;
 
-  const sdFy = date.getUTCFullYear();
-  const sdM = date.getUTCMonth();
+  const currentDateFullYear = currentDate.getUTCFullYear();
+  const currentDateMonth = currentDate.getUTCMonth();
 
-  const notInCurrentMonth = sdM !== oldM || sdFy !== oldFy;
+  const notInCurrentMonth = currentDateMonth !== dateMonth || currentDateFullYear !== dateFullYear;
 
-  let fy = oldFy;
-  let m = oldM;
-  let d = oldD;
+  let fy = dateFullYear;
+  let m = dateMonth;
+  let d = dateDate;
   let shouldRunSwitch = true;
 
   // If the focused date is not in the current month, focus the first day of the month
@@ -70,8 +70,8 @@ export function computeNextSelectedDate({
   // * PageUp (w/ or w/o Alt)
   // * End
   if (notInCurrentMonth) {
-    fy = sdFy;
-    m = sdM;
+    fy = currentDateFullYear;
+    m = currentDateMonth;
     d = 1;
 
     shouldRunSwitch =
@@ -81,8 +81,8 @@ export function computeNextSelectedDate({
   }
 
   switch (shouldRunSwitch) {
-    case focusedDateTime === minTime && (navigationKeyCodeSet.dayPrevious as Set<SupportedKeyCode>).has(keyCode):
-    case focusedDateTime === maxTime && (navigationKeyCodeSet.dayNext as Set<SupportedKeyCode>).has(keyCode):
+    case dateTime === minTime && (navigationKeyCodeSet.dayPrevious as Set<SupportedKeyCode>).has(keyCode):
+    case dateTime === maxTime && (navigationKeyCodeSet.dayNext as Set<SupportedKeyCode>).has(keyCode):
       break;
     case keyCode === ARROW_UP: {
       d -= 7;

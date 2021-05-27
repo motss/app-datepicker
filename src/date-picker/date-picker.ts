@@ -5,9 +5,8 @@ import '../year-grid/app-year-grid.js';
 import type { TemplateResult } from 'lit';
 import { nothing } from 'lit';
 import { html,LitElement } from 'lit';
-import { state } from 'lit/decorators.js';
+import { queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { repeat } from 'lit/directives/repeat.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { calendarViews,MAX_DATE } from '../constants.js';
@@ -32,6 +31,8 @@ import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
   //#region public properties
+  @queryAsync('.month-dropdown')
+  public monthDropdown!: Promise<HTMLButtonElement | null>;
   //#endregion public properties
 
   //#region private states
@@ -146,9 +147,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     }
   }
 
-  protected firstUpdated(changedProperties: DatePickerChangedProperties): void {
-    super.firstUpdated(changedProperties);
-
+  protected firstUpdated(): void {
     const focusableElements: HTMLElement[] = [];
 
     // TODO: focus element
@@ -165,15 +164,16 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     });
   }
 
-  protected updated(changedProperties: DatePickerChangedProperties): void {
-    super.updated(changedProperties);
+  protected async updated(
+    changedProperties: DatePickerChangedProperties
+  ): Promise<void> {
+    if (changedProperties.has('startView') && this.startView === 'calendar') {
+      const monthDropdown = await this.monthDropdown;
 
-    // FIXME: focus element based on start view
-    // if (this.startView === 'calendar') {
-    //   // TODO: Do stuff for calendar
-    // } else if (this.startView === 'yearGrid') {
-    //   // TODO: Do stuff for year grid
-    // }
+      if (monthDropdown) {
+        monthDropdown.focus();
+      }
+    }
   }
 
   protected render(): TemplateResult {
@@ -182,38 +182,16 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     const selectedDate = this._selectedDate;
     const max = this._max;
     const min = this._min;
-    const locale = this.locale;
-    const todayDate = this._TODAY_DATE;
     const showWeekNumber = this.showWeekNumber;
     const startView = this.startView;
 
     const {
-      dayFormat,
-      fullDateFormat,
       longMonthFormat,
       yearFormat,
-      longWeekdayFormat,
-      narrowWeekdayFormat,
     } = formatters;
     const selectedMonth = longMonthFormat(currentDate);
     const selectedYear = yearFormat(currentDate);
     const isStartViewYearGrid = startView === 'yearGrid';
-    const multiCldr = isStartViewYearGrid ? undefined : toMultiCalendars({
-      dayFormat,
-      disabledDates: splitString(this.disabledDates, toResolvedDate),
-      disabledDays: splitString(this.disabledDays, Number),
-      firstDayOfWeek: this.firstDayOfWeek,
-      fullDateFormat,
-      locale,
-      longWeekdayFormat,
-      max,
-      min,
-      narrowWeekdayFormat,
-      currentDate,
-      showWeekNumber: Boolean(this.showWeekNumber),
-      weekLabel: this.weekLabel,
-      weekNumberType: this.weekNumberType,
-    });
 
     return html`
     <div class=header>
@@ -250,8 +228,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     <div class=${classMap({
       body: true,
-      'start-view--calendar': !isStartViewYearGrid,
-      'start-view--year-grid': isStartViewYearGrid,
+      [`start-view--${isStartViewYearGrid ? 'year-grid' : 'calendar'}`]: true,
       'show-week-number': showWeekNumber,
     })}>${
       isStartViewYearGrid ?
@@ -267,34 +244,69 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
           @year-updated=${this.#updateYear}
         ></app-year-grid>
         ` :
-        multiCldr ? html`${
-          repeat(multiCldr.calendars, ({ key }) => key, (calendar) => {
-            const data: MonthCalendarData = {
-              calendar: calendar.calendar,
-              date: selectedDate,
-              disabledDatesSet: multiCldr.disabledDatesSet,
-              disabledDaysSet: multiCldr.disabledDaysSet,
-              currentDate,
-              max,
-              min,
-              showWeekNumber,
-              todayDate,
-              weekdays: multiCldr.weekdays,
-              formatters,
-            };
-
-            return html`
-            <app-month-calendar
-              class=calendar
-              .data=${data}
-              @date-updated=${this.#updateSelectedDate}
-            ></app-month-calendar>
-            `;
-          })
-        }` : nothing
+        this.#renderCalendar()
     }</div>
     `;
   }
+
+  // FIXME: Optimize this code
+  #renderCalendar = (): TemplateResult => {
+    const currentDate = this._currentDate;
+    const max = this._max;
+    const min = this._min;
+    const showWeekNumber = this.showWeekNumber;
+    const formatters = this.#formatters;
+    const {
+      dayFormat,
+      fullDateFormat,
+      longWeekdayFormat,
+      narrowWeekdayFormat,
+    } = formatters;
+
+    const {
+      calendars,
+      disabledDatesSet,
+      disabledDaysSet,
+      weekdays,
+    } = toMultiCalendars({
+      dayFormat,
+      disabledDates: splitString(this.disabledDates, toResolvedDate),
+      disabledDays: splitString(this.disabledDays, Number),
+      firstDayOfWeek: this.firstDayOfWeek,
+      fullDateFormat,
+      locale: this.locale,
+      longWeekdayFormat,
+      max,
+      min,
+      narrowWeekdayFormat,
+      currentDate,
+      showWeekNumber: Boolean(this.showWeekNumber),
+      weekLabel: this.weekLabel,
+      weekNumberType: this.weekNumberType,
+    });
+    const [{ calendar }] = calendars;
+    const data: MonthCalendarData = {
+      calendar,
+      date: this._selectedDate,
+      disabledDatesSet,
+      disabledDaysSet,
+      currentDate,
+      max,
+      min,
+      showWeekNumber,
+      todayDate: this._TODAY_DATE,
+      weekdays,
+      formatters,
+    };
+
+    return html`
+    <app-month-calendar
+      class=calendar
+      .data=${data}
+      @date-updated=${this.#updateSelectedDate}
+    ></app-month-calendar>
+    `;
+  };
 
   #navigateMonth = (ev: MouseEvent): void => {
     const currentDate = this._currentDate;
