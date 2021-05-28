@@ -15,6 +15,7 @@ import { calendarViews,MAX_DATE } from '../constants.js';
 import { adjustOutOfRangeValue } from '../helpers/adjust-out-of-range-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
@@ -212,16 +213,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
           nothing :
           html`
           <div class=month-pagination>
-            <mwc-icon-button
-              data-navigation=previous
-              label=${this.previousMonthLabel}
-              @click=${this.#navigateMonth}
-            >${iconChevronLeft}</mwc-icon-button>
-            <mwc-icon-button
-              data-navigation=next
-              label=${this.nextMonthLabel}
-              @click=${this.#navigateMonth}
-            >${iconChevronRight}</mwc-icon-button>
+            ${this.#renderNavigationButton('previous', !isInTargetMonth(min, currentDate))}
+            ${this.#renderNavigationButton('next', !isInTargetMonth(max, currentDate))}
           </div>
           `
       }
@@ -308,6 +301,21 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       @date-updated=${this.#updateSelectedDate}
     ></app-month-calendar>
     `;
+  };
+
+  #renderNavigationButton  = (
+    navigationType: 'previous' | 'next',
+    shouldRender = false
+  ): TemplateResult => {
+    const isPreviousNavigationType = navigationType === 'previous';
+
+    return shouldRender ? html`
+    <mwc-icon-button
+      data-navigation=${navigationType}
+      label=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
+      @click=${this.#navigateMonth}
+    >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
+    ` : html`<div data-navigation=${navigationType}></div>`;
   };
 
   #navigateMonth = (ev: MouseEvent): void => {

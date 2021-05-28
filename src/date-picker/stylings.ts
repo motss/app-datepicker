@@ -64,6 +64,14 @@ export const datePickerStyling = css`
   display: flex;
   margin: 0 -4px 0 0;
 }
+
+.month-pagination > [data-navigation="previous"],
+.month-pagination > [data-navigation="next"] {
+  max-width: 48px;
+  max-height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+}
 /** #endregion header */
 
 .year-grid {
