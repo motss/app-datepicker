@@ -279,7 +279,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       min,
       showWeekNumber,
       weekNumberType: this.weekNumberType,
-      selectedDate,
+      selectedDate: this._currentDate,
     });
 
     return html`
