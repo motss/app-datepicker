@@ -1,7 +1,7 @@
-import type { Calendar } from 'nodemod/dist/calendar/calendar_typing';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { calendar } from 'nodemod/dist/calendar/index.js';
+import type { Calendar } from 'nodemod/dist/calendar/typings.js';
 
 import type { MultiCalendars, ToMultiCalendarsInit } from './typings.js';
 
@@ -81,17 +81,17 @@ export function toMultiCalendars(
     }
 
     const calendarDays = calendar({
+      date: firstDayOfMonth,
       dayFormat,
-      fullDateFormat,
-      locale,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
+      fullDateFormat,
+      locale,
       max,
       min,
       showWeekNumber,
       weekNumberType,
-      selectedDate: firstDayOfMonth,
     });
 
     return { ...calendarDays, key };

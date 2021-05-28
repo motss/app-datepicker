@@ -1,8 +1,4 @@
-import type {
-  Calendar,
-  CalendarOptions,
-  CalendarWeekday,
-} from 'nodemod/dist/calendar/calendar_typing.js';
+import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
 import type { DatePickerProperties, Formatters, SupportedKeyCode } from '../typings.js';
 
@@ -35,9 +31,9 @@ Partial<Pick<
   DatePickerProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
 >>,
 Pick<DatePickerProperties, 'locale'>,
-Pick<CalendarOptions, 'disabledDates' | 'disabledDays' | 'max' | 'min'> {
+Pick<CalendarInit, 'disabledDates' | 'disabledDays' | 'max' | 'min'> {
   count?: number;
-  currentDate: CalendarOptions['selectedDate'];
+  currentDate: CalendarInit['date'];
 }
 
 export interface ToNextSelectableDateInit {

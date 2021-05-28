@@ -1,5 +1,5 @@
 import type { LitElement } from 'lit';
-import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
+import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import type { CalendarView, Constructor } from '../typings.js';
 

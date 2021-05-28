@@ -1,4 +1,4 @@
-import type { Calendar, CalendarWeekday } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { Calendar, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
 import type { ChangedProperties, Formatters } from '../typings.js';
 

@@ -1,6 +1,6 @@
 import type { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing';
+import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';

@@ -244,6 +244,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   }
 
   #renderCalendar = (): TemplateResult => {
+    const currentDate = this._currentDate;
     const firstDayOfWeek = this.firstDayOfWeek;
     const formatters = this.#formatters;
     const max = this._max;
@@ -269,17 +270,17 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       disabledDatesSet,
       disabledDaysSet,
     } = calendar({
+      date: currentDate,
       dayFormat,
-      fullDateFormat,
-      locale: this.locale,
       disabledDates: splitString(this.disabledDates, toResolvedDate),
       disabledDays: splitString(this.disabledDays, Number),
       firstDayOfWeek,
+      fullDateFormat,
+      locale: this.locale,
       max,
       min,
       showWeekNumber,
       weekNumberType: this.weekNumberType,
-      selectedDate: this._currentDate,
     });
 
     return html`
@@ -287,7 +288,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       class=calendar
       .data=${{
         calendar: calendarMonth,
-        currentDate: this._currentDate,
+        currentDate,
         date: selectedDate,
         disabledDatesSet,
         disabledDaysSet,

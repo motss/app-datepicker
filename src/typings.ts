@@ -1,4 +1,4 @@
-import type { DateTimeFormatter } from 'nodemod/dist/calendar/calendar_typing';
+import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
 import type { keyCodesRecord } from './constants.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mixins/typings.js';

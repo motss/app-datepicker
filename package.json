@@ -75,7 +75,7 @@
     "@material/mwc-button": "^0.21.0",
     "@material/mwc-icon-button": "^0.21.0",
     "lit": "^2.0.0-rc.2",
-    "nodemod": "^2.8.3",
+    "nodemod": "^2.8.4",
     "tslib": "^2.2.0"
   },
   "devDependencies": {
