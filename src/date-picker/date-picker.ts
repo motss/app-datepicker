@@ -32,8 +32,8 @@ import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
   //#region public properties
-  @queryAsync('.month-dropdown')
-  public monthDropdown!: Promise<HTMLButtonElement | null>;
+  public valueAsDate: Date;
+  public valueAsNumber: number;
   //#endregion public properties
 
   //#region private states
@@ -60,7 +60,11 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   //#region private properties
   #formatters: Formatters;
-  private _TODAY_DATE: Date;
+
+  @queryAsync('.month-dropdown')
+  private readonly _monthDropdown!: Promise<HTMLButtonElement | null>;
+
+  private readonly _TODAY_DATE: Date;
   //#endregion private properties
 
   public static styles = [
@@ -74,13 +78,14 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     const todayDate = toResolvedDate();
 
-    // this._min = new Date(todayDate);
-    this._min = new Date('1900-01-01');
+    this._min = new Date(todayDate);
     this._max = new Date(MAX_DATE);
     this._TODAY_DATE = todayDate;
     this._selectedDate = new Date(todayDate);
     this._currentDate = new Date(todayDate);
     this.#formatters = toFormatters(this.locale);
+    this.valueAsDate = new Date(todayDate);
+    this.valueAsNumber = +todayDate;
   }
 
   public willUpdate(changedProperties: DatePickerChangedProperties): void {
@@ -102,11 +107,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         changedProperties.get('value') as string
       ) || this._TODAY_DATE;
       const { date } = dateValidator(this.value, oldValue);
+      const valueDate = new Date(date);
 
-      this._currentDate = new Date(date);
-      this._selectedDate = new Date(date);
-      // this.valueAsDate = newDate;
-      // this.valueAsNumber = +newDate;
+      this._currentDate = new Date(valueDate);
+      this._selectedDate = new Date(valueDate);
+      this.valueAsDate = valueDate;
+      this.valueAsNumber = +valueDate;
     }
 
     const hasMax = changedProperties.has('max');
@@ -169,7 +175,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
     if (changedProperties.has('startView') && this.startView === 'calendar') {
-      const monthDropdown = await this.monthDropdown;
+      const monthDropdown = await this._monthDropdown;
 
       if (monthDropdown) {
         monthDropdown.focus();
