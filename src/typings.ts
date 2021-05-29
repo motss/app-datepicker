@@ -1,11 +1,12 @@
 import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
-import type { keyCodesRecord } from './constants.js';
+import type { calendarViews } from './constants.js';
+import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mixins/typings.js';
 
 export type CalendarView = CalendarViewTuple[number];
 
-export type CalendarViewTuple = ['calendar', 'yearGrid'];
+export type CalendarViewTuple = typeof calendarViews;
 
 export interface ChangedEvent {
   isKeypress: boolean;
@@ -41,6 +42,8 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
   yearFormat: DateTimeFormatter;
 }
 
+export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
+
 export interface SupportedCustomEvent {
   ['animation-finished']: null;
   ['changed']: ChangedEvent;
@@ -50,7 +53,18 @@ export interface SupportedCustomEvent {
   ['year-updated']: YearUpdatedEvent;
 }
 
-export type SupportedKeyCode = typeof keyCodesRecord[keyof typeof keyCodesRecord];
+export type SupportedKey =
+  | typeof keyArrowDown
+  | typeof keyArrowLeft
+  | typeof keyArrowRight
+  | typeof keyArrowUp
+  | typeof keyEnd
+  | typeof keyEnter
+  | typeof keyHome
+  | typeof keyPageDown
+  | typeof keyPageUp
+  | typeof keySpace
+  | typeof keyTab;
 
 export interface ValueUpdatedEvent extends Pick<DateUpdatedEvent, 'isKeypress'> {
   value: string;

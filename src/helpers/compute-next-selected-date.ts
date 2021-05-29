@@ -1,20 +1,11 @@
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { keyCodesRecord, navigationKeyCodeSet } from '../constants.js';
-import type { SupportedKeyCode } from '../typings.js';
+import type { navigationKeyListNext} from '../constants.js';
+import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
+import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome, keyPageDown, keyPageUp } from '../key-values.js';
+import type { InferredFromSet } from '../typings.js';
 import { toNextSelectableDate } from './to-next-selectable-date.js';
 import type { ComputeNextSelectedDateInit as ComputeNextSelectedDateInit } from './typings.js';
-
-const {
-  ARROW_DOWN,
-  ARROW_LEFT,
-  ARROW_RIGHT,
-  ARROW_UP,
-  END,
-  HOME,
-  PAGE_DOWN,
-  PAGE_UP,
-} = keyCodesRecord;
 
 export function computeNextSelectedDate({
   currentDate,
@@ -22,7 +13,7 @@ export function computeNextSelectedDate({
   disabledDatesSet,
   disabledDaysSet,
   hasAltKey,
-  keyCode,
+  key,
   maxTime,
   minTime,
 }: ComputeNextSelectedDateInit): Date {
@@ -75,45 +66,45 @@ export function computeNextSelectedDate({
     d = 1;
 
     shouldRunSwitch =
-      keyCode === PAGE_DOWN ||
-      keyCode === PAGE_UP ||
-      keyCode === END;
+      key === keyPageDown ||
+      key === keyPageUp ||
+      key === keyEnd;
   }
 
   switch (shouldRunSwitch) {
-    case dateTime === minTime && (navigationKeyCodeSet.dayPrevious as Set<SupportedKeyCode>).has(keyCode):
-    case dateTime === maxTime && (navigationKeyCodeSet.dayNext as Set<SupportedKeyCode>).has(keyCode):
+    case dateTime === minTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>):
+    case dateTime === maxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeyListNext>):
       break;
-    case keyCode === ARROW_UP: {
+    case key === keyArrowUp: {
       d -= 7;
       break;
     }
-    case keyCode === ARROW_DOWN: {
+    case key === keyArrowDown: {
       d += 7;
       break;
     }
-    case keyCode === ARROW_LEFT: {
+    case key === keyArrowLeft: {
       d -= 1;
       break;
     }
-    case keyCode === ARROW_RIGHT: {
+    case key === keyArrowRight: {
       d += 1;
       break;
     }
-    case keyCode === PAGE_DOWN: {
+    case key === keyPageDown: {
       hasAltKey ? fy += 1 : m += 1;
       break;
     }
-    case keyCode === PAGE_UP: {
+    case key === keyPageUp: {
       hasAltKey ? fy -= 1 : m -= 1;
       break;
     }
-    case keyCode === END: {
+    case key === keyEnd: {
       m += 1;
       d = 0;
       break;
     }
-    case keyCode === HOME:
+    case key === keyHome:
     default: {
       d = 1;
     }
@@ -127,7 +118,7 @@ export function computeNextSelectedDate({
    * - `2020-01-31` -> next month -> `2020-02-31` (invalid) -> fallback to `2020-02-29`
    * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
    */
-  if (keyCode === PAGE_DOWN || keyCode === PAGE_UP) {
+  if (key === keyPageDown || key === keyPageUp) {
     const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getUTCDate();
     if (d > totalDaysOfMonth) {
       d = totalDaysOfMonth;
@@ -139,7 +130,7 @@ export function computeNextSelectedDate({
     date: toUTCDate(fy, m, d),
     disabledDatesSet,
     disabledDaysSet,
-    keyCode,
+    key,
     maxTime,
     minTime,
   });

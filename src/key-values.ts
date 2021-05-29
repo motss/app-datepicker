@@ -1,0 +1,11 @@
+export const keyArrowDown = 'ArrowDown' as const;
+export const keyArrowLeft = 'ArrowLeft' as const;
+export const keyArrowRight = 'ArrowRight' as const;
+export const keyArrowUp = 'ArrowUp' as const;
+export const keyEnd = 'End' as const;
+export const keyEnter = 'Enter' as const;
+export const keyHome = 'Home' as const;
+export const keyPageDown = 'PageDown' as const;
+export const keyPageUp = 'PageUp' as const;
+export const keySpace = ' ' as const;
+export const keyTab = 'Tab' as const;

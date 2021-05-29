@@ -1,6 +1,6 @@
 import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
-import type { DatePickerProperties, Formatters, SupportedKeyCode } from '../typings.js';
+import type { DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
 
 export interface ComputeNextSelectedDateInit {
   currentDate: Date;
@@ -8,7 +8,7 @@ export interface ComputeNextSelectedDateInit {
   disabledDatesSet: Set<number>;
   disabledDaysSet: Set<number>;
   hasAltKey: boolean;
-  keyCode: SupportedKeyCode;
+  key: SupportedKey;
   maxTime: number;
   minTime: number;
 }
@@ -40,7 +40,7 @@ export interface ToNextSelectableDateInit {
   date: Date;
   disabledDatesSet: Set<number>;
   disabledDaysSet: Set<number>;
-  keyCode: SupportedKeyCode;
+  key: SupportedKey;
   maxTime: number;
   minTime: number;
 }

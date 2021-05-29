@@ -1,28 +1,19 @@
-import { keyCodesRecord } from '../constants.js';
+import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../key-values.js';
 import type { ToNextSelectableYearInit } from './typings.js';
 
-const {
-  ARROW_DOWN,
-  ARROW_LEFT,
-  ARROW_RIGHT,
-  ARROW_UP,
-  END,
-  HOME,
-} = keyCodesRecord;
-
 export function toNextSelectedYear({
-  keyCode,
+  key,
   max,
   min,
   year,
 }: ToNextSelectableYearInit): number {
-  switch (keyCode) {
-    case ARROW_UP: return year - 4;
-    case ARROW_DOWN: return year + 4;
-    case ARROW_LEFT: return year - 1;
-    case ARROW_RIGHT: return year  + 1;
-    case END: return max.getUTCFullYear();
-    case HOME: return min.getUTCFullYear();
+  switch (key) {
+    case keyArrowUp: return year - 4;
+    case keyArrowDown: return year + 4;
+    case keyArrowLeft: return year - 1;
+    case keyArrowRight: return year  + 1;
+    case keyEnd: return max.getUTCFullYear();
+    case keyHome: return min.getUTCFullYear();
     default:
       return year;
   }

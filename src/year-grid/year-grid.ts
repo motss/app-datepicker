@@ -5,12 +5,13 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { MAX_DATE, yearGridNavigationKeyCodeSet } from '../constants.js';
+import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
 import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
+import type { InferredFromSet } from '../typings.js';
 import { toNextSelectedYear } from './ to-next-selected-year.js';
 import { yearGridStyling } from './stylings.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties } from './typings.js';
@@ -110,11 +111,10 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
   #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
     if (['keydown', 'keyup'].includes(ev.type)) {
-      const { keyCode } = ev as KeyboardEvent;
-      const keyCodeNum = keyCode as typeof keyCode extends Set<infer U> ? U : never;
+      const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
 
       if (
-        !(yearGridNavigationKeyCodeSet.has(keyCodeNum) && ev.type === 'keydown')
+        !(ev.type === 'keydown' && navigationKeySetGrid.has(key))
       ) return;
 
       // Stop scrolling with arrow keys
@@ -126,7 +126,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
         min,
       } = this.data;
       const selectedYear = toNextSelectedYear({
-        keyCode: keyCodeNum,
+        key,
         max,
         min,
         year: this.#selectedYear,

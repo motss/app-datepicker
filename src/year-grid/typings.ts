@@ -1,10 +1,10 @@
-import type { ChangedProperties, Formatters, SupportedKeyCode } from '../typings.js';
+import type { ChangedProperties, Formatters, SupportedKey } from '../typings.js';
 
 export interface ToNextSelectableYearInit {
-  year: number;
-  keyCode: SupportedKeyCode;
+  key: SupportedKey;
   max: Date;
   min: Date;
+  year: number;
 }
 
 export type YearGridChangedProperties = ChangedProperties<YearGridProperties>;

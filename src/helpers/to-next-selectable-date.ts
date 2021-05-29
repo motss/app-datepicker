@@ -1,7 +1,7 @@
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { navigationKeyCodeSet } from '../constants.js';
-import type { SupportedKeyCode } from '../typings.js';
+import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
+import type { InferredFromSet } from '../typings.js';
 import { toDateRange } from './to-date-range.js';
 import type { ToNextSelectableDateInit } from './typings.js';
 
@@ -9,7 +9,7 @@ export function toNextSelectableDate({
   date,
   disabledDatesSet,
   disabledDaysSet,
-  keyCode,
+  key,
   maxTime,
   minTime,
 }: ToNextSelectableDateInit): Date {
@@ -38,8 +38,8 @@ export function toNextSelectableDate({
   let d = selectableDate.getUTCDate();
 
   while (isDisabledDay) {
-    if (isLessThanMinTime || (!isMoreThanMaxTime && (navigationKeyCodeSet.dayNext as Set<SupportedKeyCode>).has(keyCode))) d += 1;
-    if (isMoreThanMaxTime || (!isLessThanMinTime && (navigationKeyCodeSet.dayPrevious as Set<SupportedKeyCode>).has(keyCode))) d -= 1;
+    if (isLessThanMinTime || (!isMoreThanMaxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeySetDayNext>))) d += 1;
+    if (isMoreThanMaxTime || (!isLessThanMinTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>))) d -= 1;
 
     selectableDate = toUTCDate(fy, m, d);
     selectableDateTime = +selectableDate;

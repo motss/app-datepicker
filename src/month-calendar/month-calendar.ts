@@ -5,13 +5,15 @@ import { nothing } from 'lit';
 import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
-import { keyCodesRecord, navigationKeyCodeSet } from '../constants.js';
+import { navigationKeySetGrid } from '../constants.js';
 import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { keyHome } from '../key-values.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
+import type { InferredFromSet } from '../typings.js';
 import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
@@ -116,7 +118,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
           disabledDatesSet,
           disabledDaysSet,
           hasAltKey: false,
-          keyCode: keyCodesRecord.HOME,
+          key: keyHome,
           maxTime: +max,
           minTime: +min,
         });
@@ -219,11 +221,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     let newSelectedDate: Date | undefined = undefined;
 
     if (['keydown', 'keyup'].includes(ev.type)) {
-      const { altKey, keyCode } = ev as KeyboardEvent;
-      const keyCodeNum = keyCode as typeof navigationKeyCodeSet.all extends Set<infer T> ? T : never;
+      const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
 
       if (
-        !(navigationKeyCodeSet.all.has(keyCodeNum) && ev.type === 'keydown')
+        !(ev.type === 'keydown' && navigationKeySetGrid.has(key))
       ) return;
 
       // Stop scrolling with arrow keys
@@ -244,8 +245,8 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
           date,
           disabledDatesSet,
           disabledDaysSet,
-          hasAltKey: altKey,
-          keyCode: keyCodeNum,
+          hasAltKey: ev.altKey,
+          key,
           maxTime: +max,
           minTime: +min,
         }) :

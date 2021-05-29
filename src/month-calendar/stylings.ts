@@ -64,9 +64,9 @@ td {
   border-radius: 50%;
   pointer-events: none;
 }
-.calendar-day.day--today:not([aria-selected="true"])::before,
-.calendar-day:hover::after,
-.calendar-day:focus::after {
+.calendar-day.day--today:not([aria-disabled="true"]):not([aria-selected="true"])::before,
+.calendar-day:not([aria-disabled="true"]):hover::after,
+.calendar-day:not([aria-disabled="true"]):focus::after {
   width: 26px;
   height: 26px;
   border-style: solid;
@@ -101,5 +101,8 @@ td {
 }
 .calendar-day:hover::after {
   border-color: var(--date-picker-hover-color, var(--base-hover-color));
+}
+.calendar-day[aria-disabled="true"] {
+  color: rgba(0, 0, 0, .38);
 }
 `;
