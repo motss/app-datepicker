@@ -29,7 +29,8 @@ jobs:
 
       - name: List versions
         run: |
-          node -v && npm -v && which npm
+          npm i -g npm@latest
+          node -v && npm version && which npm && pwd && npx envinfo
 
       - name: Install dependencies
         run: |

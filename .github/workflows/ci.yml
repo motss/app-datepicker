@@ -46,6 +46,7 @@ jobs:
         if: "env.CI_SKIP == 'false'"
         continue-on-error: true
         run: |
+          npm i -g npm@latest
           node -v && npm version && which npm && pwd && npx envinfo
 
       - name: Install dependencies
