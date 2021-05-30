@@ -15,6 +15,7 @@ import { calendarViews,MAX_DATE } from '../constants.js';
 import { adjustOutOfRangeValue } from '../helpers/adjust-out-of-range-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { focusElement } from '../helpers/focus-element.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toDateString } from '../helpers/to-date-string.js';
@@ -60,9 +61,16 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   //#region private properties
   #formatters: Formatters;
+  #shouldUpdateFocusInNavigationButtons = false;
 
   @queryAsync('.month-dropdown')
   private readonly _monthDropdown!: Promise<HTMLButtonElement | null>;
+
+  @queryAsync('[data-navigation="previous"]')
+  private readonly _navigationPrevious!: Promise<HTMLButtonElement | null>;
+
+  @queryAsync('[data-navigation="next"]')
+  private readonly _navigationNext!: Promise<HTMLButtonElement | null>;
 
   private readonly _TODAY_DATE: Date;
   //#endregion private properties
@@ -174,11 +182,18 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   protected async updated(
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
-    if (changedProperties.has('startView') && this.startView === 'calendar') {
-      const monthDropdown = await this._monthDropdown;
+    if (this.startView === 'calendar') {
+      if (changedProperties.has('startView')) {
+        await focusElement(this._monthDropdown);
+      }
 
-      if (monthDropdown) {
-        monthDropdown.focus();
+      if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
+        const currentDate = this._currentDate;
+
+        isInTargetMonth(this._min, currentDate) && focusElement(this._navigationNext);
+        isInTargetMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
+
+        this.#shouldUpdateFocusInNavigationButtons = false;
       }
     }
   }
@@ -338,6 +353,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     );
 
     this._currentDate = newCurrentDate;
+    this.#shouldUpdateFocusInNavigationButtons = true;
   };
 
   #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {

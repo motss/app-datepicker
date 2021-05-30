@@ -7,6 +7,7 @@ import { classMap } from 'lit/directives/class-map.js';
 
 import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { focusElement } from '../helpers/focus-element.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
@@ -59,12 +60,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
   }
 
   protected async firstUpdated(): Promise<void> {
-    const selectedYearGridButton = await this.selectedYearGridButton;
-
-    if (selectedYearGridButton) {
-      selectedYearGridButton.focus();
-      selectedYearGridButton.scrollIntoView();
-    }
+    await focusElement(this.selectedYearGridButton, element => element.scrollIntoView());
   }
 
   protected render(): TemplateResult | typeof nothing {

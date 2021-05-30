@@ -8,6 +8,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { navigationKeySetGrid } from '../constants.js';
 import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
+import { focusElement } from '../helpers/focus-element.js';
 import { isInTargetMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -68,12 +69,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
 
   protected async updated(): Promise<void> {
     if (this.#shouldFocusSelectedDate) {
-      const selectedCalendarDay = await this.selectedCalendarDay;
-
-      if (selectedCalendarDay) {
-        selectedCalendarDay.focus();
-      }
-
+      await focusElement(this.selectedCalendarDay);
       this.#shouldFocusSelectedDate = false;
     }
   }
