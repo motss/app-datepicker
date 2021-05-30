@@ -235,19 +235,18 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         min,
       } = this.data;
 
-      newSelectedDate = isInTargetMonth(date, currentDate) ?
-        computeNextSelectedDate({
-          currentDate,
-          date,
-          disabledDatesSet,
-          disabledDaysSet,
-          hasAltKey: ev.altKey,
-          key,
-          maxTime: +max,
-          minTime: +min,
-        }) :
-        currentDate;
-        this.#shouldFocusSelectedDate = true;
+      newSelectedDate = computeNextSelectedDate({
+        currentDate,
+        date,
+        disabledDatesSet,
+        disabledDaysSet,
+        hasAltKey: ev.altKey,
+        key,
+        maxTime: +max,
+        minTime: +min,
+      });
+
+      this.#shouldFocusSelectedDate = true;
     } else {
       const selectedCalendarDay = toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
 
@@ -255,11 +254,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       if (
         selectedCalendarDay == null ||
         [
-          'day--empty',
-          'day--disabled',
-          'day--focused',
-          'weekday-label',
-        ].some(className => selectedCalendarDay.classList.contains(className))
+          'aria-disabled',
+          'aria-hidden',
+          'aria-selected',
+        ].some(attrName => selectedCalendarDay.getAttribute(attrName) === 'true')
       ) {
         return;
       }
