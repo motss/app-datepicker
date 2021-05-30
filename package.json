@@ -62,7 +62,7 @@
     "serve": "npm x --no @web/dev-server@latest -- wds --node-resolve -dw -p 4343 -a index.html",
     "ts": "tsc",
     "watch": "npm run clean && tsc --watch",
-    "prepare": "npm x --no -- husky install",
+    "prepare": "npm x -- husky install",
     "postinstall": "npm dedupe"
   },
   "commitlint": {
