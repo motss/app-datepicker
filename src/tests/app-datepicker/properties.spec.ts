@@ -314,7 +314,7 @@ describe('properties', () => {
       weekNumbersContents.map(n => cleanHtml(n)),
       [1, 2, 3, 4, 5].map((n) => {
         return prettyHtml(
-        `<th class="full-calendar__day weekday-label" abbr="Week ${n}" aria-label="Week ${n}">${n}</th>`
+        `<th class="full-calendar__day weekday-label" abbr="Wk ${n}" aria-label="Wk ${n}">${n}</th>`
         );
       })
     );
@@ -354,7 +354,7 @@ describe('properties', () => {
       weekNumbersContents.map(n => cleanHtml(n)),
       [52, 1, 2, 3, 4].map((n) => {
         return prettyHtml(
-        `<th class="full-calendar__day weekday-label" abbr="Week ${n}" aria-label="Week ${n}">${n}</th>`
+        `<th class="full-calendar__day weekday-label" abbr="Wk ${n}" aria-label="Wk ${n}">${n}</th>`
         );
       })
     );
