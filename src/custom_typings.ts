@@ -1,4 +1,4 @@
-import type { DateTimeFormatter } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
 // #region TS helpers
 export type Nullable<T> = {

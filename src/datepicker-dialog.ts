@@ -5,8 +5,8 @@ export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpd
 
 import '@material/mwc-button/mwc-button.js';
 import { css, html, LitElement, property, query } from 'lit-element';
+import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
 import { datepickerVariables } from './common-styles.js';
 import type {
   DatepickerFirstUpdated,

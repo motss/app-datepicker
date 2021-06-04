@@ -1,12 +1,7 @@
-import type {
-  Calendar,
-  CalendarWeekday,
-  DateTimeFormatter,
-  WeekNumberType,
-} from 'nodemod/dist/calendar/calendar_typing.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { calendar } from 'nodemod/dist/calendar/index.js';
+import type { Calendar, CalendarWeekday, DateTimeFormatter, WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 interface MultiCalendars extends NonNullable<Omit<Calendar, 'calendar' | 'key'>> {
   key: string;
@@ -112,8 +107,9 @@ export function getMultiCalendars(
       max,
       min,
       showWeekNumber,
+      weekLabel,
       weekNumberType,
-      selectedDate: firstDayOfMonth,
+      date: firstDayOfMonth,
     });
 
     return { ...calendarDays, key };

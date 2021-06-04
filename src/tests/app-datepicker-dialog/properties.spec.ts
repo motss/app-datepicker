@@ -1,4 +1,5 @@
-import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
+
 import { DATEPICKER_DIALOG_NAME, DATEPICKER_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
 import type { DatepickerDialog } from '../../datepicker-dialog.js';

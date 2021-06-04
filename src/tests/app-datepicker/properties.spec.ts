@@ -1,4 +1,4 @@
-import type { WeekNumberType } from 'nodemod/dist/calendar/calendar_typing.js';
+import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import { DATEPICKER_NAME } from '../../constants.js';
 import type { StartView } from '../../custom_typings.js';
@@ -321,8 +321,8 @@ describe('properties', () => {
   });
 
   it(`renders with defined 'weekNumberType'`, async () => {
-    type A = [WeekNumberType, WeekNumberType, string[]];
 
+    type A = [WeekNumberType, WeekNumberType, string[]];
     const [
       prop,
       attr,
