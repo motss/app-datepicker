@@ -31,12 +31,12 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
    */
   #shouldFocusSelectedDate = false;
 
-  public static shadowRootOptions = {
+  public static override shadowRootOptions = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,
   };
 
-  public static styles = [
+  public static override styles = [
     baseStyling,
     resetShadowRoot,
     monthCalendarStyling,
@@ -63,18 +63,18 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     };
   }
 
-  protected shouldUpdate(): boolean {
+  protected override shouldUpdate(): boolean {
     return this.data.formatters != null;
   }
 
-  protected async updated(): Promise<void> {
+  protected override async updated(): Promise<void> {
     if (this.#shouldFocusSelectedDate) {
       await focusElement(this.selectedCalendarDay);
       this.#shouldFocusSelectedDate = false;
     }
   }
 
-  protected render(): TemplateResult | typeof nothing {
+  protected override render(): TemplateResult | typeof nothing {
     const {
       calendar,
       date,

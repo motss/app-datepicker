@@ -5,8 +5,8 @@ import type { MaybeDate } from './typings.js';
 export function toResolvedDate(date?: MaybeDate): Date {
   const dateDate = date == null ? new Date() : new Date(date);
   const isUTCDateFormat = typeof date === 'string' && (
-    /^\d{4}-\d{2}-\d{2}$/i.test(date) ||
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(Z|\+00:00|-00:00)$/i.test(date));
+    /^\d{4}-\d{2}-\d{2}$/.test(date) ||
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|\+00:00|-00:00)$/.test(date));
   const isUnixTimestamp = typeof date === 'number' && date > 0 && isFinite(date);
 
   let fy = dateDate.getFullYear();

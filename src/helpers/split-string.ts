@@ -12,7 +12,7 @@ export type splitString = {
 export function splitString<SourceType extends string = string, ReturnType = string>(
   source: SourceType,
   callbackFn?: SplitStringCallbackFn<ReturnType>,
-  separator: RegExp | string = /,\s*/i
+  separator: RegExp | string = /,\s*/
 ): ReturnType[] {
   const dateList = typeof source === 'string' && source.length > 0
     ? source.split(separator) as unknown as ReturnType[]

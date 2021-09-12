@@ -75,7 +75,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   private readonly _TODAY_DATE: Date;
   //#endregion private properties
 
-  public static styles = [
+  public static override styles = [
     resetShadowRoot,
     datePickerStyling,
     webkitScrollbarStyling,
@@ -96,7 +96,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     this.valueAsNumber = +todayDate;
   }
 
-  public willUpdate(changedProperties: DatePickerChangedProperties): void {
+  public override willUpdate(changedProperties: DatePickerChangedProperties): void {
     if (changedProperties.has('locale')) {
       this.#formatters = toFormatters(this.locale);
     }
@@ -162,7 +162,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     }
   }
 
-  protected firstUpdated(): void {
+  protected override firstUpdated(): void {
     const focusableElements: HTMLElement[] = [];
 
     // TODO: focus element
@@ -179,7 +179,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     });
   }
 
-  protected async updated(
+  protected override async updated(
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
     if (this.startView === 'calendar') {
@@ -199,7 +199,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   }
 
   //  FIXME: To not render min and max buttons
-  protected render(): TemplateResult {
+  protected override render(): TemplateResult {
     const formatters = this.#formatters;
     const currentDate = this._currentDate;
     const selectedDate = this._selectedDate;
@@ -224,7 +224,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
         <mwc-icon-button
           class=month-dropdown
-          label=${this.yearDropdownLabel}
+          ariaLabel=${this.yearDropdownLabel}
           @click=${this.#updateStartView}
         >${iconArrowDropdown}</mwc-icon-button>
       </div>
@@ -334,7 +334,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     return shouldRender ? html`
     <mwc-icon-button
       data-navigation=${navigationType}
-      label=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
+      ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
       @click=${this.#navigateMonth}
     >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
     ` : html`<div data-navigation=${navigationType}></div>`;

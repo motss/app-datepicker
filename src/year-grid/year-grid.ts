@@ -24,7 +24,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
   @queryAsync('button[data-year][aria-selected="true"]')
   public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
 
-  public static styles = [
+  public static override styles = [
     baseStyling,
     resetButton,
     resetShadowRoot,
@@ -49,21 +49,21 @@ export class YearGrid extends LitElement implements YearGridProperties {
     this.#todayYear = todayDate.getUTCFullYear();
   }
 
-  protected shouldUpdate(): boolean {
+  protected override shouldUpdate(): boolean {
     return this.data.formatters != null;
   }
 
-  public willUpdate(changedProperties: YearGridChangedProperties): void {
+  public override willUpdate(changedProperties: YearGridChangedProperties): void {
     if (changedProperties.has('data')) {
       this.#selectedYear = this.data.date.getUTCFullYear();
     }
   }
 
-  protected async firstUpdated(): Promise<void> {
+  protected override async firstUpdated(): Promise<void> {
     await focusElement(this.selectedYearGridButton, element => element.scrollIntoView());
   }
 
-  protected render(): TemplateResult | typeof nothing {
+  protected override render(): TemplateResult | typeof nothing {
     const {
       date,
       formatters,
