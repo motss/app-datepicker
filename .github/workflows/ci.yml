@@ -12,6 +12,10 @@ on:
     tags-ignore:
       - '*'
 
+defaults:
+  run:
+    shell: bash
+
 env:
   CI_SKIP: false
 
@@ -57,12 +61,7 @@ jobs:
       - name: Lint
         if: "env.CI_SKIP == 'false'"
         run: |
-          npm run lint
-
-      - name: Build
-        if: "env.CI_SKIP == 'false'"
-        run: |
-          npm run build:test && npm run build:config
+          npm run lint:build
 
       - name: Check build
         if: "env.CI_SKIP == 'false'"
@@ -73,5 +72,4 @@ jobs:
       - name: Run Test
         if: "env.CI_SKIP == 'false'"
         run: |
-          npm run test:dev
-
+          npm t
