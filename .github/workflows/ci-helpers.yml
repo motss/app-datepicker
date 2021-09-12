@@ -1,0 +1,83 @@
+name: ci-helpers
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CI_SKIP: false
+
+jobs:
+  test:
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, 'doc:')"
+    name: ${{ matrix.os }} ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        target: [16.x]
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Git log
+        run: |
+          if [ -n "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]; then
+            echo "CI_SKIP=true" >> $GITHUB_ENV
+          fi
+
+      - name: Setup node@${{ matrix.target }}
+        if: "env.CI_SKIP == 'false'"
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.target }}
+
+      - name: List versions
+        if: "env.CI_SKIP == 'false'"
+        continue-on-error: true
+        run: |
+          npm i -g npm@latest
+          node -v && npm version && which npm && pwd && npx envinfo
+
+      - name: Install dependencies
+        if: "env.CI_SKIP == 'false'"
+        run: |
+          npm ci --quiet
+
+      - name: Lint
+        if: "env.CI_SKIP == 'false'"
+        run: |
+          npm run lint:build
+
+      - name: Check build
+        if: "env.CI_SKIP == 'false'"
+        shell: bash
+        run: |
+          pwd && ls -la
+
+      - name: Run Test
+        if: "env.CI_SKIP == 'false'"
+        run: |
+          npm run test:helpers
+
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v1
+        if: env.CI_SKIP != 'true' && success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unit_tests_helpers
