@@ -10,6 +10,7 @@
     "plugin:lit/recommended",
     "plugin:lit-a11y/recommended"
   ],
+  "ignorePatterns": "wtr.config.mjs",
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
