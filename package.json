@@ -62,10 +62,12 @@
     "serve": "npm x --no @web/dev-server@latest -- wds --node-resolve -dw -p 4343 -a index.html",
     "ts": "tsc",
     "test:helpers": "c8 --reporter=lcov --exclude=src/tests uvu -r @swc/register src/tests/helpers",
-    "test": "npm run test:helpers",
+    "test:elements": "npm run wtr -- --config wtr.config.mjs",
+    "test": "npm run test:helpers && npm run test:elements",
     "watch": "npm run clean && tsc --watch",
     "prepare": "npm x -- husky install",
-    "postinstall": "npm dedupe"
+    "postinstall": "npm dedupe",
+    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
   },
   "commitlint": {
     "extends": [
@@ -82,12 +84,18 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^13.1.0",
+    "@open-wc/testing": "^2.5.33",
     "@reallyland/tsconfig": "^3.0.2",
     "@skypack/package-check": "^0.2.2",
     "@swc/helpers": "^0.2.13",
     "@swc/register": "^0.1.7",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
+    "@web/dev-server-esbuild": "^0.2.14",
+    "@web/dev-server-rollup": "^0.3.9",
+    "@web/test-runner": "^0.13.17",
+    "@web/test-runner-commands": "^0.5.12",
+    "@web/test-runner-playwright": "^0.8.8",
     "c8": "^7.9.0",
     "eslint-plugin-lit": "^1.4.1",
     "eslint-plugin-lit-a11y": "^1.0.1",

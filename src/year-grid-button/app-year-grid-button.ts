@@ -1,4 +1,4 @@
-import { customElement } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators/custom-element.js';
 
 import { APP_YEAR_GRID_BUTTON_NAME } from './constants.js';
 import { YearGridButton } from './year-grid-button.js';

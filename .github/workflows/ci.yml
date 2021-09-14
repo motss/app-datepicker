@@ -26,8 +26,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        target: [14.x]
+        os: [ubuntu-latest]
+        target: [16.x]
     timeout-minutes: 120
 
     steps:
@@ -45,6 +45,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.target }}
+
+      - name: Setup Playwright
+        if: env.CI_SKIP != 'true'
+        uses: microsoft/playwright-github-action@v1
 
       - name: List versions
         if: "env.CI_SKIP == 'false'"
@@ -72,4 +76,12 @@ jobs:
       - name: Run Test
         if: "env.CI_SKIP == 'false'"
         run: |
-          npm t
+          npm run test:elements
+
+      - name: Upload coverage to codecov
+        uses: codecov/codecov-action@v1
+        if: env.CI_SKIP != 'true' && success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unit_tests
