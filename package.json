@@ -55,7 +55,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.prod.json",
     "check": "package-check",
-    "clean": "rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
+    "clean": "shx rm -rf .*cache *.log coverage/ dist/ logs/",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "prepublishOnly": "npm run lint && npm run build:prod",
