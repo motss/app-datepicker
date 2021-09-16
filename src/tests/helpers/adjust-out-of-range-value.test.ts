@@ -1,7 +1,14 @@
-import { adjustOutOfRangeValue } from '../../helpers/adjust-out-of-range-value';
-import { assert, test } from '../utils';
+import { expect } from '@open-wc/testing';
 
-const cases: ([...Parameters<typeof adjustOutOfRangeValue>, ReturnType<typeof adjustOutOfRangeValue>])[] = [
+import { adjustOutOfRangeValue } from '../../helpers/adjust-out-of-range-value';
+import { messageFormatter } from '../test-utils/message-formatter';
+
+type A = [
+  ...Parameters<typeof adjustOutOfRangeValue>,
+  ReturnType<typeof adjustOutOfRangeValue>
+];
+
+const cases: A[] = [
   [
     new Date('2020-02-02'),
     new Date('2020-02-12'),
@@ -22,17 +29,19 @@ const cases: ([...Parameters<typeof adjustOutOfRangeValue>, ReturnType<typeof ad
   ],
 ];
 
-cases.forEach(([
-  testMin,
-  testMax,
-  testDate,
-  expected,
-]) => {
-  test('returns adjusted date (min=%s, max=%s, date=%s)', () => {
-    const result = adjustOutOfRangeValue(testMin, testMax, testDate);
+describe(adjustOutOfRangeValue.name, () => {
+  cases.forEach((a) => {
+    it(messageFormatter('returns adjusted date (min=%s, max=%s, date=%s)', a), () => {
+      const [
+        testMin,
+        testMax,
+        testDate,
+        expected,
+      ] = a;
 
-    assert.equal(result, expected);
+      const result = adjustOutOfRangeValue(testMin, testMax, testDate);
+
+      expect(result).deep.equal(expected);
+    });
   });
 });
-
-test.run();

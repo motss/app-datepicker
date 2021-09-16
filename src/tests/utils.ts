@@ -1,21 +1,34 @@
-// import type { Test } from 'uvu';
-import { test } from 'uvu';
-import * as assert from 'uvu/assert';
+// import type { Context, Test } from 'uvu';
+// import { test as testBase } from 'uvu';
+// import * as assert from 'uvu/assert';
+
+// import { messageFormatter } from './test-utils/message-formatter';
 
 // function eachFn<T>(
-//   groups: T[],
-//   message: string,
-//   cb: Parameters<Test<T>>['1']
+//   groups: T[]
 // ) {
-//   groups.forEach((group) => {
-//     test(message, (ctx) => cb<{ group: T }>({ ...ctx, group }));
-//   });
+//   return (
+//     message: string,
+//     cb: Parameters<Test<Context & { group: T }>>['1']
+//   ) => {
+//     groups.forEach((group) => {
+//       testBase(
+//         messageFormatter(message, group),
+//         (ctx) =>
+//           cb({ ...ctx, group } as never)
+//       );
+//     });
+//   };
 // }
 
-// Object.assign(test, {
+// Object.assign(testBase, {
 //   each: eachFn,
 // });
 
-// export const test = () => testBase<{ group: T }>();
+// interface A extends Test<Context> {
+//   each: typeof eachFn;
+// }
 
-export { assert, test };
+// const test = testBase as A;
+
+// export { assert, test };

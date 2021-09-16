@@ -1,15 +1,22 @@
+import { fromRollup } from '@web/dev-server-rollup';
 import { esbuildPlugin } from '@web/dev-server-esbuild';
 import { playwrightLauncher } from '@web/test-runner-playwright';
 import { sendKeysPlugin } from '@web/test-runner-commands/plugins';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
+const nodeResolvePlugin = fromRollup(nodeResolve);
 
 const isCI = String(process.env.CI) === 'true';
+const isTestHelpersOnly = String(process.env.TEST_HELPERS) === '1';
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
   browsers: [
     playwrightLauncher({ product: 'chromium' }),
-    playwrightLauncher({ product: 'firefox' }),
-    playwrightLauncher({ product: 'webkit' }),
+    ...(isTestHelpersOnly ? [] : [
+      playwrightLauncher({ product: 'firefox' }),
+      playwrightLauncher({ product: 'webkit' }),
+    ])
   ],
   browserStartTimeout: 60e3,
   concurrency: 3,
@@ -30,10 +37,14 @@ const config = {
     ],
   },
   files: [
-    'src/tests/!(helpers)/*.test.ts'
+    `src/tests/${isTestHelpersOnly ? 'helpers' : '!(helpers)'}/*.test.ts`
   ],
-  nodeResolve: true,
+  // nodeResolve: true,
   plugins: [
+    nodeResolvePlugin({
+      exportConditions: ['default', 'esbuild', 'import'],
+      extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
+    }),
     esbuildPlugin({ ts: true }),
     sendKeysPlugin(),
   ],
