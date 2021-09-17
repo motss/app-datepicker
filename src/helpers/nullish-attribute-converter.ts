@@ -1,4 +1,4 @@
 import type { ComplexAttributeConverter } from 'lit';
 
-export const nullishAttributeConverter: ComplexAttributeConverter<unknown>['toAttribute'] =
+export const nullishAttributeConverter: NonNullable<ComplexAttributeConverter<unknown>['toAttribute']> =
   <T = string>(value: T) => value || undefined;
