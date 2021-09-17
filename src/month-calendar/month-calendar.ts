@@ -9,7 +9,7 @@ import { navigationKeySetGrid } from '../constants.js';
 import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
-import { isInTargetMonth } from '../helpers/is-in-current-month.js';
+import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
@@ -106,7 +106,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
        * When there is a selected date in the current month, tab to focus on selected date.
        * Otherwise, set the first day of month tabbable so that tapping on Tab focuses that.
        */
-      const tabbableDate = isInTargetMonth(date, currentDate) ?
+      const tabbableDate = isInCurrentMonth(date, currentDate) ?
         date :
         computeNextSelectedDate({
           currentDate,

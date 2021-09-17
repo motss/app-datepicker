@@ -16,7 +16,7 @@ import { adjustOutOfRangeValue } from '../helpers/adjust-out-of-range-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
-import { isInTargetMonth } from '../helpers/is-in-current-month.js';
+import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
@@ -190,8 +190,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
         const currentDate = this._currentDate;
 
-        isInTargetMonth(this._min, currentDate) && focusElement(this._navigationNext);
-        isInTargetMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
+        isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
+        isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
 
         this.#shouldUpdateFocusInNavigationButtons = false;
       }
@@ -234,8 +234,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
           nothing :
           html`
           <div class=month-pagination>
-            ${this.#renderNavigationButton('previous', !isInTargetMonth(min, currentDate))}
-            ${this.#renderNavigationButton('next', !isInTargetMonth(max, currentDate))}
+            ${this.#renderNavigationButton('previous', !isInCurrentMonth(min, currentDate))}
+            ${this.#renderNavigationButton('next', !isInCurrentMonth(max, currentDate))}
           </div>
           `
       }

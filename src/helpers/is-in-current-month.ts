@@ -1,4 +1,4 @@
-export function isInTargetMonth(targetDate: Date, sourceDate: Date): boolean {
+export function isInCurrentMonth(targetDate: Date, sourceDate: Date): boolean {
   const targetDateFy = targetDate.getUTCFullYear();
   const targetDateM = targetDate.getUTCMonth();
   const sourceDateFY = sourceDate.getUTCFullYear();
