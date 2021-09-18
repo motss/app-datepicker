@@ -1,25 +1,23 @@
 type SplitStringCallbackFn<ReturnType> = (
-  element: ReturnType,
+  element: string,
   index: number,
-  array: ReturnType[]
+  array: string[]
 ) => ReturnType;
 
-export type splitString = {
-  (source: string): string[];
-  <ReturnType>(source: string, callbackFn: SplitStringCallbackFn<ReturnType>): ReturnType[];
-}
-
-export function splitString<SourceType extends string = string, ReturnType = string>(
-  source: SourceType,
-  callbackFn?: SplitStringCallbackFn<ReturnType>,
+export function splitString<ReturnType = string>(
+  source: string,
+  splitFunction?: SplitStringCallbackFn<ReturnType>,
   separator: RegExp | string = /,\s*/
 ): ReturnType[] {
   const dateList = typeof source === 'string' && source.length > 0
-    ? source.split(separator) as unknown as ReturnType[]
+    ? source.split(separator)
     : [];
 
   if (!dateList.length) return [];
-  if (callbackFn == null) return dateList;
+  if (splitFunction == null) return dateList as unknown as ReturnType[];
 
-  return dateList.map(callbackFn);
+  return dateList.map(
+    (n, i, arr) =>
+      splitFunction(n, i, arr)
+  );
 }
