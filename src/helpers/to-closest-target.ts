@@ -4,7 +4,10 @@ export function toClosestTarget<Target extends HTMLElement, TargetEvent extends 
 ): Target | undefined {
   const matchedTarget = (
     Array.from(event.composedPath()) as Target[]
-  ).find((element => element.nodeType === Node.ELEMENT_NODE && element.matches(selector)));
+  ).find(
+    element =>
+      element.nodeType === Node.ELEMENT_NODE && element.matches(selector)
+  );
 
   return matchedTarget;
 }
