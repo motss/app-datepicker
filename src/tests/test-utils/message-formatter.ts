@@ -1,5 +1,11 @@
 const re = /%s|%j/g;
 
+function replacer(_: string, v: unknown): unknown {
+  return v instanceof Set || v instanceof Map ?
+    Array.from(v) :
+    v;
+}
+
 export function messageFormatter<T>(message: string, group: T): string {
   let i = 0;
 
@@ -11,7 +17,7 @@ export function messageFormatter<T>(message: string, group: T): string {
       try {
         return value?.toJSON();
       } catch {
-        return s === '%j' ? JSON.stringify(value): String(value);
+        return s === '%j' ? JSON.stringify(value, replacer): String(value);
       }
     }
   );

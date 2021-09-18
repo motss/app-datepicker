@@ -2,7 +2,6 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
 import type { InferredFromSet } from '../typings.js';
-import { toDateRange } from './to-date-range.js';
 import type { ToNextSelectableDateInit } from './typings.js';
 
 export function toNextSelectableDate({
@@ -13,61 +12,58 @@ export function toNextSelectableDate({
   maxTime,
   minTime,
 }: ToNextSelectableDateInit): Date {
+  // Bail when there is no valid date range (<= 1 day).
+  if ((maxTime - minTime + 864e5) <= 864e5) return date;
+
   const focusedDateTime = +date;
 
-  let isLessThanMinTime = focusedDateTime < minTime;
-  let isMoreThanMaxTime = focusedDateTime > maxTime;
-
-  // Bail when there is no valid date range (< 1 day).
-  if (toDateRange(minTime, maxTime) < 864e5) return date;
-
+  let isBeforeMinTime = focusedDateTime < minTime;
+  let iaAfterMaxTime = focusedDateTime > maxTime;
   let isDisabledDay =
-    isLessThanMinTime ||
-    isMoreThanMaxTime ||
+    isBeforeMinTime ||
+    iaAfterMaxTime ||
     disabledDaysSet.has((date as Date).getUTCDay()) ||
     disabledDatesSet.has(focusedDateTime);
 
   if (!isDisabledDay) return date;
 
-  let selectableDateTime = 0;
-  let selectableDate = isLessThanMinTime === isMoreThanMaxTime ?
-    date : new Date(isLessThanMinTime ? minTime - 864e5 : 864e5 + maxTime);
+  let newSelectableDate = isBeforeMinTime === iaAfterMaxTime ?
+    date : new Date(isBeforeMinTime ? minTime - 864e5 : 864e5 + maxTime);
+  let newSelectableDateTime = +newSelectableDate;
 
-  const fy = selectableDate.getUTCFullYear();
-  const m = selectableDate.getUTCMonth();
-  let d = selectableDate.getUTCDate();
+  const fy = newSelectableDate.getUTCFullYear();
+  const m = newSelectableDate.getUTCMonth();
+  let d = newSelectableDate.getUTCDate();
 
   while (isDisabledDay) {
-    if (isLessThanMinTime || (!isMoreThanMaxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeySetDayNext>))) d += 1;
-    if (isMoreThanMaxTime || (!isLessThanMinTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>))) d -= 1;
+    if (isBeforeMinTime || (!iaAfterMaxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeySetDayNext>))) d += 1;
+    if (iaAfterMaxTime || (!isBeforeMinTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>))) d -= 1;
 
-    selectableDate = toUTCDate(fy, m, d);
-    selectableDateTime = +selectableDate;
+    newSelectableDate = toUTCDate(fy, m, d);
+    newSelectableDateTime = +newSelectableDate;
 
-    if (!isLessThanMinTime) {
-      isLessThanMinTime = selectableDateTime < minTime;
+    if (!isBeforeMinTime) {
+      isBeforeMinTime = newSelectableDateTime < minTime;
 
-      if (isLessThanMinTime) {
-        selectableDate = new Date(minTime);
-        selectableDateTime = +selectableDate;
-        d = selectableDate.getUTCDate();
+      if (isBeforeMinTime) {
+        newSelectableDate = new Date(minTime);
+        d = newSelectableDate.getUTCDate();
       }
     }
 
-    if (!isMoreThanMaxTime) {
-      isMoreThanMaxTime = selectableDateTime > maxTime;
+    if (!iaAfterMaxTime) {
+      iaAfterMaxTime = newSelectableDateTime > maxTime;
 
-      if (isMoreThanMaxTime) {
-        selectableDate = new Date(maxTime);
-        selectableDateTime = +selectableDate;
-        d = selectableDate.getUTCDate();
+      if (iaAfterMaxTime) {
+        newSelectableDate = new Date(maxTime)
+        d = newSelectableDate.getUTCDate();
       }
     }
 
     isDisabledDay =
-      disabledDaysSet.has(selectableDate.getUTCDay()) ||
-      disabledDatesSet.has(selectableDateTime);
+      disabledDaysSet.has(newSelectableDate.getUTCDay()) ||
+      disabledDatesSet.has(+newSelectableDate);
   }
 
-  return selectableDate;
+  return newSelectableDate;
 }
