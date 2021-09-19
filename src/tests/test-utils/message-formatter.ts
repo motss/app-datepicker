@@ -15,7 +15,7 @@ export function messageFormatter<T>(message: string, group: T): string {
       const value = Array.isArray(group) ? group[i++] : group;
 
       try {
-        return value?.toJSON();
+        return value == null ? String(value) : value?.toJSON();
       } catch {
         return s === '%j' ? JSON.stringify(value, replacer): String(value);
       }
