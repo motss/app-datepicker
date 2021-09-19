@@ -2,10 +2,10 @@ import type { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
+import { DateTimeFormat } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
-import { toResolvedLocale } from '../helpers/to-resolved-locale.js';
 import type { CalendarView, Constructor } from '../typings.js';
 import type { DatePickerMixinProperties, MixinReturnType } from './typings.js';
 
@@ -32,7 +32,7 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
     public landscape = false;
 
     @property()
-    public locale: string = toResolvedLocale();
+    public locale: string = DateTimeFormat().resolvedOptions().locale;
 
     @property()
     public nextMonthLabel = 'Next month';

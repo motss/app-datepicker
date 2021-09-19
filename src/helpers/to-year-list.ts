@@ -1,7 +1,7 @@
 import { toDateRange } from './to-date-range.js';
 
 export function toYearList(min: Date, max: Date): number[] {
-  if (toDateRange(min, max) < 864e5) return [];
+  if (toDateRange(min, max) < 1) return [];
 
   const fy = min.getUTCFullYear();
 
