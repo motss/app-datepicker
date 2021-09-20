@@ -2,7 +2,7 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
 import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
 import type { InferredFromSet } from '../typings.js';
-import { toDateRange } from './to-date-range.js';
+import { toDayDiffInclusive } from './to-day-diff-inclusive.js';
 import type { ToNextSelectableDateInit } from './typings.js';
 
 export function toNextSelectableDate({
@@ -14,7 +14,7 @@ export function toNextSelectableDate({
   minTime,
 }: ToNextSelectableDateInit): Date {
   // Bail when there is no valid date range (<= 1 day).
-  if (toDateRange(minTime, maxTime) <= 1) return date;
+  if (toDayDiffInclusive(minTime, maxTime) <= 1) return date;
 
   const focusedDateTime = +date;
 

@@ -1,9 +1,9 @@
 import { expect } from '@open-wc/testing';
 
-import { toDateRange } from '../../helpers/to-date-range';
+import { toDayDiffInclusive } from '../../helpers/to-day-diff-inclusive';
 import { messageFormatter } from '../test-utils/message-formatter';
 
-describe(toDateRange.name, () => {
+describe(toDayDiffInclusive.name, () => {
   type A = [number | Date, number | Date, number];
 
   const cases: A[] = [
@@ -23,7 +23,7 @@ describe(toDateRange.name, () => {
     it(
       messageFormatter('returns date range (min=%s, max=%s)', a),
       () => {
-        const result = toDateRange(testMin, testMax);
+        const result = toDayDiffInclusive(testMin, testMax);
 
         expect(result).equal(expected);
       }

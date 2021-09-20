@@ -1,7 +1,7 @@
-import { toDateRange } from './to-date-range.js';
+import { toDayDiffInclusive } from './to-day-diff-inclusive.js';
 
 export function toYearList(min: Date, max: Date): number[] {
-  if (toDateRange(min, max) < 1) return [];
+  if (toDayDiffInclusive(min, max) < 1) return [];
 
   const fy = min.getUTCFullYear();
 
