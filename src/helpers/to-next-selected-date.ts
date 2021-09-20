@@ -5,9 +5,9 @@ import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constan
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome, keyPageDown, keyPageUp } from '../key-values.js';
 import type { InferredFromSet } from '../typings.js';
 import { toNextSelectableDate } from './to-next-selectable-date.js';
-import type { ComputeNextSelectedDateInit as ComputeNextSelectedDateInit } from './typings.js';
+import type { ToNextSelectedDateInit } from './typings.js';
 
-export function computeNextSelectedDate({
+export function toNextSelectedDate({
   currentDate,
   date,
   disabledDatesSet,
@@ -16,7 +16,7 @@ export function computeNextSelectedDate({
   key,
   maxTime,
   minTime,
-}: ComputeNextSelectedDateInit): Date {
+}: ToNextSelectedDateInit): Date {
   /**
    * To update focused date,
    *

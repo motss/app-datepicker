@@ -20,11 +20,11 @@ const cases: A[] = [
 
 describe(isInCurrentMonth.name, () => {
   cases.forEach(a => {
+    const [testTarget, testSource, expected] = a;
+
     it(
       messageFormatter('returns if %s is current month of %s', a),
       () => {
-        const [testTarget, testSource, expected] = a;
-
         const result = isInCurrentMonth(testTarget, testSource);
 
         expect(result).equal(expected);

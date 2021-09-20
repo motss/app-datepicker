@@ -6,11 +6,11 @@ import { html, LitElement } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { navigationKeySetGrid } from '../constants.js';
-import { computeNextSelectedDate } from '../helpers/compute-next-selected-date.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
+import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
@@ -108,7 +108,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
        */
       const tabbableDate = isInCurrentMonth(date, currentDate) ?
         date :
-        computeNextSelectedDate({
+        toNextSelectedDate({
           currentDate,
           date,
           disabledDatesSet,
@@ -235,7 +235,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         min,
       } = this.data;
 
-      newSelectedDate = computeNextSelectedDate({
+      newSelectedDate = toNextSelectedDate({
         currentDate,
         date,
         disabledDatesSet,
