@@ -15,6 +15,7 @@ describe(toDayDiffInclusive.name, () => {
     // other ranges
     [new Date('2020-02-02'), new Date('2020-02-01'), 0],
     [+new Date('2020-02-02'), +new Date('2020-02-04'), 3],
+    [+new Date('2020-02-02T08:00:00.000+08:00'), +new Date('2020-02-02T20:00:00.00+08:00'), 1],
   ];
 
   cases.forEach((a) => {
