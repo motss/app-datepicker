@@ -75,10 +75,10 @@
     ]
   },
   "dependencies": {
-    "@material/mwc-base": "^0.23.0-canary.3fae6c2d.0",
-    "@material/mwc-button": "^0.23.0-canary.3fae6c2d.0",
-    "@material/mwc-icon-button": "^0.23.0-canary.3fae6c2d.0",
-    "lit": "^2.0.0-rc.4",
+    "@material/mwc-base": "^0.25.1",
+    "@material/mwc-button": "^0.25.1",
+    "@material/mwc-icon-button": "^0.25.1",
+    "lit": "^2.0.0",
     "nodemod": "^3.0.0",
     "tslib": "^2.3.1"
   },
