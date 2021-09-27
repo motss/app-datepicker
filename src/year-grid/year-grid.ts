@@ -1,8 +1,6 @@
-import { property } from '@lit/reactive-element/decorators/property.js';
-import { queryAsync } from '@lit/reactive-element/decorators/query-async.js';
 import type { TemplateResult } from 'lit';
-import { nothing } from 'lit';
-import { html, LitElement } from 'lit';
+import { html, LitElement, nothing } from 'lit';
+import { property, queryAsync } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { MAX_DATE, navigationKeySetGrid } from '../constants.js';

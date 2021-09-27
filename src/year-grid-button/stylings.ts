@@ -1,4 +1,4 @@
-import { css } from '@lit/reactive-element';
+import { css } from 'lit';
 
 export const yearGridButtonStyling = css`
 :host {
