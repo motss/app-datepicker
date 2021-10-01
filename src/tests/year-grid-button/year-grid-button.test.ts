@@ -2,7 +2,7 @@ import '../../year-grid-button/app-year-grid-button';
 
 import { expect, fixture, html } from '@open-wc/testing';
 
-import { APP_YEAR_GRID_BUTTON_NAME } from '../../year-grid-button/constants.js';
+import { APP_YEAR_GRID_BUTTON_NAME } from '../../year-grid-button/constants';
 
 describe(APP_YEAR_GRID_BUTTON_NAME, () => {
   it('renders', async () => {
@@ -12,4 +12,5 @@ describe(APP_YEAR_GRID_BUTTON_NAME, () => {
 
     expect(el.shadowRoot?.querySelector(`button[aria-label="test"]`)).exist;
   });
+
 });

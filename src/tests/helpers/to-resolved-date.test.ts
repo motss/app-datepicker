@@ -29,4 +29,5 @@ describe(toResolvedDate.name, () => {
       }
     );
   });
+
 });

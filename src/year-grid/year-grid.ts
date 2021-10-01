@@ -1,6 +1,6 @@
-import type { TemplateResult } from 'lit';
-import { html, LitElement, nothing } from 'lit';
-import { property, queryAsync } from 'lit/decorators.js';
+import type { nothing, TemplateResult } from 'lit';
+import { html, LitElement } from 'lit';
+import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
@@ -10,9 +10,9 @@ import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
 import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
-import type { InferredFromSet } from '../typings.js';
-import { toNextSelectedYear } from './ to-next-selected-year.js';
+import type { Formatters, InferredFromSet } from '../typings.js';
 import { yearGridStyling } from './stylings.js';
+import { toNextSelectedYear } from './to-next-selected-year.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties } from './typings.js';
 
 export class YearGrid extends LitElement implements YearGridProperties {
@@ -21,6 +21,9 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
   @queryAsync('button[data-year][aria-selected="true"]')
   public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
+
+  @state()
+  protected $focusingYear: number;
 
   public static override styles = [
     baseStyling,
@@ -43,7 +46,9 @@ export class YearGrid extends LitElement implements YearGridProperties {
       max: MAX_DATE,
       min: todayDate,
     };
-    this.#selectedYear = todayDate.getUTCFullYear();
+
+    this.$focusingYear =
+    this.#selectedYear =
     this.#todayYear = todayDate.getUTCFullYear();
   }
 
@@ -53,7 +58,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
   public override willUpdate(changedProperties: YearGridChangedProperties): void {
     if (changedProperties.has('data')) {
-      this.#selectedYear = this.data.date.getUTCFullYear();
+      this.$focusingYear = this.#selectedYear = this.data.date.getUTCFullYear();
     }
   }
 
@@ -68,10 +73,9 @@ export class YearGrid extends LitElement implements YearGridProperties {
       max,
       min,
     } = this.data;
+    const focusingYear =this.$focusingYear;
 
-    if (formatters == null) return nothing;
-
-    const { yearFormat } = formatters;
+    const { yearFormat } = formatters as Formatters;
     const yearList = toYearList(min, max);
 
     return html`
@@ -82,9 +86,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
       @keyup=${this.#updateYear}
     >${
       yearList.map((year) => {
-        const yearLabel = yearFormat(year);
-        // FIXME: To update tabindex
-        const isYearSelected = year === date.getUTCFullYear();
+        const yearLabel = yearFormat(new Date(`${year}-01-01`));
 
         return html`
         <button
@@ -92,10 +94,10 @@ export class YearGrid extends LitElement implements YearGridProperties {
             'year-grid-button': true,
             'year--today': this.#todayYear === year,
           })}
-          tabindex=${isYearSelected ? '0' : '-1'}
+          tabindex=${year === focusingYear ? '0' : '-1'}
           data-year=${year}
           label=${yearLabel}
-          aria-selected=${isYearSelected ? 'true' : 'false'}
+          aria-selected=${year === date.getUTCFullYear() ? 'true' : 'false'}
         ></button>
         `;
       })
@@ -104,12 +106,10 @@ export class YearGrid extends LitElement implements YearGridProperties {
   }
 
   #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
-    if (['keydown', 'keyup'].includes(ev.type)) {
+    if (ev.type === 'keydown') {
       const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
 
-      if (
-        !(ev.type === 'keydown' && navigationKeySetGrid.has(key))
-      ) return;
+      if (!navigationKeySetGrid.has(key)) return;
 
       // Stop scrolling with arrow keys
       ev.preventDefault();
@@ -119,30 +119,30 @@ export class YearGrid extends LitElement implements YearGridProperties {
         max,
         min,
       } = this.data;
-      const selectedYear = toNextSelectedYear({
+      const focusingYear = toNextSelectedYear({
         key,
         max,
         min,
-        year: this.#selectedYear,
+        year: this.$focusingYear,
       });
 
-      const selectedYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
-        `button[data-year="${selectedYear}"]`
+      const focusingYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
+        `button[data-year="${focusingYear}"]`
       );
 
-      this.#selectedYear = selectedYear;
-
-      if (selectedYearGridButton) {
-        selectedYearGridButton.focus();
-      }
-    } else {
-      const selectedYearGridButton = toClosestTarget(ev, `button[data-year]`);
+      this.$focusingYear = focusingYear;
+      focusingYearGridButton?.focus();
+    } else if (ev.type === 'click') {
+      const selectedYearStr =
+        toClosestTarget(ev, `button[data-year]`)
+        ?.getAttribute('data-year');
 
       /** Do nothing when not tapping on the year button */
-      if (selectedYearGridButton == null) return;
+      if (selectedYearStr == null) return;
 
-      const year = Number(selectedYearGridButton.getAttribute('data-year'));
+      const year = Number(selectedYearStr);
 
+      this.$focusingYear = this.#selectedYear = year;
       dispatchCustomEvent(this, 'year-updated', { year });
     }
   };

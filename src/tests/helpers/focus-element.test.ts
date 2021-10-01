@@ -22,4 +22,5 @@ describe(focusElement.name, () => {
 
     expect(document.activeElement).dom.equal(focusedElement);
   });
+
 });

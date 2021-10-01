@@ -26,4 +26,5 @@ describe(toFormatters.name, () => {
         expect(result).haveOwnProperty(n)
     );
   });
+
 });

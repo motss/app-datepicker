@@ -96,4 +96,5 @@ describe(toNextSelectedYear.name, () => {
       }
     );
   });
+
 });
