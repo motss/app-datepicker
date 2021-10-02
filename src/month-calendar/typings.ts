@@ -20,5 +20,5 @@ export interface MonthCalendarData {
 }
 
 export interface MonthCalendarProperties {
-  data: MonthCalendarData;
+  data?: MonthCalendarData;
 }

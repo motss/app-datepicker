@@ -43,20 +43,12 @@ describe(APP_YEAR_GRID_NAME, () => {
     ]);
   });
 
-  type A = null | undefined;
-  const cases: A[] = [null, undefined];
-  cases.forEach((a) => {
-    it(
-      messageFormatter('renders nothing (formatters=%s)', a),
-      async () => {
-        const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${{
-          ...data,
-          formatters: a as never,
-        }}></app-year-grid>`);
-
-        expect(el.shadowRoot?.querySelector(elementSelectors.yearGrid)).not.exist;
-      }
+  it('renders nothing', async () => {
+    const el = await fixture<AppYearGrid>(
+      html`<app-year-grid></app-year-grid>`
     );
+
+    expect(el.shadowRoot?.querySelector(elementSelectors.yearGrid)).not.exist;
   });
 
   it('focuses new year with keyboard', async () => {

@@ -18,7 +18,7 @@ import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
 export class MonthCalendar extends LitElement implements MonthCalendarProperties {
   @property({ attribute: false })
-  public data: MonthCalendarData;
+  public data?: MonthCalendarData;
 
   @queryAsync('.calendar-day[aria-selected="true"]')
   public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
@@ -63,7 +63,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   }
 
   protected override shouldUpdate(): boolean {
-    return this.data.formatters != null;
+    return this.data != null && this.data.formatters != null;
   }
 
   protected override async updated(): Promise<void> {
@@ -87,7 +87,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       todayDate,
       weekdays,
       formatters,
-    } = this.data;
+    } = this.data as MonthCalendarData;
 
     let calendarContent: TemplateResult | typeof nothing = nothing;
 
@@ -127,12 +127,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         @keyup=${this.#updateSelectedDate}
       >
         ${
-          showCaption ? html`
+          showCaption && secondMonthSecondCalendarDayFullDate ? html`
           <caption id=${calendarCaptionId}>
             <div class=calendar-caption part=caption>${
-              secondMonthSecondCalendarDayFullDate ?
-                longMonthYearFormat(secondMonthSecondCalendarDayFullDate) :
-                ''
+              longMonthYearFormat(secondMonthSecondCalendarDayFullDate)
             }</div>
           </caption>
           ` : nothing
@@ -164,7 +162,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                 /** Week label, if any */
                 if (!fullDate && value && showWeekNumber && i < 1) {
                   return html`<th
-                    class="calendar-day weekday-label"
+                    class="calendar-day week-number"
                     part=calendar-day
                     scope=row
                     role=rowheader
@@ -228,7 +226,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         disabledDaysSet,
         max,
         min,
-      } = this.data;
+      } = this.data as MonthCalendarData;
 
       newSelectedDate = toNextSelectedDate({
         currentDate,
@@ -267,7 +265,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     if (newSelectedDate == null) return;
 
     dispatchCustomEvent(this, 'date-updated', {
-      isKeypress: false,
+      isKeypress: ev.type === 'keydown',
       value: new Date(newSelectedDate),
     });
   };

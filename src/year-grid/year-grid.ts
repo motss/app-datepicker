@@ -17,7 +17,7 @@ import type { YearGridChangedProperties, YearGridData, YearGridProperties } from
 
 export class YearGrid extends LitElement implements YearGridProperties {
   @property({ attribute: false })
-  public data: YearGridData;
+  public data?: YearGridData;
 
   @queryAsync('button[data-year][aria-selected="true"]')
   public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
@@ -53,12 +53,16 @@ export class YearGrid extends LitElement implements YearGridProperties {
   }
 
   protected override shouldUpdate(): boolean {
-    return this.data.formatters != null;
+    return this.data != null && this.data.formatters != null;
   }
 
   public override willUpdate(changedProperties: YearGridChangedProperties): void {
-    if (changedProperties.has('data')) {
-      this.$focusingYear = this.#selectedYear = this.data.date.getUTCFullYear();
+    if (changedProperties.has('data') && this.data) {
+      const { date } = this.data;
+
+      if (date) {
+        this.$focusingYear = this.#selectedYear = date.getUTCFullYear();
+      }
     }
   }
 
@@ -72,7 +76,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
       formatters,
       max,
       min,
-    } = this.data;
+    } = this.data as YearGridData;
     const focusingYear =this.$focusingYear;
 
     const { yearFormat } = formatters as Formatters;
@@ -119,7 +123,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
       const {
         max,
         min,
-      } = this.data;
+      } = this.data as YearGridData;
       const focusingYear = toNextSelectedYear({
         key,
         max,
