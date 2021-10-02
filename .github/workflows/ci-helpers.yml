@@ -63,7 +63,7 @@ jobs:
             ${{ matrix.os }}-npm-
 
       - name: Install dependencies
-        if: env.CI_SKIP == 'false' && steps.npm-cache.outputs.cache-hit != 'true'
+        if: env.CI_SKIP == 'false'
         run: |
           npm ci --quiet
 
