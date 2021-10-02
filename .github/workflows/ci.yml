@@ -57,6 +57,15 @@ jobs:
           npm i -g npm@latest
           node -v && npm version && which npm && pwd && npx envinfo
 
+      - name: Cache dependencies
+        id: npm-cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ matrix.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-npm-
+
       - name: Install dependencies
         if: "env.CI_SKIP == 'false'"
         run: |
