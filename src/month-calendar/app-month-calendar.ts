@@ -4,7 +4,7 @@ import { APP_MONTH_CALENDAR_NAME } from './constants.js';
 import { MonthCalendar } from './month-calendar.js';
 
 @customElement(APP_MONTH_CALENDAR_NAME)
-class AppMonthCalendar extends MonthCalendar {}
+export class AppMonthCalendar extends MonthCalendar {}
 
 declare global {
   interface HTMLElementTagNameMap {

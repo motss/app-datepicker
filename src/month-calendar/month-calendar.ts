@@ -12,7 +12,7 @@ import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
-import type { InferredFromSet } from '../typings.js';
+import type { Formatters, InferredFromSet } from '../typings.js';
 import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
 
@@ -25,7 +25,8 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
 
   /**
    * NOTE(motss): This is required to avoid selected date being focused on each update.
-   * Selected date should ONLY be focused during navigation with keyboard.
+   * Selected date should ONLY be focused during navigation with keyboard, e.g.
+   * initial render, switching between views, etc.
    */
   #shouldFocusSelectedDate = false;
 
@@ -88,14 +89,12 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       formatters,
     } = this.data;
 
-    if (formatters == null) return nothing;
-
     let calendarContent: TemplateResult | typeof nothing = nothing;
 
     if (calendar.length) {
       const id = this.id;
 
-      const { longMonthYearFormat } = formatters;
+      const { longMonthYearFormat } = formatters as Formatters;
       const calendarCaptionId = `calendar-caption-${id}`;
       const [, [, secondMonthSecondCalendarDay]] = calendar;
       const secondMonthSecondCalendarDayFullDate = secondMonthSecondCalendarDay.fullDate;
@@ -214,12 +213,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   #updateSelectedDate = (ev: MouseEvent | KeyboardEvent): void => {
     let newSelectedDate: Date | undefined = undefined;
 
-    if (['keydown', 'keyup'].includes(ev.type)) {
+    if (ev.type === 'keydown') {
       const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
 
-      if (
-        !(ev.type === 'keydown' && navigationKeySetGrid.has(key))
-      ) return;
+      if (!navigationKeySetGrid.has(key)) return;
 
       // Stop scrolling with arrow keys
       ev.preventDefault();
@@ -245,8 +242,9 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
       });
 
       this.#shouldFocusSelectedDate = true;
-    } else {
-      const selectedCalendarDay = toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
+    } else if (ev.type === 'click') {
+      const selectedCalendarDay =
+        toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
 
       /** NOTE: Required condition check else these will trigger unwanted re-rendering */
       if (
@@ -255,7 +253,10 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
           'aria-disabled',
           'aria-hidden',
           'aria-selected',
-        ].some(attrName => selectedCalendarDay.getAttribute(attrName) === 'true')
+        ].some(
+          attrName =>
+            selectedCalendarDay.getAttribute(attrName) === 'true'
+        )
       ) {
         return;
       }

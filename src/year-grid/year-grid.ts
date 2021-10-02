@@ -107,7 +107,8 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
   #updateYear = (ev: MouseEvent | KeyboardEvent): void => {
     if (ev.type === 'keydown') {
-      const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
+      const key =
+        (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
 
       if (!navigationKeySetGrid.has(key)) return;
 
@@ -126,9 +127,10 @@ export class YearGrid extends LitElement implements YearGridProperties {
         year: this.$focusingYear,
       });
 
-      const focusingYearGridButton = this.shadowRoot?.querySelector<HTMLButtonElement>(
-        `button[data-year="${focusingYear}"]`
-      );
+      const focusingYearGridButton =
+        this.shadowRoot?.querySelector<HTMLButtonElement>(
+          `button[data-year="${focusingYear}"]`
+        );
 
       this.$focusingYear = focusingYear;
       focusingYearGridButton?.focus();
