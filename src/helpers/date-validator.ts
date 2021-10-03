@@ -3,10 +3,10 @@ import type { DateValidatorResult, MaybeDate } from './typings.js';
 
 export function dateValidator(value: MaybeDate, defaultDate: Date): DateValidatorResult {
   const dateDate = toResolvedDate(value);
-  const isInvalid = value == null || !(dateDate instanceof Date) || isNaN(+dateDate);
+  const isValid = !Number.isNaN(+dateDate);
 
   return {
-    date: isInvalid ? defaultDate : dateDate,
-    isValid: !isInvalid,
+    date: isValid ? dateDate : defaultDate,
+    isValid,
   };
 }

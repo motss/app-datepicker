@@ -3,11 +3,25 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import type { MaybeDate } from './typings.js';
 
 export function toResolvedDate(date?: MaybeDate): Date {
-  const dateDate = new Date(date || new Date());
-  const isUTCDateFormat = typeof date === 'string' && (
-    /^\d{4}-\d{2}-\d{2}$/.test(date) ||
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|\+00:00|-00:00)$/.test(date));
-  const isUnixTimestamp = typeof date === 'number' && date > 0 && isFinite(date);
+  /**
+   * NOTE: Only allow undefined `date` so that calling function without any parameter will
+   * always return today's date. Return `Invalid Date` object for all falsy values.
+   *
+   * Chrome returns valid date for new Date('0') while Firefox returns `Invalid Date`.
+   * There's no problem parsing a number in both platforms. Try to parse input as number and
+   * use that to construct date before proceeding to use original value.
+   */
+  const tryDate =
+    typeof date === 'string' && !Number.isNaN(Number(date)) ?
+      Number(date) :
+      date;
+  const dateDate = tryDate === undefined ? new Date() : new Date(tryDate || NaN);
+  const isUTCDateFormat = typeof tryDate === 'string' && (
+    /^\d{4}-\d{2}-\d{2}$/.test(tryDate) ||
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|\+00:00|-00:00)$/.test(tryDate));
+  const isUnixTimestamp = typeof tryDate === 'number' &&
+    tryDate > 0 &&
+    isFinite(tryDate);
 
   let fy = dateDate.getFullYear();
   let m = dateDate.getMonth();

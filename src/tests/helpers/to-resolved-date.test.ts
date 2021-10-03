@@ -7,15 +7,19 @@ import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toResolvedDate.name, () => {
   type A = [MaybeDate | undefined, Date];
-
   const today = new Date();
+  const date1 = new Date(1);
   const cases: A[] = [
-    ['', toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
+    ['', new Date(NaN)],
+    ['0', new Date(NaN)],
+    ['1', toUTCDate(date1.getUTCFullYear(), date1.getUTCMonth(), date1.getUTCDate())],
     ['2020-02-02', new Date('2020-02-02')],
     [+new Date('2020-02-02'), new Date('2020-02-02')],
+    [0, new Date(NaN)],
+    [NaN, new Date(NaN)],
     [new Date('2020-02-02'), new Date('2020-02-02')],
     [new Date('2020-02-02').toJSON(), new Date('2020-02-02')],
-    [null, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
+    [null, new Date(NaN)],
     [undefined, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
   ];
 
