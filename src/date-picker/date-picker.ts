@@ -11,8 +11,8 @@ import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { calendarViews,MAX_DATE } from '../constants.js';
-import { adjustOutOfRangeValue } from '../helpers/adjust-out-of-range-value.js';
+import { calendarViews, DateTimeFormat, MAX_DATE } from '../constants.js';
+import { clampValue } from '../helpers/clamp-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
@@ -41,17 +41,14 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   @state()
   private _currentDate: Date;
 
-  @state()
-  private _hasMax!: boolean;
+  // @state()
+  // private _hasMax!: boolean;
 
-  @state()
-  private _hasMin!: boolean;
+  // @state()
+  // private _hasMin!: boolean;
 
   @state()
   private _max: Date;
-
-  @state()
-  private _maxDate!: Date;
 
   @state()
   private _min: Date;
@@ -98,68 +95,78 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   public override willUpdate(changedProperties: DatePickerChangedProperties): void {
     if (changedProperties.has('locale')) {
-      this.#formatters = toFormatters(this.locale);
+      const newLocale = (
+        this.locale || DateTimeFormat().resolvedOptions().locale
+      ) as string;
+
+      this.#formatters = toFormatters(newLocale);
+      this.locale = newLocale;
+    }
+
+    if (
+      (
+        ['max', 'min', 'value'] as (keyof Pick<DatePickerProperties, 'max' | 'min' | 'value'>)[]
+      ).some(n => changedProperties.has(n))
+    ) {
+      const todayDate = this._TODAY_DATE;
+      const oldMin =
+        toResolvedDate((changedProperties.get('min') || this.min || todayDate) as MaybeDate);
+      const oldMax =
+        toResolvedDate((changedProperties.get('max') || this.max || MAX_DATE) as MaybeDate);
+      const oldValue =
+        toResolvedDate((changedProperties.get('value') || this.value || todayDate) as MaybeDate);
+
+      // FIXME: Can look into use MAX_DATE as fallback
+      const newMin = dateValidator(this.min as MaybeDate, oldMin);
+      const newMax = dateValidator(this.max as MaybeDate, oldMax);
+      const newValue = dateValidator(this.value as MaybeDate, oldValue);
+
+      /**
+       * NOTE: Ensure new `value` is clamped between new `min` and `max` as `newValue` will only
+       * contain valid date but its value might be a out-of-range date.
+       */
+      const valueDate = toResolvedDate(
+        clampValue(+newMin.date, +newMax.date, +newValue.date)
+      );
+
+      this._min = newMin.date;
+      this._max = newMax.date;
+
+      // this._hasMin = newMin.isValid;
+      // this._hasMax = newMax.isValid;
+
+      this._currentDate = new Date(valueDate);
+      this._selectedDate = new Date(valueDate);
+      this.valueAsDate = new Date(valueDate);
+      this.valueAsNumber = +valueDate;
+      this.value = toDateString(valueDate);
     }
 
     if (changedProperties.has('startView')) {
-      const oldStartView = changedProperties.get('startView') as CalendarView;
-      const newStartView = this.startView;
+      const oldStartView =
+        (changedProperties.get('startView') || this.startView) as CalendarView;
 
-      if (!calendarViews.includes(newStartView)) {
-        this.startView = this.startView = oldStartView;
+      /**
+       * NOTE: Reset to old `startView` to ensure a valid value.
+       */
+      if (!calendarViews.includes(this.startView)) {
+        this.startView = oldStartView;
+      }
+
+      if (this.startView === 'calendar') {
+        const newSelectedYear = new Date(
+          clampValue(
+            +this._min,
+            +this._max,
+            +this._selectedDate
+          )
+        );
+
+        this._selectedDate = newSelectedYear;
+        this._currentDate = new Date(newSelectedYear);
       }
     }
 
-    if (changedProperties.has('value')) {
-      const oldValue = toResolvedDate(
-        changedProperties.get('value') as string || this._TODAY_DATE
-      );
-      const { date } = dateValidator(this.value, oldValue);
-
-      this._currentDate = new Date(date);
-      this._selectedDate = new Date(date);
-      this.valueAsDate = new Date(date);
-      this.valueAsNumber = +date;
-    }
-
-    const hasMax = changedProperties.has('max');
-    const hasMin = changedProperties.has('min');
-
-    if (hasMax || hasMin) {
-      const update = (isMax = false) => {
-        const oldValue = toResolvedDate(
-          changedProperties.get(isMax ? 'max' : 'min') as string ||
-          (isMax ? MAX_DATE : this._TODAY_DATE)
-        );
-        const value = this[isMax ? 'max' : 'min'] as MaybeDate;
-        const { date, isValid } = dateValidator(value, oldValue);
-
-        this[isMax ? '_max' : '_min'] = date;
-        this[isMax ? '_hasMax' : '_hasMin'] = isValid;
-      };
-
-      if (hasMax) update(true);
-      if (hasMin) update();
-
-      const min = this._min;
-      const max = this._max;
-      const adjustedCurrentDate = adjustOutOfRangeValue(min, max, this._currentDate);
-
-      this._currentDate = adjustedCurrentDate;
-      this._selectedDate = new Date(adjustedCurrentDate);
-      this.value = toDateString(adjustedCurrentDate);
-    }
-
-    if (changedProperties.has('startView') && this.startView === 'calendar') {
-      const newSelectedYear = adjustOutOfRangeValue(
-        this._min,
-        this._max,
-        this._selectedDate
-      );
-
-      this._selectedDate = newSelectedYear;
-      this._currentDate = new Date(newSelectedYear);
-    }
   }
 
   protected override firstUpdated(): void {

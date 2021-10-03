@@ -10,9 +10,17 @@ export const DatePickerMinMaxMixin = <BaseConstructor extends Constructor<LitEle
 ): MixinReturnType<BaseConstructor, DatePickerMinMaxProperties> => {
   class DatePickerMinMaxClass extends SuperClass implements DatePickerMinMaxProperties {
 
+    /**
+     * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
+     * today's date, set `max` undefined.
+     */
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
     public max?: string;
 
+    /**
+     * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
+     * today's date, set `min` undefined.
+     */
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
     public min?: string;
   }

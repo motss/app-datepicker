@@ -8,6 +8,7 @@ import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
+import type { MaybeDate } from '../../helpers/typings';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import type { CalendarView, DateUpdatedEvent, Formatters } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
@@ -393,14 +394,18 @@ describe(appDatePickerName, () => {
   });
 
   type A4 = [
-    string,
-    string,
+    MaybeDate | undefined,
+    MaybeDate | undefined,
     Date,
     Date
   ];
   const cases4: A4[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['2020-02-02', '', toResolvedDate('2020-02-02'), todayDate],
+    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
+    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
+    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
   cases4.forEach((a) => {
     const [testValue, testNewValue, expectedValueDate, expectedNewValueDate] = a;
@@ -411,7 +416,7 @@ describe(appDatePickerName, () => {
           html`<app-date-picker
             .max=${'2100-12-31'}
             .min=${'1970-01-01'}
-            .value=${testValue}
+            .value=${testValue as never}
           ></app-date-picker>`
         );
 
@@ -430,7 +435,7 @@ describe(appDatePickerName, () => {
           expectedValueDate
         );
 
-        el.value = testNewValue;
+        el.value = testNewValue as never;
 
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
@@ -446,7 +451,7 @@ describe(appDatePickerName, () => {
         expect(newSelectedDate?.getAttribute('aria-label')).equal(
           formatters.fullDateFormat(expectedNewValueDate)
         );
-        expect(selectedDate?.fullDate).deep.equal(
+        expect(newSelectedDate?.fullDate).deep.equal(
           expectedNewValueDate
         );
       });
@@ -454,15 +459,23 @@ describe(appDatePickerName, () => {
   );
 
   type A5 = [
-    string,
-    string,
+    MaybeDate | undefined,
+    MaybeDate | undefined,
     Date,
     Date
   ];
   const cases5: A5[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
+    [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
+    ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
+    [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['', '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
-    ['2020-02-02', '', new Date('2020-02-02'), toResolvedDate(todayDate)],
+    [null, '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
+    ['', '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
+    [undefined, '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
+    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
   cases5.forEach((a) => {
     const [testMin, testNewMin, expectedMinDate, expectedNewMinDate] = a;
@@ -472,8 +485,8 @@ describe(appDatePickerName, () => {
         const el = await fixture<AppDatePicker>(
           html`<app-date-picker
             .max=${'2100-12-31'}
-            .min=${testMin}
-            .value=${testMin}
+            .min=${testMin as never}
+            .value=${testMin as never}
           ></app-date-picker>`
         );
 
@@ -511,8 +524,7 @@ describe(appDatePickerName, () => {
         );
         expect(oneDayBeforeMinDate?.fullDate).deep.equal(expectedOneDayBeforeMinDate);
 
-        el.min = testNewMin;
-        el.value = testNewMin;
+        el.min = el.value = testNewMin as never;
 
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
@@ -541,7 +553,7 @@ describe(appDatePickerName, () => {
         expect(previousMonthNavigationButton).not.exist;
 
         // NOTE: Skip checking for one day before min when new min is 01 or first day of the month
-        if (!testNewMin.endsWith('01')) {
+        if (!(testNewMin as string)?.endsWith('01')) {
           const expectedOneDayBeforeMinDate2 = toResolvedDate(
             new Date(expectedNewMinDate).setUTCDate(
               expectedNewMinDate.getUTCDate() - 1
@@ -565,27 +577,40 @@ describe(appDatePickerName, () => {
   );
 
   type A6 = [
-    string,
-    string,
+    MaybeDate | undefined,
+    MaybeDate | undefined,
+    Date,
     Date,
     Date
   ];
   const cases6: A6[] = [
-    ['', '2020-02-20', MAX_DATE, toResolvedDate('2020-02-20')],
-    ['', MAX_DATE.toJSON(), MAX_DATE, MAX_DATE],
-    // FIXME: not working
-    // ['2020-02-02', '', toResolvedDate('2020-02-02'), MAX_DATE],
+    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
+    ['', '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
+    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
+    [null, '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
+    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
+    ['', MAX_DATE.toJSON(), todayDate, MAX_DATE, MAX_DATE],
+    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
+    [null, MAX_DATE.toJSON(), todayDate, MAX_DATE, MAX_DATE],
+
+    // defined max to old max
+    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+
+    // defined max to old max
+    [undefined, '2020-02-20', todayDate, todayDate, toResolvedDate('2020-02-20')],
+    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), todayDate],
   ];
   cases6.forEach((a) => {
-    const [testMax, testNewMax, expectedMaxDate, expectedNewMaxDate] = a;
+    const [testMax, testNewMax, expectedSelectedDate, expectedMaxDate, expectedNewMaxDate] = a;
     it(
       messageFormatter('updates optional max (max=%s, newMax=%s)', a),
       async () => {
         const el = await fixture<AppDatePicker>(
           html`<app-date-picker
-            .max=${testMax}
+            .max=${testMax as never}
             .min=${'1970-01-01'}
-            .value=${testMax}
+            .value=${testMax as never}
           ></app-date-picker>`
         );
 
@@ -593,13 +618,20 @@ describe(appDatePickerName, () => {
           elementSelectors.calendar
         );
 
-        // NOTE: Go to max date when max is ''
-        if (testMax === '') {
-          el.value = MAX_DATE.toJSON();
+        const selectedDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+          elementSelectors.selectedCalendarDay
+        );
 
-          await elementUpdated(calendar as AppMonthCalendar);
-          await elementUpdated(el);
-        }
+        expect(selectedDate).exist;
+        expect(selectedDate?.getAttribute('aria-label')).equal(
+          formatters.fullDateFormat(expectedSelectedDate)
+        );
+        expect(selectedDate?.fullDate).deep.equal(expectedSelectedDate);
+
+        el.value = expectedMaxDate.toJSON();
+
+        await elementUpdated(calendar as AppMonthCalendar);
+        await elementUpdated(el);
 
         const maxDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
           `${elementSelectors.calendarDay}[aria-label="${
@@ -608,6 +640,7 @@ describe(appDatePickerName, () => {
         );
 
         expect(maxDate).exist;
+        expect(maxDate?.getAttribute('aria-disabled')).equal('false');
         expect(maxDate?.getAttribute('aria-label')).equal(
           formatters.fullDateFormat(expectedMaxDate)
         );
@@ -635,15 +668,14 @@ describe(appDatePickerName, () => {
             );
 
           expect(oneDayAfterMaxDate).exist;
+          expect(oneDayAfterMaxDate?.getAttribute('aria-disabled')).equal('true');
           expect(oneDayAfterMaxDate?.getAttribute('aria-label')).equal(
             formatters.fullDateFormat(expectedOneDayAfterMaxDate)
           );
           expect(oneDayAfterMaxDate?.fullDate).deep.equal(expectedOneDayAfterMaxDate);
         }
 
-        el.max = testNewMax;
-        // NOTE: Go to max date when new max is ''
-        el.value = testNewMax === '' ? MAX_DATE.toJSON() : testNewMax;
+        el.max = el.value = testNewMax as never;
 
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
@@ -659,6 +691,7 @@ describe(appDatePickerName, () => {
         );
 
         expect(maxDate2).exist;
+        expect(maxDate2?.getAttribute('aria-disabled')).equal('false');
         expect(maxDate2?.getAttribute('aria-label')).equal(
           formatters.fullDateFormat(expectedNewMaxDate)
         );
@@ -686,6 +719,7 @@ describe(appDatePickerName, () => {
             );
 
           expect(oneDayAfterMaxDate2).exist;
+          expect(oneDayAfterMaxDate2?.getAttribute('aria-disabled')).equal('true');
           expect(oneDayAfterMaxDate2?.getAttribute('aria-label')).equal(
             formatters.fullDateFormat(expectedOneDayAfterMaxDate2)
           );

@@ -49,6 +49,10 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
     public startView: CalendarView = 'calendar';
 
+    /**
+     * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
+     * today's date, set `value` undefined.
+     */
     @property()
     public value: string = toDateString(toResolvedDate());
 
