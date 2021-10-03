@@ -11,12 +11,12 @@ import type { CalendarInit } from 'nodemod/dist/calendar/typings';
 import type { confirmKeySet, navigationKeySetGrid } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
-import { APP_MONTH_CALENDAR_NAME } from '../../month-calendar/constants';
+import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
 import type { DateUpdatedEvent, InferredFromSet } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
-describe(APP_MONTH_CALENDAR_NAME, () => {
+describe(appMonthCalendarName, () => {
   const locale = 'en-US';
   const formatters = toFormatters(locale);
   const calendarInit: CalendarInit = {

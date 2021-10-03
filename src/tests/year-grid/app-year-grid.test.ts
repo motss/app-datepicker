@@ -7,11 +7,11 @@ import type { confirmKeySet } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { InferredFromSet, YearUpdatedEvent } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
-import { APP_YEAR_GRID_NAME } from '../../year-grid/constants';
+import { appYearGridName } from '../../year-grid/constants';
 import type { YearGridData } from '../../year-grid/typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
-describe(APP_YEAR_GRID_NAME, () => {
+describe(appYearGridName, () => {
   const data: YearGridData = {
     date: new Date('2020-02-02'),
     formatters: toFormatters('en-US'),

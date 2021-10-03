@@ -1,13 +1,13 @@
 import { customElement } from 'lit/decorators.js';
 
-import { APP_MONTH_CALENDAR_NAME } from './constants.js';
+import { appMonthCalendarName } from './constants.js';
 import { MonthCalendar } from './month-calendar.js';
 
-@customElement(APP_MONTH_CALENDAR_NAME)
+@customElement(appMonthCalendarName)
 export class AppMonthCalendar extends MonthCalendar {}
 
 declare global {
   interface HTMLElementTagNameMap {
-    [APP_MONTH_CALENDAR_NAME]: AppMonthCalendar;
+    [appMonthCalendarName]: AppMonthCalendar;
   }
 }

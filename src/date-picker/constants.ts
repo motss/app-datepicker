@@ -1,1 +1,1 @@
-export const APP_DATE_PICKER_NAME = 'app-date-picker';
+export const appDatePickerName = 'app-date-picker' as const;

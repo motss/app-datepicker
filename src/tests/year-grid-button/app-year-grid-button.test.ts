@@ -2,9 +2,9 @@ import '../../year-grid-button/app-year-grid-button';
 
 import { expect, fixture, html } from '@open-wc/testing';
 
-import { APP_YEAR_GRID_BUTTON_NAME } from '../../year-grid-button/constants';
+import { appYearGridName } from '../../year-grid-button/constants';
 
-describe(APP_YEAR_GRID_BUTTON_NAME, () => {
+describe(appYearGridName, () => {
   it('renders', async () => {
     const el = await fixture(
       html`<app-year-grid-button label="test"></app-year-grid-button>`
