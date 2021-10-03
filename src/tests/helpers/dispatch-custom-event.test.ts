@@ -1,13 +1,12 @@
 import { expect } from '@open-wc/testing';
 
-import { dateValidator } from '../../helpers/date-validator';
 import { dispatchCustomEvent } from '../../helpers/dispatch-custom-event';
 import type { SupportedCustomEvent } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 type A = [SupportedCustomEvent['changed'] | undefined, SupportedCustomEvent['changed'] | null];
 
-describe(dateValidator.name, () => {
+describe(dispatchCustomEvent.name, () => {
   const cases: A[] = [
     [undefined, null],
     [

@@ -1,3 +1,4 @@
+import { clampValue } from '../helpers/clamp-value.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../key-values.js';
 import type { ToNextSelectableYearInit } from './typings.js';
 
@@ -32,8 +33,5 @@ export function toNextSelectedYear({
       return year;
   }
 
-  return Math.min(
-    Math.max(min.getUTCFullYear(), newYear),
-    max.getUTCFullYear()
-  );
+  return clampValue(min.getUTCFullYear(), max.getFullYear(), newYear);
 }
