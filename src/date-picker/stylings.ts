@@ -51,12 +51,12 @@ export const datePickerStyling = css`
   margin: 0 0 0 4px;
 }
 
-.month-dropdown {
+.year-dropdown {
   margin: 0 0 0 -8px;
   transition: transform 300ms cubic-bezier(0, 0, .4, 1);
   will-change: transform;
 }
-:host([startview="yearGrid"]) .month-dropdown {
+:host([startview="yearGrid"]) .year-dropdown {
   transform: rotateZ(180deg);
 }
 

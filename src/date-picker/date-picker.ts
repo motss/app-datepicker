@@ -63,7 +63,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   #formatters: Formatters;
   #shouldUpdateFocusInNavigationButtons = false;
 
-  @queryAsync('.month-dropdown')
+  @queryAsync('.year-dropdown')
   private readonly _monthDropdown!: Promise<HTMLButtonElement | null>;
 
   @queryAsync('[data-navigation="previous"]')
@@ -112,15 +112,14 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     if (changedProperties.has('value')) {
       const oldValue = toResolvedDate(
-        changedProperties.get('value') as string
-      ) || this._TODAY_DATE;
+        changedProperties.get('value') as string || this._TODAY_DATE
+      );
       const { date } = dateValidator(this.value, oldValue);
-      const valueDate = new Date(date);
 
-      this._currentDate = new Date(valueDate);
-      this._selectedDate = new Date(valueDate);
-      this.valueAsDate = valueDate;
-      this.valueAsNumber = +valueDate;
+      this._currentDate = new Date(date);
+      this._selectedDate = new Date(date);
+      this.valueAsDate = new Date(date);
+      this.valueAsNumber = +date;
     }
 
     const hasMax = changedProperties.has('max');
@@ -129,8 +128,9 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     if (hasMax || hasMin) {
       const update = (isMax = false) => {
         const oldValue = toResolvedDate(
-          changedProperties.get(isMax ? 'max' : 'min') as string
-        ) || (isMax ? MAX_DATE: this._TODAY_DATE);
+          changedProperties.get(isMax ? 'max' : 'min') as string ||
+          (isMax ? MAX_DATE : this._TODAY_DATE)
+        );
         const value = this[isMax ? 'max' : 'min'] as MaybeDate;
         const { date, isValid } = dateValidator(value, oldValue);
 
@@ -223,7 +223,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         <div class=selected-year>${selectedYear}</div>
 
         <mwc-icon-button
-          class=month-dropdown
+          class=year-dropdown
           ariaLabel=${this.yearDropdownLabel}
           @click=${this.#updateStartView}
         >${iconArrowDropdown}</mwc-icon-button>
@@ -234,8 +234,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
           nothing :
           html`
           <div class=month-pagination>
-            ${this.#renderNavigationButton('previous', !isInCurrentMonth(min, currentDate))}
-            ${this.#renderNavigationButton('next', !isInCurrentMonth(max, currentDate))}
+            ${this.#renderNavigationButton('previous', isInCurrentMonth(min, currentDate))}
+            ${this.#renderNavigationButton('next', isInCurrentMonth(max, currentDate))}
           </div>
           `
       }
@@ -327,17 +327,19 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   #renderNavigationButton  = (
     navigationType: 'previous' | 'next',
-    shouldRender = false
+    shouldSkipRender = true
   ): TemplateResult => {
     const isPreviousNavigationType = navigationType === 'previous';
 
-    return shouldRender ? html`
-    <mwc-icon-button
-      data-navigation=${navigationType}
-      ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
-      @click=${this.#navigateMonth}
-    >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
-    ` : html`<div data-navigation=${navigationType}></div>`;
+    return shouldSkipRender ?
+      html`<div data-navigation=${navigationType}></div>` :
+      html`
+      <mwc-icon-button
+        data-navigation=${navigationType}
+        ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
+        @click=${this.#navigateMonth}
+      >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
+      `;
   };
 
   #navigateMonth = (ev: MouseEvent): void => {

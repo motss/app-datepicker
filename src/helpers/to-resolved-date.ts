@@ -3,7 +3,7 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import type { MaybeDate } from './typings.js';
 
 export function toResolvedDate(date?: MaybeDate): Date {
-  const dateDate = date == null ? new Date() : new Date(date);
+  const dateDate = new Date(date || new Date());
   const isUTCDateFormat = typeof date === 'string' && (
     /^\d{4}-\d{2}-\d{2}$/.test(date) ||
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|\+00:00|-00:00)$/.test(date));

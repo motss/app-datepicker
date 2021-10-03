@@ -6,22 +6,24 @@ import type { MaybeDate } from '../../helpers/typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toResolvedDate.name, () => {
-  type A = [MaybeDate, Date];
+  type A = [MaybeDate | undefined, Date];
 
   const today = new Date();
   const cases: A[] = [
-    [null, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
-    [new Date('2020-02-02'), new Date('2020-02-02')],
-    [+new Date('2020-02-02'), new Date('2020-02-02')],
-    [new Date('2020-02-02').toJSON(), new Date('2020-02-02')],
+    ['', toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
     ['2020-02-02', new Date('2020-02-02')],
+    [+new Date('2020-02-02'), new Date('2020-02-02')],
+    [new Date('2020-02-02'), new Date('2020-02-02')],
+    [new Date('2020-02-02').toJSON(), new Date('2020-02-02')],
+    [null, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
+    [undefined, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
   ];
 
   cases.forEach((a) => {
     const [testDate, expected] = a;
 
     it(
-      messageFormatter('returns resolve date (%s)', a),
+      messageFormatter('returns resolved date (%s)', a),
       () => {
         const result = toResolvedDate(testDate);
 
