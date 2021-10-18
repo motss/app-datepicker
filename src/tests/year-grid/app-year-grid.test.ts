@@ -30,7 +30,7 @@ describe(appYearGridName, () => {
       el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
-      n.getAttribute('label') ?? '',
+      n.getAttribute('aria-label') ?? '',
       n.getAttribute('tabindex') ?? '',
       n.getAttribute('aria-selected') ?? '',
     ]);
@@ -70,7 +70,7 @@ describe(appYearGridName, () => {
       el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
-      n.getAttribute('label') ?? '',
+      n.getAttribute('aria-label') ?? '',
       n.getAttribute('tabindex') ?? '',
       n.getAttribute('aria-selected') ?? '',
     ]);
@@ -131,7 +131,7 @@ describe(appYearGridName, () => {
           el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
         ).map<[string, string, string, string]>(n => [
           n.getAttribute('data-year') ?? '',
-          n.getAttribute('label') ?? '',
+          n.getAttribute('aria-label') ?? '',
           n.getAttribute('tabindex') ?? '',
           n.getAttribute('aria-selected') ?? '',
         ]);
@@ -163,7 +163,7 @@ describe(appYearGridName, () => {
       el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
-      n.getAttribute('label') ?? '',
+      n.getAttribute('aria-label') ?? '',
       n.getAttribute('tabindex') ?? '',
       n.getAttribute('aria-selected') ?? '',
     ]);
