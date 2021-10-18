@@ -32,17 +32,16 @@ const config = {
     },
     nativeInstrumentation: true,
     exclude: [
-      './src/tests/**',
+      './src/*tests*/**',
       'node_modules/**'
     ],
   },
   files: [
-    `src/tests/${isTestHelpersOnly ? 'helpers' : '!(helpers)'}/*.test.ts`
+    `src/*tests*/${isTestHelpersOnly ? 'helpers' : '!(helpers)'}/*.test.ts`
   ],
-  // nodeResolve: true,
   plugins: [
     nodeResolvePlugin({
-      exportConditions: ['default', 'esbuild', 'import'],
+      exportConditions: ['default', 'dev', 'development', 'esbuild', 'import'],
       extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
     }),
     esbuildPlugin({ ts: true }),
