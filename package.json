@@ -96,7 +96,7 @@
     "@web/test-runner-commands": "^0.5.12",
     "@web/test-runner-playwright": "^0.8.8",
     "eslint-plugin-lit": "^1.6.0",
-    "eslint-plugin-lit-a11y": "^1.1.0",
+    "eslint-plugin-lit-a11y": "^2.0.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-regexp": "^1.4.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
