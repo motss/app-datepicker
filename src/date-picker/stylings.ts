@@ -47,8 +47,8 @@ export const datePickerStyling = css`
   font-size: 13px;
 }
 
-.selected-year {
-  margin: 0 0 0 4px;
+.selected-year-month {
+  margin: 0;
 }
 
 .year-dropdown {

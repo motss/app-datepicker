@@ -100,7 +100,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
           })}
           tabindex=${year === focusingYear ? '0' : '-1'}
           data-year=${year}
-          label=${yearLabel}
+          aria-label=${yearLabel}
           aria-selected=${year === date.getUTCFullYear() ? 'true' : 'false'}
         ></button>
         `;

@@ -19,12 +19,12 @@ describe(appDatePickerName, () => {
     body: '.body',
     calendar: '.calendar',
     calendarDay: '.calendar-day',
+    disabledCalendarDay: '.calendar-day[aria-disabled="true"]',
     header: '.header',
     nextMonthNavigationButton: 'mwc-icon-button[data-navigation="next"]',
     previousMonthNavigationButton: 'mwc-icon-button[data-navigation="previous"]',
     selectedCalendarDay: '.calendar-day[aria-selected="true"]',
-    selectedMonth: '.selected-month',
-    selectedYear: '.selected-year',
+    selectedYearMonth: '.selected-year-month',
     yearDropdown: '.year-dropdown',
     yearGrid: '.year-grid',
     yearGridButton: '.year-grid-button',
@@ -77,14 +77,40 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type A2 = [
+  type A2 = [string | undefined, string, string];
+  const cases2: A2[] = [
+    [undefined, Intl.DateTimeFormat().resolvedOptions().locale, 'February 2020'],
+    ['zh-TW', 'zh-TW', '2020年2月'],
+  ];
+  cases2.forEach((a) => {
+    const [testLocale, expectedLocale, expectedYearMonthLabel] = a;
+    it(
+      messageFormatter('renders (locale=%s)', a),
+      async () => {
+        const testValue = '2020-02-02';
+        const el = await fixture<AppDatePicker>(
+          html`<app-date-picker .locale=${testLocale as never} min="1970-01-01" value=${testValue}></app-date-picker>`
+        );
+
+        const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+          elementSelectors.selectedYearMonth
+        );
+
+        expect(el.locale).equal(expectedLocale);
+        expect(el.value).equal(testValue);
+        expect(selectedYearMonth?.textContent).equal(expectedYearMonthLabel);
+      }
+    );
+  });
+
+  type A3 = [
     string,
     string,
     string,
     (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
     (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[]
   ];
-  const cases2: A2[] = [
+  const cases3: A3[] = [
     [
       '2020-03-03',
       '2020-01-01',
@@ -107,7 +133,7 @@ describe(appDatePickerName, () => {
       ['nextMonthNavigationButton'],
     ],
   ];
-  cases2.forEach((a) => {
+  cases3.forEach((a) => {
     const [testMax, testMin, testValue, testElementsShouldRender, testElementsShouldNotRender] = a;
     it(
       messageFormatter(
@@ -141,15 +167,15 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type A3 = [
+  type A4 = [
     keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
     Date
   ];
-  const cases3: A3[] = [
+  const cases4: A4[] = [
     ['previousMonthNavigationButton', new Date('2020-01-01')],
     ['nextMonthNavigationButton', new Date('2020-03-01')],
   ];
-  cases3.forEach((a) => {
+  cases4.forEach((a) => {
     const [testMonthNavigationElementSelector, testCurrentDate] = a;
     it(
       messageFormatter('navigates to new month by clicking %s', a),
@@ -171,18 +197,12 @@ describe(appDatePickerName, () => {
 
         await elementUpdated(el);
 
-        const selectedMonth = el.shadowRoot?.querySelector<HTMLDivElement>(
-          elementSelectors.selectedMonth
-        );
-        const selectedYear = el.shadowRoot?.querySelector<HTMLDivElement>(
-          elementSelectors.selectedYear
+        const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+          elementSelectors.selectedYearMonth
         );
 
-        expect(selectedMonth?.textContent).equal(
-          formatters.longMonthFormat(testCurrentDate)
-        );
-        expect(selectedYear?.textContent).equal(
-          formatters.yearFormat(testCurrentDate)
+        expect(selectedYearMonth?.textContent).equal(
+          formatters.longMonthYearFormat(testCurrentDate)
         );
       }
     );
@@ -236,18 +256,12 @@ describe(appDatePickerName, () => {
 
     expect(calendar).exist;
 
-    const selectedMonth = el.shadowRoot?.querySelector<HTMLDivElement>(
-      elementSelectors.selectedMonth
-    );
-    const selectedYear = el.shadowRoot?.querySelector<HTMLDivElement>(
-      elementSelectors.selectedYear
+    const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+      elementSelectors.selectedYearMonth
     );
 
-    expect(selectedMonth?.textContent).equal(
-      formatters.longMonthFormat(newSelectedDate)
-    );
-    expect(selectedYear?.textContent).equal(
-      formatters.yearFormat(newSelectedDate)
+    expect(selectedYearMonth?.textContent).equal(
+      formatters.longMonthYearFormat(newSelectedDate)
     );
 
     const newSelectedDate2 = new Date(
@@ -393,13 +407,13 @@ describe(appDatePickerName, () => {
     expect(calendar).exist;
   });
 
-  type A4 = [
+  type A5 = [
     MaybeDate | undefined,
     MaybeDate | undefined,
     Date,
     Date
   ];
-  const cases4: A4[] = [
+  const cases5: A5[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
     [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
@@ -407,7 +421,7 @@ describe(appDatePickerName, () => {
     [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
-  cases4.forEach((a) => {
+  cases5.forEach((a) => {
     const [testValue, testNewValue, expectedValueDate, expectedNewValueDate] = a;
     it(
       messageFormatter('updates optional value (value=%s, newValue=%s)', a),
@@ -458,13 +472,13 @@ describe(appDatePickerName, () => {
     }
   );
 
-  type A5 = [
+  type A6 = [
     MaybeDate | undefined,
     MaybeDate | undefined,
     Date,
     Date
   ];
-  const cases5: A5[] = [
+  const cases6: A6[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
@@ -477,7 +491,7 @@ describe(appDatePickerName, () => {
     ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
     ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
-  cases5.forEach((a) => {
+  cases6.forEach((a) => {
     const [testMin, testNewMin, expectedMinDate, expectedNewMinDate] = a;
     it(
       messageFormatter('updates optional min (min=%s, newMin=%s)', a),
@@ -576,14 +590,14 @@ describe(appDatePickerName, () => {
     }
   );
 
-  type A6 = [
+  type A7 = [
     MaybeDate | undefined,
     MaybeDate | undefined,
     Date,
     Date,
     Date
   ];
-  const cases6: A6[] = [
+  const cases7: A7[] = [
     // MAX_DATE (i=3) will not affect test result and it will always return '' after init
     ['', '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
     // MAX_DATE (i=3) will not affect test result and it will always return '' after init
@@ -598,10 +612,10 @@ describe(appDatePickerName, () => {
     ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
 
     // defined max to old max
-    [undefined, '2020-02-20', todayDate, todayDate, toResolvedDate('2020-02-20')],
-    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), todayDate],
+    [undefined, '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
+    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), MAX_DATE],
   ];
-  cases6.forEach((a) => {
+  cases7.forEach((a) => {
     const [testMax, testNewMax, expectedSelectedDate, expectedMaxDate, expectedNewMaxDate] = a;
     it(
       messageFormatter('updates optional max (max=%s, newMax=%s)', a),
@@ -633,98 +647,65 @@ describe(appDatePickerName, () => {
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
 
-        const maxDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
-          `${elementSelectors.calendarDay}[aria-label="${
-            formatters.fullDateFormat(expectedMaxDate)
-          }"]`
-        );
+        const assertMaxDate = (
+          date: MaybeDate | undefined,
+          expectedDate: Date
+        ): void => {
+          const isSameCalendarMonth = toResolvedDate(date).getUTCMonth() === expectedDate.getUTCMonth();
 
-        expect(maxDate).exist;
-        expect(maxDate?.getAttribute('aria-disabled')).equal('false');
-        expect(maxDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedMaxDate)
-        );
-        expect(maxDate?.fullDate).deep.equal(expectedMaxDate);
-
-        // NOTE: Skip checking when max is last day of the month or MAX_DATE
-        if (
-          expectedMaxDate.getUTCDate() !== MAX_DATE.getUTCDate() &&
-          expectedMaxDate.getUTCDate() !== new Date(
-            expectedMaxDate.getUTCFullYear(),
-            expectedMaxDate.getMonth() + 1,
-            0
-          ).getUTCDate()
-        ) {
-          const expectedOneDayAfterMaxDate = toResolvedDate(
-            new Date(expectedMaxDate).setUTCDate(
-              expectedMaxDate.getUTCDate() + 1
-            )
-          );
-          const oneDayAfterMaxDate =
-            calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+          if (isSameCalendarMonth) {
+            const maxDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
               `${elementSelectors.calendarDay}[aria-label="${
-                formatters.fullDateFormat(expectedOneDayAfterMaxDate)
+                formatters.fullDateFormat(expectedDate)
               }"]`
             );
 
-          expect(oneDayAfterMaxDate).exist;
-          expect(oneDayAfterMaxDate?.getAttribute('aria-disabled')).equal('true');
-          expect(oneDayAfterMaxDate?.getAttribute('aria-label')).equal(
-            formatters.fullDateFormat(expectedOneDayAfterMaxDate)
-          );
-          expect(oneDayAfterMaxDate?.fullDate).deep.equal(expectedOneDayAfterMaxDate);
-        }
+            expect(maxDate).exist;
+            expect(maxDate?.getAttribute('aria-disabled')).equal('false');
+            expect(maxDate?.getAttribute('aria-label')).equal(
+              formatters.fullDateFormat(expectedDate)
+            );
+            expect(maxDate?.fullDate).deep.equal(expectedDate);
+          }
+
+          const isNotLastDayOfCalendarMonth =
+            expectedDate.getUTCDate() !== new Date(
+              expectedDate.getUTCFullYear(),
+              expectedDate.getMonth() + 1,
+              0
+            ).getUTCDate();
+          const isNotMaxDate = expectedDate.getTime() !== MAX_DATE.getTime();
+
+          if (isNotLastDayOfCalendarMonth && isNotMaxDate) {
+            const expectedOneDayAfterMaxDate = toResolvedDate(
+              new Date(expectedDate).setUTCDate(
+                expectedDate.getUTCDate() + 1
+              )
+            );
+            const oneDayAfterMaxDate =
+              calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+                `${elementSelectors.calendarDay}[aria-label="${
+                  formatters.fullDateFormat(expectedOneDayAfterMaxDate)
+                }"]`
+              );
+
+            expect(oneDayAfterMaxDate).exist;
+            expect(oneDayAfterMaxDate?.getAttribute('aria-disabled')).equal('true');
+            expect(oneDayAfterMaxDate?.getAttribute('aria-label')).equal(
+              formatters.fullDateFormat(expectedOneDayAfterMaxDate)
+            );
+            expect(oneDayAfterMaxDate?.fullDate).deep.equal(expectedOneDayAfterMaxDate);
+          }
+        };
+
+        assertMaxDate(testMax, expectedMaxDate);
 
         el.max = el.value = testNewMax as never;
 
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
 
-        const calendar2 = el.shadowRoot?.querySelector<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
-
-        const maxDate2 = calendar2?.shadowRoot?.querySelector<HTMLTableCellElement>(
-          `${elementSelectors.calendarDay}[aria-label="${
-            formatters.fullDateFormat(expectedNewMaxDate)
-          }"]`
-        );
-
-        expect(maxDate2).exist;
-        expect(maxDate2?.getAttribute('aria-disabled')).equal('false');
-        expect(maxDate2?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedNewMaxDate)
-        );
-        expect(maxDate2?.fullDate).deep.equal(expectedNewMaxDate);
-
-        // NOTE: Skip checking when max is last day of the month or MAX_DATE
-        if (
-          expectedNewMaxDate.getUTCDate() !== MAX_DATE.getUTCDate() &&
-          expectedNewMaxDate.getUTCDate() !== new Date(
-            expectedNewMaxDate.getUTCFullYear(),
-            expectedNewMaxDate.getMonth() + 1,
-            0
-          ).getUTCDate()
-        ) {
-          const expectedOneDayAfterMaxDate2 = toResolvedDate(
-            new Date(expectedNewMaxDate).setUTCDate(
-              expectedNewMaxDate.getUTCDate() + 1
-            )
-          );
-          const oneDayAfterMaxDate2 =
-            calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
-              `${elementSelectors.calendarDay}[aria-label="${
-                formatters.fullDateFormat(expectedOneDayAfterMaxDate2)
-              }"]`
-            );
-
-          expect(oneDayAfterMaxDate2).exist;
-          expect(oneDayAfterMaxDate2?.getAttribute('aria-disabled')).equal('true');
-          expect(oneDayAfterMaxDate2?.getAttribute('aria-label')).equal(
-            formatters.fullDateFormat(expectedOneDayAfterMaxDate2)
-          );
-          expect(oneDayAfterMaxDate2?.fullDate).deep.equal(expectedOneDayAfterMaxDate2);
-        }
+        assertMaxDate(testNewMax, expectedNewMaxDate);
       });
     }
   );

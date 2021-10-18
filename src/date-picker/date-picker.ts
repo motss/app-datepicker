@@ -103,23 +103,42 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       this.locale = newLocale;
     }
 
+    const dateRangeProps = [
+      'max',
+      'min',
+      'value',
+    ] as (keyof Pick<DatePickerProperties, 'max' | 'min' | 'value'>)[];
     if (
-      (
-        ['max', 'min', 'value'] as (keyof Pick<DatePickerProperties, 'max' | 'min' | 'value'>)[]
-      ).some(n => changedProperties.has(n))
+      dateRangeProps.some(n => changedProperties.has(n))
     ) {
       const todayDate = this._TODAY_DATE;
-      const oldMin =
-        toResolvedDate((changedProperties.get('min') || this.min || todayDate) as MaybeDate);
-      const oldMax =
-        toResolvedDate((changedProperties.get('max') || this.max || MAX_DATE) as MaybeDate);
-      const oldValue =
-        toResolvedDate((changedProperties.get('value') || this.value || todayDate) as MaybeDate);
 
-      // FIXME: Can look into use MAX_DATE as fallback
-      const newMin = dateValidator(this.min as MaybeDate, oldMin);
-      const newMax = dateValidator(this.max as MaybeDate, oldMax);
-      const newValue = dateValidator(this.value as MaybeDate, oldValue);
+      const [
+        newMax,
+        newMin,
+        newValue,
+      ] = (
+        [
+          ['max', MAX_DATE],
+          ['min', todayDate],
+          ['value', todayDate],
+        ] as [keyof Pick<DatePickerProperties, 'max' | 'min' | 'value'>, Date][]
+      ).map(
+        ([propKey, resetValue]) => {
+          const currentValue = this[propKey];
+          const defaultValue = toResolvedDate(
+            /**
+             * The value from `changedProperties` can only be undefined when first init.
+             * This also means that subsequent changes will not affect the outcome because any
+             * invalid value will be dropped in favor of previous valid value.
+             */
+            changedProperties.get(propKey) as MaybeDate ?? resetValue
+          );
+          const valueWithReset = currentValue === undefined ? resetValue : currentValue;
+
+          return dateValidator(valueWithReset, defaultValue);
+        }
+      );
 
       /**
        * NOTE: Ensure new `value` is clamped between new `min` and `max` as `newValue` will only
@@ -215,23 +234,18 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     const showWeekNumber = this.showWeekNumber;
     const startView = this.startView;
 
-    const {
-      longMonthFormat,
-      yearFormat,
-    } = formatters;
-    const selectedMonth = longMonthFormat(currentDate);
-    const selectedYear = yearFormat(currentDate);
+    const { longMonthYearFormat } = formatters;
+    const selectedYearMonth = longMonthYearFormat(currentDate);
     const isStartViewYearGrid = startView === 'yearGrid';
 
     return html`
     <div class=header>
       <div class=month-and-year-selector>
-        <div class=selected-month>${selectedMonth}</div>
-        <div class=selected-year>${selectedYear}</div>
+        <p class=selected-year-month>${selectedYearMonth}</p>
 
         <mwc-icon-button
           class=year-dropdown
-          ariaLabel=${this.yearDropdownLabel}
+          .ariaLabel=${this.yearDropdownLabel}
           @click=${this.#updateStartView}
         >${iconArrowDropdown}</mwc-icon-button>
       </div>
@@ -343,7 +357,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       html`
       <mwc-icon-button
         data-navigation=${navigationType}
-        ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
+        .ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
         @click=${this.#navigateMonth}
       >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
       `;

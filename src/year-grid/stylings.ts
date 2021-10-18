@@ -36,7 +36,7 @@ export const yearGridStyling = css`
 }
 
 .year-grid > .year-grid-button::before {
-  content: attr(data-year);
+  content: attr(aria-label);
   position: absolute;
   display: flex;
   align-items: center;
