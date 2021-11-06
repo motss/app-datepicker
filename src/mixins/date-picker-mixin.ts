@@ -63,7 +63,7 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
     public weekNumberType: WeekNumberType = 'first-4-day-week';
 
     @property()
-    public yearDropdownLabel = 'Choose year and month';
+    public yearDropdownLabel = 'Select a year';
   }
 
   return DatePickerMixinClass as unknown as MixinReturnType<
