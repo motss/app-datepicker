@@ -23,6 +23,7 @@ export const datePickerStyling = css`
   max-height: var(--date-picker-height);
   width: 100%;
   height: 100%;
+  overscroll-behavior: contain;
 }
 :host([startview="calendar"][show-week-number]) {
   --date-picker-width: var(--date-picker-with-week-number-width);
