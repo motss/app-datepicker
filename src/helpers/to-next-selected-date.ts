@@ -104,10 +104,11 @@ export function toNextSelectedDate({
       d = 0;
       break;
     }
-    case key === keyHome:
-    default: {
+    case key === keyHome: {
       d = 1;
+      break;
     }
+    default:
   }
 
   /**

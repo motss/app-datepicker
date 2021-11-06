@@ -8,8 +8,7 @@ export type CalendarView = CalendarViewTuple[number];
 
 export type CalendarViewTuple = typeof calendarViews;
 
-export interface ChangedEvent {
-  isKeypress: boolean;
+export interface ChangedEvent extends KeyEvent {
   value: DatePickerMixinProperties['value'];
 }
 
@@ -21,8 +20,7 @@ export type Constructor<T> = new (...args: any[]) => T;
 export interface DatePickerProperties extends DatePickerMixinProperties,
 DatePickerMinMaxProperties {}
 
-export interface DateUpdatedEvent {
-  isKeypress: boolean;
+export interface DateUpdatedEvent extends KeyEvent {
   value: Date;
 }
 
@@ -45,11 +43,11 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
 export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
 
 export interface SupportedCustomEventDetail {
-  ['animation-finished']: null;
-  ['changed']: ChangedEvent;
+  // ['animation-finished']: null;
+  // ['changed']: ChangedEvent;
   ['date-updated']: DateUpdatedEvent;
   ['first-updated']: FirstUpdatedEvent;
-  ['value-updated']: ValueUpdatedEvent;
+  // ['value-updated']: ValueUpdatedEvent;
   ['year-updated']: YearUpdatedEvent;
 }
 
@@ -66,10 +64,15 @@ export type SupportedKey =
   | typeof keySpace
   | typeof keyTab;
 
-export interface ValueUpdatedEvent extends Pick<DateUpdatedEvent, 'isKeypress'> {
+export interface ValueUpdatedEvent extends KeyEvent {
   value: string;
 }
 
-export interface YearUpdatedEvent {
+export interface YearUpdatedEvent extends KeyEvent {
   year: number;
+}
+
+interface KeyEvent {
+  isKeypress: boolean;
+  key?: SupportedKey;
 }

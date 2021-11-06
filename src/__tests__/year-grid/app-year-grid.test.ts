@@ -135,7 +135,11 @@ describe(appYearGridName, () => {
           n.getAttribute('tabindex') ?? '',
           n.getAttribute('aria-selected') ?? '',
         ]);
-        const expectedYearUpdatedEvent: YearUpdatedEvent = { year: data.max.getUTCFullYear() };
+        const expectedYearUpdatedEvent: YearUpdatedEvent = {
+          year: data.max.getUTCFullYear(),
+          isKeypress: testEventType.startsWith('key'),
+          key: testKey,
+        };
 
         expect(yearGridButtonAttrsList).deep.equal([
           ['2019', '2019', '-1', 'false'],
