@@ -58,7 +58,7 @@
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "prepare": "if [ \"$CI\" != 'true' ]; then npm x -- husky install; fi",
     "prepublishOnly": "npm run lint && npm run build:prod",
-    "serve": "npm x --no @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
+    "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "npm run test:helpers && npm run test:elements",
     "test:elements": "npm run wtr -- --config wtr.config.mjs",
     "test:helpers": "TEST_HELPERS=1 npm run wtr -- --config wtr.config.mjs",

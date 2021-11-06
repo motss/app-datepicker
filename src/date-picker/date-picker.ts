@@ -3,8 +3,7 @@ import '../month-calendar/app-month-calendar.js';
 import '../year-grid/app-year-grid.js';
 
 import type { TemplateResult } from 'lit';
-import { nothing } from 'lit';
-import { html,LitElement } from 'lit';
+import { html, LitElement, nothing } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
@@ -25,8 +24,10 @@ import type { MaybeDate } from '../helpers/typings.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import type { AppMonthCalendar } from '../month-calendar/app-month-calendar.js';
 import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { CalendarView, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
+import type { AppYearGrid } from '../year-grid/app-year-grid.js';
 import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
@@ -54,9 +55,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   //#region private properties
   #formatters: Formatters;
   #shouldUpdateFocusInNavigationButtons = false;
+  #today: Date;
 
-  @queryAsync('.year-dropdown')
-  private readonly _monthDropdown!: Promise<HTMLButtonElement | null>;
+  @queryAsync('app-month-calendar')
+  private readonly _monthCalendar!: Promise<AppMonthCalendar | null>;
 
   @queryAsync('[data-navigation="previous"]')
   private readonly _navigationPrevious!: Promise<HTMLButtonElement | null>;
@@ -64,7 +66,8 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   @queryAsync('[data-navigation="next"]')
   private readonly _navigationNext!: Promise<HTMLButtonElement | null>;
 
-  private readonly _TODAY_DATE: Date;
+  @queryAsync('app-year-grid')
+  private readonly _yearGrid!: Promise<AppYearGrid | null>;
   //#endregion private properties
 
   public static override styles = [
@@ -80,7 +83,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     this._min = new Date(todayDate);
     this._max = new Date(MAX_DATE);
-    this._TODAY_DATE = todayDate;
+    this.#today = todayDate;
     this._selectedDate = new Date(todayDate);
     this._currentDate = new Date(todayDate);
     this.#formatters = toFormatters(this.locale);
@@ -106,7 +109,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     if (
       dateRangeProps.some(n => changedProperties.has(n))
     ) {
-      const todayDate = this._TODAY_DATE;
+      const todayDate = this.#today;
 
       const [
         newMax,
@@ -179,19 +182,9 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   }
 
-  protected override firstUpdated(): void {
-    const focusableElements: HTMLElement[] = [];
-
-    // TODO: focus element
-    if (this.startView === 'calendar') {
-      // TODO: query select elements in calendar
-    } else {
-      // TODO: query select elements in year list
-    }
-
-    // dispatch updated event
+  protected override async firstUpdated(): Promise<void> {
     dispatchCustomEvent(this, 'first-updated', {
-      focusableElements,
+      focusableElements: await this.#queryAllFocusable(),
       value: this.value,
     });
   }
@@ -200,10 +193,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
     if (this.startView === 'calendar') {
-      if (changedProperties.has('startView')) {
-        await focusElement(this._monthDropdown);
-      }
-
       if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
         const currentDate = this._currentDate;
 
@@ -215,11 +204,9 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     }
   }
 
-  //  FIXME: To not render min and max buttons
   protected override render(): TemplateResult {
     const formatters = this.#formatters;
     const currentDate = this._currentDate;
-    const selectedDate = this._selectedDate;
     const max = this._max;
     const min = this._min;
     const showWeekNumber = this.showWeekNumber;
@@ -257,23 +244,42 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       [`start-view--${isStartViewYearGrid ? 'year-grid' : 'calendar'}`]: true,
       'show-week-number': showWeekNumber,
     })}">${
-      isStartViewYearGrid ?
-      html`
-      <app-year-grid
-        class=year-grid
-        .data=${{
-          date: selectedDate,
-          max,
-          min,
-          formatters,
-        } as YearGridData}
-        @year-updated=${this.#updateYear}
-      ></app-year-grid>
-      ` :
-      this.#renderCalendar()
+      (isStartViewYearGrid ? this.#renderYearGrid : this.#renderCalendar)()
     }</div>
     `;
   }
+
+  #navigateMonth(ev: MouseEvent): void {
+    const currentDate = this._currentDate;
+    const isPreviousNavigation = (
+      ev.currentTarget as HTMLButtonElement
+    ).getAttribute('data-navigation') === 'previous';
+
+    const newCurrentDate = toUTCDate(
+      currentDate.getUTCFullYear(),
+      currentDate.getUTCMonth() + (isPreviousNavigation ? -1 : 1),
+      1
+    );
+
+    this._currentDate = newCurrentDate;
+    this.#shouldUpdateFocusInNavigationButtons = true;
+  }
+
+  #queryAllFocusable = async () : Promise<HTMLElement[]> => {
+    const isStartViewCalendar = this.startView === 'calendar';
+    const focusable = [
+      ...Array.from(
+        this.shadowRoot?.querySelectorAll('mwc-icon-button') ?? []
+      ),
+      (await (isStartViewCalendar ? this._monthCalendar : this._yearGrid))
+        ?.shadowRoot
+        ?.querySelector<HTMLElement>(`.${
+          isStartViewCalendar ? 'calendar-day' : 'year-grid-button'
+        }[aria-selected="true"]`),
+    ].filter(Boolean) as HTMLElement[];
+
+    return focusable;
+  };
 
   #renderCalendar = (): TemplateResult => {
     const currentDate = this._currentDate;
@@ -317,7 +323,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     return html`
     <app-month-calendar
-      class=calendar
       .data=${{
         calendar: calendarMonth,
         currentDate,
@@ -328,18 +333,19 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         max,
         min,
         showWeekNumber,
-        todayDate: this._TODAY_DATE,
+        todayDate: this.#today,
         weekdays,
       }}
       @date-updated=${this.#updateSelectedDate}
+      class=calendar
     ></app-month-calendar>
     `;
   };
 
-  #renderNavigationButton  = (
+  #renderNavigationButton (
     navigationType: 'previous' | 'next',
     shouldSkipRender = true
-  ): TemplateResult => {
+  ): TemplateResult {
     const isPreviousNavigationType = navigationType === 'previous';
 
     return shouldSkipRender ?
@@ -351,49 +357,48 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
         @click=${this.#navigateMonth}
       >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
       `;
+  }
+
+  #renderYearGrid = (): TemplateResult => {
+    return html`
+    <app-year-grid
+      class=year-grid
+      .data=${{
+        date: this._selectedDate,
+        formatters: this.#formatters,
+        max: this._max,
+        min: this._min,
+      } as YearGridData}
+      @year-updated=${this.#updateYear}
+    ></app-year-grid>
+    `;
   };
 
-  #navigateMonth = (ev: MouseEvent): void => {
-    const currentDate = this._currentDate;
-    const isPreviousNavigation = (
-      ev.currentTarget as HTMLButtonElement
-    ).getAttribute('data-navigation') === 'previous';
-
-    const newCurrentDate = toUTCDate(
-      currentDate.getUTCFullYear(),
-      currentDate.getUTCMonth() + (isPreviousNavigation ? -1 : 1),
-      1
-    );
-
-    this._currentDate = newCurrentDate;
-    this.#shouldUpdateFocusInNavigationButtons = true;
-  };
-
-  #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {
+  #updateSelectedAndCurrentDate(maybeDate: Date | number | string): void {
     const newSelectedDate = new Date(maybeDate);
 
     this._selectedDate = newSelectedDate;
     this._currentDate = new Date(newSelectedDate);
-  };
+  }
 
-  #updateSelectedDate = ({
+  #updateSelectedDate({
     detail: { value },
-  }: CustomEvent<ValueUpdatedEvent>): void => {
+  }: CustomEvent<ValueUpdatedEvent>): void {
     this.#updateSelectedAndCurrentDate(value);
 
     // TODO: To fire value update event
-  };
+  }
 
-  #updateStartView = (): void => {
+  #updateStartView(): void {
     const isYearGrid = this.startView === 'yearGrid';
 
     this.startView = isYearGrid ? 'calendar' : 'yearGrid';
-  };
+  }
 
-  #updateYear = ({
+  #updateYear({
     detail: { year },
-  }: CustomEvent<YearUpdatedEvent>): void => {
+  }: CustomEvent<YearUpdatedEvent>): void {
     this.#updateSelectedAndCurrentDate(this._selectedDate.setUTCFullYear(year));
     this.startView = 'calendar';
-  };
+  }
 }
