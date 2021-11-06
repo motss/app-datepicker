@@ -44,7 +44,7 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
 
 export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
 
-export interface SupportedCustomEvent {
+export interface SupportedCustomEventDetail {
   ['animation-finished']: null;
   ['changed']: ChangedEvent;
   ['date-updated']: DateUpdatedEvent;

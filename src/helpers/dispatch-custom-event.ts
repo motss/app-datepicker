@@ -1,9 +1,9 @@
-import type { SupportedCustomEvent } from '../typings.js';
+import type { SupportedCustomEventDetail } from '../typings.js';
 
-export function dispatchCustomEvent<T extends keyof SupportedCustomEvent>(
+export function dispatchCustomEvent<T extends keyof SupportedCustomEventDetail>(
   target: HTMLElement,
   eventName: T,
-  detail?: SupportedCustomEvent[T]
+  detail?: SupportedCustomEventDetail[T]
 ): boolean {
   return target.dispatchEvent(new CustomEvent(eventName, {
     bubbles: true,

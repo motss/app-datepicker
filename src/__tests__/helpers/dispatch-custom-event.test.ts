@@ -1,10 +1,10 @@
 import { expect } from '@open-wc/testing';
 
 import { dispatchCustomEvent } from '../../helpers/dispatch-custom-event';
-import type { SupportedCustomEvent } from '../../typings';
+import type { SupportedCustomEventDetail } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
-type A = [SupportedCustomEvent['changed'] | undefined, SupportedCustomEvent['changed'] | null];
+type A = [SupportedCustomEventDetail['changed'] | undefined, SupportedCustomEventDetail['changed'] | null];
 
 describe(dispatchCustomEvent.name, () => {
   const cases: A[] = [
@@ -26,13 +26,13 @@ describe(dispatchCustomEvent.name, () => {
       messageFormatter('dispatches custom event (detail=%j)', a),
   async () => {
         const [testDetail, expected] = a;
-        const testEventName: keyof SupportedCustomEvent = 'changed';
+        const testEventName: keyof SupportedCustomEventDetail = 'changed';
 
         const el = document.createElement('div');
 
-        const done = new Promise<SupportedCustomEvent['changed']>((resolve) => {
+        const done = new Promise<SupportedCustomEventDetail['changed']>((resolve) => {
           el.addEventListener(testEventName, (ev) => {
-            resolve((ev as CustomEvent<SupportedCustomEvent['changed']>).detail);
+            resolve((ev as CustomEvent<SupportedCustomEventDetail['changed']>).detail);
           }, { once: true });
         });
 
