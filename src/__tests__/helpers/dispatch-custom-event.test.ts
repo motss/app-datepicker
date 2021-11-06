@@ -4,7 +4,7 @@ import { dispatchCustomEvent } from '../../helpers/dispatch-custom-event';
 import type { SupportedCustomEventDetail } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
-type A = [SupportedCustomEventDetail['changed'] | undefined, SupportedCustomEventDetail['changed'] | null];
+type A = [SupportedCustomEventDetail['year-updated'] | undefined, SupportedCustomEventDetail['year-updated'] | null];
 
 describe(dispatchCustomEvent.name, () => {
   const cases: A[] = [
@@ -12,11 +12,13 @@ describe(dispatchCustomEvent.name, () => {
     [
       {
         isKeypress: true,
-        value: '1',
+        key: 'Enter',
+        year: 2020,
       },
       {
         isKeypress: true,
-        value: '1',
+        key: 'Enter',
+        year: 2020,
       },
     ],
   ];
@@ -26,13 +28,13 @@ describe(dispatchCustomEvent.name, () => {
       messageFormatter('dispatches custom event (detail=%j)', a),
   async () => {
         const [testDetail, expected] = a;
-        const testEventName: keyof SupportedCustomEventDetail = 'changed';
+        const testEventName: keyof SupportedCustomEventDetail = 'year-updated';
 
         const el = document.createElement('div');
 
-        const done = new Promise<SupportedCustomEventDetail['changed']>((resolve) => {
+        const done = new Promise<SupportedCustomEventDetail['year-updated']>((resolve) => {
           el.addEventListener(testEventName, (ev) => {
-            resolve((ev as CustomEvent<SupportedCustomEventDetail['changed']>).detail);
+            resolve((ev as CustomEvent<SupportedCustomEventDetail['year-updated']>).detail);
           }, { once: true });
         });
 
