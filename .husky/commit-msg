@@ -1,4 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-npm x -- commitlint --edit "$1"
+npm x -y -- commitlint --edit "$1"
