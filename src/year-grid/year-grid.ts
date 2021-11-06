@@ -94,10 +94,7 @@ export class YearGrid extends LitElement implements YearGridProperties {
 
         return html`
         <button
-          class=${classMap({
-            'year-grid-button': true,
-            'year--today': this.#todayYear === year,
-          })}
+          class="year-grid-button ${classMap({ 'year--today': this.#todayYear === year })}"
           tabindex=${year === focusingYear ? '0' : '-1'}
           data-year=${year}
           aria-label=${yearLabel}

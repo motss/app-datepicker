@@ -253,11 +253,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
       }
     </div>
 
-    <div class=${classMap({
-      body: true,
+    <div class="body ${classMap({
       [`start-view--${isStartViewYearGrid ? 'year-grid' : 'calendar'}`]: true,
       'show-week-number': showWeekNumber,
-    })}>${
+    })}">${
       isStartViewYearGrid ?
       html`
       <app-year-grid

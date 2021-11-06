@@ -177,16 +177,11 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                 const curTime = +new Date(fullDate);
                 const isSelectedDate = +date === curTime;
                 const shouldTab = tabbableDate.getUTCDate() === Number(value);
-                /** NOTE: lit-plugin does not like this */
-                const calendarDayClasses = classMap({
-                  'calendar-day': true,
-                  'day--today': +todayDate === curTime,
-                }) as unknown as string;
 
                 return html`
                 <td
                   tabindex=${shouldTab ? '0' : '-1'}
-                  class=${calendarDayClasses}
+                  class="calendar-day ${classMap({ 'day--today': +todayDate === curTime })}"
                   part=calendar-day
                   role=gridcell
                   aria-disabled=${disabled ? 'true' : 'false'}
