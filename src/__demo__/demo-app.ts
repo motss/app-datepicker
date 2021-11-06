@@ -1,4 +1,5 @@
 import '../date-picker/app-date-picker.js';
+import '../date-picker-input/app-date-picker-input.js';
 
 import { css, html, LitElement } from 'lit';
 import { customElement } from 'lit/decorators.js';
@@ -7,13 +8,24 @@ import { customElement } from 'lit/decorators.js';
 export class DemoApp extends LitElement {
   public static override styles = [
     css`
-    * {
+    :host {
       display: block;
+    }
+    :host > * + * {
+      margin: 16px 0 0;
+    }
+
+    * {
       box-sizing: border-box;
     }
 
-    app-date-picker {
-      background-color: #f5f5f5;
+    app-date-picker,
+    app-date-picker-input {
+      background-color: #fcfcfc;
+    }
+
+    app-date-picker-input {
+      --mdc-text-field-fill-color: #fcfcfc;
     }
     `,
   ];
@@ -25,6 +37,17 @@ export class DemoApp extends LitElement {
       .max=${'2020-02-02'}
       .value=${'2020-02-02' as never}
     ></app-date-picker>
+
+    <app-date-picker
+      .min=${'1970-01-01'}
+    ></app-date-picker>
+
+    <app-date-picker-input
+      .label=${'DOB'}
+      ?outlined=${true}
+      .placeholder=${'Select your date of birth'}
+      .value=${'2020-02-02'}
+    ></app-date-picker-input>
 
     <!-- <app-date-picker-input></app-date-picker-input> -->
     <!-- <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog> -->

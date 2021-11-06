@@ -15,6 +15,8 @@ export const datePickerStyling = css`
 
   display: flex;
   flex-direction: column;
+
+  position: relative;
   min-width: var(--date-picker-width);
   max-width: var(--date-picker-width);
   min-height: var(--date-picker-height);
@@ -49,6 +51,7 @@ export const datePickerStyling = css`
 
 .selected-year-month {
   margin: 0;
+  white-space: nowrap;
 }
 
 .year-dropdown {

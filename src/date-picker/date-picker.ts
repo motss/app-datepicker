@@ -41,12 +41,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   @state()
   private _currentDate: Date;
 
-  // @state()
-  // private _hasMax!: boolean;
-
-  // @state()
-  // private _hasMin!: boolean;
-
   @state()
   private _max: Date;
 
@@ -55,6 +49,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
   @state()
   private _selectedDate: Date;
+  //#endregion private states
 
   //#region private properties
   #formatters: Formatters;
@@ -150,10 +145,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
       this._min = newMin.date;
       this._max = newMax.date;
-
-      // this._hasMin = newMin.isValid;
-      // this._hasMax = newMax.isValid;
-
       this._currentDate = new Date(valueDate);
       this._selectedDate = new Date(valueDate);
       this.valueAsDate = new Date(valueDate);
