@@ -22,7 +22,7 @@ describe(toNextSelectedDate.name, () => {
     // all supported keys
     [
       { key: ' ' },
-      new Date('2020-02-01'),
+      defaultInit.date,
     ],
     [
       { key: 'ArrowDown' },
@@ -46,7 +46,7 @@ describe(toNextSelectedDate.name, () => {
     ],
     [
       { key: 'Enter' },
-      new Date('2020-02-01'),
+      defaultInit.date,
     ],
     [
       { key: 'Home' },
@@ -74,7 +74,7 @@ describe(toNextSelectedDate.name, () => {
     ],
     [
       { key: 'Tab' },
-      new Date('2020-02-01'),
+      defaultInit.date,
     ],
 
     // not in current month
