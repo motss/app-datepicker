@@ -98,7 +98,7 @@ The following snippet shows a simple script used in the demo to load polyfills v
 
   if (!window.Intl) {
     var wa = document.createElement('script');
-    /** FIXME: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
+    /** NOTE: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
     wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
     wa.onload = function onLoad() { console.info('🌐 Intl polyfill loaded'); };
     wa.onerror = console.error;

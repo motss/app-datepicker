@@ -11,13 +11,9 @@ describe(dispatchCustomEvent.name, () => {
     [undefined, null],
     [
       {
-        isKeypress: true,
-        key: 'Enter',
         year: 2020,
       },
       {
-        isKeypress: true,
-        key: 'Enter',
         year: 2020,
       },
     ],

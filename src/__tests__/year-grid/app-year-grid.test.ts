@@ -137,8 +137,6 @@ describe(appYearGridName, () => {
         ]);
         const expectedYearUpdatedEvent: YearUpdatedEvent = {
           year: data.max.getUTCFullYear(),
-          isKeypress: testEventType.startsWith('key'),
-          key: testKey,
         };
 
         expect(yearGridButtonAttrsList).deep.equal([

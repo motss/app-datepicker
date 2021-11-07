@@ -288,10 +288,12 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
 
     if (newSelectedDate == null) return;
 
+    const isKeypress = Boolean(key);
+
     dispatchCustomEvent(this, 'date-updated', {
-      isKeypress: Boolean(key),
-      key,
+      isKeypress,
       value: new Date(newSelectedDate),
+      ...(isKeypress && { key }),
     });
   };
 }

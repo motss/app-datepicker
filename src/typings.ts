@@ -68,7 +68,10 @@ export interface ValueUpdatedEvent extends KeyEvent {
   value: string;
 }
 
-export interface YearUpdatedEvent extends KeyEvent {
+/**
+ * NOTE: No `KeyEvent` is needed as native `button` element will dispatch `click` event on keypress.
+ */
+export interface YearUpdatedEvent {
   year: number;
 }
 

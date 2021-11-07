@@ -384,14 +384,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     detail: { value },
   }: CustomEvent<ValueUpdatedEvent>): void {
     this.#updateSelectedAndCurrentDate(value);
-
-    // TODO: To fire value update event
   }
 
   #updateStartView(): void {
-    const isYearGrid = this.startView === 'yearGrid';
-
-    this.startView = isYearGrid ? 'calendar' : 'yearGrid';
+    this.startView = this.startView === 'yearGrid' ? 'calendar' : 'yearGrid';
   }
 
   #updateYear({

@@ -243,9 +243,11 @@ describe(appMonthCalendarName, () => {
         );
         expect(newSelectedDate?.fullDate).deep.equal(calendarInit.date);
 
+        const isKeypress = testEventType === 'keydown';
         const expectedDateUpdatedEvent: DateUpdatedEvent = {
-          isKeypress: testEventType === 'keydown',
+          isKeypress,
           value: new Date('2020-02-09'),
+          ...(isKeypress && { key: testKeyPayloads[0].down }),
         };
 
         expect(dateUpdatedEvent).deep.equal(expectedDateUpdatedEvent);

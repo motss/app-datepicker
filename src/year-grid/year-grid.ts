@@ -10,7 +10,7 @@ import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
 import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
-import type { Formatters, InferredFromSet, SupportedKey } from '../typings.js';
+import type { Formatters, InferredFromSet } from '../typings.js';
 import { yearGridStyling } from './stylings.js';
 import { toNextSelectedYear } from './to-next-selected-year.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties, YearGridRenderButtonInit } from './typings.js';
@@ -110,10 +110,10 @@ export class YearGrid extends LitElement implements YearGridProperties {
     `;
   }
 
-  #updateYear = (event: MouseEvent | KeyboardEvent): void => {
+  #updateYear = (event: KeyboardEvent): void => {
     if (event.type === 'keydown') {
       const key =
-        (event as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
+        event.key as InferredFromSet<typeof navigationKeySetGrid>;
 
       if (!navigationKeySetGrid.has(key)) return;
 
@@ -147,14 +147,11 @@ export class YearGrid extends LitElement implements YearGridProperties {
       /** Do nothing when not tapping on the year button */
       if (selectedYearStr == null) return;
 
-      const key = (event as KeyboardEvent).key as SupportedKey;
       const year = Number(selectedYearStr);
 
       this.$focusingYear = year;
 
       dispatchCustomEvent(this, 'year-updated', {
-        isKeypress: Boolean(key),
-        key,
         year,
       });
     }
