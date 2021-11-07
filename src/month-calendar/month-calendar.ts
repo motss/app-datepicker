@@ -224,13 +224,18 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     const type = event.type as 'click' | 'keydown' | 'keyup';
 
     if (type === 'keydown') {
+      const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
+
       if (
         !navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>) &&
-        !confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
+        !isConfirmKey
       ) return;
 
-      // Stop scrolling with arrow keys or Space key
+      // Prevent scrolling with arrow keys or Space key
       event.preventDefault();
+
+      // Bail out for Enter/ Space key as they should go to keyup handler.
+      if (isConfirmKey) return;
 
       const {
         currentDate,
@@ -268,7 +273,6 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         [
           'aria-disabled',
           'aria-hidden',
-          'aria-selected',
         ].some(
           attrName =>
             selectedCalendarDay.getAttribute(attrName) === 'true'

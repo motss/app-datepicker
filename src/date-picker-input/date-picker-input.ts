@@ -9,6 +9,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
+import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconClose } from '../icons.js';
 import { keyEnter, keySpace } from '../key-values.js';
@@ -22,14 +23,15 @@ export class DatePickerInput extends DatePickerMixin(DatePickerMinMaxMixin(TextF
   public override type = 'date' as TextFieldType;
 
   @property({ type: String }) public clearLabel = 'Clear';
-  @queryAsync('.mdc-text-field__input') private _input!: Promise<HTMLInputElement | null>;
+  @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
+  @queryAsync('app-date-picker-input-surface') protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
   @state() private _open = false;
   @state() private _valueText = '';
 
   #disconnect: () => void = () => undefined;
   #focusElement: HTMLElement | undefined = undefined;
   #picker: AppDatePicker | undefined = undefined;
-  #valueFormatter = this.#toValueFormatter();
+  #valueFormatter = this.$toValueFormatter();
 
   public static override styles = [
     ...TextField.styles,
@@ -45,7 +47,7 @@ export class DatePickerInput extends DatePickerMixin(DatePickerMinMaxMixin(TextF
   public override async firstUpdated(): Promise<void> {
     super.firstUpdated();
 
-    const input = await this._input;
+    const input = await this.$input;
 
     if (!input) return;
 
@@ -74,7 +76,7 @@ export class DatePickerInput extends DatePickerMixin(DatePickerMinMaxMixin(TextF
       ) as string;
 
       this.locale = newLocale;
-      this.#valueFormatter = this.#toValueFormatter();
+      this.#valueFormatter = this.$toValueFormatter();
 
       if (this.value) {
         this._valueText = this.#valueFormatter.format(toResolvedDate(this.value));
@@ -174,37 +176,47 @@ export class DatePickerInput extends DatePickerMixin(DatePickerMinMaxMixin(TextF
     `;
   }
 
-  #onClearClick() {
+  protected $toValueFormatter(): Intl.DateTimeFormat {
+    return DateTimeFormat(this.locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  #onClearClick(): void  {
     this.value = this._valueText = '';
   }
 
-  #onClosed() {
+  #onClosed(): void {
     this._open = false;
   }
 
-  async #onDatePickerFirstUpdated(ev: CustomEvent<SupportedCustomEventDetail['first-updated']>) {
+  #onDatePickerFirstUpdated(ev: CustomEvent<SupportedCustomEventDetail['first-updated']>): void {
     const [focusableElement] = ev.detail.focusableElements;
 
     this.#picker = ev.currentTarget as AppDatePicker;
     this.#focusElement = focusableElement;
   }
 
-  #onDatePickerDateUpdated(ev: CustomEvent<SupportedCustomEventDetail['date-updated']>) {
-    this.value = this.#valueFormatter.format(ev.detail.value);
+  async #onDatePickerDateUpdated(ev: CustomEvent<SupportedCustomEventDetail['date-updated']>): Promise<void> {
+    const {
+      isKeypress,
+      key,
+      value,
+    } = ev.detail;
+
+    this.value = this.#valueFormatter.format(value);
+
+    if (isKeypress && (key === 'Enter' || key === ' ')) {
+      (await this.$inputSurface)?.close();
+    }
   }
 
-  async #onOpened() {
+  async #onOpened(): Promise<void> {
     await (this.#picker as AppDatePicker).updateComplete;
     await this.updateComplete;
 
     this.#focusElement?.focus();
-  }
-
-  #toValueFormatter() {
-    return DateTimeFormat(this.locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
   }
 }
