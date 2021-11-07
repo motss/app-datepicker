@@ -1,9 +1,8 @@
 import type { TemplateResult } from 'lit';
-import { html, LitElement , nothing} from 'lit';
+import { html, LitElement, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 
-import { navigationKeySetGrid } from '../constants.js';
+import { confirmKeySet, navigationKeySetGrid } from '../constants.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
@@ -12,17 +11,15 @@ import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
-import type { Formatters, InferredFromSet } from '../typings.js';
+import type { Formatters, InferredFromSet, SupportedKey } from '../typings.js';
 import { monthCalendarStyling } from './stylings.js';
-import type { MonthCalendarData, MonthCalendarProperties } from './typings.js';
+import type { MonthCalendarData, MonthCalendarProperties, MonthCalendarRenderCalendarDayInit } from './typings.js';
 
 export class MonthCalendar extends LitElement implements MonthCalendarProperties {
-  @property({ attribute: false })
-  public data?: MonthCalendarData;
+  @property({ attribute: false }) public data?: MonthCalendarData;
+  @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
-  @queryAsync('.calendar-day[aria-selected="true"]')
-  public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
-
+  #selectedDate: Date | undefined = undefined;
   /**
    * NOTE(motss): This is required to avoid selected date being focused on each update.
    * Selected date should ONLY be focused during navigation with keyboard, e.g.
@@ -118,13 +115,13 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
 
       calendarContent = html`
       <table
-        class=calendar-table
-        part=table
-        role=grid
-        aria-labelledby=${calendarCaptionId}
         @click=${this.#updateSelectedDate}
         @keydown=${this.#updateSelectedDate}
         @keyup=${this.#updateSelectedDate}
+        aria-labelledby=${calendarCaptionId}
+        class=calendar-table
+        part=table
+        role=grid
       >
         ${
           showCaption && secondMonthSecondCalendarDayFullDate ? html`
@@ -175,23 +172,17 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
                   return html`<td class="calendar-day day--empty" aria-hidden="true" part=calendar-day></td>`;
                 }
                 const curTime = +new Date(fullDate);
-                const isSelectedDate = +date === curTime;
                 const shouldTab = tabbableDate.getUTCDate() === Number(value);
 
-                return html`
-                <td
-                  tabindex=${shouldTab ? '0' : '-1'}
-                  class="calendar-day ${classMap({ 'day--today': +todayDate === curTime })}"
-                  part=calendar-day
-                  role=gridcell
-                  aria-disabled=${disabled ? 'true' : 'false'}
-                  aria-label=${label}
-                  aria-selected=${isSelectedDate ? 'true' : 'false'}
-                  data-day=${value}
-                  .fullDate=${fullDate}
-                >
-                </td>
-                `;
+                return this.$renderCalendarDay({
+                  ariaDisabled: String(disabled),
+                  ariaLabel: label,
+                  ariaSelected: String(+date === curTime),
+                  className: +todayDate === curTime ? 'day--today' : '',
+                  day: value,
+                  fullDate,
+                  tabIndex: shouldTab ? 0 : -1,
+                } as MonthCalendarRenderCalendarDayInit);
               })
             }</tr>`;
           })
@@ -203,16 +194,43 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
     return html`<div class="month-calendar" part="calendar">${calendarContent}</div>`;
   }
 
-  #updateSelectedDate = (ev: MouseEvent | KeyboardEvent): void => {
-    let newSelectedDate: Date | undefined = undefined;
+  protected $renderCalendarDay({
+    ariaDisabled,
+    ariaLabel,
+    ariaSelected,
+    className,
+    day,
+    fullDate,
+    tabIndex,
+  }: MonthCalendarRenderCalendarDayInit): TemplateResult {
+    return html`
+    <td
+      .fullDate=${fullDate}
+      aria-disabled=${ariaDisabled as 'true' | 'false'}
+      aria-label=${ariaLabel}
+      aria-selected=${ariaSelected as 'true' | 'false'}
+      class="calendar-day ${className}"
+      data-day=${day}
+      part=calendar-day
+      role=gridcell
+      tabindex=${tabIndex}
+    >
+    </td>
+    `;
+  }
 
-    if (ev.type === 'keydown') {
-      const key = (ev as KeyboardEvent).key as InferredFromSet<typeof navigationKeySetGrid>;
+  #updateSelectedDate = (event: KeyboardEvent): void => {
+    const key = event.key as SupportedKey;
+    const type = event.type as 'click' | 'keydown' | 'keyup';
 
-      if (!navigationKeySetGrid.has(key)) return;
+    if (type === 'keydown') {
+      if (
+        !navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>) &&
+        !confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
+      ) return;
 
-      // Stop scrolling with arrow keys
-      ev.preventDefault();
+      // Stop scrolling with arrow keys or Space key
+      event.preventDefault();
 
       const {
         currentDate,
@@ -223,21 +241,26 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         min,
       } = this.data as MonthCalendarData;
 
-      newSelectedDate = toNextSelectedDate({
+      this.#selectedDate = toNextSelectedDate({
         currentDate,
         date,
         disabledDatesSet,
         disabledDaysSet,
-        hasAltKey: ev.altKey,
+        hasAltKey: event.altKey,
         key,
         maxTime: +max,
         minTime: +min,
       });
-
       this.#shouldFocusSelectedDate = true;
-    } else if (ev.type === 'click') {
+    } else if (
+      type === 'click' ||
+      (
+        type === 'keyup' &&
+        confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
+      )
+    ) {
       const selectedCalendarDay =
-        toClosestTarget<HTMLTableCellElement>(ev, '.calendar-day');
+        toClosestTarget<HTMLTableCellElement>(event, '.calendar-day');
 
       /** NOTE: Required condition check else these will trigger unwanted re-rendering */
       if (
@@ -254,13 +277,16 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
         return;
       }
 
-      newSelectedDate = selectedCalendarDay.fullDate;
+      this.#selectedDate = selectedCalendarDay.fullDate;
     }
+
+    const newSelectedDate = this.#selectedDate;
 
     if (newSelectedDate == null) return;
 
     dispatchCustomEvent(this, 'date-updated', {
-      isKeypress: ev.type === 'keydown',
+      isKeypress: Boolean(key),
+      key,
       value: new Date(newSelectedDate),
     });
   };

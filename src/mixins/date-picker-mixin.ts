@@ -6,7 +6,7 @@ import { DateTimeFormat } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
-import type { CalendarView, Constructor } from '../typings.js';
+import type { Constructor, StartView } from '../typings.js';
 import type { DatePickerMixinProperties, MixinReturnType } from './typings.js';
 
 export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>(
@@ -47,7 +47,7 @@ export const DatePickerMixin = <BaseConstructor extends Constructor<LitElement>>
     public showWeekNumber = false;
 
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
-    public startView: CalendarView = 'calendar';
+    public startView: StartView = 'calendar';
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to

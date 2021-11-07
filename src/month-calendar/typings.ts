@@ -22,3 +22,8 @@ export interface MonthCalendarData {
 export interface MonthCalendarProperties {
   data?: MonthCalendarData;
 }
+
+export interface MonthCalendarRenderCalendarDayInit extends HTMLElement {
+  day: string;
+  fullDate: Date;
+}

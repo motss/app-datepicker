@@ -2,6 +2,7 @@ import '@material/mwc-icon-button';
 import '../month-calendar/app-month-calendar.js';
 import '../year-grid/app-year-grid.js';
 
+import type { IconButton } from '@material/mwc-icon-button';
 import type { TemplateResult } from 'lit';
 import { html, LitElement, nothing } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
@@ -10,7 +11,7 @@ import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import { calendarViews, DateTimeFormat, MAX_DATE } from '../constants.js';
+import { DateTimeFormat, MAX_DATE, startViews } from '../constants.js';
 import { clampValue } from '../helpers/clamp-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
 import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
@@ -26,49 +27,37 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { AppMonthCalendar } from '../month-calendar/app-month-calendar.js';
 import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
-import type { CalendarView, DatePickerProperties, Formatters, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
+import type { DatePickerProperties, Formatters, StartView, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
 import type { AppYearGrid } from '../year-grid/app-year-grid.js';
 import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
-  //#region public properties
   public valueAsDate: Date;
   public valueAsNumber: number;
-  //#endregion public properties
 
-  //#region private states
-  @state()
-  private _currentDate: Date;
+  @queryAsync('app-month-calendar') private readonly _monthCalendar!: Promise<AppMonthCalendar | null>;
 
-  @state()
-  private _max: Date;
+  @queryAsync('[data-navigation="previous"]') private readonly _navigationPrevious!: Promise<HTMLButtonElement | null>;
 
-  @state()
-  private _min: Date;
+  @queryAsync('[data-navigation="next"]') private readonly _navigationNext!: Promise<HTMLButtonElement | null>;
 
-  @state()
-  private _selectedDate: Date;
-  //#endregion private states
+  @queryAsync('.year-dropdown') private readonly _yearDropdown!: Promise<IconButton | null>;
 
-  //#region private properties
+  @queryAsync('app-year-grid') private readonly _yearGrid!: Promise<AppYearGrid | null>;
+
+  @state() private _currentDate: Date;
+
+  @state() private _max: Date;
+
+  @state() private _min: Date;
+
+  @state() private _selectedDate: Date;
+
   #formatters: Formatters;
   #shouldUpdateFocusInNavigationButtons = false;
   #today: Date;
-
-  @queryAsync('app-month-calendar')
-  private readonly _monthCalendar!: Promise<AppMonthCalendar | null>;
-
-  @queryAsync('[data-navigation="previous"]')
-  private readonly _navigationPrevious!: Promise<HTMLButtonElement | null>;
-
-  @queryAsync('[data-navigation="next"]')
-  private readonly _navigationNext!: Promise<HTMLButtonElement | null>;
-
-  @queryAsync('app-year-grid')
-  private readonly _yearGrid!: Promise<AppYearGrid | null>;
-  //#endregion private properties
 
   public static override styles = [
     resetShadowRoot,
@@ -157,12 +146,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
 
     if (changedProperties.has('startView')) {
       const oldStartView =
-        (changedProperties.get('startView') || this.startView) as CalendarView;
+        (changedProperties.get('startView') || this.startView) as StartView;
 
       /**
        * NOTE: Reset to old `startView` to ensure a valid value.
        */
-      if (!calendarViews.includes(this.startView)) {
+      if (!startViews.includes(this.startView)) {
         this.startView = oldStartView;
       }
 
@@ -192,16 +181,26 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   protected override async updated(
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
-    if (this.startView === 'calendar') {
-      if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
-        const currentDate = this._currentDate;
+    if (changedProperties.has('startView')) {
+      if (this.startView === 'calendar') {
+        if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
+          const currentDate = this._currentDate;
 
-        isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
-        isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
+          isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
+          isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
 
-        this.#shouldUpdateFocusInNavigationButtons = false;
+          this.#shouldUpdateFocusInNavigationButtons = false;
+        }
+      }
+
+      if (
+        changedProperties.get('startView') === 'yearGrid' as StartView &&
+        this.startView === 'calendar'
+      ) {
+        (await this._yearDropdown)?.focus();
       }
     }
+
   }
 
   protected override render(): TemplateResult {

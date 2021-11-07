@@ -9,7 +9,7 @@ export const MAX_DATE = toResolvedDate('2100-12-31');
 export const ONE_DAY_IN_SECONDS = 864e5;
 //#endregion constants
 
-export const calendarViews = [
+export const startViews = [
   'calendar',
   'yearGrid',
 ] as const;

@@ -1,12 +1,12 @@
 import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
-import type { calendarViews } from './constants.js';
+import type { startViews } from './constants.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mixins/typings.js';
 
-export type CalendarView = CalendarViewTuple[number];
+export type StartView = StartViewTuple[number];
 
-export type CalendarViewTuple = typeof calendarViews;
+export type StartViewTuple = typeof startViews;
 
 export interface ChangedEvent extends KeyEvent {
   value: DatePickerMixinProperties['value'];

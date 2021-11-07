@@ -1,7 +1,7 @@
 import '../../date-picker/app-date-picker';
 
 import { expect } from '@open-wc/testing';
-import { elementUpdated,fixture, html, oneEvent } from '@open-wc/testing-helpers';
+import { elementUpdated, fixture, html, oneEvent } from '@open-wc/testing-helpers';
 
 import { MAX_DATE } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
@@ -10,7 +10,7 @@ import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { MaybeDate } from '../../helpers/typings';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
-import type { CalendarView, DateUpdatedEvent, Formatters } from '../../typings';
+import type { DateUpdatedEvent, Formatters, StartView } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { messageFormatter } from '../test-utils/message-formatter';
 
@@ -32,7 +32,7 @@ describe(appDatePickerName, () => {
   const formatters: Formatters = toFormatters('en-US');
   const todayDate = toResolvedDate();
 
-  type A = [CalendarView | undefined, (keyof typeof elementSelectors)[], (keyof typeof elementSelectors)[]];
+  type A = [StartView | undefined, (keyof typeof elementSelectors)[], (keyof typeof elementSelectors)[]];
   const cases: A[] = [
     [
       undefined,

@@ -1,7 +1,7 @@
 import type { LitElement } from 'lit';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import type { CalendarView, Constructor } from '../typings.js';
+import type { Constructor, StartView } from '../typings.js';
 
 export interface DatePickerMinMaxProperties {
   max?: string;
@@ -20,7 +20,7 @@ export interface DatePickerMixinProperties {
   previousMonthLabel: string;
   selectedDateLabel: string;
   showWeekNumber: boolean;
-  startView: CalendarView;
+  startView: StartView;
   value: string;
   weekLabel: string;
   weekNumberType: WeekNumberType;
