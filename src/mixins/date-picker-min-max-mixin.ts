@@ -1,11 +1,10 @@
-import type { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
-import type { Constructor } from '../typings.js';
+import type { LitConstructor } from '../typings.js';
 import type { DatePickerMinMaxProperties, MixinReturnType } from './typings.js';
 
-export const DatePickerMinMaxMixin = <BaseConstructor extends Constructor<LitElement>>(
+export const DatePickerMinMaxMixin = <BaseConstructor extends LitConstructor>(
   SuperClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, DatePickerMinMaxProperties> => {
   class DatePickerMinMaxClass extends SuperClass implements DatePickerMinMaxProperties {

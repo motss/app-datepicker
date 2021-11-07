@@ -1,5 +1,5 @@
 import type { TemplateResult } from 'lit';
-import { html, LitElement } from 'lit';
+import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
@@ -9,13 +9,14 @@ import { focusElement } from '../helpers/focus-element.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
+import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
 import type { Formatters, InferredFromSet } from '../typings.js';
 import { yearGridStyling } from './stylings.js';
 import { toNextSelectedYear } from './to-next-selected-year.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties, YearGridRenderButtonInit } from './typings.js';
 
-export class YearGrid extends LitElement implements YearGridProperties {
+export class YearGrid extends RootElement implements YearGridProperties {
   @property({ attribute: false }) public data?: YearGridData;
 
   @queryAsync('button[data-year][aria-selected="true"]') public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
@@ -132,10 +133,9 @@ export class YearGrid extends LitElement implements YearGridProperties {
         year: this.$focusingYear,
       });
 
-      const focusingYearGridButton =
-        this.shadowRoot?.querySelector<HTMLButtonElement>(
-          `button[data-year="${focusingYear}"]`
-        );
+      const focusingYearGridButton = this.query<HTMLButtonElement>(
+        `button[data-year="${focusingYear}"]`
+      );
 
       this.$focusingYear = focusingYear;
       focusingYearGridButton?.focus();

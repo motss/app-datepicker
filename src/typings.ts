@@ -1,8 +1,9 @@
+import type { LitElement } from 'lit';
 import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
 import type { startViews } from './constants.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
-import type { DatePickerMinMaxProperties, DatePickerMixinProperties } from './mixins/typings.js';
+import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
 
 export type StartView = StartViewTuple[number];
 
@@ -17,8 +18,10 @@ export type ChangedProperties<T = Record<string, unknown>> = Map<keyof T, T[keyo
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
 
-export interface DatePickerProperties extends DatePickerMixinProperties,
-DatePickerMinMaxProperties {}
+export interface DatePickerProperties extends
+  DatePickerMinMaxProperties,
+  DatePickerMixinProperties,
+  ElementMixinProperties {}
 
 export interface DateUpdatedEvent extends KeyEvent {
   value: Date;
@@ -41,6 +44,8 @@ export interface Formatters extends Pick<DatePickerMixinProperties, 'locale'> {
 }
 
 export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
+
+export type LitConstructor = Constructor<LitElement>;
 
 export interface SupportedCustomEventDetail {
   // ['animation-finished']: null;

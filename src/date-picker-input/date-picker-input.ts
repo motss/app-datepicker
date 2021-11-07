@@ -15,11 +15,12 @@ import { iconClose } from '../icons.js';
 import { keyEnter, keySpace } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import { ElementMixin } from '../mixins/element-mixin.js';
 import type { DatePickerMixinProperties } from '../mixins/typings.js';
 import type { ChangedProperties, DatePickerProperties, SupportedCustomEventDetail } from '../typings.js';
 import { datePickerInputStyling } from './stylings.js';
 
-export class DatePickerInput extends DatePickerMixin(DatePickerMinMaxMixin(TextField)) implements DatePickerMixinProperties {
+export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
   public override type = 'date' as TextFieldType;
 
   @property({ type: String }) public clearLabel = 'Clear';

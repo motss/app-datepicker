@@ -1,11 +1,13 @@
-import '../date-picker/app-date-picker.js';
 import '../date-picker-input/app-date-picker-input.js';
+import '../date-picker/app-date-picker.js';
 
-import { css, html, LitElement } from 'lit';
+import { css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
+import { RootElement } from '../root-element/root-element.js';
+
 @customElement('demo-app')
-export class DemoApp extends LitElement {
+export class DemoApp extends RootElement {
   public static override styles = [
     css`
     :host {

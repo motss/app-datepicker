@@ -1,5 +1,5 @@
 import type { TemplateResult } from 'lit';
-import { html, LitElement, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
 
 import { confirmKeySet, navigationKeySetGrid } from '../constants.js';
@@ -10,12 +10,13 @@ import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
+import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import type { Formatters, InferredFromSet, SupportedKey } from '../typings.js';
 import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties, MonthCalendarRenderCalendarDayInit } from './typings.js';
 
-export class MonthCalendar extends LitElement implements MonthCalendarProperties {
+export class MonthCalendar extends RootElement implements MonthCalendarProperties {
   @property({ attribute: false }) public data?: MonthCalendarData;
   @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
@@ -28,7 +29,7 @@ export class MonthCalendar extends LitElement implements MonthCalendarProperties
   #shouldFocusSelectedDate = false;
 
   public static override shadowRootOptions = {
-    ...LitElement.shadowRootOptions,
+    ...RootElement.shadowRootOptions,
     delegatesFocus: true,
   };
 

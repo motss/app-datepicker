@@ -55,21 +55,17 @@ describe(appDatePickerName, () => {
     it(
       messageFormatter('renders (startView=%s)', a),
       async () => {
-        const el = await fixture(
+        const el = await fixture<AppDatePicker>(
           html`<app-date-picker .startView=${testCalendarView as never}></app-date-picker>`
         );
 
         testElementsShouldRender.forEach((n) => {
-          const element = el.shadowRoot?.querySelector(
-            elementSelectors[n]
-          );
+          const element = el.query(elementSelectors[n]);
 
           expect(element).exist;
         });
         testElementsShouldNotRender.forEach((n) => {
-          const element = el.shadowRoot?.querySelector(
-            elementSelectors[n]
-          );
+          const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
         });
@@ -92,7 +88,7 @@ describe(appDatePickerName, () => {
           html`<app-date-picker .locale=${testLocale as never} min="1970-01-01" value=${testValue}></app-date-picker>`
         );
 
-        const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+        const selectedYearMonth = el.query<HTMLParagraphElement>(
           elementSelectors.selectedYearMonth
         );
 
@@ -141,7 +137,7 @@ describe(appDatePickerName, () => {
         a
       ),
       async () => {
-        const el = await fixture(
+        const el = await fixture<AppDatePicker>(
           html`<app-date-picker
             .max=${testMax}
             .min=${testMin}
@@ -150,16 +146,12 @@ describe(appDatePickerName, () => {
         );
 
         testElementsShouldRender.forEach((n) => {
-          const element = el.shadowRoot?.querySelector(
-            elementSelectors[n]
-          );
+          const element = el.query(elementSelectors[n]);
 
           expect(element).exist;
         });
         testElementsShouldNotRender.forEach((n) => {
-          const element = el.shadowRoot?.querySelector(
-            elementSelectors[n]
-          );
+          const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
         });
@@ -188,7 +180,7 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const element = el.shadowRoot?.querySelector<HTMLButtonElement>(
+        const element = el.query<HTMLButtonElement>(
           elementSelectors[testMonthNavigationElementSelector]
         );
 
@@ -197,7 +189,7 @@ describe(appDatePickerName, () => {
 
         await elementUpdated(el);
 
-        const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+        const selectedYearMonth = el.query<HTMLParagraphElement>(
           elementSelectors.selectedYearMonth
         );
 
@@ -224,7 +216,7 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.shadowRoot?.querySelector<HTMLButtonElement>(
+    const yearDropdown = el.query<HTMLButtonElement>(
       elementSelectors.yearDropdown
     );
 
@@ -233,13 +225,13 @@ describe(appDatePickerName, () => {
 
     await elementUpdated(el);
 
-    const yearGrid = el.shadowRoot?.querySelector<AppYearGrid>(
+    const yearGrid = el.query<AppYearGrid>(
       elementSelectors.yearGrid
     );
 
     expect(yearGrid).exist;
 
-    const newSelectedYear = yearGrid?.shadowRoot?.querySelector<HTMLButtonElement>(
+    const newSelectedYear = yearGrid?.query<HTMLButtonElement>(
       `${elementSelectors.yearGridButton}[data-year="${newSelectedDate.getUTCFullYear()}"]`
     );
 
@@ -250,13 +242,13 @@ describe(appDatePickerName, () => {
 
     await elementUpdated(el);
 
-    const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+    const calendar = el.query<AppMonthCalendar>(
       elementSelectors.calendar
     );
 
     expect(calendar).exist;
 
-    const selectedYearMonth = el.shadowRoot?.querySelector<HTMLParagraphElement>(
+    const selectedYearMonth = el.query<HTMLParagraphElement>(
       elementSelectors.selectedYearMonth
     );
 
@@ -270,7 +262,7 @@ describe(appDatePickerName, () => {
     const newSelectedDate2Label = formatters.fullDateFormat(newSelectedDate2);
 
     const newSelectedCalendarDay =
-      calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+      calendar?.query<HTMLTableCellElement>(
         `${elementSelectors.calendarDay}[aria-label="${newSelectedDate2Label}"]`
       );
 
@@ -293,7 +285,7 @@ describe(appDatePickerName, () => {
     await elementUpdated(el);
 
     const selectedCalendarDay =
-      calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+      calendar?.query<HTMLTableCellElement>(
         elementSelectors.selectedCalendarDay
       );
 
@@ -328,11 +320,11 @@ describe(appDatePickerName, () => {
     );
     const newSelectedDateLabel = formatters.fullDateFormat(newSelectedDate);
 
-    const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+    const calendar = el.query<AppMonthCalendar>(
       elementSelectors.calendar
     );
     const newSelectedCalendarDay =
-      calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+      calendar?.query<HTMLTableCellElement>(
         `${elementSelectors.calendarDay}[aria-label="${newSelectedDateLabel}"]`
       );
 
@@ -349,7 +341,7 @@ describe(appDatePickerName, () => {
     await elementUpdated(calendar as AppMonthCalendar);
     await elementUpdated(el);
 
-    const selectedDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+    const selectedDate = calendar?.query<HTMLTableCellElement>(
       elementSelectors.selectedCalendarDay
     );
 
@@ -376,7 +368,7 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.shadowRoot?.querySelector<HTMLButtonElement>(
+    const yearDropdown = el.query<HTMLButtonElement>(
       elementSelectors.yearDropdown
     );
 
@@ -385,7 +377,7 @@ describe(appDatePickerName, () => {
 
     await elementUpdated(el);
 
-    const yearGrid = el.shadowRoot?.querySelector<AppYearGrid>(
+    const yearGrid = el.query<AppYearGrid>(
       elementSelectors.yearGrid
     );
 
@@ -396,10 +388,10 @@ describe(appDatePickerName, () => {
 
     await elementUpdated(el);
 
-    const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+    const calendar = el.query<AppMonthCalendar>(
       elementSelectors.calendar
     );
-    const yearGrid2 = el.shadowRoot?.querySelector<AppYearGrid>(
+    const yearGrid2 = el.query<AppYearGrid>(
       elementSelectors.yearGrid
     );
 
@@ -434,10 +426,10 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+        const calendar = el.query<AppMonthCalendar>(
           elementSelectors.calendar
         );
-        const selectedDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const selectedDate = calendar?.query<HTMLTableCellElement>(
           elementSelectors.selectedCalendarDay
         );
 
@@ -454,10 +446,10 @@ describe(appDatePickerName, () => {
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
 
-        const calendar2 = el.shadowRoot?.querySelector<AppMonthCalendar>(
+        const calendar2 = el.query<AppMonthCalendar>(
           elementSelectors.calendar
         );
-        const newSelectedDate = calendar2?.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const newSelectedDate = calendar2?.query<HTMLTableCellElement>(
           elementSelectors.selectedCalendarDay
         );
 
@@ -504,11 +496,11 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+        const calendar = el.query<AppMonthCalendar>(
           elementSelectors.calendar
         );
 
-        const minDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const minDate = calendar?.query<HTMLTableCellElement>(
           `${elementSelectors.calendarDay}[aria-label="${
             formatters.fullDateFormat(expectedMinDate)
           }"]`
@@ -526,7 +518,7 @@ describe(appDatePickerName, () => {
           )
         );
         const oneDayBeforeMinDate =
-          calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+          calendar?.query<HTMLTableCellElement>(
             `${elementSelectors.calendarDay}[aria-label="${
               formatters.fullDateFormat(expectedOneDayBeforeMinDate)
             }"]`
@@ -543,11 +535,11 @@ describe(appDatePickerName, () => {
         await elementUpdated(calendar as AppMonthCalendar);
         await elementUpdated(el);
 
-        const calendar2 = el.shadowRoot?.querySelector<AppMonthCalendar>(
+        const calendar2 = el.query<AppMonthCalendar>(
           elementSelectors.calendar
         );
 
-        const minDate2 = calendar2?.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const minDate2 = calendar2?.query<HTMLTableCellElement>(
           `${elementSelectors.calendarDay}[aria-label="${
             formatters.fullDateFormat(expectedNewMinDate)
           }"]`
@@ -560,7 +552,7 @@ describe(appDatePickerName, () => {
         expect(minDate2?.fullDate).deep.equal(expectedNewMinDate);
 
         const previousMonthNavigationButton =
-          el.shadowRoot?.querySelector<HTMLButtonElement>(
+          el.query<HTMLButtonElement>(
             elementSelectors.previousMonthNavigationButton
           );
 
@@ -574,7 +566,7 @@ describe(appDatePickerName, () => {
             )
           );
           const oneDayBeforeMinDate2 =
-            calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+            calendar?.query<HTMLTableCellElement>(
               `${elementSelectors.calendarDay}[aria-label="${
                 formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
               }"]`
@@ -628,11 +620,11 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const calendar = el.shadowRoot?.querySelector<AppMonthCalendar>(
+        const calendar = el.query<AppMonthCalendar>(
           elementSelectors.calendar
         );
 
-        const selectedDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const selectedDate = calendar?.query<HTMLTableCellElement>(
           elementSelectors.selectedCalendarDay
         );
 
@@ -654,7 +646,7 @@ describe(appDatePickerName, () => {
           const isSameCalendarMonth = toResolvedDate(date).getUTCMonth() === expectedDate.getUTCMonth();
 
           if (isSameCalendarMonth) {
-            const maxDate = calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+            const maxDate = calendar?.query<HTMLTableCellElement>(
               `${elementSelectors.calendarDay}[aria-label="${
                 formatters.fullDateFormat(expectedDate)
               }"]`
@@ -683,7 +675,7 @@ describe(appDatePickerName, () => {
               )
             );
             const oneDayAfterMaxDate =
-              calendar?.shadowRoot?.querySelector<HTMLTableCellElement>(
+              calendar?.query<HTMLTableCellElement>(
                 `${elementSelectors.calendarDay}[aria-label="${
                   formatters.fullDateFormat(expectedOneDayAfterMaxDate)
                 }"]`

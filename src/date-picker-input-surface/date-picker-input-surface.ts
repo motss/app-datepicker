@@ -2,6 +2,7 @@ import { MenuSurface } from '@material/mwc-menu/mwc-menu-surface.js';
 
 import { appDatePickerName } from '../date-picker/constants.js';
 import { appDatePickerInputName } from '../date-picker-input/constants.js';
+import { ElementMixin } from '../mixins/element-mixin.js';
 import type { InferredFromSet } from '../typings.js';
 import { DatePickerInputSurfaceStyling } from './stylings.js';
 
@@ -10,7 +11,7 @@ const alwaysOpenElementSet = new Set([
   appDatePickerName,
 ]);
 
-export class DatePickerInputSurface extends MenuSurface {
+export class DatePickerInputSurface extends ElementMixin(MenuSurface) {
   public static override styles = [
     ...MenuSurface.styles,
     DatePickerInputSurfaceStyling,

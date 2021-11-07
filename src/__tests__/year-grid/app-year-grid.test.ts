@@ -27,7 +27,7 @@ describe(appYearGridName, () => {
     const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${data}></app-year-grid>`);
 
     const yearGridButtonAttrsList = Array.from(
-      el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
+      el.queryAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
       n.getAttribute('aria-label') ?? '',
@@ -35,7 +35,7 @@ describe(appYearGridName, () => {
       n.getAttribute('aria-selected') ?? '',
     ]);
 
-    expect(el.shadowRoot?.querySelector(elementSelectors.yearGrid)).exist;
+    expect(el.query(elementSelectors.yearGrid)).exist;
     expect(yearGridButtonAttrsList).deep.equal([
       ['2019', '2019', '-1', 'false'],
       ['2020', '2020', '0', 'true'],
@@ -48,13 +48,13 @@ describe(appYearGridName, () => {
       html`<app-year-grid></app-year-grid>`
     );
 
-    expect(el.shadowRoot?.querySelector(elementSelectors.yearGrid)).not.exist;
+    expect(el.query(elementSelectors.yearGrid)).not.exist;
   });
 
   it('focuses new year with keyboard', async () => {
     const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${data}></app-year-grid>`);
 
-    const newSelectedYear = el.shadowRoot?.querySelector<HTMLButtonElement>(
+    const newSelectedYear = el.query<HTMLButtonElement>(
       `${elementSelectors.yearGridButton}[data-year="${data.date.getUTCFullYear()}"]`
     );
 
@@ -67,7 +67,7 @@ describe(appYearGridName, () => {
     await el.updateComplete;
 
     const yearGridButtonAttrsList = Array.from(
-      el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
+      el.queryAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
       n.getAttribute('aria-label') ?? '',
@@ -105,7 +105,7 @@ describe(appYearGridName, () => {
           el.addEventListener('year-updated', fn);
         });
 
-        const newSelectedYear = el.shadowRoot?.querySelector<HTMLButtonElement>(
+        const newSelectedYear = el.query<HTMLButtonElement>(
           `${elementSelectors.yearGridButton}[data-year="${testNewSelectedYear}"]`
         );
 
@@ -128,7 +128,7 @@ describe(appYearGridName, () => {
         const yearUpdatedEvent = await yearUpdatedEventTask;
 
         const yearGridButtonAttrsList = Array.from(
-          el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
+          el.queryAll(elementSelectors.yearGridButton) ?? []
         ).map<[string, string, string, string]>(n => [
           n.getAttribute('data-year') ?? '',
           n.getAttribute('aria-label') ?? '',
@@ -152,7 +152,7 @@ describe(appYearGridName, () => {
   it('does not focus/ select new year when click on irrelevant element', async () => {
     const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${data}></app-year-grid>`);
 
-    const newSelectedYear = el.shadowRoot?.querySelector<HTMLButtonElement>(
+    const newSelectedYear = el.query<HTMLButtonElement>(
       elementSelectors.yearGrid
     );
 
@@ -162,7 +162,7 @@ describe(appYearGridName, () => {
     await el.updateComplete;
 
     const yearGridButtonAttrsList = Array.from(
-      el.shadowRoot?.querySelectorAll(elementSelectors.yearGridButton) ?? []
+      el.queryAll(elementSelectors.yearGridButton) ?? []
     ).map<[string, string, string, string]>(n => [
       n.getAttribute('data-year') ?? '',
       n.getAttribute('aria-label') ?? '',

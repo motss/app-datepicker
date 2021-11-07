@@ -4,7 +4,7 @@ import '../year-grid/app-year-grid.js';
 
 import type { IconButton } from '@material/mwc-icon-button';
 import type { TemplateResult } from 'lit';
-import { html, LitElement, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
@@ -26,6 +26,7 @@ import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.j
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { AppMonthCalendar } from '../month-calendar/app-month-calendar.js';
+import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { DatePickerProperties, Formatters, StartView, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
 import type { AppYearGrid } from '../year-grid/app-year-grid.js';
@@ -33,7 +34,7 @@ import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
 
-export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement)) implements DatePickerProperties {
+export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerProperties {
   public valueAsDate: Date;
   public valueAsNumber: number;
 
@@ -56,7 +57,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   @state() private _selectedDate: Date;
 
   #formatters: Formatters;
-  #shouldUpdateFocusInNavigationButtons = false;
+  #focusNavButtonWithKey = false;
   #today: Date;
 
   public static override styles = [
@@ -181,26 +182,31 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
   protected override async updated(
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
-    if (changedProperties.has('startView')) {
-      if (this.startView === 'calendar') {
-        if (changedProperties.has('_currentDate') && this.#shouldUpdateFocusInNavigationButtons) {
-          const currentDate = this._currentDate;
-
-          isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
-          isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
-
-          this.#shouldUpdateFocusInNavigationButtons = false;
-        }
-      }
-
-      if (
-        changedProperties.get('startView') === 'yearGrid' as StartView &&
-        this.startView === 'calendar'
-      ) {
-        (await this._yearDropdown)?.focus();
-      }
+    /**
+     * NOTE: Focus `.year-dropdown` when switching from year grid to calendar view.
+     */
+    if (
+      changedProperties.get('startView') === 'yearGrid' as StartView &&
+      this.startView === 'calendar'
+    ) {
+      (await this._yearDropdown)?.focus();
     }
 
+    /**
+     * NOTE: Focus new navigation button when navigating months with keyboard, e.g.
+     * next button will not show in Dec 2020 when `max=2020-12-31` so previous button should be
+     * focused instead.
+     */
+    if (this.startView === 'calendar') {
+      if (changedProperties.has('_currentDate') && this.#focusNavButtonWithKey) {
+        const currentDate = this._currentDate;
+
+        isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
+        isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
+
+        this.#focusNavButtonWithKey = false;
+      }
+    }
   }
 
   protected override render(): TemplateResult {
@@ -261,18 +267,19 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(LitElement
     );
 
     this._currentDate = newCurrentDate;
-    this.#shouldUpdateFocusInNavigationButtons = true;
+
+    /**
+     * `.detail=1` means mouse click in `@click` for all browsers except IE11.
+     */
+    this.#focusNavButtonWithKey = ev.detail === 0;
   }
 
   #queryAllFocusable = async () : Promise<HTMLElement[]> => {
     const isStartViewCalendar = this.startView === 'calendar';
     const focusable = [
-      ...Array.from(
-        this.shadowRoot?.querySelectorAll('mwc-icon-button') ?? []
-      ),
+      ...this.queryAll('mwc-icon-button'),
       (await (isStartViewCalendar ? this._monthCalendar : this._yearGrid))
-        ?.shadowRoot
-        ?.querySelector<HTMLElement>(`.${
+        ?.query(`.${
           isStartViewCalendar ? 'calendar-day' : 'year-grid-button'
         }[aria-selected="true"]`),
     ].filter(Boolean) as HTMLElement[];

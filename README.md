@@ -1,7 +1,7 @@
 <div align="center" style="text-align: center;">
   <h1 style="border-bottom: none;">app-datepicker</h1>
 
-  <p>Datepicker element built with lit-element and Material Design 2</p>
+  <p>Datepicker element built with lit and Material Design 2</p>
 </div>
 
 <hr />
@@ -11,7 +11,7 @@
 [![Follow me][follow-me-badge]][follow-me-url]
 
 [![Version][version-badge]][version-url]
-[![lit-element][lit-element-version-badge]][lit-element-url]
+[![lit][lit-version-badge]][lit-url]
 [![Node version][node-version-badge]][node-version-url]
 [![MIT License][mit-license-badge]][mit-license-url]
 
@@ -41,7 +41,7 @@ Today, `app-datepicker` has been completely rewritten to adapt to the best of bo
 The following are the list of tools used that makes it shine:
 
   1. [TypeScript]
-  2. [lit-element][lit-element-url]
+  2. [lit]
 
 ## Table of contents <!-- omit in toc -->
 
@@ -58,7 +58,7 @@ The following are the list of tools used that makes it shine:
 ## Pre-requisite
 
 - [ES2019] _(The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers.)_
-- [lit-element][lit-element-url] >= 2.2.1
+- [lit] >= 2.2.1
 - [OPTIONAL] [TypeScript] >= 3.8.3 _(TypeScript users only)_
 
 ## Installation
@@ -112,9 +112,9 @@ The following snippet shows a simple script used in the demo to load polyfills v
 ```ts
 /**
  * Say you've already installed the element via NPM, simply import the package to your application.
- * Here I'm using `lit-element` for developing my application.
+ * Here I'm using `lit` for developing my application.
  */
-import { css, customElement, html, LitElement } from 'lit-element';
+import { css, customElement, html, LitElement } from 'lit';
 import 'app-datepicker';
 
 @customElement(MyApp.is)
@@ -248,7 +248,8 @@ Meantime, feel free to check the older version out at:
 [Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker.html
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[lit-element-url]: https://github.com/Polymer/lit-element?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[lit]: https://github.com/lit/lit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[lit-url]: https://github.com/lit/lit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
@@ -282,7 +283,7 @@ Meantime, feel free to check the older version out at:
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/latest?icon=npm
-[lit-element-version-badge]: https://flat.badgen.net/npm/v/lit-element/latest?icon=npm&label=lit-element
+[lit-version-badge]: https://flat.badgen.net/npm/v/lit/latest?icon=npm&label=lit
 [node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 

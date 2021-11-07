@@ -1,7 +1,6 @@
-import type { LitElement } from 'lit';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import type { Constructor, StartView } from '../typings.js';
+import type { Constructor, LitConstructor, StartView } from '../typings.js';
 
 export interface DatePickerMinMaxProperties {
   max?: string;
@@ -11,7 +10,6 @@ export interface DatePickerMinMaxProperties {
 export interface DatePickerMixinProperties {
   disabledDates: string;
   disabledDays: string;
-  dragRatio: number;
   firstDayOfWeek: number;
   inline: boolean;
   landscape: boolean;
@@ -27,7 +25,13 @@ export interface DatePickerMixinProperties {
   yearDropdownLabel: string;
 }
 
+export interface ElementMixinProperties {
+  query<T extends HTMLElement>(selector: string): T | null;
+  queryAll<T extends HTMLElement>(selector: string): T[];
+  root: ShadowRoot;
+}
+
 export type MixinReturnType<
-  BaseConstructor extends Constructor<LitElement>,
+  BaseConstructor extends LitConstructor,
   Mixin
 > = BaseConstructor & Constructor<Mixin>;

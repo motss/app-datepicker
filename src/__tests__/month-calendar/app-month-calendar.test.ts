@@ -73,14 +73,14 @@ describe(appMonthCalendarName, () => {
     const [, testData, testShouldRender] = a;
 
     it(messageFormatter('renders %s(data=%j)', a), async () => {
-      const el = await fixture(
+      const el = await fixture<AppMonthCalendar>(
         html`<app-month-calendar .data=${testData}></app-month-calendar>`
       );
 
-      const monthCalendar = el.shadowRoot?.querySelector<HTMLDivElement>(
+      const monthCalendar = el.query<HTMLDivElement>(
         elementSelectors.monthCalendar
       );
-      const calendarTable = el.shadowRoot?.querySelector<HTMLTableElement>(
+      const calendarTable = el.query<HTMLTableElement>(
         elementSelectors.calendarTable
       );
 
@@ -109,7 +109,7 @@ describe(appMonthCalendarName, () => {
     );
 
     const expected = new Date('2020-03-01');
-    const tabbableCalendarDay = el.shadowRoot?.querySelector<HTMLTableCellElement>(
+    const tabbableCalendarDay = el.query<HTMLTableCellElement>(
       `${elementSelectors.tabbableCalendarDay}[aria-label="${formatters.fullDateFormat(expected)}"]`
     );
 
@@ -151,7 +151,7 @@ describe(appMonthCalendarName, () => {
         }}></app-month-calendar>`
       );
 
-      const element = el.shadowRoot?.querySelector<HTMLDivElement>(
+      const element = el.query<HTMLDivElement>(
         testElementSelector
       );
 
@@ -210,7 +210,7 @@ describe(appMonthCalendarName, () => {
           });
         });
 
-        const selectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const selectedDate = el.query<HTMLTableCellElement>(
           `${elementSelectors.calendarDay}[aria-label="${
             formatters.fullDateFormat(testSelectedDate)
           }"]`
@@ -233,7 +233,7 @@ describe(appMonthCalendarName, () => {
         await el.updateComplete;
         const dateUpdatedEvent = await dateUpdatedEventTask;
 
-        const newSelectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const newSelectedDate = el.query<HTMLTableCellElement>(
           elementSelectors.selectedCalendarDay
         );
 
@@ -251,7 +251,7 @@ describe(appMonthCalendarName, () => {
         };
 
         expect(dateUpdatedEvent).deep.equal(expectedDateUpdatedEvent);
-        expect(el.shadowRoot?.activeElement?.isEqualNode(newSelectedDate ?? null));
+        expect(el.root.activeElement?.isEqualNode(newSelectedDate ?? null));
       }
     );
   });
@@ -297,7 +297,7 @@ describe(appMonthCalendarName, () => {
           }}></app-month-calendar>`
         );
 
-        const newSelectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const newSelectedDate = el.query<HTMLTableCellElement>(
           testElementSelector
         );
 
@@ -306,7 +306,7 @@ describe(appMonthCalendarName, () => {
 
         await el.updateComplete;
 
-        const selectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
+        const selectedDate = el.query<HTMLTableCellElement>(
           elementSelectors.selectedCalendarDay
         );
 
@@ -317,52 +317,5 @@ describe(appMonthCalendarName, () => {
       }
     );
   });
-
-  // type A5 = [string, 'click' | 'keydown'];
-  // const cases5 = [
-  //   ['focuses', 'click'],
-  // ];
-  // cases5.forEach(a => {
-  //   const [testPartialData, testElementSelector] = a;
-  //   it(
-  //     messageFormatter('%s new date (eventType=%s)', a),
-  //     async () => {
-  //       const testCalendar = calendar({
-  //         ...calendarInit,
-  //         ...(
-  //           testPartialData.disabledDatesSet && {
-  //             disabledDates: [...testPartialData.disabledDatesSet].map(n => new Date(n)),
-  //           }
-  //         ),
-  //       });
-  //       const el = await fixture<AppMonthCalendar>(
-  //         html`<app-month-calendar .data=${{
-  //           ...data,
-  //           ...testPartialData,
-  //           calendar: testCalendar.calendar,
-  //           disabledDatesSet: testCalendar.disabledDatesSet,
-  //         }}></app-month-calendar>`
-  //       );
-
-  //       const newSelectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
-  //         testElementSelector
-  //       );
-
-  //       newSelectedDate?.focus();
-  //       newSelectedDate?.click();
-
-  //       await el.updateComplete;
-
-  //       const selectedDate = el.shadowRoot?.querySelector<HTMLTableCellElement>(
-  //         elementSelectors.selectedCalendarDay
-  //       );
-
-  //       expect(selectedDate).exist;
-  //       expect(selectedDate?.getAttribute('aria-label')).equal(
-  //         formatters.fullDateFormat(data.date)
-  //       );
-  //     }
-  //   );
-  // });
 
 });
