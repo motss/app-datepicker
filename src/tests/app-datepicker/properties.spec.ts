@@ -35,7 +35,7 @@ describe('properties', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<Datepicker>(a)!;
+      const el = document.body.querySelector(a) as Datepicker;
 
       document.body.removeChild(el);
 
@@ -50,7 +50,7 @@ describe('properties', () => {
       `./src/tests/snapshots/${DATEPICKER_NAME}/properties-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<Datepicker>(a)!;
+      const el = document.body.querySelector(a) as Datepicker;
 
       el.min = '2020-01-15';
       el.value = '2020-01-17';
@@ -73,7 +73,7 @@ describe('properties', () => {
       disabledDateContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
       n.min = '2020-01-15';
@@ -81,10 +81,10 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const disabledDates = Array.from(root.querySelectorAll<HTMLTableCellElement>(b));
+      const disabledDates = Array.from(root.querySelectorAll(b)) as HTMLTableCellElement[];
       const lastDisableDate = disabledDates[disabledDates.length - 1];
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+      const focusedDate = root.querySelector(c) as HTMLTableCellElement;
 
       // Chrome requires more time to render
       await n.updateComplete;
@@ -122,7 +122,7 @@ describe('properties', () => {
       disabledDateContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
       n.min = '2000-01-01';
@@ -131,9 +131,9 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const disabledDates = Array.from(root.querySelectorAll<HTMLTableCellElement>(b));
+      const disabledDates = Array.from(root.querySelectorAll(b)) as HTMLTableCellElement[];
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+      const focusedDate = root.querySelector(c) as HTMLTableCellElement;
 
       // Chrome requires more time to render
       await n.updateComplete;
@@ -169,7 +169,7 @@ describe('properties', () => {
       prop,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.min = '2000-01-01';
       n.max = '2020-12-31';
@@ -177,7 +177,7 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -203,13 +203,13 @@ describe('properties', () => {
       attr,
       hasYearListView,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.startView = 'yearList';
 
       await n.updateComplete;
 
-      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const yearListView = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done([
         n.startView,
@@ -231,7 +231,7 @@ describe('properties', () => {
       firstWeekdayLabelContent,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
       n.min = '2000-01-01';
@@ -240,8 +240,8 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const firstWeekdayLabel = root.querySelector<HTMLTableHeaderCellElement>(b)!;
-      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+      const firstWeekdayLabel = root.querySelector(b) as HTMLTableCellElement;
+      const focusedDate = root.querySelector(c) as HTMLTableCellElement;
 
       done([
         n.firstDayOfWeek,
@@ -277,7 +277,7 @@ describe('properties', () => {
       weekNumberLabelContent,
       weekNumbersContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
       n.min = '2000-01-01';
@@ -286,9 +286,9 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const weekNumberLabel = root.querySelector<HTMLTableHeaderCellElement>(b)!;
+      const weekNumberLabel = root.querySelector(b) as HTMLTableCellElement;
       const weekNumbers = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(c), o => o.outerHTML);
+        root.querySelectorAll(c), o => o.outerHTML);
 
       done([
         n.showWeekNumber,
@@ -328,7 +328,7 @@ describe('properties', () => {
       attr,
       weekNumbersContents,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -338,7 +338,7 @@ describe('properties', () => {
       await n.updateComplete;
 
       const weekNumbers = Array.from(
-        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(b), o => o.outerHTML);
+        n.shadowRoot!.querySelectorAll(b), o => o.outerHTML);
 
       done([
         n.weekNumberType,
@@ -369,7 +369,7 @@ describe('properties', () => {
       attr,
       cssDisplay,
     ]: A = await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.landscape = true;
 
@@ -378,7 +378,7 @@ describe('properties', () => {
       done([
         n.landscape,
         n.getAttribute('landscape'),
-        getComputedStyle(n).display,
+        getComputedStyle(n as unknown as Element).display,
       ] as A);
     }, DATEPICKER_NAME);
 
@@ -395,7 +395,7 @@ describe('properties', () => {
       focusedDateContent,
       weekdayLabelsContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
       n.min = '2000-01-01';
@@ -404,9 +404,9 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = root.querySelector(b) as HTMLTableCellElement;
       const weekdayLabels = Array.from(
-        root.querySelectorAll<HTMLTableHeaderCellElement>(c), o => o.outerHTML);
+        root.querySelectorAll(c), o => o.outerHTML);
 
       done([
         n.locale,
@@ -447,7 +447,7 @@ describe('properties', () => {
       prop,
       disabledDatesContents,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -456,7 +456,7 @@ describe('properties', () => {
       await n.updateComplete;
 
       const disabledDates = Array.from(
-        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(b), o => o.outerHTML);
+        n.shadowRoot!.querySelectorAll(b), o => o.outerHTML);
 
       done([
         n.disabledDays,
@@ -501,7 +501,7 @@ describe('properties', () => {
       prop,
       disabledDatesContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -510,7 +510,7 @@ describe('properties', () => {
       await n.updateComplete;
 
       const disabledDates = Array.from(
-        n.shadowRoot!.querySelectorAll<HTMLTableCellElement>(c), o => o.outerHTML);
+        n.shadowRoot!.querySelectorAll(c), o => o.outerHTML);
 
       done([
         n.disabledDates,
@@ -534,19 +534,19 @@ describe('properties', () => {
   });
 
   it(`renders with defined 'inline'`, async () => {
-    type A = [boolean, null];
+    type A = [boolean, HTMLElement | null];
 
     const [
       prop,
       noDatepickerHeader,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.inline = true;
 
       await n.updateComplete;
 
-      const datepickerHeader = n.shadowRoot!.querySelector<HTMLDivElement>(b);
+      const datepickerHeader = n.shadowRoot!.querySelector(b) as HTMLDivElement | null;
 
       done([
         n.inline,
@@ -563,7 +563,7 @@ describe('properties', () => {
 
     const dragRatio = .5;
     const prop: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.dragRatio = b;
 
@@ -582,7 +582,7 @@ describe('properties', () => {
       prop,
       weekNumberLabelContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.min = '2000-01-01';
       n.value = '2020-01-15';
@@ -591,7 +591,7 @@ describe('properties', () => {
 
       await n.updateComplete;
 
-      const weekNumberLabel = n.shadowRoot!.querySelector<HTMLTableHeaderCellElement>(b)!;
+      const weekNumberLabel = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.weekLabel,
@@ -628,7 +628,7 @@ describe('properties', () => {
         focusedDateContent,
         disabledDatesContent,
       ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
         const root = n.shadowRoot!;
 
         n.min = '2000-01-01';
@@ -639,9 +639,9 @@ describe('properties', () => {
 
         await n.updateComplete;
 
-        const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+        const focusedDate = root.querySelector(c) as HTMLTableCellElement;
         const disabledDates = Array.from(
-          root.querySelectorAll<HTMLTableCellElement>(d), o => o.outerHTML);
+          root.querySelectorAll(d), o => o.outerHTML);
 
         done([
           n.firstDayOfWeek,

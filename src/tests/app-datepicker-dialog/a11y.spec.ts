@@ -49,7 +49,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::a11y`, () => {
 
   afterEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<DatepickerDialog>(a)!;
+      const el = document.body.querySelector(a) as DatepickerDialog;
 
       if (el) document.body.removeChild(el);
 
@@ -73,7 +73,9 @@ describe(`${DATEPICKER_DIALOG_NAME}::a11y`, () => {
           await (window as any).axeReport(el);
 
           done({ type: 'success' });
-        } catch (e) {
+        } catch (error) {
+          const e = error as Error;
+
           done({
             type: 'error',
             name: e.name,

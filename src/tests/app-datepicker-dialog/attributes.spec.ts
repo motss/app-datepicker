@@ -37,7 +37,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<DatepickerDialog>(a)!;
+      const el = document.body.querySelector(a) as DatepickerDialog;
 
       if (el) document.body.removeChild(el);
 
@@ -52,7 +52,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       `./src/tests/snapshots/${DATEPICKER_DIALOG_NAME}/attributes-0-${browserName}.png`);
 
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<DatepickerDialog>(a)!;
+      const el = document.body.querySelector(a) as DatepickerDialog;
 
       el.setAttribute('min', '2020-01-15');
       el.setAttribute('value', '2020-01-17');
@@ -77,8 +77,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     ];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       done([
         n.getAttribute('firstdayofweek'),
@@ -109,8 +109,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedMin = '2000-01-01';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('min', c);
 
@@ -127,8 +127,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedMax = '2020-02-27';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('max', c);
 
@@ -145,8 +145,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedValue = '2020-02-20';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('value', c);
 
@@ -169,8 +169,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedStartview: StartView = 'calendar';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('startview', c);
 
@@ -187,8 +187,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedFirstdayofweek = '1';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('firstdayofweek', c);
 
@@ -204,8 +204,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('showweeknumber', '');
 
@@ -222,8 +222,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedWeeknumbertype: WeekNumberType = 'first-4-day-week';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('weeknumbertype', c);
 
@@ -239,8 +239,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     type A = [boolean, boolean];
 
     const values: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('landscape', '');
 
@@ -257,8 +257,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedLocale: string = 'ja-JP';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('locale', c);
 
@@ -281,8 +281,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedDisableddays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('disableddays', c);
 
@@ -310,13 +310,13 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedDisableddates: string = '2020-02-02,2020-02-15';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
 
       n.setAttribute('disableddates', c);
 
       await n.updateComplete;
 
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       done([
         n.getAttribute('disableddates'),
@@ -344,8 +344,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       prop2,
       attr,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('dragratio', `${c}`);
 
@@ -367,8 +367,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
     const expectedWeeklabel: string = '周数';
     const values: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
       const initialLabel = n.weekLabel;
 
       n.setAttribute('weeklabel', c);
@@ -403,7 +403,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       initialClearLabel,
       ...others
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
       const root = n.shadowRoot!;
       const initialLabel = n.clearLabel;
 
@@ -411,7 +411,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
       await n.updateComplete;
 
-      const clearButton = root.querySelector<HTMLElement>(b);
+      const clearButton = root.querySelector(b) as HTMLElement;
 
       done([
         initialLabel,
@@ -433,7 +433,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       initialDismissLabel,
       ...others
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
       const root = n.shadowRoot!;
       const initialLabel = n.dismissLabel;
 
@@ -441,7 +441,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
       await n.updateComplete;
 
-      const clearButton = root.querySelector<HTMLElement>(b);
+      const clearButton = root.querySelector(b) as HTMLElement;
 
       done([
         initialLabel,
@@ -463,7 +463,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       initialConfirmLabel,
       ...others
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
       const root = n.shadowRoot!;
       const initialLabel = n.confirmLabel;
 
@@ -471,7 +471,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
       await n.updateComplete;
 
-      const clearButton = root.querySelector<HTMLElement>(b);
+      const clearButton = root.querySelector(b) as HTMLElement;
 
       done([
         initialLabel,
@@ -501,7 +501,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
         return $n;
       };
 
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
       const initialNoFocusTrap = n.noFocusTrap;
 
       n.min = '2000-01-01';
@@ -510,7 +510,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
       await n.updateComplete;
 
-      const confirmButton = n.querySelector<HTMLElement>(b);
+      const confirmButton = n.querySelector(b) as HTMLElement;
 
       confirmButton?.focus();
 
@@ -552,9 +552,9 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
 
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
       const root = n.shadowRoot!;
-      const n2 = root.querySelector<Datepicker>(b)!;
+      const n2 = root.querySelector(b) as Datepicker;
       const initialAlwaysResetValue = n.alwaysResetValue;
 
       n.min = '2000-01-01';
@@ -569,7 +569,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
       await n.open();
       await n.updateComplete;
 
-      const focusedDate = n2.shadowRoot!.querySelector<HTMLTableCellElement>(c);
+      const focusedDate = n2.shadowRoot!.querySelector(c) as HTMLTableCellElement;
 
       done([
         initialAlwaysResetValue,
@@ -613,8 +613,8 @@ describe(`${DATEPICKER_DIALOG_NAME}::attributes`, () => {
     const expectedFirstdayofweek: string = '1';
     const expectedDisableddays: string = '3,5';
     const values: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<DatepickerDialog>(a)!;
-      const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+      const n = document.body.querySelector(a) as DatepickerDialog;
+      const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
       n.setAttribute('firstdayofweek', c);
       n.setAttribute('disableddays', d);

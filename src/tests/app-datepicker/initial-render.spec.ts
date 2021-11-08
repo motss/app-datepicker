@@ -35,7 +35,7 @@ describe('initial render', () => {
 
     afterEach(async () => {
       await browser.executeAsync((a, done) => {
-        const el = document.body.querySelector<Datepicker>(a)!;
+        const el = document.body.querySelector(a) as Datepicker;
 
         document.body.removeChild(el);
 
@@ -53,7 +53,7 @@ describe('initial render', () => {
 
     it(`renders initial content`, async () => {
       const prop: string = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
         done(n.locale);
       }, DATEPICKER_NAME);
@@ -68,13 +68,13 @@ describe('initial render', () => {
         calendarLabelContent,
         calendarDaysContents,
       ]: A = await browser.executeAsync(async (a, b, c, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
         const root = n.shadowRoot!;
 
-        const calendarLabel = root.querySelector<HTMLDivElement>(b)!;
+        const calendarLabel = root.querySelector(b) as HTMLDivElement;
         const calendarDays = Array.from(
-          root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
+          root.querySelectorAll(c), o => o.textContent);
 
         done([
           calendarLabel.outerHTML,
@@ -105,14 +105,14 @@ describe('initial render', () => {
         dateLabel,
         calendarDay,
       ]: A = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
         // Reset focused date
         n.value = '';
 
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+        const n2 = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
         /**
          * NOTE: Get the today's date from the browser instead of
@@ -144,9 +144,9 @@ describe('initial render', () => {
 
     it(`focuses date based on 'value'`, async () => {
       const focusedDateContent: string = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
-        const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+        const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
         done(focusedDate.outerHTML);
       }, DATEPICKER_NAME, toSelector('.day--focused'));
@@ -202,10 +202,10 @@ describe('initial render', () => {
 
     it(`renders initial content`, async () => {
       const yearListItemsContents: string[] = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
         const yearListItems = Array.from(
-          n.shadowRoot!.querySelectorAll<HTMLButtonElement>(b), o => o.textContent);
+          n.shadowRoot!.querySelectorAll(b), o => o.textContent);
 
         done(yearListItems);
       }, DATEPICKER_NAME, '.year-list-view__list-item');
@@ -218,9 +218,9 @@ describe('initial render', () => {
 
     it(`focuses this year`, async () => {
       const focusedYearContent: string = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
-        const focusedYear = n.shadowRoot!.querySelector<HTMLButtonElement>(b)!;
+        const focusedYear = n.shadowRoot!.querySelector(b) as HTMLButtonElement;
 
         done(focusedYear.outerHTML);
       }, DATEPICKER_NAME, '.year-list-view__list-item.year--selected');
@@ -273,7 +273,7 @@ describe('initial render', () => {
 
       for (const part of parts) {
         const result: A = await browser.executeAsync(async (a, [b, c], done) => {
-          const n = document.body.querySelector<Datepicker>(a)!;
+          const n = document.body.querySelector(a) as Datepicker;
 
           n.startView = c;
           await n.updateComplete;

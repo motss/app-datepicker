@@ -42,7 +42,7 @@ describe('edge cases', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<Datepicker>(a)!;
+      const el = document.body.querySelector(a) as Datepicker;
 
       document.body.removeChild(el);
 
@@ -54,9 +54,9 @@ describe('edge cases', () => {
     type A = [string, string];
 
     const getValues = () => browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const calendarLabel = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const calendarLabel = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done([
         n.value,
@@ -93,7 +93,7 @@ describe('edge cases', () => {
     prepareOptions?: PrepareOptions
   ): Promise<B> => {
     await browser.executeAsync(async (a, b: PrepareOptions, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       if (b) {
         const attrs = b.attrs ?? {};
@@ -124,9 +124,9 @@ describe('edge cases', () => {
     await browserKeys(key, altKey);
 
     const [prop, content]: B = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -284,7 +284,7 @@ describe('edge cases', () => {
         valueProp,
         focusedDateContent,
       ]: A = await browser.executeAsync(async (a, b, c, d, e, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
         n.min = b;
         n.max = c;
@@ -294,7 +294,7 @@ describe('edge cases', () => {
           /** Loop until all renders complete (Chrome needs this but not FF) */
         }
 
-        const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(e);
+        const focusedDate = n.shadowRoot!.querySelector(e) as HTMLTableCellElement;
 
         done([
           n.min,

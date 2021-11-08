@@ -6,16 +6,14 @@ interface ParamUpdatedChanged extends Omit<Datepicker, keyof LitElement> {
 
 import {
   css,
-  eventOptions,
   html,
   LitElement,
-  property,
-  query,
   TemplateResult,
-} from 'lit-element';
-import { cache } from 'lit-html/directives/cache.js';
-import { classMap } from 'lit-html/directives/class-map.js';
-import { repeat } from 'lit-html/directives/repeat.js';
+} from 'lit';
+import { eventOptions, property, query, queryAsync } from 'lit/decorators.js';
+import { cache } from 'lit/directives/cache.js';
+import { classMap } from 'lit/directives/class-map.js';
+import { repeat } from 'lit/directives/repeat.js';
 
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
@@ -26,7 +24,6 @@ import type {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   Formatters,
-  HTMLElementPart,
   MonthUpdateType,
   StartView,
 } from './custom_typings.js';
@@ -53,7 +50,7 @@ import type { TrackerHandlers } from './tracker.js';
 import { Tracker } from './tracker.js';
 
 export class Datepicker extends LitElement {
-  public static styles = [
+  public static override styles = [
     // tslint:disable:max-line-length
     datepickerVariables,
     resetButton,
@@ -438,7 +435,7 @@ export class Datepicker extends LitElement {
   public get min() {
     return this._hasMin ? toFormattedDateString(this._min!) : '';
   }
-  public set min(val: string) {
+  public set min(val: string | undefined) {
     const valDate = getResolvedDate(val);
     const isValidMin = isValidDate(val, valDate);
 
@@ -451,7 +448,7 @@ export class Datepicker extends LitElement {
   public get max() {
     return this._hasMax ? toFormattedDateString(this._max!) : '';
   }
-  public set max(val: string) {
+  public set max(val: string | undefined) {
     const valDate = getResolvedDate(val);
     const isValidMax = isValidDate(val, valDate);
 
@@ -492,14 +489,6 @@ export class Datepicker extends LitElement {
   @property({ type: Number })
   public dragRatio: number = .15;
 
-  public get datepickerBodyCalendarView() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.datepicker-body__calendar-view');
-  }
-
-  public get calendarsContainer() {
-    return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
-  }
-
   @property({ type: Date, attribute: false })
   private _selectedDate: Date;
 
@@ -517,6 +506,10 @@ export class Datepicker extends LitElement {
 
   @query('.year-list-view__list-item')
   private _yearViewListItem?: HTMLButtonElement;
+
+  @queryAsync('.calendars-container') public calendarsContainer!: Promise<HTMLDivElement>;
+
+  @queryAsync('.datepicker-body__calendar-view') public datepickerBodyCalendarView!: Promise<HTMLDivElement>;
 
   private _min: Date;
   private _max: Date;
@@ -555,7 +548,7 @@ export class Datepicker extends LitElement {
     this._formatters = allFormatters;
   }
 
-  public disconnectedCallback() {
+  public override disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this._tracker) {
@@ -564,7 +557,7 @@ export class Datepicker extends LitElement {
     }
   }
 
-  protected render() {
+  protected override render() {
     /**
      * NOTE: Update `_formatters` when `locale` changes.
      */
@@ -588,13 +581,13 @@ export class Datepicker extends LitElement {
     `;
   }
 
-  protected firstUpdated() {
+  protected override firstUpdated() {
     let firstFocusableElement: HTMLElement;
 
     if ('calendar' === this._startView) {
       firstFocusableElement = (
         this.inline ?
-          this.shadowRoot!.querySelector<HTMLButtonElement>('.btn__month-selector') :
+          this.shadowRoot!.querySelector('.btn__month-selector') as unknown as HTMLButtonElement:
           this._buttonSelectorYear
       )!;
     } else {
@@ -605,7 +598,7 @@ export class Datepicker extends LitElement {
       this, 'datepicker-first-updated', { firstFocusableElement, value: this.value });
   }
 
-  protected updated(changed: Map<keyof ParamUpdatedChanged, unknown>) {
+  protected override async updated(changed: Map<keyof ParamUpdatedChanged, unknown>) {
     const startView = this._startView;
 
     if (changed.has('min') || changed.has('max')) {
@@ -644,7 +637,7 @@ export class Datepicker extends LitElement {
       }
 
       if ('calendar' === startView && null == this._tracker) {
-        const calendarsContainer = this.calendarsContainer;
+        const calendarsContainer = await this.calendarsContainer;
 
         let $down = false;
         let $move = false;
@@ -741,7 +734,7 @@ export class Datepicker extends LitElement {
   }
 
   private _focusElement(selector: string) {
-    const focusedTarget = this.shadowRoot!.querySelector<HTMLElement>(selector);
+    const focusedTarget = this.shadowRoot!.querySelector(selector) as unknown as HTMLElement;
 
     if (focusedTarget) focusedTarget.focus();
   }
@@ -1191,10 +1184,6 @@ declare global {
   // #region HTML element type extensions
   interface HTMLButtonElement {
     year: number;
-  }
-
-  interface HTMLElement {
-    part: HTMLElementPart;
   }
 
   interface HTMLTableCellElement {

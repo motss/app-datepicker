@@ -49,7 +49,7 @@ describe('a11y', () => {
 
   afterEach(async () => {
     await browser.executeAsync(async (a, done) => {
-      const el = document.body.querySelector<Datepicker>(a)!;
+      const el = document.body.querySelector(a) as Datepicker;
 
       if (el) document.body.removeChild(el);
 
@@ -64,7 +64,7 @@ describe('a11y', () => {
     ].map<Promise<A11yReport>>(async (startView) => {
       const report = await browser.executeAsync(async (a, b, done) => {
         try {
-          const el = document.body.querySelector<Datepicker>(a)!;
+          const el = document.body.querySelector(a) as Datepicker;
 
           el.startView = b;
 
@@ -73,7 +73,9 @@ describe('a11y', () => {
           await (window as any).axeReport(el);
 
           done({ type: 'success' });
-        } catch (e) {
+        } catch (error) {
+          const e = error as Error;
+
           done({
             type: 'error',
             name: e.name,

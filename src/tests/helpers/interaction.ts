@@ -7,8 +7,8 @@ import { toSelector } from './to-selector.js';
 const browserKeys = (elementName: string) =>
 async (keyCode: number, altKey: boolean = false) => {
   return browser.executeAsync(async (a, b, c, d, done) => {
-    const n = document.body.querySelector<Datepicker>(a)!;
-    const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+    const n = document.body.querySelector(a) as Datepicker;
+    const n2 = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
     const opt: any = { keyCode: c, altKey: d };
     const ev = new CustomEvent('keyup', opt);
@@ -27,7 +27,7 @@ const clickElements = (elementName: string, isSafari: boolean) =>
 async (classes: string[], prepareOptions?: PrepareOptions) => {
   if (prepareOptions) {
     await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       const { props, attrs }: PrepareOptions = b;
 
@@ -63,7 +63,7 @@ async (classes: string[], prepareOptions?: PrepareOptions) => {
   for (const cls of classes) {
     if (isSafari) {
       await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
         const n2: HTMLElement = n.shadowRoot!.querySelector(b)!;
 
         if (n2 instanceof HTMLButtonElement || n2.tagName === 'MWC-BUTTON') {
@@ -92,7 +92,7 @@ async (classes: string[], prepareOptions?: PrepareOptions) => {
 const focusCalendarsContainer = (elementName: string) =>
 async (prepareOptions?: PrepareOptions): Promise<string> => {
   return await browser.executeAsync(async (a, b, c, done) => {
-    const a1 = document.body.querySelector<Datepicker>(a)!;
+    const a1 = document.body.querySelector(a) as Datepicker;
 
     if (c) {
       const { props, attrs }: PrepareOptions = c;
@@ -112,7 +112,7 @@ async (prepareOptions?: PrepareOptions): Promise<string> => {
 
     await a1.updateComplete;
 
-    const b1 = a1.shadowRoot!.querySelector<HTMLElement>(b)!;
+    const b1 = a1.shadowRoot!.querySelector(b) as HTMLElement;
 
     b1.focus();
 
@@ -328,10 +328,10 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
           };
         };
 
-        const a1 = document.body.querySelector<Datepicker>(a)!;
+        const a1 = document.body.querySelector(a) as Datepicker;
         const a2 = b == null ?
           a1 :
-          a1.shadowRoot!.querySelector<Datepicker>(b)!;
+          a1.shadowRoot!.querySelector(b) as Datepicker;
         const root = a2.shadowRoot!;
 
         if (f) {
@@ -353,7 +353,7 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
         if (b) await a2.updateComplete;
         await a1.updateComplete;
 
-        const b1 = root.querySelector<HTMLElement>(c)!;
+        const b1 = root.querySelector(c) as HTMLElement;
 
         // Setup drag point
         const a1Rect = a1.getBoundingClientRect();
@@ -384,9 +384,9 @@ const dragCalendarsContainer = (elementName: string, elementName2?: string) => {
         await transitionComplete;
         await a1.updateComplete;
 
-        done(root.querySelector<HTMLDivElement>(d)?.textContent ?? '');
+        done(root.querySelector(d)?.textContent ?? '');
       } catch (err) {
-        done(err.stack);
+        done((err as Error).stack);
       }
     },
     elementName,

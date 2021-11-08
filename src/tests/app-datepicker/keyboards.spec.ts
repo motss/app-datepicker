@@ -26,11 +26,11 @@ describe('keyboards', () => {
     await browserKeys(key, altKey);
 
     const [prop, content]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       await n.updateComplete;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b);
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -65,7 +65,7 @@ describe('keyboards', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<Datepicker>(a);
+      const el = document.body.querySelector(a) as Datepicker;
 
       if (el) document.body.removeChild(el);
 
@@ -589,9 +589,9 @@ describe('keyboards', () => {
     const focusedDateSelector = toSelector('.day--focused');
     const getFocusedDate = (s: string): Promise<string> =>
       browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<Datepicker>(a)!;
+        const n = document.body.querySelector(a) as Datepicker;
 
-        done(n.shadowRoot?.querySelector<HTMLTableCellElement>(b)?.outerHTML ?? '');
+        done(n.shadowRoot?.querySelector(b)?.outerHTML ?? '');
       }, DATEPICKER_NAME, s);
 
     const initialFocusedDateContent = await getFocusedDate(focusedDateSelector);
