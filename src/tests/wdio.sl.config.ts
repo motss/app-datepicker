@@ -54,11 +54,11 @@ export const config: WdioConfig = {
         screenResolution: '1024x768',
       },
     },
-    {
-      ...baseCapability,
-      browserName: 'microsoftedge',
-      browserVersion: '18',
-    },
+    // {
+    //   ...baseCapability,
+    //   browserName: 'microsoftedge',
+    //   browserVersion: '18',
+    // },
 
     // {
     //   ...baseCapability,
