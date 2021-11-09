@@ -274,7 +274,7 @@ export class DatepickerDialog extends LitElement {
   }
 
   protected override async getUpdateComplete() {
-    await this._datepicker!.updateComplete;
+    await this._datepicker?.updateComplete;
 
     super.requestUpdate();
 
@@ -317,7 +317,7 @@ export class DatepickerDialog extends LitElement {
     return `0${val}`.slice(-2);
   }
 
-  private async _setToday() {
+  private _setToday() {
     const today = getResolvedDate();
     const fy = today.getFullYear();
     const m = today.getMonth();
@@ -326,7 +326,7 @@ export class DatepickerDialog extends LitElement {
     this._datepicker!.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
   }
 
-  private async _updateValue() {
+  private _updateValue() {
     this.value = this._datepicker!.value;
   }
 
