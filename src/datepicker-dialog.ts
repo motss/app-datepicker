@@ -274,11 +274,11 @@ export class DatepickerDialog extends LitElement {
   }
 
   protected override async getUpdateComplete() {
+    const result = await super.getUpdateComplete()
+
     await this._datepicker?.updateComplete;
 
-    super.requestUpdate();
-
-    return await this.updateComplete;
+    return result;
   }
 
   protected override render() {
