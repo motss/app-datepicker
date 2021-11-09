@@ -60,5 +60,7 @@ export function sanitizeText(content: string, options?: SanitizeTextOptions): st
     .replace(/(\s?style-scope app-datepicker\s?)/gi, '') // ShadyDOM specific classes
     .replace(/(\s?scope="row"|scope="row"\s?)/g, '') // scope="row" attribute in all week labels
     .replace(/(\s?class=""|class=""\s?)/g, '') // empty `class` attribute set by ShadyDOM
-    .replace(/(\s?style=""|style=""\s?)/g, ''); // Unknown `style` set by Firefox
+    .replace(/(\s?style=""|style=""\s?)/g, '') // Unknown `style` set by Firefox
+    .replace(/class="(.+?)"/gi, (_, s) => `class="${s.trim()}"`) // lit classMap
+    ;
 }
