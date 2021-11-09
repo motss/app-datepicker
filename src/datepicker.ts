@@ -10,7 +10,7 @@ import {
   LitElement,
   TemplateResult,
 } from 'lit';
-import { eventOptions, property, query, queryAsync } from 'lit/decorators.js';
+import { eventOptions, property, query } from 'lit/decorators.js';
 import { cache } from 'lit/directives/cache.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -507,11 +507,6 @@ export class Datepicker extends LitElement {
   @query('.year-list-view__list-item')
   private _yearViewListItem?: HTMLButtonElement;
 
-  @queryAsync('.calendars-container') public calendarsContainer!: Promise<HTMLDivElement>;
-
-  @queryAsync('.datepicker-body__calendar-view')
-  public datepickerBodyCalendarView!: Promise<HTMLDivElement>;
-
   private _min: Date;
   private _max: Date;
   private _hasMin: boolean = false;
@@ -638,7 +633,7 @@ export class Datepicker extends LitElement {
       }
 
       if ('calendar' === startView && null == this._tracker) {
-        const calendarsContainer = await this.calendarsContainer;
+        const calendarsContainer = this.calendarsContainer;
 
         let $down = false;
         let $move = false;
@@ -1177,6 +1172,10 @@ export class Datepicker extends LitElement {
     const dateBM = dateB.getUTCMonth();
 
     return dateAFy === dateBFY && dateAM === dateBM;
+  }
+
+  public get calendarsContainer() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.calendars-container');
   }
 
 }

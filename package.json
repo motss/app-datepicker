@@ -92,7 +92,7 @@
     "@wdio/sauce-service": "^5.22.1",
     "@wdio/selenium-standalone-service": "^5.16.10",
     "@wdio/spec-reporter": "^5.23.0",
-    "axe-core": "^4.3.5",
+    "axe-core": "^2.6.1",
     "env-cmd": "^10.1.0",
     "es-dev-server": "^2.1.0",
     "husky": "^4.3.0",

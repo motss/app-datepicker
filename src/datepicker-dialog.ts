@@ -5,7 +5,7 @@ export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpd
 
 import '@material/mwc-button/mwc-button.js';
 import { css, html, LitElement } from 'lit';
-import { property, query, queryAsync } from 'lit/decorators.js';
+import { property, query } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import { datepickerVariables } from './common-styles.js';
@@ -175,10 +175,6 @@ export class DatepickerDialog extends LitElement {
 
   @query('mwc-button[dialog-confirm]') private _dialogConfirm?: HTMLElement;
 
-  @queryAsync('.datepicker') private _datepicker!: Promise<Datepicker>;
-
-  @queryAsync('.scrim') private _scrim!: Promise<HTMLDivElement>;
-
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
   private _focusable?: HTMLElement;
   private _focusTrap?: FocusTrap;
@@ -192,7 +188,7 @@ export class DatepickerDialog extends LitElement {
     this.removeAttribute('aria-hidden');
     this.style.display = 'block';
     this._opened = true;
-    const datepicker = await this._datepicker;
+    const datepicker = this._datepicker;
 
     if (this.alwaysResetValue && datepicker) datepicker.value = this.value;
 
@@ -200,9 +196,8 @@ export class DatepickerDialog extends LitElement {
     await this.updateComplete;
 
     const contentContainer = this._contentContainer!;
-    const scrim = await this._scrim;
 
-    scrim.style.visibility = contentContainer.style.visibility = 'visible';
+    this._scrim!.style.visibility = contentContainer.style.visibility = 'visible';
 
     await animateElement(contentContainer, {
       hasNativeWebAnimation: this._hasNativeWebAnimation,
@@ -234,10 +229,8 @@ export class DatepickerDialog extends LitElement {
 
     if (!this._opened) return;
 
-    const scrim = await this._scrim;
-
     this._opened = false;
-    scrim.style.visibility = '';
+    this._scrim!.style.visibility = '';
 
     const contentContainer = this._contentContainer!;
 
@@ -261,11 +254,11 @@ export class DatepickerDialog extends LitElement {
       this, 'datepicker-dialog-closed', { opened: false, value: this.value });
   }
 
-  protected override shouldUpdate(): boolean {
+  protected override shouldUpdate() {
     return !this.hasAttribute('aria-hidden');
   }
 
-  protected override firstUpdated(): void {
+  protected override firstUpdated() {
     this.setAttribute('role', 'dialog');
     this.setAttribute('aria-label', 'datepicker');
     this.setAttribute('aria-modal', 'true');
@@ -280,16 +273,8 @@ export class DatepickerDialog extends LitElement {
     });
   }
 
-  // tslint:disable-next-line: function-name
-  // protected _getUpdateComplete() {
-  //   const datepicker = this._datepicker;
-
-  //   return (
-  //     datepicker ? datepicker.updateComplete : Promise.resolve()
-  //   ).then(() => super.performUpdate());
-  // }
   protected override async getUpdateComplete() {
-    await (await this._datepicker).updateComplete;
+    await this._datepicker!.updateComplete;
 
     super.requestUpdate();
 
@@ -337,13 +322,12 @@ export class DatepickerDialog extends LitElement {
     const fy = today.getFullYear();
     const m = today.getMonth();
     const d = today.getDate();
-    const datepicker = await this._datepicker;
 
-    datepicker.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
+    this._datepicker!.value = [`${fy}`].concat([1 + m, d].map(this._padStart)).join('-');
   }
 
   private async _updateValue() {
-    this.value = (await this._datepicker).value;
+    this.value = this._datepicker!.value;
   }
 
   private _update() {
@@ -363,6 +347,14 @@ export class DatepickerDialog extends LitElement {
   private _setFocusable(ev: CustomEvent<DatepickerFirstUpdated>) {
     this._focusable = ev.detail && ev.detail.firstFocusableElement;
     this._updateValue();
+  }
+
+  private get _datepicker() {
+    return this.shadowRoot!.querySelector<Datepicker>('.datepicker');
+  }
+
+  private get _scrim() {
+    return this.shadowRoot!.querySelector<HTMLDivElement>('.scrim');
   }
 
 }
