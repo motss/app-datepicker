@@ -4,7 +4,8 @@ export interface DatepickerDialogClosed extends Pick<DatepickerDialog, 'value'> 
 export type DatepickerDialogOpened = DatepickerDialogClosed & DatepickerFirstUpdated;
 
 import '@material/mwc-button/mwc-button.js';
-import { css, html, LitElement, property, query } from 'lit-element';
+import { css, html, LitElement } from 'lit';
+import { property, query } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import { datepickerVariables } from './common-styles.js';
@@ -12,7 +13,6 @@ import type {
   DatepickerFirstUpdated,
   DatepickerValueUpdated,
   FocusTrap,
-  HTMLElementPart,
   StartView,
 } from './custom_typings.js';
 import { KEY_CODES_MAP } from './custom_typings.js';
@@ -25,100 +25,97 @@ import { setFocusTrap } from './helpers/set-focus-trap.js';
 import { toFormattedDateString } from './helpers/to-formatted-date-string.js';
 
 export class DatepickerDialog extends LitElement {
-  static get styles() {
-    // tslint:disable: max-line-length
-    return [
-      datepickerVariables,
-      css`
-      :host {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+  public static override styles = [
+    datepickerVariables,
+    css`
+    :host {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
 
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: var(--app-datepicker-dialog-z-index, 24);
-        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: var(--app-datepicker-dialog-z-index, 24);
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+
+    .scrim,
+    .content-container {
+      pointer-events: auto;
+    }
+
+    .scrim {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--app-datepicker-dialog-scrim-bg-color, rgba(0, 0, 0, .55));
+      visibility: hidden;
+      z-index: 22;
+    }
+
+    .content-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      max-width: 100%;
+      max-height: 100%;
+      background-color: var(--app-datepicker-bg-color, #fff);
+      transform: translate3d(-50%, -50%, 0);
+      border-radius: var(--app-datepicker-dialog-border-radius, 8px);
+      will-change: transform, opacity;
+      overflow: hidden;
+      visibility: hidden;
+      opacity: 0;
+      z-index: 23;
+      box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+                  0 9px 46px 8px rgba(0, 0, 0, 0.12),
+                  0 11px 15px -7px rgba(0, 0, 0, 0.4);
+    }
+
+    .datepicker {
+      --app-datepicker-border-top-left-radius: 8px;
+      --app-datepicker-border-top-right-radius: 8px;
+    }
+
+    .actions-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      margin: 0;
+      padding: 12px;
+      background-color: inherit;
+      --mdc-theme-primary: var(--app-datepicker-accent-color, #1a73e8);
+    }
+
+    mwc-button[dialog-confirm] {
+      margin: 0 0 0 8px;
+    }
+
+    .clear {
+      margin: 0 auto 0 0;
+    }
+
+    /**
+      * NOTE: IE11-only fix via CSS hack.
+      * Visit https://bit.ly/2DEUNZu|CSS for more relevant browsers' hacks.
+      */
+    @media screen and (-ms-high-contrast: none) {
+      mwc-button[dialog-dismiss] {
+        min-width: 10ch;
       }
-
-      .scrim,
-      .content-container {
-        pointer-events: auto;
-      }
-
-      .scrim {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--app-datepicker-dialog-scrim-bg-color, rgba(0, 0, 0, .55));
-        visibility: hidden;
-        z-index: 22;
-      }
-
-      .content-container {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        max-width: 100%;
-        max-height: 100%;
-        background-color: var(--app-datepicker-bg-color, #fff);
-        transform: translate3d(-50%, -50%, 0);
-        border-radius: var(--app-datepicker-dialog-border-radius, 8px);
-        will-change: transform, opacity;
-        overflow: hidden;
-        visibility: hidden;
-        opacity: 0;
-        z-index: 23;
-        box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
-                    0 9px 46px 8px rgba(0, 0, 0, 0.12),
-                    0 11px 15px -7px rgba(0, 0, 0, 0.4);
-      }
-
-      .datepicker {
-        --app-datepicker-border-top-left-radius: 8px;
-        --app-datepicker-border-top-right-radius: 8px;
-      }
-
-      .actions-container {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-
-        margin: 0;
-        padding: 12px;
-        background-color: inherit;
-        --mdc-theme-primary: var(--app-datepicker-accent-color, #1a73e8);
-      }
-
-      mwc-button[dialog-confirm] {
-        margin: 0 0 0 8px;
-      }
-
-      .clear {
-        margin: 0 auto 0 0;
-      }
-
-      /**
-       * NOTE: IE11-only fix via CSS hack.
-       * Visit https://bit.ly/2DEUNZu|CSS for more relevant browsers' hacks.
-       */
-      @media screen and (-ms-high-contrast: none) {
-        mwc-button[dialog-dismiss] {
-          min-width: 10ch;
-        }
-      }
-      `,
-    ];
-    // tslint:enable: max-line-length
-  }
+    }
+    `,
+  ];
+  // tslint:enable: max-line-length
 
   @property({ type: Number, reflect: true })
   public firstDayOfWeek: number = 0;
@@ -151,7 +148,7 @@ export class DatepickerDialog extends LitElement {
   public disabledDays: string = '';
 
   @property({ type: String })
-  public disabledDates?: string;
+  public disabledDates: string = '';
 
   @property({ type: String })
   public weekLabel: string = 'Wk';
@@ -174,18 +171,16 @@ export class DatepickerDialog extends LitElement {
   @property({ type: Boolean })
   public alwaysResetValue: boolean = false;
 
-  @query('.content-container')
-  private _contentContainer?: HTMLDivElement;
+  @query('.content-container') private _contentContainer?: HTMLDivElement;
 
-  @query('mwc-button[dialog-confirm]')
-  private _dialogConfirm?: HTMLElement;
+  @query('mwc-button[dialog-confirm]') private _dialogConfirm?: HTMLElement;
 
   private _hasNativeWebAnimation: boolean = 'animate' in HTMLElement.prototype;
   private _focusable?: HTMLElement;
   private _focusTrap?: FocusTrap;
   private _opened: boolean = false;
 
-  public async open(): Promise<void> {
+  public async open() {
     await this.updateComplete;
 
     if (this._opened) return;
@@ -193,10 +188,12 @@ export class DatepickerDialog extends LitElement {
     this.removeAttribute('aria-hidden');
     this.style.display = 'block';
     this._opened = true;
+    const datepicker = this._datepicker;
 
-    if (this.alwaysResetValue && this._datepicker) this._datepicker.value = this.value;
+    if (this.alwaysResetValue && datepicker) datepicker.value = this.value;
 
-    await this.requestUpdate();
+    this.requestUpdate();
+    await this.updateComplete;
 
     const contentContainer = this._contentContainer!;
 
@@ -227,7 +224,7 @@ export class DatepickerDialog extends LitElement {
     });
   }
 
-  public async close(): Promise<void> {
+  public async close() {
     await this.updateComplete;
 
     if (!this._opened) return;
@@ -257,11 +254,11 @@ export class DatepickerDialog extends LitElement {
       this, 'datepicker-dialog-closed', { opened: false, value: this.value });
   }
 
-  protected shouldUpdate() {
+  protected override shouldUpdate() {
     return !this.hasAttribute('aria-hidden');
   }
 
-  protected firstUpdated() {
+  protected override firstUpdated() {
     this.setAttribute('role', 'dialog');
     this.setAttribute('aria-label', 'datepicker');
     this.setAttribute('aria-modal', 'true');
@@ -276,16 +273,15 @@ export class DatepickerDialog extends LitElement {
     });
   }
 
-  // tslint:disable-next-line: function-name
-  protected _getUpdateComplete() {
-    const datepicker = this._datepicker;
+  protected override async getUpdateComplete() {
+    const result = await super.getUpdateComplete();
 
-    return (
-      datepicker ? datepicker.updateComplete : Promise.resolve()
-    ).then(() => super._getUpdateComplete());
+    await this._datepicker?.updateComplete;
+
+    return result;
   }
 
-  protected render() {
+  protected override render() {
     return html`
     <div class="scrim" part="scrim" @click="${this.close}"></div>
 
@@ -365,9 +361,9 @@ export class DatepickerDialog extends LitElement {
 
 declare global {
   // #region HTML element type extension
-  interface HTMLElement {
-    part: HTMLElementPart;
-  }
+  // interface HTMLElement {
+  //   part: HTMLElementPart;
+  // }
   // #endregion HTML element type extension
 
   interface HTMLElementEventMap {

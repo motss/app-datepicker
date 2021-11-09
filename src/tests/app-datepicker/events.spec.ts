@@ -116,7 +116,7 @@ describe('events', () => {
 
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<HTMLElement>('.calendars-container')!;
+        const n2 = n.shadowRoot!.querySelector('.calendars-container') as unknown as HTMLElement;
 
         domTriggerKey(n2, KEY_CODES_MAP.ARROW_LEFT);
 
@@ -188,7 +188,7 @@ describe('events', () => {
         timer = window.setTimeout(() => yay(null), 15e3);
       });
 
-      const n2 = n.shadowRoot!.querySelector<HTMLElement>(b)!;
+      const n2 = n.shadowRoot!.querySelector(b) as HTMLElement;
 
       if (n2 instanceof HTMLButtonElement || n2.tagName === 'MWC-BUTTON') {
         n2.click();

@@ -32,7 +32,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
 
     afterEach(async () => {
       await browser.executeAsync((a, done) => {
-        const el = document.body.querySelector<DatepickerDialog>(a)!;
+        const el = document.body.querySelector(a) as DatepickerDialog;
 
         if (el) document.body.removeChild(el);
 
@@ -44,7 +44,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
       const browserName = browser.capabilities.browserName;
 
       await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
 
         await n.open();
         await n.updateComplete;
@@ -61,7 +61,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
       type A = [string, string, string, string];
 
       const values: A = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
 
         done([
           n.getAttribute('role'),
@@ -91,13 +91,13 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
       type A = [boolean, boolean];
 
       const values: A = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
-        const n2 = n.shadowRoot!.querySelector<Datepicker>(b);
-        const n3 = n.shadowRoot!.querySelector<HTMLDivElement>('.scrim')!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
+        const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
+        const n3 = n.shadowRoot!.querySelector('.scrim') as unknown as HTMLDivElement;
 
         done([
           n2 == null,
-          getComputedStyle(n3).visibility === 'hidden',
+          getComputedStyle(n3 as unknown as Element).visibility === 'hidden',
         ] as A);
       }, DATEPICKER_DIALOG_NAME, DATEPICKER_NAME);
 
@@ -111,7 +111,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
         prop,
         todayValue,
       ]: A = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
 
         /**
          * NOTE: Get the today's date from the browser instead of
@@ -133,14 +133,14 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
 
     it(`renders year list view`, async () => {
       const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
 
         n.startView = 'yearList';
 
         await n.open();
         await n.updateComplete;
 
-        const n2 = n.shadowRoot!.querySelector<Datepicker>(b)!;
+        const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
 
         done(
           n2.shadowRoot!.querySelector('.datepicker-body__year-list-view') == null
@@ -158,17 +158,19 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
         hasActionButtons,
         actionLabels,
       ]: A = await browser.executeAsync(async (a, done) => {
-        const n = document.body.querySelector<DatepickerDialog>(a)!;
+        const n = document.body.querySelector(a) as DatepickerDialog;
 
         await n.open();
         await n.updateComplete;
 
         const root = n.shadowRoot!;
-        const n2 = root.querySelector<HTMLDivElement>('.scrim')!;
-        const n3s = Array.from(root.querySelectorAll<HTMLButtonElement>('mwc-button')!);
+        const n2 = root.querySelector('.scrim') as unknown as HTMLDivElement;
+        const n3s = Array.from(
+          root.querySelectorAll('mwc-button')
+        ) as unknown as HTMLButtonElement[];
 
         done([
-          getComputedStyle(n2).visibility === 'visible',
+          getComputedStyle(n2 as unknown as Element).visibility === 'visible',
           n3s.length === 3,
           n3s.map(o => o.textContent),
         ]);
@@ -199,7 +201,7 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
 
       for (const part of parts) {
         const result: A = await browser.executeAsync(async (a, [b, c], done) => {
-          const n = document.body.querySelector<DatepickerDialog>(a)!;
+          const n = document.body.querySelector(a) as DatepickerDialog;
 
           if (c) {
             await n.open();

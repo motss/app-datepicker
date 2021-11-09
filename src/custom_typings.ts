@@ -37,6 +37,9 @@ type HTMLTableCellElementPart = /** Both td and th have the same instance */
   | 'calendar-weekday';
 type HTMLTableElementPart = 'table';
 type HTMLTableRowElementPart = 'weekdays';
+/**
+ * FIXME: Not able to extend HTMLElement when `types` is used.
+ */
 export type HTMLElementPart =
   | HTMLButtonElementPart
   | HTMLDivElementPart

@@ -24,7 +24,7 @@ describe('gestures', () => {
     done();
   }, DATEPICKER_NAME);
   const cleanup = () => browser.executeAsync((a, done) => {
-    const els = document.body.querySelectorAll<Datepicker>(a);
+    const els = document.body.querySelectorAll(a) as unknown as Datepicker[];
 
     els.forEach(n => document.body.removeChild(n));
 

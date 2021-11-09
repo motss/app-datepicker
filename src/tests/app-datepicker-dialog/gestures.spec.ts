@@ -23,7 +23,7 @@ describe('gestures', () => {
     done();
   }, DATEPICKER_DIALOG_NAME);
   const cleanup = () => browser.executeAsync((a, done) => {
-    const el = document.body.querySelector<DatepickerDialog>(a);
+    const el = document.body.querySelector(a) as DatepickerDialog;
 
     if (el) document.body.removeChild(el);
 

@@ -41,7 +41,7 @@ describe('mouses', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<Datepicker>(a);
+      const el = document.body.querySelector(a) as Datepicker;
 
       if (el) document.body.removeChild(el);
 
@@ -53,8 +53,8 @@ describe('mouses', () => {
     await clickElements(['.btn__year-selector']);
 
     const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
-      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const n = document.body.querySelector(a) as Datepicker;
+      const yearListView = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done(yearListView != null);
     }, DATEPICKER_NAME, '.datepicker-body__year-list-view');
@@ -70,9 +70,9 @@ describe('mouses', () => {
     });
 
     const hasCalendarView: boolean = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const calendarView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const calendarView = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done(calendarView != null);
     }, DATEPICKER_NAME, '.datepicker-body__calendar-view');
@@ -89,9 +89,9 @@ describe('mouses', () => {
     ]);
 
     const hasYearListView: boolean = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const yearListView = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const yearListView = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done(yearListView != null);
     }, DATEPICKER_NAME, '.datepicker-body__year-list-view');
@@ -102,11 +102,11 @@ describe('mouses', () => {
       hasCalendarView,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const calendarView = root.querySelector<HTMLDivElement>(b)!;
-      const focusedDate = root.querySelector<HTMLTableCellElement>(c)!;
+      const calendarView = root.querySelector(b) as HTMLDivElement;
+      const focusedDate = root.querySelector(c) as HTMLTableCellElement;
 
       done([
         calendarView != null,
@@ -143,13 +143,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const yearSelectorButton = root.querySelector<HTMLButtonElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const yearSelectorButton = root.querySelector(b) as HTMLButtonElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         n.value,
@@ -189,9 +189,9 @@ describe('mouses', () => {
       prop,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -219,12 +219,12 @@ describe('mouses', () => {
       focusedDateContent,
       calendarLabelContent,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       const root = n.shadowRoot!;
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const focusedDate = root.querySelector(b) as HTMLTableCellElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
 
       done([
         focusedDate.outerHTML,
@@ -259,13 +259,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const prevMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const prevMonthSelector = root.querySelector(b) as HTMLButtonElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         prevMonthSelector == null,
@@ -310,13 +310,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const nextMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const nextMonthSelector = root.querySelector(b) as HTMLButtonElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         nextMonthSelector == null,
@@ -360,13 +360,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const prevMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const prevMonthSelector = root.querySelector(b) as HTMLButtonElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         prevMonthSelector == null,
@@ -410,13 +410,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const nextMonthSelector = root.querySelector<HTMLButtonElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const nextMonthSelector = root.querySelector(b) as HTMLButtonElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         nextMonthSelector == null,
@@ -447,10 +447,10 @@ describe('mouses', () => {
     await clickElements([`.btn__year-selector`], prepareOptions);
 
     const yearIdx: number = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       const allYears = Array.from(
-        n.shadowRoot!.querySelectorAll<HTMLButtonElement>(b), o => o.textContent!);
+        n.shadowRoot!.querySelectorAll(b), o => o.textContent!);
 
       done(allYears.findIndex(o => o.trim() === c));
     }, DATEPICKER_NAME, `.year-list-view__list-item`, newYear);
@@ -481,9 +481,9 @@ describe('mouses', () => {
       prop,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -520,9 +520,9 @@ describe('mouses', () => {
       prop,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -551,9 +551,9 @@ describe('mouses', () => {
       prop,
       focusedDateContent,
     ]: A = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
-      const focusedDate = n.shadowRoot!.querySelector<HTMLTableCellElement>(b)!;
+      const focusedDate = n.shadowRoot!.querySelector(b) as HTMLTableCellElement;
 
       done([
         n.value,
@@ -571,8 +571,8 @@ describe('mouses', () => {
 
   const queryCalendarLabel = async () => {
     const label: string = await browser.executeAsync(async (a, b, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
-      const n2 = n.shadowRoot!.querySelector<HTMLDivElement>(b)!;
+      const n = document.body.querySelector(a) as Datepicker;
+      const n2 = n.shadowRoot!.querySelector(b) as HTMLDivElement;
 
       done(n2.textContent);
     }, DATEPICKER_NAME, toSelector('.calendar-label'));
@@ -590,7 +590,7 @@ describe('mouses', () => {
     const calendarLabelContent = await queryCalendarLabel();
 
     await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.firstDayOfWeek = 2;
       n.value = '2020-02-13';
@@ -610,12 +610,12 @@ describe('mouses', () => {
       calendarLabelContent3,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const calendarLabel3 = root.querySelector<HTMLDivElement>(b)!;
+      const calendarLabel3 = root.querySelector(b) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
+        root.querySelectorAll(c), o => o.textContent);
 
       done([
         calendarLabel3.textContent,
@@ -646,7 +646,7 @@ describe('mouses', () => {
     const calendarLabelContent = await queryCalendarLabel();
 
     await browser.executeAsync(async (a, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
 
       n.setAttribute('firstdayofweek', '2');
       n.setAttribute('value', '2020-02-13');
@@ -666,12 +666,12 @@ describe('mouses', () => {
       calendarLabelContent3,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const calendarLabel3 = root.querySelector<HTMLDivElement>(b)!;
+      const calendarLabel3 = root.querySelector(b) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(c), o => o.textContent);
+        root.querySelectorAll(c), o => o.textContent);
 
       done([
         calendarLabel3.textContent,
@@ -709,13 +709,13 @@ describe('mouses', () => {
       calendarLabelContent,
       calendarDaysContents,
     ]: A = await browser.executeAsync(async (a, b, c, d, done) => {
-      const n = document.body.querySelector<Datepicker>(a)!;
+      const n = document.body.querySelector(a) as Datepicker;
       const root = n.shadowRoot!;
 
-      const focusedDate = root.querySelector<HTMLTableCellElement>(b)!;
-      const calendarLabel = root.querySelector<HTMLDivElement>(c)!;
+      const focusedDate = root.querySelector(b) as HTMLTableCellElement;
+      const calendarLabel = root.querySelector(c) as HTMLDivElement;
       const calendarDays = Array.from(
-        root.querySelectorAll<HTMLTableCellElement>(d), o => o.textContent);
+        root.querySelectorAll(d), o => o.textContent);
 
       done([
         n.value,

@@ -30,7 +30,7 @@ describe('timezones', () => {
 
   afterEach(async () => {
     await browser.executeAsync((a, done) => {
-      const el = document.body.querySelector<Datepicker>(a)!;
+      const el = document.body.querySelector(a) as Datepicker;
 
       document.body.removeChild(el);
 
@@ -60,7 +60,7 @@ describe('timezones', () => {
     for (const n of allDateStrings) {
       const valueProp = await browser.executeAsync(
         async (a: string, b: string, done: (a: string) => void) => {
-          const el = document.body.querySelector<Datepicker>(a)!;
+          const el = document.body.querySelector(a) as unknown as Datepicker;
 
           el.value = b;
 
