@@ -53,6 +53,8 @@ export function sanitizeText(content: string, options?: SanitizeTextOptions): st
       /(?:aria-label="(.+?)").*?(?:abbr="(.+?)")/gi,
       (_, p1, p2) => `abbr="${p2}" aria-label="${p1}"`
     ) // Swap abbr and aria-label of th in MS Edge
+    .replace(/<!--\?lit\$[0-9]+\$-->|<!--\??-->/g, '') // lit expression comments
+    .replace(/<!--\?lit\$[0-9]+\$-->|<!--\??-->|lit\$[0-9]+\$/g, '') // lit expression markers
     .replace(/<!---->/g, '') // lit-html template placeholder
     .replace(/\r?\n/gi, '') // new lines in text
     .replace(/(\s?style-scope app-datepicker\s?)/gi, '') // ShadyDOM specific classes
