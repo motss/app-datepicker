@@ -165,7 +165,9 @@ describe(`${DATEPICKER_DIALOG_NAME}::initial_render`, () => {
 
         const root = n.shadowRoot!;
         const n2 = root.querySelector('.scrim') as unknown as HTMLDivElement;
-        const n3s = Array.from(root.querySelectorAll('mwc-button')) as unknown as HTMLButtonElement[];
+        const n3s = Array.from(
+          root.querySelectorAll('mwc-button')
+        ) as unknown as HTMLButtonElement[];
 
         done([
           getComputedStyle(n2 as unknown as Element).visibility === 'visible',

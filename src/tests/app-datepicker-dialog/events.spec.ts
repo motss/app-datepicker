@@ -43,7 +43,9 @@ describe(`${DATEPICKER_DIALOG_NAME}::events`, () => {
         await n.updateComplete;
 
         const n2 = n.shadowRoot!.querySelector(b) as Datepicker;
-        const n3 = n2.shadowRoot!.querySelector('.calendars-container') as unknown as HTMLDivElement;
+        const n3 = n2.shadowRoot!.querySelector(
+          '.calendars-container'
+        ) as unknown as HTMLDivElement;
 
         domTriggerKey(n3, KEY_CODES_MAP.ARROW_LEFT);
 

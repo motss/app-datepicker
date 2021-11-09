@@ -509,7 +509,8 @@ export class Datepicker extends LitElement {
 
   @queryAsync('.calendars-container') public calendarsContainer!: Promise<HTMLDivElement>;
 
-  @queryAsync('.datepicker-body__calendar-view') public datepickerBodyCalendarView!: Promise<HTMLDivElement>;
+  @queryAsync('.datepicker-body__calendar-view')
+  public datepickerBodyCalendarView!: Promise<HTMLDivElement>;
 
   private _min: Date;
   private _max: Date;
@@ -587,7 +588,7 @@ export class Datepicker extends LitElement {
     if ('calendar' === this._startView) {
       firstFocusableElement = (
         this.inline ?
-          this.shadowRoot!.querySelector('.btn__month-selector') as unknown as HTMLButtonElement:
+          this.shadowRoot!.querySelector('.btn__month-selector') as unknown as HTMLButtonElement :
           this._buttonSelectorYear
       )!;
     } else {
