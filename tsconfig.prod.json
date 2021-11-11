@@ -1,10 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "allowUnusedLabels": true,
-    "importHelpers": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
-  },
-  "include": ["src/*.ts"]
+    "importHelpers": true
+  }
 }

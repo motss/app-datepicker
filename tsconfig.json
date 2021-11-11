@@ -1,18 +1,15 @@
 {
   "extends": "@reallyland/tsconfig/browser/tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
     "declarationDir": "dist",
-    "target": "ES2019",
-    "sourceMap": false,
     "inlineSources": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "allowUnusedLabels": true
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": false,
+    "target": "ES2019"
   },
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["dist", "node_modules"]
 }
