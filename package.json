@@ -38,7 +38,6 @@
     "./dist/*": "./dist/*",
     "./month-calendar/*": "./dist/month-calendar/*",
     "./root-element/*": "./dist/root-element/*",
-    "./year-grid-button/*": "./dist/year-grid-button/*",
     "./year-grid/*": "./dist/year-grid/*"
   },
   "main": "./dist/date-picker/app-date-picker.js",
@@ -77,10 +76,6 @@
     "dist/root-element/*.*js",
     "dist/root-element/*.d.ts.map",
     "dist/root-element/*.d.ts",
-    "dist/year-grid-button/.*js.map",
-    "dist/year-grid-button/*.*js",
-    "dist/year-grid-button/*.d.ts.map",
-    "dist/year-grid-button/*.d.ts",
     "dist/year-grid/.*js.map",
     "dist/year-grid/*.*js",
     "dist/year-grid/*.d.ts.map",
@@ -140,8 +135,8 @@
     "typescript": "^4.4.4"
   },
   "engines": {
-    "node": ">= 14.x",
-    "npm": ">= 6.x"
+    "node": ">= 16.x",
+    "npm": ">= 8.x"
   },
   "publishConfig": {
     "access": "public"
