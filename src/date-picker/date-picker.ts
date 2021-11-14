@@ -14,7 +14,6 @@ import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 import { DateTimeFormat, MAX_DATE, startViews } from '../constants.js';
 import { clampValue } from '../helpers/clamp-value.js';
 import { dateValidator } from '../helpers/date-validator.js';
-import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { splitString } from '../helpers/split-string.js';
@@ -28,15 +27,20 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { AppMonthCalendar } from '../month-calendar/app-month-calendar.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
-import type { DatePickerProperties, Formatters, StartView, ValueUpdatedEvent, YearUpdatedEvent } from '../typings.js';
+import type { CustomEventDetail, DatePickerProperties, Formatters, StartView, ValueUpdatedEvent } from '../typings.js';
 import type { AppYearGrid } from '../year-grid/app-year-grid.js';
 import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerProperties {
-  public valueAsDate: Date;
-  public valueAsNumber: number;
+  public get valueAsDate(): Date {
+    return this.#valueAsDate;
+  }
+
+  public get valueAsNumber(): number {
+    return +this.#valueAsDate;
+  }
 
   @queryAsync('app-month-calendar') private readonly _monthCalendar!: Promise<AppMonthCalendar | null>;
 
@@ -59,6 +63,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   #formatters: Formatters;
   #focusNavButtonWithKey = false;
   #today: Date;
+  #valueAsDate: Date;
 
   public static override styles = [
     resetShadowRoot,
@@ -77,8 +82,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     this._selectedDate = new Date(todayDate);
     this._currentDate = new Date(todayDate);
     this.#formatters = toFormatters(this.locale);
-    this.valueAsDate = new Date(todayDate);
-    this.valueAsNumber = +todayDate;
+    this.#valueAsDate = new Date(todayDate);
   }
 
   public override willUpdate(changedProperties: DatePickerChangedProperties): void {
@@ -140,9 +144,26 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       this._max = newMax.date;
       this._currentDate = new Date(valueDate);
       this._selectedDate = new Date(valueDate);
-      this.valueAsDate = new Date(valueDate);
-      this.valueAsNumber = +valueDate;
-      this.value = toDateString(valueDate);
+      this.#valueAsDate = new Date(valueDate);
+
+      /**
+       * Always override `value` when its value is nullish and dispatch `date-updated` event.
+       */
+      if (this.value === null) {
+        const valueStr = toDateString(valueDate);
+
+        this.value = valueStr;
+
+        this.fire<CustomEventDetail['date-updated']>({
+          detail: {
+            isKeypress: false,
+            value: valueStr,
+            valueAsDate: new Date(valueDate),
+            valueAsNumber: +valueDate,
+          },
+          type: 'date-updated',
+        });
+      }
     }
 
     if (changedProperties.has('startView')) {
@@ -173,9 +194,16 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   }
 
   protected override async firstUpdated(): Promise<void> {
-    dispatchCustomEvent(this, 'first-updated', {
-      focusableElements: await this.#queryAllFocusable(),
-      value: this.value,
+    const valueAsDate = this.#valueAsDate;
+
+    this.fire<CustomEventDetail['first-updated']>({
+      detail: {
+        focusableElements: await this.#queryAllFocusable(),
+        value: toDateString(valueAsDate),
+        valueAsDate: new Date(valueAsDate),
+        valueAsNumber: +valueAsDate,
+      },
+      type: 'first-updated',
     });
   }
 
@@ -385,6 +413,11 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
 
     this._selectedDate = newSelectedDate;
     this._currentDate = new Date(newSelectedDate);
+
+    /**
+     * Always update `value` just like other native element such as `input`.
+     */
+    this.value = toDateString(newSelectedDate);
   }
 
   #updateSelectedDate({
@@ -399,7 +432,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
 
   #updateYear({
     detail: { year },
-  }: CustomEvent<YearUpdatedEvent>): void {
+  }: CustomEvent<CustomEventDetail['year-updated']['detail']>): void {
     this.#updateSelectedAndCurrentDate(this._selectedDate.setUTCFullYear(year));
     this.startView = 'calendar';
   }

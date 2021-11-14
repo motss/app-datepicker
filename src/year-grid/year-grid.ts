@@ -4,14 +4,13 @@ import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
-import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetButton, resetShadowRoot } from '../stylings.js';
-import type { Formatters, InferredFromSet } from '../typings.js';
+import type { CustomEventDetail, Formatters, InferredFromSet } from '../typings.js';
 import { yearGridStyling } from './stylings.js';
 import { toNextSelectedYear } from './to-next-selected-year.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties, YearGridRenderButtonInit } from './typings.js';
@@ -151,8 +150,11 @@ export class YearGrid extends RootElement implements YearGridProperties {
 
       this.$focusingYear = year;
 
-      dispatchCustomEvent(this, 'year-updated', {
-        year,
+      this.fire<CustomEventDetail['year-updated']>({
+        detail: {
+          year,
+        },
+        type: 'year-updated',
       });
     }
   };

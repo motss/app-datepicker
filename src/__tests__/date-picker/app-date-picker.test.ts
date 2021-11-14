@@ -6,11 +6,12 @@ import { elementUpdated, fixture, html, oneEvent } from '@open-wc/testing-helper
 import { MAX_DATE } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
+import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { MaybeDate } from '../../helpers/typings';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
-import type { DateUpdatedEvent, Formatters, StartView } from '../../typings';
+import type { CustomEventDetail, Formatters, StartView } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { messageFormatter } from '../test-utils/message-formatter';
 
@@ -297,9 +298,11 @@ describe(appDatePickerName, () => {
       newSelectedDate2
     );
 
-    const expectedDateUpdatedEvent: DateUpdatedEvent = {
+    const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
       isKeypress: false,
-      value: newSelectedDate2,
+      value: toDateString(newSelectedDate2),
+      valueAsDate: newSelectedDate2,
+      valueAsNumber: +newSelectedDate2,
     };
 
     expect(dateUpdatedEvent.detail).deep.equal(expectedDateUpdatedEvent);
@@ -351,9 +354,11 @@ describe(appDatePickerName, () => {
     );
     expect(selectedDate?.fullDate).deep.equal(newSelectedDate);
 
-    const expectedDateUpdatedEvent: DateUpdatedEvent = {
+    const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
       isKeypress: false,
-      value: newSelectedDate,
+      value: toDateString(newSelectedDate),
+      valueAsDate: newSelectedDate,
+      valueAsNumber: +newSelectedDate,
     };
 
     expect(dateUpdatedEvent.detail).deep.equal(expectedDateUpdatedEvent);

@@ -38,7 +38,7 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
      * today's date, set `value` undefined.
      */
-    @property() public value: string = toDateString(toResolvedDate());
+    @property() public value = toDateString(toResolvedDate());
 
     @property() public weekLabel = 'Wk';
 

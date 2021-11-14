@@ -17,7 +17,7 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
 import type { DatePickerMixinProperties } from '../mixins/typings.js';
-import type { ChangedProperties, DatePickerProperties, SupportedCustomEventDetail } from '../typings.js';
+import type { ChangedProperties, CustomEventDetail, DatePickerProperties } from '../typings.js';
 import { datePickerInputStyling } from './stylings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
@@ -193,21 +193,24 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this._open = false;
   }
 
-  #onDatePickerFirstUpdated(ev: CustomEvent<SupportedCustomEventDetail['first-updated']>): void {
-    const [focusableElement] = ev.detail.focusableElements;
-
-    this.#picker = ev.currentTarget as AppDatePicker;
+  #onDatePickerFirstUpdated({
+    currentTarget,
+    detail: {
+      focusableElements: [focusableElement],
+    },
+  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void {
+    this.#picker = currentTarget as AppDatePicker;
     this.#focusElement = focusableElement;
   }
 
-  async #onDatePickerDateUpdated(ev: CustomEvent<SupportedCustomEventDetail['date-updated']>): Promise<void> {
+  async #onDatePickerDateUpdated(ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> {
     const {
       isKeypress,
       key,
-      value,
+      valueAsDate,
     } = ev.detail;
 
-    this.value = this.#valueFormatter.format(value);
+    this.value = this.#valueFormatter.format(valueAsDate);
 
     if (isKeypress && (key === 'Enter' || key === ' ')) {
       (await this.$inputSurface)?.close();

@@ -9,11 +9,12 @@ import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import type { CalendarInit } from 'nodemod/dist/calendar/typings';
 
 import type { confirmKeySet, navigationKeySetGrid } from '../../constants';
+import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
-import type { DateUpdatedEvent, InferredFromSet } from '../../typings';
+import type { CustomEventDetail, InferredFromSet } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(appMonthCalendarName, () => {
@@ -204,7 +205,7 @@ describe(appMonthCalendarName, () => {
 
         const dateUpdatedEventTask = new Promise((resolve) => {
           el.addEventListener('date-updated', function fn(ev) {
-            resolve((ev as CustomEvent<DateUpdatedEvent>).detail);
+            resolve((ev as CustomEvent<CustomEventDetail['date-updated']['detail']>).detail);
 
             el.removeEventListener('date-updated', fn);
           });
@@ -244,9 +245,12 @@ describe(appMonthCalendarName, () => {
         expect(newSelectedDate?.fullDate).deep.equal(calendarInit.date);
 
         const isKeypress = testEventType === 'keydown';
-        const expectedDateUpdatedEvent: DateUpdatedEvent = {
+        const expectedDate = new Date('2020-02-09');
+        const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
           isKeypress,
-          value: new Date('2020-02-09'),
+          value: toDateString(expectedDate),
+          valueAsDate: expectedDate,
+          valueAsNumber: +expectedDate,
           ...(isKeypress && { key: testKeyPayloads[0].down }),
         };
 

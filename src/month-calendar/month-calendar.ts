@@ -3,16 +3,16 @@ import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
 
 import { confirmKeySet, navigationKeySetGrid } from '../constants.js';
-import { dispatchCustomEvent } from '../helpers/dispatch-custom-event.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
+import { toDateString } from '../helpers/to-date-string.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
-import type { Formatters, InferredFromSet, SupportedKey } from '../typings.js';
+import type { CustomEventDetail, Formatters, InferredFromSet, SupportedKey } from '../typings.js';
 import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties, MonthCalendarRenderCalendarDayInit } from './typings.js';
 
@@ -285,17 +285,28 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       this.#selectedDate = selectedCalendarDay.fullDate;
     }
 
-    const newSelectedDate = this.#selectedDate;
+    const selectedDate = this.#selectedDate;
 
-    if (newSelectedDate == null) return;
+    if (selectedDate == null) return;
 
     const isKeypress = Boolean(key);
+    const newSelectedDate = new Date(selectedDate);
 
-    dispatchCustomEvent(this, 'date-updated', {
-      isKeypress,
-      value: new Date(newSelectedDate),
-      ...(isKeypress && { key }),
+    this.fire<CustomEventDetail['date-updated']>({
+      detail: {
+        isKeypress,
+        value: toDateString(newSelectedDate),
+        valueAsDate: newSelectedDate,
+        valueAsNumber: +newSelectedDate,
+        ...(isKeypress && { key }),
+      },
+      type: 'date-updated',
     });
+
+    /**
+     * Reset `#selectedDate` after click or keyup event
+     */
+    this.#selectedDate = undefined;
   };
 }
 

@@ -5,7 +5,7 @@ import { sendKeys } from '@web/test-runner-commands';
 
 import type { confirmKeySet } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
-import type { InferredFromSet, YearUpdatedEvent } from '../../typings';
+import type { CustomEventDetail, InferredFromSet } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
 import type { YearGridData } from '../../year-grid/typings';
@@ -98,7 +98,7 @@ describe(appYearGridName, () => {
 
         const yearUpdatedEventTask = new Promise((resolve) => {
           function fn(ev: Event) {
-            resolve((ev as CustomEvent<YearUpdatedEvent>).detail);
+            resolve((ev as CustomEvent<CustomEventDetail['year-updated']['detail']>).detail);
             el.removeEventListener('year-updated', fn);
           }
 
@@ -135,7 +135,7 @@ describe(appYearGridName, () => {
           n.getAttribute('tabindex') ?? '',
           n.getAttribute('aria-selected') ?? '',
         ]);
-        const expectedYearUpdatedEvent: YearUpdatedEvent = {
+        const expectedYearUpdatedEvent: CustomEventDetail['year-updated']['detail'] = {
           year: data.max.getUTCFullYear(),
         };
 
