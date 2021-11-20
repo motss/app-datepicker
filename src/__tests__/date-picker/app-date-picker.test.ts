@@ -310,6 +310,7 @@ describe(appDatePickerName, () => {
 
   it('selects new date', async () => {
     const testValue = '2020-02-02';
+    const testValueDate = new Date(testValue);
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
         .max=${'2020-03-03'}
@@ -317,6 +318,9 @@ describe(appDatePickerName, () => {
         .value=${testValue}
       ></app-date-picker>`
     );
+
+    expect(el.valueAsDate).deep.equal(testValueDate);
+    expect(el.valueAsNumber).equal(+testValueDate);
 
     const newSelectedDate = new Date(
       new Date(testValue).setUTCDate(15)
@@ -347,13 +351,6 @@ describe(appDatePickerName, () => {
     const selectedDate = calendar?.query<HTMLTableCellElement>(
       elementSelectors.selectedCalendarDay
     );
-
-    expect(selectedDate).exist;
-    expect(selectedDate?.getAttribute('aria-label')).equal(
-      newSelectedDateLabel
-    );
-    expect(selectedDate?.fullDate).deep.equal(newSelectedDate);
-
     const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
       isKeypress: false,
       value: toDateString(newSelectedDate),
@@ -361,6 +358,14 @@ describe(appDatePickerName, () => {
       valueAsNumber: +newSelectedDate,
     };
 
+    expect(el.valueAsDate).deep.equal(newSelectedDate);
+    expect(el.valueAsNumber).equal(+newSelectedDate);
+
+    expect(selectedDate).exist;
+    expect(selectedDate?.getAttribute('aria-label')).equal(
+      newSelectedDateLabel
+    );
+    expect(selectedDate?.fullDate).deep.equal(newSelectedDate);
     expect(dateUpdatedEvent.detail).deep.equal(expectedDateUpdatedEvent);
   });
 

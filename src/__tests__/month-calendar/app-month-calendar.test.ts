@@ -16,6 +16,7 @@ import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
 import { messageFormatter } from '../test-utils/message-formatter';
+import { queryDeepActiveElement } from '../test-utils/query-deep-active-element';
 
 describe(appMonthCalendarName, () => {
   const locale = 'en-US';
@@ -55,14 +56,14 @@ describe(appMonthCalendarName, () => {
   };
   const elementSelectors = {
     calendarCaption: '.calendar-caption',
-    calendarTable: '.calendar-table',
-    monthCalendar: '.month-calendar',
     calendarDay: 'td.calendar-day',
-    tabbableCalendarDay: 'td.calendar-day[tabindex="0"]',
-    selectedCalendarDay: 'td.calendar-day[aria-selected="true"]',
-    disabledCalendarDay: 'td.calendar-day[aria-disabled="true"]',
     calendarDayWeekNumber: 'th.calendar-day.week-number',
+    calendarTable: '.calendar-table',
+    disabledCalendarDay: 'td.calendar-day[aria-disabled="true"]',
     hiddenCalendarDay: 'td.calendar-day[aria-hidden="true"]',
+    monthCalendar: '.month-calendar',
+    selectedCalendarDay: 'td.calendar-day[aria-selected="true"]',
+    tabbableCalendarDay: 'td.calendar-day[tabindex="0"]',
   } as const;
 
   type A = [string, MonthCalendarData | undefined, boolean];
@@ -163,7 +164,7 @@ describe(appMonthCalendarName, () => {
   type A3 = [
     'click' | 'keydown',
     (Partial<Record<
-      'down' | 'press',
+      'down' | 'up' | 'press',
       InferredFromSet<typeof confirmKeySet> | InferredFromSet<typeof navigationKeySetGrid>
     >>)[],
     Date
@@ -174,6 +175,7 @@ describe(appMonthCalendarName, () => {
       'keydown',
       [
         { down: 'ArrowDown' },
+        { up: 'ArrowDown' },
       ],
       data.date,
     ],
@@ -181,6 +183,7 @@ describe(appMonthCalendarName, () => {
       'keydown',
       [
         { down: 'ArrowDown' },
+        { up: 'ArrowDown' },
         { press: ' ' },
       ],
       data.date,
@@ -189,6 +192,7 @@ describe(appMonthCalendarName, () => {
       'keydown',
       [
         { down: 'ArrowDown' },
+        { up: 'ArrowDown' },
         { press: 'Enter' },
       ],
       data.date,
@@ -259,6 +263,39 @@ describe(appMonthCalendarName, () => {
       }
     );
   });
+
+  it(
+    'tabs new element',
+    async () => {
+      const el = await fixture<AppMonthCalendar>(
+        html`<app-month-calendar .data=${data}></app-month-calendar>`
+      );
+
+      const calendarTable = el.query<HTMLTableElement>(elementSelectors.calendarTable);
+
+      expect(calendarTable).exist;
+
+      calendarTable?.focus();
+
+      let activeElement = queryDeepActiveElement();
+
+      expect(activeElement?.isEqualNode(calendarTable)).true;
+
+      await sendKeys({ down: 'Tab' } as SendKeysPayload);
+      await sendKeys({ up: 'Tab' } as SendKeysPayload);
+
+      activeElement = queryDeepActiveElement();
+
+      const selectedDate = el.query<HTMLTableCellElement>(
+        `${elementSelectors.calendarDay}[aria-label="${
+          formatters.fullDateFormat(calendarInit.date)
+        }"]`
+      );
+
+      expect(activeElement).exist;
+      expect(activeElement?.isEqualNode(selectedDate)).true;
+    }
+  );
 
   type A4 = [Partial<MonthCalendarData>, string];
   const cases4: A4[] = [

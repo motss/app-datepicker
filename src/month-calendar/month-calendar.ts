@@ -123,6 +123,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
         class=calendar-table
         part=table
         role=grid
+        tabindex=-1
       >
         ${
           showCaption && secondMonthSecondCalendarDayFullDate ? html`
@@ -192,7 +193,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       `;
     }
 
-    return html`<div class="month-calendar" part="calendar">${calendarContent}</div>`;
+    return html`<div class=month-calendar part=calendar>${calendarContent}</div>`;
   }
 
   protected $renderCalendarDay({
