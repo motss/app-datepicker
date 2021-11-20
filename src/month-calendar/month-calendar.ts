@@ -225,6 +225,13 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     const type = event.type as 'click' | 'keydown' | 'keyup';
 
     if (type === 'keydown') {
+      /**
+       * NOTE: `@material/mwc-dialog` captures Enter keyboard event then closes the dialog.
+       * This is not what `month-calendar` expects so here stops all event propagation immediately for
+       * all key events.
+       */
+      event.stopImmediatePropagation();
+
       const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
 
       if (

@@ -150,5 +150,3 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     this.value = undefined;
   }
 }
-
-// FIXME: Do not close dialog when enter/ space or select new year
