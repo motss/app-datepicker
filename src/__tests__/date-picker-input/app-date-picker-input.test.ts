@@ -126,8 +126,11 @@ describe(appDatePickerInputName, () => {
 
     const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
 
+    // FIXME: FF94 returns undefined whereas FF96 will return the correct value.
+    // expect(mdcTextFieldInput?.autocapitalize).equal(testAutocapitalize);
+
     expect(mdcTextFieldInput).exist;
-    expect(mdcTextFieldInput?.autocapitalize).equal(testAutocapitalize);
+    expect(mdcTextFieldInput?.getAttribute('autocapitalize')).equal(testAutocapitalize);
     expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).null;
     expect(mdcTextFieldInput?.name).equal(testName);
   });
