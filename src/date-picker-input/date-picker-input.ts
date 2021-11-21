@@ -98,7 +98,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
         <app-date-picker-input-surface
           ?open=${true}
           ?stayOpenOnBodyClick=${true}
-          .anchor=${this}
+          .anchor=${this as HTMLElement}
           @closed=${this.#onClosed}
           @opened=${this.#onOpened}
         >
