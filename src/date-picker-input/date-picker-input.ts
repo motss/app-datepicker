@@ -1,6 +1,6 @@
 import '../date-picker-input-surface/app-date-picker-input-surface.js';
+import '../date-picker/app-date-picker.js';
 
-import type { TextFieldType } from '@material/mwc-textfield';
 import { TextField } from '@material/mwc-textfield';
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
@@ -10,6 +10,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
+import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconClose } from '../icons.js';
 import { keyEnter, keySpace } from '../key-values.js';
@@ -18,14 +19,15 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
 import type { DatePickerMixinProperties } from '../mixins/typings.js';
 import type { ChangedProperties, CustomEventDetail, DatePickerProperties } from '../typings.js';
+import { appDatePickerInputClearLabel, appDatePickerInputType } from './constants.js';
 import { datePickerInputStyling } from './stylings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
-  public override type = 'date' as TextFieldType;
+  public override type = appDatePickerInputType;
 
-  @property({ type: String }) public clearLabel = 'Clear';
+  @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
-  @queryAsync('app-date-picker-input-surface') protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
+  @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
   @state() private _open = false;
   @state() private _valueText = '';
 
@@ -49,23 +51,22 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     super.firstUpdated();
 
     const input = await this.$input;
+    if (input) {
+      const onClick = () => this._open = true;
+      const onKeyup = (ev: KeyboardEvent) => {
+        if ([keySpace, keyEnter].some(n => n === ev.key)) {
+          onClick();
+        }
+      };
 
-    if (!input) return;
+      input.addEventListener('keyup', onKeyup);
+      input.addEventListener('click', onClick);
 
-    const onClick = () => this._open = true;
-    const onKeyup = (ev: KeyboardEvent) => {
-      if ([keySpace, keyEnter].some(n => n === ev.key)) {
-        onClick();
-      }
-    };
-
-    input.addEventListener('keyup', onKeyup);
-    input.addEventListener('click', onClick);
-
-    this.#disconnect = () => {
-      input.removeEventListener('keyup', onKeyup);
-      input.removeEventListener('click', onClick);
-    };
+      this.#disconnect = () => {
+        input.removeEventListener('keyup', onKeyup);
+        input.removeEventListener('click', onClick);
+      };
+    }
   }
 
   public override willUpdate(changedProperties: ChangedProperties<DatePickerProperties>) {
@@ -126,6 +127,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
         ` :
         nothing
     }`;
+  }
+
+  public closePicker() {
+    this._open = false;
+  }
+
+  public showPicker() {
+    this._open = true;
   }
 
   protected override renderInput(shouldRenderHelperText: boolean): TemplateResult {
@@ -193,6 +202,20 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this._open = false;
   }
 
+  async #onDatePickerDateUpdated(ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> {
+    const {
+      isKeypress,
+      key,
+      valueAsDate,
+    } = ev.detail;
+
+    this.value = this.#valueFormatter.format(valueAsDate);
+
+    if (isKeypress && (key === keyEnter || key === keySpace)) {
+      (await this.$inputSurface)?.close();
+    }
+  }
+
   #onDatePickerFirstUpdated({
     currentTarget,
     detail: {
@@ -203,22 +226,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this.#focusElement = focusableElement;
   }
 
-  async #onDatePickerDateUpdated(ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> {
-    const {
-      isKeypress,
-      key,
-      valueAsDate,
-    } = ev.detail;
-
-    this.value = this.#valueFormatter.format(valueAsDate);
-
-    if (isKeypress && (key === 'Enter' || key === ' ')) {
-      (await this.$inputSurface)?.close();
-    }
-  }
-
   async #onOpened(): Promise<void> {
-    await (this.#picker as AppDatePicker).updateComplete;
+    (await this.#picker)?.updateComplete;
     await this.updateComplete;
 
     this.#focusElement?.focus();

@@ -7,6 +7,8 @@ export interface DatePickerDialogProperties extends DialogProperties {
   show(): void;
 }
 
+export type DialogClosedEventDetail = DialogClosingEventDetail;
+
 export interface DialogClosingEventDetail {
   action: DialogClosingEventDetailAction;
 }

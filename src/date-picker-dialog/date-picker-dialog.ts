@@ -120,11 +120,8 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
   #onClosing = ({
     detail: {
       action,
-      ...rest
     },
   }: CustomEvent<DialogClosingEventDetail>): void => {
-    console.debug({ action, rest });
-
     if (action === 'set') {
       this.value = toDateString(this.#valueAsDate);
     }

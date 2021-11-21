@@ -1,7 +1,7 @@
 import '../../date-picker/app-date-picker';
 
 import { expect } from '@open-wc/testing';
-import { elementUpdated, fixture, html, oneEvent } from '@open-wc/testing-helpers';
+import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 
 import { MAX_DATE } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
@@ -13,6 +13,7 @@ import type { MaybeDate } from '../../helpers/typings';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import type { CustomEventDetail, Formatters, StartView } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
+import { eventOnce } from '../test-utils/event-once';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(appDatePickerName, () => {
@@ -275,7 +276,11 @@ describe(appDatePickerName, () => {
 
 
     const dateUpdatedEventTask =
-      oneEvent(el, 'date-updated');
+      eventOnce<
+        typeof el,
+        'date-updated',
+        CustomEvent<CustomEventDetail['date-updated']['detail']>
+      >(el, 'date-updated');
 
     newSelectedCalendarDay?.focus();
     newSelectedCalendarDay?.click();
@@ -305,7 +310,7 @@ describe(appDatePickerName, () => {
       valueAsNumber: +newSelectedDate2,
     };
 
-    expect(dateUpdatedEvent.detail).deep.equal(expectedDateUpdatedEvent);
+    expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
   });
 
   it('selects new date', async () => {
@@ -338,7 +343,11 @@ describe(appDatePickerName, () => {
     expect(newSelectedCalendarDay).exist;
 
     const dateUpdatedEventTask =
-      oneEvent(el, 'date-updated');
+      eventOnce<
+        typeof el,
+        'date-updated',
+        CustomEvent<CustomEventDetail['date-updated']['detail']>
+      >(el, 'date-updated');
 
     newSelectedCalendarDay?.focus();
     newSelectedCalendarDay?.click();
@@ -366,7 +375,7 @@ describe(appDatePickerName, () => {
       newSelectedDateLabel
     );
     expect(selectedDate?.fullDate).deep.equal(newSelectedDate);
-    expect(dateUpdatedEvent.detail).deep.equal(expectedDateUpdatedEvent);
+    expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
   });
 
   it('selects new startView', async () => {
