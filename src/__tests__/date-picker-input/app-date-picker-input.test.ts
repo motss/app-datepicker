@@ -13,7 +13,7 @@ import { appDatePickerInputName, appDatePickerInputType } from '../../date-picke
 import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { iconClose } from '../../icons';
-import { keyEnter, keySpace } from '../../key-values';
+import { keyEnter, keyEscape, keySpace } from '../../key-values';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import { eventOnce } from '../test-utils/event-once';
@@ -185,47 +185,65 @@ describe(appDatePickerInputName, () => {
     expect(datePicker).exist;
   });
 
-  it('closes date picker by clicking outside of input surface', async () => {
-    const el = await fixture<AppDatePickerInput>(
-      html`<app-date-picker-input
-        .label=${label}
-        .max=${max}
-        .min=${min}
-        .placeholder=${placeholder}
-        .value=${value}
-      ></app-date-picker-input>`
+  type CaseCloseDatePickerBy = [string, 'click' | 'keyup'];
+  const casesCloseDatePicker: CaseCloseDatePickerBy[] = [
+    ['clicking outside of input surface', 'click'],
+    ['pressing Escape key', 'keyup'],
+  ];
+  casesCloseDatePicker.forEach((a) => {
+    const [, testTriggerType] = a;
+
+    it(
+      messageFormatter('closes date picker by %s', a),
+      async () => {
+        const el = await fixture<AppDatePickerInput>(
+          html`<app-date-picker-input
+            .label=${label}
+            .max=${max}
+            .min=${min}
+            .placeholder=${placeholder}
+            .value=${value}
+          ></app-date-picker-input>`
+        );
+
+        const openedTask = eventOnce<
+          typeof el,
+          'opened',
+          CustomEvent<unknown>>(el, 'opened');
+
+        el.showPicker();
+        await openedTask;
+        await el.updateComplete;
+
+        let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+        let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
+        expect(datePickerInputSurface).exist;
+        expect(datePicker).exist;
+        expect(datePickerInputSurface?.open).true;
+
+        const closedTask = eventOnce<
+          typeof el,
+          'closed',
+          CustomEvent<DialogClosedEventDetail>>(el, 'closed');
+
+        if (testTriggerType === 'click') {
+          document.body.click();
+        } else {
+          await sendKeys({ down: keyEscape });
+          await sendKeys({ up: keyEscape });
+        }
+
+        await closedTask;
+        await el.updateComplete;
+
+        datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+        datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
+        expect(datePickerInputSurface).exist;
+        expect(datePicker).exist;
+      }
     );
-
-    const openedTask = eventOnce<
-      typeof el,
-      'opened',
-      CustomEvent<unknown>>(el, 'opened');
-
-    el.showPicker();
-    await openedTask;
-    await el.updateComplete;
-
-    let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-    let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-
-    expect(datePickerInputSurface).exist;
-    expect(datePicker).exist;
-    expect(datePickerInputSurface?.open).true;
-
-    const closedTask = eventOnce<
-      typeof el,
-      'closed',
-      CustomEvent<DialogClosedEventDetail>>(el, 'closed');
-
-    document.body.click();
-    await closedTask;
-    await el.updateComplete;
-
-    datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-    datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-
-    expect(datePickerInputSurface).exist;
-    expect(datePicker).exist;
   });
 
   type A2 = typeof keyEnter | typeof keySpace;

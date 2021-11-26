@@ -4,6 +4,7 @@ export const keyArrowRight = 'ArrowRight' as const;
 export const keyArrowUp = 'ArrowUp' as const;
 export const keyEnd = 'End' as const;
 export const keyEnter = 'Enter' as const;
+export const keyEscape = 'Escape' as const;
 export const keyHome = 'Home' as const;
 export const keyPageDown = 'PageDown' as const;
 export const keyPageUp = 'PageUp' as const;

@@ -13,7 +13,7 @@ import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconClose } from '../icons.js';
-import { keyEnter, keySpace } from '../key-values.js';
+import { keyEnter, keyEscape, keySpace } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
@@ -55,6 +55,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     const input = await this.$input;
     if (input) {
+      const onBodyKeyup = (ev: KeyboardEvent) => {
+        if (ev.key === keyEscape) this.closePicker();
+      }
       const onClick = () => this._open = true;
       const onKeyup = (ev: KeyboardEvent) => {
         if ([keySpace, keyEnter].some(n => n === ev.key)) {
@@ -62,10 +65,12 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
         }
       };
 
+      document.body.addEventListener('keyup', onBodyKeyup);
       input.addEventListener('keyup', onKeyup);
       input.addEventListener('click', onClick);
 
       this.#disconnect = () => {
+        document.body.removeEventListener('keyup', onBodyKeyup);
         input.removeEventListener('keyup', onKeyup);
         input.removeEventListener('click', onClick);
       };
@@ -262,6 +267,5 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 }
 
-// FIXME: Esc does not close input surface
 // FIXME: No focus trap in input surface or close input surface when focus is outside
 // FIXME: Support valueAsDate:null and valueAsNumber:NaN just like native input[type=date]
