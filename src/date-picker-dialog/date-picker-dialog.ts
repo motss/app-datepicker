@@ -17,13 +17,22 @@ import { datePickerDialogStyling } from './stylings.js';
 import type { DatePickerDialogProperties, DialogClosingEventDetail } from './typings.js';
 
 export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerDialogProperties {
+  public override get valueAsDate(): Date {
+    return this.#valueAsDate;
+  }
+
+  public override get valueAsNumber(): number {
+    return +this.#valueAsDate;
+  }
+
   @property({ type: String }) public confirmLabel = 'set';
   @property({ type: String }) public dismissLabel = 'cancel';
   @property({ type: String }) public resetLabel = 'reset';
   @property({ type: Boolean }) public open = false;
 
-  #disconnect: () => void = () => void 0;
-  #valueAsDate: Date = toResolvedDate();
+  #isResetAction = false;
+  #selectedDate: Date;
+  #valueAsDate: Date;
 
   public static override styles = [
     datePickerDialogStyling,
@@ -32,21 +41,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
   public constructor() {
     super();
 
-    const closing = (ev: CustomEvent<DialogClosingEventDetail>) => {
-      this.#onClosing(ev);
-    };
-
-    this.addEventListener('closing' as never, closing);
-
-    this.#disconnect = () => {
-      this.removeEventListener('closing' as never, closing);
-    };
-  }
-
-  public override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.#disconnect();
+    this.#selectedDate = this.#valueAsDate = toResolvedDate();
   }
 
   protected override createRenderRoot(): Element | ShadowRoot {
@@ -91,6 +86,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       <div class=secondary-actions slot=secondaryAction>
         <mwc-button
           @click=${this.#onResetClick}
+          data-dialog-action=reset
         >${this.resetLabel}</mwc-button>
         <mwc-button
           dialogAction=cancel
@@ -123,7 +119,11 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     },
   }: CustomEvent<DialogClosingEventDetail>): void => {
     if (action === 'set') {
-      this.value = toDateString(this.#valueAsDate);
+      const selectedDate = this.#selectedDate;
+
+      this.#valueAsDate = new Date(selectedDate);
+
+      this.value = toDateString(selectedDate);
     }
   };
 
@@ -132,7 +132,17 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       valueAsDate,
     },
   }: CustomEvent<CustomEventDetail['date-updated']['detail']>) {
-    this.#valueAsDate = valueAsDate;
+    this.#selectedDate = new Date(valueAsDate);
+
+    /**
+     * Reset `value` when it is a reset action or `value` is nullish
+     */
+    if (this.#isResetAction || !this.value) {
+      this.#isResetAction = false;
+      this.#valueAsDate = new Date(valueAsDate);
+
+      this.value = toDateString(valueAsDate);
+    }
   }
 
   #onDatePickerFirstUpdated({
@@ -140,10 +150,11 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       valueAsDate,
     },
   }: CustomEvent<CustomEventDetail['first-updated']['detail']>) {
-    this.#valueAsDate = valueAsDate;
+    this.#selectedDate = this.#valueAsDate = valueAsDate;
   }
 
   #onResetClick() {
+    this.#isResetAction = true;
     this.value = undefined;
   }
 }

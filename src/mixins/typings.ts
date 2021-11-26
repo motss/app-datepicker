@@ -19,7 +19,9 @@ export interface DatePickerMixinProperties {
   selectedDateLabel: string;
   showWeekNumber: boolean;
   startView: StartView;
-  value?: string;
+  value?: string | null;
+  valueAsDate: Date;
+  valueAsNumber: number;
   weekLabel: string;
   weekNumberType: WeekNumberType;
   yearDropdownLabel: string;

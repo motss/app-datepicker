@@ -40,6 +40,10 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
      */
     @property() public value = toDateString(toResolvedDate());
 
+    public valueAsDate!: Date;
+
+    public valueAsNumber!: number;
+
     @property() public weekLabel = 'Wk';
 
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public weekNumberType: WeekNumberType = 'first-4-day-week';
