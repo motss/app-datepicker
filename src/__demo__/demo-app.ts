@@ -8,12 +8,15 @@ import { customElement, queryAsync } from 'lit/decorators.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
 import { appDatePickerDialogName } from '../date-picker-dialog/constants.js';
+import type { AppDatePickerInput } from '../date-picker-input/app-date-picker-input.js';
+import { appDatePickerInputName } from '../date-picker-input/constants.js';
 import { RootElement } from '../root-element/root-element.js';
 import type { CustomEventDetail } from '../typings.js';
 
 @customElement('demo-app')
 export class DemoApp extends RootElement {
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
+  @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
 
   public static override styles = [
     css`
@@ -56,9 +59,11 @@ export class DemoApp extends RootElement {
     ></app-date-picker>
 
     <app-date-picker-input
-      .label=${'DOB'}
       ?outlined=${true}
+      .label=${'DOB'}
       .placeholder=${'Select your date of birth'}
+      .max=${'2100-12-31'}
+      .min=${'1970-01-01'}
       .value=${'2020-02-02'}
     ></app-date-picker-input>
 

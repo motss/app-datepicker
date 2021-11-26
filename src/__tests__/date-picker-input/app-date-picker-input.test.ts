@@ -157,8 +157,16 @@ describe(appDatePickerInputName, () => {
 
     let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
     let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-    const activeElement = queryDeepActiveElement();
     const yearDropdown = datePicker?.query<Button>(elementSelectors.yearDropdown);
+
+    /**
+     * NOTE: Webkit requires more time to await `datePicker` and `datePickerInputSurface` to complete
+     * their updates before it can find the active element in the document.
+     */
+    await datePicker?.updateComplete;
+    await datePickerInputSurface?.updateComplete;
+
+    const activeElement = queryDeepActiveElement();
 
     expect(datePickerInputSurface).exist;
     expect(datePicker).exist;
@@ -173,8 +181,8 @@ describe(appDatePickerInputName, () => {
     datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
-    expect(datePickerInputSurface).not.exist;
-    expect(datePicker).not.exist;
+    expect(datePickerInputSurface).exist;
+    expect(datePicker).exist;
   });
 
   it('closes date picker by clicking outside of input surface', async () => {
@@ -216,8 +224,8 @@ describe(appDatePickerInputName, () => {
     datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
-    expect(datePickerInputSurface).not.exist;
-    expect(datePicker).not.exist;
+    expect(datePickerInputSurface).exist;
+    expect(datePicker).exist;
   });
 
   type A2 = typeof keyEnter | typeof keySpace;
@@ -273,8 +281,10 @@ describe(appDatePickerInputName, () => {
       ></app-date-picker-input>`
     );
 
-    let mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-    const mdcTextFieldIconTrailing = el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+    let mdcTextFieldInput =
+      el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+    const mdcTextFieldIconTrailing =
+      el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
 
     expect(mdcTextFieldInput).exist;
     expect(mdcTextFieldIconTrailing).exist;

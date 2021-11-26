@@ -29,11 +29,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
   @state() private _open = false;
+  @state() private _rendered = false;
   @state() private _valueText = '';
 
   #disconnect: () => void = () => undefined;
   #focusElement: HTMLElement | undefined = undefined;
+  #isClearAction = false;
   #picker: AppDatePicker | undefined = undefined;
+  #selectedDate!: Date;
   #valueFormatter = this.$toValueFormatter();
 
   public static override styles = [
@@ -88,16 +91,20 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     if (changedProperties.has('value') && this.value) {
       this._valueText = this.#valueFormatter.format(toResolvedDate(this.value));
     }
+
+    if (!this._rendered && this._open) {
+      this._rendered = true;
+    }
   }
 
   public override render(): TemplateResult {
     return html`
     ${super.render()}
     ${
-      this._open ?
+      this._rendered ?
         html`
         <app-date-picker-input-surface
-          ?open=${true}
+          ?open=${this._open}
           ?stayOpenOnBodyClick=${true}
           .anchor=${this as HTMLElement}
           @closed=${this.#onClosed}
@@ -194,7 +201,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     });
   }
 
-  #onClearClick(): void  {
+  #onClearClick()  {
+    this.#isClearAction = true;
+
     this.value = this._valueText = '';
   }
 
@@ -209,10 +218,27 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       valueAsDate,
     } = ev.detail;
 
-    this.value = this.#valueFormatter.format(valueAsDate);
+    /**
+     * NOTE: When the input date is cleared, the date picker's `date` will be updated and `#isClearAction`
+     * is used to prevent `valueAsDate` from updating empty `value`.
+     *
+     * The flow of execution is as follows:
+     *
+     * 1. Clear input value
+     * 2. Set `#isClearAction=true`
+     * 3. `date` updated but `#isClearAction` is true so do nothing and reset `#isClearAction`
+     * 4. At this point, new value can be set via keyboard or mouse
+     */
+    if (!this.#isClearAction) {
+      this.#selectedDate = valueAsDate;
 
-    if (isKeypress && (key === keyEnter || key === keySpace)) {
-      (await this.$inputSurface)?.close();
+      if (!isKeypress || (key === keyEnter || key === keySpace)) {
+        this.value = this.#valueFormatter.format(this.#selectedDate);
+
+        isKeypress && (await this.$inputSurface)?.close();
+      }
+    } else {
+      this.#isClearAction = false;
     }
   }
 
@@ -220,16 +246,22 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     currentTarget,
     detail: {
       focusableElements: [focusableElement],
+      valueAsDate,
     },
   }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void {
-    this.#picker = currentTarget as AppDatePicker;
     this.#focusElement = focusableElement;
+    this.#picker = currentTarget as AppDatePicker;
+    this.#selectedDate = valueAsDate;
   }
 
   async #onOpened(): Promise<void> {
-    (await this.#picker)?.updateComplete;
+    await this.#picker?.updateComplete;
     await this.updateComplete;
 
     this.#focusElement?.focus();
   }
 }
+
+// FIXME: Esc does not close input surface
+// FIXME: No focus trap in input surface or close input surface when focus is outside
+// FIXME: Support valueAsDate:null and valueAsNumber:NaN just like native input[type=date]
