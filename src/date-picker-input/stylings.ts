@@ -6,7 +6,7 @@ export const datePickerInputStyling = css`
 }
 
 .mdc-text-field__icon--trailing {
-  padding: 0 4px 0 0;
+  padding: 0;
 }
 
 .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon--trailing {

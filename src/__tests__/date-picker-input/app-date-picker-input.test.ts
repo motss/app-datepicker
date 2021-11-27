@@ -12,8 +12,8 @@ import type { AppDatePickerInput } from '../../date-picker-input/app-date-picker
 import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input/constants';
 import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
-import { iconClose } from '../../icons';
-import { keyEnter, keyEscape, keySpace } from '../../key-values';
+import { iconClear } from '../../icons';
+import { keyEnter, keyEscape, keySpace, keyTab } from '../../key-values';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import { eventOnce } from '../test-utils/event-once';
@@ -84,7 +84,7 @@ describe(appDatePickerInputName, () => {
         expect(mdcFloatingLabel).text(label);
         expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).equal('label');
         expect(mdcTextFieldInput?.placeholder).equal(placeholder);
-        expect(mdcTextFieldIconTrailing).lightDom.equal(iconClose.strings.toString());
+        expect(mdcTextFieldIconTrailing).lightDom.equal(iconClear.strings.toString());
       }
     );
   });
@@ -203,10 +203,11 @@ describe(appDatePickerInputName, () => {
     expect(datePicker).exist;
   });
 
-  type CaseCloseDatePickerBy = [string, 'click' | 'keyup'];
+  type CaseCloseDatePickerBy = [string, 'click' | 'escape' | 'tab'];
   const casesCloseDatePicker: CaseCloseDatePickerBy[] = [
-    ['clicking outside of input surface', 'click'],
-    ['pressing Escape key', 'keyup'],
+    ['clicking outside of date picker input', 'click'],
+    ['pressing Escape key', 'escape'],
+    ['tabbing outside of date picker input', 'tab'],
   ];
   casesCloseDatePicker.forEach((a) => {
     const [, testTriggerType] = a;
@@ -245,11 +246,26 @@ describe(appDatePickerInputName, () => {
           'closed',
           CustomEvent<DialogClosedEventDetail>>(el, 'closed');
 
-        if (testTriggerType === 'click') {
-          document.body.click();
-        } else {
-          await sendKeys({ down: keyEscape });
-          await sendKeys({ up: keyEscape });
+        switch (testTriggerType) {
+          case 'click': {
+            document.body.click();
+            break;
+          }
+          case 'escape': {
+            await sendKeys({ down: keyEscape });
+            await sendKeys({ up: keyEscape });
+            break;
+          }
+          case 'tab': {
+            const yearDropdown = datePicker?.query(elementSelectors.yearDropdown);
+
+            expect(yearDropdown).exist;
+
+            yearDropdown?.focus();
+            for (const _ of Array(4)) await sendKeys({ press: keyTab });
+            break;
+          }
+          default:
         }
 
         await closedTask;
@@ -306,38 +322,55 @@ describe(appDatePickerInputName, () => {
     );
   });
 
-  it('clears value', async () => {
-    const el = await fixture<AppDatePickerInput>(
-      html`<app-date-picker-input
-        .label=${label}
-        .max=${max}
-        .min=${min}
-        .placeholder=${placeholder}
-        .value=${value}
-      ></app-date-picker-input>`
+  type CaseResetsValue = [string, 'reset' | 'click'];
+  const casesResetsValue: CaseResetsValue[] = [
+    ['calls .reset()', 'reset'],
+    ['clicks clear icon button', 'click'],
+  ];
+  casesResetsValue.forEach((a) => {
+    const [_, testTriggerType] = a;
+
+    it(
+      messageFormatter('%s to reset value', a),
+      async () => {
+        const el = await fixture<AppDatePickerInput>(
+          html`<app-date-picker-input
+            .label=${label}
+            .max=${max}
+            .min=${min}
+            .placeholder=${placeholder}
+            .value=${value}
+          ></app-date-picker-input>`
+        );
+
+        let mdcTextFieldInput =
+          el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+        const mdcTextFieldIconTrailing =
+          el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+
+        expect(mdcTextFieldInput).exist;
+        expect(mdcTextFieldIconTrailing).exist;
+
+        const expectedValue = formatter.format(new Date(value));
+
+        expect(mdcTextFieldInput).value(expectedValue);
+
+        if (testTriggerType === 'click') {
+          mdcTextFieldIconTrailing?.click();
+        } else {
+          el.reset();
+        }
+
+        await el.updateComplete;
+
+        mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+
+        expect(mdcTextFieldInput).value('');
+        expect(el.value).equal('');
+        expect(el.valueAsDate).equal(null);
+        expect(el.valueAsNumber).deep.equal(NaN);
+      }
     );
-
-    let mdcTextFieldInput =
-      el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-    const mdcTextFieldIconTrailing =
-      el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
-
-    expect(mdcTextFieldInput).exist;
-    expect(mdcTextFieldIconTrailing).exist;
-
-    const expectedValue = formatter.format(new Date(value));
-
-    expect(mdcTextFieldInput).value(expectedValue);
-
-    mdcTextFieldIconTrailing?.click();
-    await el.updateComplete;
-
-    mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-
-    expect(mdcTextFieldInput).value('');
-    expect(el.value).equal('');
-    expect(el.valueAsDate).equal(null);
-    expect(el.valueAsNumber).deep.equal(NaN);
   });
 
   type A3 = typeof keyEnter | typeof keySpace;

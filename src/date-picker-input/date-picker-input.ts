@@ -12,8 +12,8 @@ import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
 import { toDateString } from '../helpers/to-date-string.js';
-import { iconClose } from '../icons.js';
-import { keyEnter, keyEscape, keySpace } from '../key-values.js';
+import { iconClear } from '../icons.js';
+import { keyEnter, keyEscape, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
@@ -24,6 +24,7 @@ import { datePickerInputStyling } from './stylings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
   public override type = appDatePickerInputType;
+  public override iconTrailing = 'clear';
 
   public get valueAsDate(): Date | null {
     return this.#valueAsDate || null;
@@ -66,7 +67,16 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     const input = await this.$input;
     if (input) {
       const onBodyKeyup = (ev: KeyboardEvent) => {
-        if (ev.key === keyEscape) this.closePicker();
+        if (ev.key === keyEscape) {
+          this.closePicker();
+        } else if (ev.key === keyTab) {
+          const isTabInside = (ev.composedPath() as HTMLElement[]).find(
+            n => n.nodeType === Node.ELEMENT_NODE &&
+            this.isEqualNode(n)
+          );
+
+          if (!isTabInside) this.closePicker();
+        }
       }
       const onClick = () => this._open = true;
       const onKeyup = (ev: KeyboardEvent) => {
@@ -205,7 +215,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       aria-label=${this.clearLabel}
       class="mdc-text-field__icon mdc-text-field__icon--trailing"
     >
-      ${iconClose}
+      ${iconClear}
     </mwc-icon-button>
     `;
   }
@@ -289,5 +299,3 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }
   }
 }
-
-// FIXME: No focus trap in input surface or close input surface when focus is outside
