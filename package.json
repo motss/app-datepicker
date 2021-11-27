@@ -88,6 +88,7 @@
     "postinstall": "if [ \"$CI\" != 'true' ]; then npm dedupe; fi",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
+    "nano-staged": "nano-staged",
     "prepare": "if [ \"$CI\" != 'true' ]; then npm x -- husky install; fi",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
@@ -132,6 +133,7 @@
     "eslint-plugin-promise": "^5.1.1",
     "eslint-plugin-regexp": "^1.5.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "nano-staged": "^0.3.1",
     "typescript": "^4.5.2"
   },
   "engines": {
@@ -140,5 +142,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "nano-staged": {
+    "*.ts": "npm run lint:build -- --fix"
   }
 }
