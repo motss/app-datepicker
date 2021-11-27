@@ -11,7 +11,7 @@ import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
-import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { toDateString } from '../helpers/to-date-string.js';
 import { iconClose } from '../icons.js';
 import { keyEnter, keyEscape, keySpace } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
@@ -25,6 +25,15 @@ import { datePickerInputStyling } from './stylings.js';
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
   public override type = appDatePickerInputType;
 
+  public get valueAsDate(): Date | null {
+    return this.#valueAsDate || null;
+  }
+
+  public get valueAsNumber(): number {
+    return Number(this.#valueAsDate || NaN);
+  }
+
+
   @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
@@ -36,7 +45,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   #focusElement: HTMLElement | undefined = undefined;
   #isClearAction = false;
   #picker: AppDatePicker | undefined = undefined;
-  #selectedDate!: Date;
+  #selectedDate: Date | undefined;
+  #valueAsDate: Date | undefined;
   #valueFormatter = this.$toValueFormatter();
 
   public static override styles = [
@@ -86,15 +96,13 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       ) as string;
 
       this.locale = newLocale;
-      this.#valueFormatter = this.$toValueFormatter();
 
-      if (this.value) {
-        this._valueText = this.#valueFormatter.format(toResolvedDate(this.value));
-      }
+      this.#valueFormatter = this.$toValueFormatter();
+      this.#updateValues(this.value);
     }
 
-    if (changedProperties.has('value') && this.value) {
-      this._valueText = this.#valueFormatter.format(toResolvedDate(this.value));
+    if (changedProperties.has('value')) {
+      this.#updateValues(this.value);
     }
 
     if (!this._rendered && this._open) {
@@ -141,11 +149,15 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }`;
   }
 
-  public closePicker() {
+  public closePicker(): void {
     this._open = false;
   }
 
-  public showPicker() {
+  public reset(): void {
+    this.#onResetClick();
+  }
+
+  public showPicker(): void {
     this._open = true;
   }
 
@@ -189,7 +201,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   protected override renderTrailingIcon(): TemplateResult {
     return html`
     <mwc-icon-button
-      @click=${this.#onClearClick}
+      @click=${this.#onResetClick}
       aria-label=${this.clearLabel}
       class="mdc-text-field__icon mdc-text-field__icon--trailing"
     >
@@ -206,8 +218,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     });
   }
 
-  #onClearClick()  {
+  #onResetClick()  {
     this.#isClearAction = true;
+    this.#selectedDate = this.#valueAsDate = undefined;
 
     this.value = this._valueText = '';
   }
@@ -238,8 +251,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       this.#selectedDate = valueAsDate;
 
       if (!isKeypress || (key === keyEnter || key === keySpace)) {
-        this.value = this.#valueFormatter.format(this.#selectedDate);
-
+        this.value = toDateString(this.#selectedDate);
         isKeypress && (await this.$inputSurface)?.close();
       }
     } else {
@@ -265,7 +277,17 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     this.#focusElement?.focus();
   }
+
+  #updateValues(value: string): void {
+    if (value) {
+      const valueDate = new Date(value);
+
+      this.#selectedDate = this.#valueAsDate = valueDate;
+      this._valueText = this.#valueFormatter.format(valueDate);
+    } else {
+      this.#onResetClick();
+    }
+  }
 }
 
 // FIXME: No focus trap in input surface or close input surface when focus is outside
-// FIXME: Support valueAsDate:null and valueAsNumber:NaN just like native input[type=date]

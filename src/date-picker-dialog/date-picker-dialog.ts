@@ -17,11 +17,11 @@ import { datePickerDialogStyling } from './stylings.js';
 import type { DatePickerDialogProperties, DialogClosingEventDetail } from './typings.js';
 
 export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerDialogProperties {
-  public override get valueAsDate(): Date {
+  public get valueAsDate(): Date {
     return this.#valueAsDate;
   }
 
-  public override get valueAsNumber(): number {
+  public get valueAsNumber(): number {
     return +this.#valueAsDate;
   }
 

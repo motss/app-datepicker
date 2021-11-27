@@ -34,11 +34,11 @@ import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
 
 export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerProperties {
-  public override get valueAsDate(): Date {
+  public get valueAsDate(): Date {
     return this.#valueAsDate;
   }
 
-  public override get valueAsNumber(): number {
+  public get valueAsNumber(): number {
     return +this.#valueAsDate;
   }
 

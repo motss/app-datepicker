@@ -6,10 +6,6 @@ import type { DatePicker } from './date-picker/date-picker.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
 
-export type StartView = StartViewTuple[number];
-
-export type StartViewTuple = typeof startViews;
-
 export type ChangedProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -18,6 +14,25 @@ export type Constructor<T> = new (...args: any[]) => T;
 export interface CustomEventAction<T extends string, CustomEventDetail> {
   detail: CustomEventDetail;
   type: T;
+}
+
+export interface CustomEventDetail {
+  ['date-updated']: CustomEventAction<'date-updated', CustomEventDetailDateUpdated>;
+  ['first-updated']: CustomEventAction<'first-updated', CustomEventDetailFirstUpdated>;
+  ['year-updated']: CustomEventAction<'year-updated', CustomEventDetailYearUpdated>;
+}
+
+interface CustomEventDetailDateUpdated extends KeyEvent, DatePickerValues {}
+
+interface CustomEventDetailFirstUpdated extends DatePickerValues {
+  focusableElements: HTMLElement[];
+}
+
+/**
+ * NOTE: No `KeyEvent` is needed as native `button` element will dispatch `click` event on keypress.
+ */
+interface CustomEventDetailYearUpdated {
+  year: number;
 }
 
 export interface DatePickerProperties extends
@@ -40,26 +55,18 @@ export interface Formatters extends Pick<DatePicker, 'locale'> {
 
 export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
 
+interface KeyEvent {
+  isKeypress: boolean;
+  key?: SupportedKey;
+}
+
 export type LitConstructor = Constructor<LitElement>;
 
-export interface CustomEventDetail {
-  ['date-updated']: CustomEventAction<'date-updated', CustomEventDetailDateUpdated>;
-  ['first-updated']: CustomEventAction<'first-updated', CustomEventDetailFirstUpdated>;
-  ['year-updated']: CustomEventAction<'year-updated', CustomEventDetailYearUpdated>;
-}
+export type OmitKey<T, K extends keyof T> = Omit<T, K>;
 
-interface CustomEventDetailDateUpdated extends KeyEvent, DatePickerValues {}
+export type StartView = StartViewTuple[number];
 
-interface CustomEventDetailFirstUpdated extends DatePickerValues {
-  focusableElements: HTMLElement[];
-}
-
-/**
- * NOTE: No `KeyEvent` is needed as native `button` element will dispatch `click` event on keypress.
- */
-interface CustomEventDetailYearUpdated {
-  year: number;
-}
+export type StartViewTuple = typeof startViews;
 
 export type SupportedKey =
   | typeof keyArrowDown
@@ -76,9 +83,4 @@ export type SupportedKey =
 
 export interface ValueUpdatedEvent extends KeyEvent {
   value: string;
-}
-
-interface KeyEvent {
-  isKeypress: boolean;
-  key?: SupportedKey;
 }

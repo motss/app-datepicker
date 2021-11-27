@@ -42,6 +42,17 @@ export class DemoApp extends RootElement {
     `,
   ];
 
+  protected override firstUpdated(_changedProperties: Map<string | number | symbol, unknown>): void {
+      Object.defineProperty(globalThis, 'demoApp', {
+        value: {
+          datePicker1: this.query('#datePicker1'),
+          datePicker2: this.query('#datePicker2'),
+          datePickerInput1: this.query('#datePickerInput1'),
+          datePickerDialog1: this.query('#datePickerDialog1'),
+        },
+      });
+  }
+
   protected override render() {
     return html`
     <app-date-picker
@@ -59,6 +70,7 @@ export class DemoApp extends RootElement {
     ></app-date-picker>
 
     <app-date-picker-input
+      id="datePickerInput1"
       ?outlined=${true}
       .label=${'DOB'}
       .placeholder=${'Select your date of birth'}
@@ -68,7 +80,7 @@ export class DemoApp extends RootElement {
     ></app-date-picker-input>
 
     <button @click=${this.#showDialog}>Open</button>
-    <app-date-picker-dialog></app-date-picker-dialog>
+    <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 
     <!-- <app-date-picker-input></app-date-picker-input> -->
     <!-- <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog> -->

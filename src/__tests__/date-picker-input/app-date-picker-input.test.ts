@@ -43,32 +43,50 @@ describe(appDatePickerInputName, () => {
   const placeholder = 'Select your date of birth';
   const value = '2020-02-02';
 
-  it('renders', async () => {
-    const el = await fixture<AppDatePickerInput>(
-      html`<app-date-picker-input
-        .label=${label}
-        .max=${max}
-        .min=${min}
-        .placeholder=${placeholder}
-        .value=${value}
-      ></app-date-picker-input>`
+  type CaseRenders = [string | undefined | null, string, Date | null, number];
+  const casesRenders: CaseRenders[] = [
+    ['', '', null, NaN],
+    [undefined, '', null, NaN],
+    [null, '', null, NaN],
+    [value, value, new Date(value), +new Date(value)],
+  ];
+  casesRenders.forEach((a) => {
+    const [testValue, expectedValue, expectedValueAsDate, expectedValueAsNumber] = a;
+
+    it(
+      messageFormatter('renders (value=%s)', a),
+      async () => {
+        const el = await fixture<AppDatePickerInput>(
+          html`<app-date-picker-input
+            .label=${label}
+            .max=${max}
+            .min=${min}
+            .placeholder=${placeholder}
+            .value=${testValue}
+          ></app-date-picker-input>`
+        );
+
+        const mdcTextField = el.query(elementSelectors.mdcTextField);
+        const mdcFloatingLabel = el.query(elementSelectors.mdcFloatingLabel);
+        const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+        const mdcTextFieldIconTrailing = el.query(elementSelectors.mdcTextFieldIconTrailing);
+
+        expect(mdcTextField).exist;
+        expect(mdcFloatingLabel).exist;
+        expect(mdcTextFieldInput).exist;
+        expect(mdcTextFieldIconTrailing).exist;
+
+        expect(el.type).equal(appDatePickerInputType);
+        expect(el.value).equal(expectedValue);
+        expect(el.valueAsDate).deep.equal(expectedValueAsDate);
+        expect(el.valueAsNumber).deep.equal(expectedValueAsNumber);
+
+        expect(mdcFloatingLabel).text(label);
+        expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).equal('label');
+        expect(mdcTextFieldInput?.placeholder).equal(placeholder);
+        expect(mdcTextFieldIconTrailing).lightDom.equal(iconClose.strings.toString());
+      }
     );
-
-    const mdcTextField = el.query(elementSelectors.mdcTextField);
-    const mdcFloatingLabel = el.query(elementSelectors.mdcFloatingLabel);
-    const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-    const mdcTextFieldIconTrailing = el.query(elementSelectors.mdcTextFieldIconTrailing);
-
-    expect(mdcTextField).exist;
-    expect(mdcFloatingLabel).exist;
-    expect(mdcTextFieldInput).exist;
-    expect(mdcTextFieldIconTrailing).exist;
-
-    expect(el.type).equal(appDatePickerInputType);
-    expect(mdcFloatingLabel).text(label);
-    expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).equal('label');
-    expect(mdcTextFieldInput?.placeholder).equal(placeholder);
-    expect(mdcTextFieldIconTrailing).lightDom.equal(iconClose.strings.toString());
   });
 
   type A1 = [string | undefined | null, string];
@@ -317,7 +335,9 @@ describe(appDatePickerInputName, () => {
     mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
 
     expect(mdcTextFieldInput).value('');
-    expect(el).value('');
+    expect(el.value).equal('');
+    expect(el.valueAsDate).equal(null);
+    expect(el.valueAsNumber).deep.equal(NaN);
   });
 
   type A3 = typeof keyEnter | typeof keySpace;
