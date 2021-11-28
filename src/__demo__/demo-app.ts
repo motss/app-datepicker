@@ -1,5 +1,6 @@
 import '../date-picker-dialog/app-date-picker-dialog.js';
 import '../date-picker-input/app-date-picker-input.js';
+import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '../date-picker/app-date-picker.js';
 
 import { css, html } from 'lit';

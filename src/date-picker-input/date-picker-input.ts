@@ -1,4 +1,3 @@
-import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '../date-picker/app-date-picker.js';
 
 import { TextField } from '@material/mwc-textfield';
@@ -11,7 +10,9 @@ import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
+import { datePickerSlot } from '../helpers/date-picker-slot.js';
 import { toDateString } from '../helpers/to-date-string.js';
+import { warnUndefinedElement } from '../helpers/warn-undefined-element.js';
 import { iconClear } from '../icons.js';
 import { keyEnter, keyEscape, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
@@ -123,40 +124,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   public override render(): TemplateResult {
     return html`
     ${super.render()}
-    ${
-      this._rendered ?
-        html`
-        <app-date-picker-input-surface
-          ?open=${this._open}
-          ?stayOpenOnBodyClick=${true}
-          .anchor=${this as HTMLElement}
-          @closed=${this.#onClosed}
-          @opened=${this.#onOpened}
-        >
-          <app-date-picker
-            ?showWeekNumber=${this.showWeekNumber}
-            .disabledDates=${this.disabledDates}
-            .disabledDays=${this.disabledDays}
-            .firstDayOfWeek=${this.firstDayOfWeek}
-            .landscape=${this.landscape}
-            .locale=${this.locale}
-            .max=${this.max}
-            .min=${this.min}
-            .nextMonthLabel=${this.nextMonthLabel}
-            .previousMonthLabel=${this.previousMonthLabel}
-            .selectedDateLabel=${this.selectedDateLabel}
-            .startView=${this.startView}
-            .value=${this.value}
-            .weekLabel=${this.weekLabel}
-            .weekNumberType=${this.weekNumberType}
-            .yearDropdownLabel=${this.yearDropdownLabel}
-            @date-updated=${this.#onDatePickerDateUpdated}
-            @first-updated=${this.#onDatePickerFirstUpdated}
-          ></app-date-picker>
-        </app-date-picker-input-surface>
-        ` :
-        nothing
-    }`;
+    ${this._rendered ? this.$renderContent() : nothing}
+    `;
   }
 
   public closePicker(): void {
@@ -220,6 +189,44 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     `;
   }
 
+  protected $renderContent(): TemplateResult {
+    warnUndefinedElement(appDatePickerInputSurfaceName);
+
+    return html`
+    <app-date-picker-input-surface
+      ?open=${this._open}
+      ?stayOpenOnBodyClick=${true}
+      .anchor=${this as HTMLElement}
+      @closed=${this.#onClosed}
+      @opened=${this.#onOpened}
+    >${this.$renderSlot()}</app-date-picker-input-surface>
+    `;
+  }
+
+  protected $renderSlot(): TemplateResult {
+    return datePickerSlot({
+      disabledDates: this.disabledDates,
+      disabledDays: this.disabledDays,
+      firstDayOfWeek: this.firstDayOfWeek,
+      inline: true,
+      landscape: this.landscape,
+      locale: this.locale,
+      max: this.max,
+      min: this.min,
+      nextMonthLabel: this.nextMonthLabel,
+      onDatePickerDateUpdated: this.#onDatePickerDateUpdated,
+      onDatePickerFirstUpdated: this.#onDatePickerFirstUpdated,
+      previousMonthLabel: this.previousMonthLabel,
+      selectedDateLabel: this.selectedDateLabel,
+      showWeekNumber: this.showWeekNumber,
+      startView: this.startView,
+      value: this.value,
+      weekLabel: this.weekLabel,
+      weekNumberType: this.weekNumberType,
+      yearDropdownLabel: this.yearDropdownLabel,
+    });
+  }
+
   protected $toValueFormatter(): Intl.DateTimeFormat {
     return DateTimeFormat(this.locale, {
       year: 'numeric',
@@ -235,8 +242,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this.value = this._valueText = '';
   }
 
-  #onClosed(): void {
+  #onClosed({ detail }: CustomEvent): void {
     this._open = false;
+    this.fire({ detail, type: 'closed' });
   }
 
   async #onDatePickerDateUpdated(ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> {
@@ -281,11 +289,12 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this.#selectedDate = valueAsDate;
   }
 
-  async #onOpened(): Promise<void> {
+  async #onOpened({ detail }: CustomEvent): Promise<void> {
     await this.#picker?.updateComplete;
     await this.updateComplete;
 
     this.#focusElement?.focus();
+    this.fire({ detail, type: 'opened' });
   }
 
   #updateValues(value: string): void {

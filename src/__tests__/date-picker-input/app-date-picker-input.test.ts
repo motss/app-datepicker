@@ -1,4 +1,5 @@
 import '../../date-picker-input/app-date-picker-input';
+import '../../date-picker-input-surface/app-date-picker-input-surface';
 
 import type { Button } from '@material/mwc-button';
 import { expect, fixture, html } from '@open-wc/testing';
@@ -139,8 +140,10 @@ describe(appDatePickerInputName, () => {
       CustomEvent<unknown>>(el, 'opened');
 
     el.showPicker();
-    await openedTask;
+    const opened = await openedTask;
     await el.updateComplete;
+
+    expect(opened).not.undefined;
 
     const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
 
@@ -231,8 +234,10 @@ describe(appDatePickerInputName, () => {
           CustomEvent<unknown>>(el, 'opened');
 
         el.showPicker();
-        await openedTask;
+        const opened = await openedTask;
         await el.updateComplete;
+
+        expect(opened).not.undefined;
 
         let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
         let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
@@ -268,8 +273,10 @@ describe(appDatePickerInputName, () => {
           default:
         }
 
-        await closedTask;
+        const closed = await closedTask;
         await el.updateComplete;
+
+        expect(closed).not.undefined;
 
         datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
         datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
@@ -310,8 +317,10 @@ describe(appDatePickerInputName, () => {
         await sendKeys({ down: testKey });
         await sendKeys({ up: testKey });
 
-        await openedTask;
+        const opened = await openedTask;
         await el.updateComplete;
+
+        expect(opened).not.undefined;
 
         const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
         const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
@@ -400,8 +409,10 @@ describe(appDatePickerInputName, () => {
           CustomEvent<unknown>>(el, 'opened');
 
         el.showPicker();
-        await openedTask;
+        const opened = await openedTask;
         await el.updateComplete;
+
+        expect(opened).not.undefined;
 
         const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
         const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
@@ -424,6 +435,9 @@ describe(appDatePickerInputName, () => {
 
         await closedTask;
         await el.updateComplete;
+
+        // FIXME: Webkit returns undefined even `closed` event is fired
+        // expect(closed).not.undefined;
       }
     );
   });
@@ -445,8 +459,10 @@ describe(appDatePickerInputName, () => {
       CustomEvent<unknown>>(el, 'opened');
 
     el.showPicker();
-    await openedTask;
+    const opened = await openedTask;
     await el.updateComplete;
+
+    expect(opened).not.undefined;
 
     const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
     const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
@@ -466,8 +482,10 @@ describe(appDatePickerInputName, () => {
     newSelectedDate?.focus();
     newSelectedDate?.click();
 
-    await closedTask;
+    const closed = await closedTask;
     await el.updateComplete;
+
+    expect(closed).not.undefined;
   });
 
 });

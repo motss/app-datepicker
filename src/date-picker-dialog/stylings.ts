@@ -2,7 +2,7 @@ import { css, unsafeCSS } from 'lit';
 
 import { appDatePickerDialogName } from './constants.js';
 
-export const datePickerDialogBaseStyling = css`
+export const datePickerDialogDialogStyling = css`
 :host {
   display: block;
 

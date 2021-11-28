@@ -1,6 +1,12 @@
 import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
-import type { DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
+import type { ElementMixinProperties } from '../mixins/typings.js';
+import type { CustomEventDetail, DatePickerProperties, Formatters, OmitKey, SupportedKey } from '../typings.js';
+
+export interface DatePickerSlotInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties> {
+  onDatePickerDateUpdated(event: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> | void;
+  onDatePickerFirstUpdated(event: CustomEvent<CustomEventDetail['first-updated']['detail']>): Promise<void> | void;
+}
 
 export interface DateValidatorResult {
   date: Date;
