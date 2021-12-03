@@ -89,7 +89,7 @@
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "nano-staged": "nano-staged",
-    "prepare": "if [ \"$CI\" != 'true' ]; then npm x -- husky install; fi",
+    "prepare": "if [ \"$CI\" != 'true' ]; then npm x -y -- simple-git-hooks; fi",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "npm run test:helpers && npm run test:elements",
@@ -98,6 +98,11 @@
     "ts": "tsc",
     "watch": "npm run clean && tsc --watch",
     "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npm run check && npm run nano-staged && npm run ts -- --noEmit",
+    "commit-msg": "npm x -y -- commitlint --edit \"$1\"",
+    "post-commit": "npm run clean"
   },
   "commitlint": {
     "extends": [
@@ -135,6 +140,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "hanbi": "^1.0.1",
     "nano-staged": "^0.3.1",
+    "simple-git-hooks": "^2.7.0",
     "typescript": "^4.5.2"
   },
   "engines": {
