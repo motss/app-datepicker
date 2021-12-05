@@ -87,6 +87,7 @@
     "clean": "rm -rf .*cache *.log coverage/ dist/ logs/",
     "postinstall": "if [ \"$CI\" != 'true' ]; then npm dedupe; fi",
     "lint": "eslint src --ext .js,.ts",
+    "lint-commit": "npm x -y -- commitlint --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
     "nano-staged": "nano-staged",
     "prepare": "if [ \"$CI\" != 'true' ]; then npm x -y -- simple-git-hooks; fi",
@@ -97,8 +98,7 @@
     "test:helpers": "TEST_HELPERS=1 npm run wtr -- --config wtr.config.mjs",
     "ts": "tsc",
     "watch": "npm run clean && tsc --watch",
-    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js",
-    "lint-commit": "npm x -y -- commitlint --edit"
+    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run check && npm run nano-staged && npm run ts -- --noEmit",
