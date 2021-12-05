@@ -147,6 +147,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       this.#valueAsDate = new Date(valueDate);
 
       /**
+       * Always override `min` and `max` when they are set with falsy values.
+       */
+      if (!this.max) this.max = toDateString(newMax.date);
+      if (!this.min) this.min = toDateString(newMin.date);
+
+      /**
        * Always override `value` when its value is not a string and dispatch `date-updated` event.
        */
       if (!this.value) {

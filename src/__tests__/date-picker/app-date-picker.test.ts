@@ -1,5 +1,6 @@
 import '../../date-picker/app-date-picker';
 
+import type { Button } from '@material/mwc-button';
 import { expect } from '@open-wc/testing';
 import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 
@@ -21,6 +22,7 @@ describe(appDatePickerName, () => {
     body: '.body',
     calendar: '.calendar',
     calendarDay: '.calendar-day',
+    calendarDayWithLabel: (label: string) => `.calendar-day[aria-label="${label}"]`,
     disabledCalendarDay: '.calendar-day[aria-disabled="true"]',
     header: '.header',
     nextMonthNavigationButton: 'mwc-icon-button[data-navigation="next"]',
@@ -34,7 +36,7 @@ describe(appDatePickerName, () => {
   const formatters: Formatters = toFormatters('en-US');
   const todayDate = toResolvedDate();
 
-  type A = [StartView | undefined, (keyof typeof elementSelectors)[], (keyof typeof elementSelectors)[]];
+  type A = [StartView | undefined, ('body' | 'calendar' | 'header' | 'yearGrid')[], ('body' | 'calendar' | 'header' | 'yearGrid')[]];
   const cases: A[] = [
     [
       undefined,
@@ -601,35 +603,87 @@ describe(appDatePickerName, () => {
     }
   );
 
-  type A7 = [
-    MaybeDate | undefined,
-    MaybeDate | undefined,
-    Date,
-    Date,
-    Date
+  type NullishDateString = string | null | undefined;
+  type CaseOptionalMax = [
+    [testMax: NullishDateString, testValue: NullishDateString, max: string, value: string],
+    [testNewMax: NullishDateString, testNewValue: NullishDateString, newMax: string, newValue: string]
   ];
-  const cases7: A7[] = [
-    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
-    ['', '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
-    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
-    [null, '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
-    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
-    ['', MAX_DATE.toJSON(), todayDate, MAX_DATE, MAX_DATE],
-    // MAX_DATE (i=3) will not affect test result and it will always return '' after init
-    [null, MAX_DATE.toJSON(), todayDate, MAX_DATE, MAX_DATE],
+  const casesOptionalMax: CaseOptionalMax[] = [
+    // max='',value=''
+    [
+      // same max and value subsequently
+      ['', '', '2100-12-31', toDateString(todayDate)],
+      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
+    ],
+    [
+      // larger max subsequently
+      ['', '', '2100-12-31', toDateString(todayDate)],
+      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
+    ],
+    [
+      // smaller max subsequently
+      ['', '', '2100-12-31', toDateString(todayDate)],
+      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
+    ],
 
-    // defined max to old max
-    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
-    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
+    // max=null,value=null
+    [
+      // same max and value subsequently (null)
+      [null, null, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
+    ],
+    [
+      // larger max subsequently
+      [null, null, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
+    ],
+    [
+      // smaller max subsequently
+      [null, null, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
+    ],
 
-    // defined max to old max
-    [undefined, '2020-02-20', todayDate, MAX_DATE, toResolvedDate('2020-02-20')],
-    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02'), MAX_DATE],
+    // max=undefined,value=undefined
+    [
+      // same max and value subsequently
+      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
+    ],
+    [
+      // larger max subsequently
+      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
+    ],
+    [
+      // smaller max subsequently
+      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
+      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
+    ],
+
+    // max=2020-02-02,value=2020-02-02
+    [
+      // max='' and value=2100-12-12 subsequently
+      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
+      ['', '2100-12-12', '2020-02-02', '2020-02-02'],
+    ],
+    [
+      // max=null and value=2100-12-12 subsequently
+      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
+      [null, '2100-12-12', '2020-02-02', '2020-02-02'],
+    ],
+    [
+      // max=undefined and value=2100-12-12 subsequently
+      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
+      [undefined, '2100-12-12', toDateString(MAX_DATE), '2100-12-12'],
+    ],
   ];
-  cases7.forEach((a) => {
-    const [testMax, testNewMax, expectedSelectedDate, expectedMaxDate, expectedNewMaxDate] = a;
+  casesOptionalMax.forEach((a) => {
+    const [
+      [testMax, testValue],
+      [testNewMax, testNewValue],
+    ] = a;
     it(
-      messageFormatter('updates optional max (max=%s, newMax=%s)', a),
+      `updates optional max (initially: max=${testMax}, value=${testValue}, subsequently: max=${testNewMax}, value=${testNewValue})`,
       async () => {
         const el = await fixture<AppDatePicker>(
           html`<app-date-picker
@@ -639,84 +693,76 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const calendar = el.query<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
+        const $a = a.map<[number, CaseOptionalMax[0]]>((n, i) => [i, n]);
+        for (const [
+          i,
+          [$testMax, $testValue, $expectedMax, $expectedValue],
+        ] of $a) {
+          const calendar = el.query<AppMonthCalendar>(
+            elementSelectors.calendar
+          );
 
-        const selectedDate = calendar?.query<HTMLTableCellElement>(
-          elementSelectors.selectedCalendarDay
-        );
+          if (i) {
+            el.max = $testMax as never;
+            el.value = $testValue;
 
-        expect(selectedDate).exist;
-        expect(selectedDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedSelectedDate)
-        );
-        expect(selectedDate?.fullDate).deep.equal(expectedSelectedDate);
-
-        el.value = expectedMaxDate.toJSON();
-
-        await elementUpdated(calendar as AppMonthCalendar);
-        await elementUpdated(el);
-
-        const assertMaxDate = (
-          date: MaybeDate | undefined,
-          expectedDate: Date
-        ): void => {
-          const isSameCalendarMonth = toResolvedDate(date).getUTCMonth() === expectedDate.getUTCMonth();
-
-          if (isSameCalendarMonth) {
-            const maxDate = calendar?.query<HTMLTableCellElement>(
-              `${elementSelectors.calendarDay}[aria-label="${
-                formatters.fullDateFormat(expectedDate)
-              }"]`
-            );
-
-            expect(maxDate).exist;
-            expect(maxDate?.getAttribute('aria-disabled')).equal('false');
-            expect(maxDate?.getAttribute('aria-label')).equal(
-              formatters.fullDateFormat(expectedDate)
-            );
-            expect(maxDate?.fullDate).deep.equal(expectedDate);
+            calendar && await elementUpdated(calendar);
+            await elementUpdated(el);
           }
 
-          const isNotLastDayOfCalendarMonth =
-            expectedDate.getUTCDate() !== new Date(
-              expectedDate.getUTCFullYear(),
-              expectedDate.getMonth() + 1,
-              0
-            ).getUTCDate();
-          const isNotMaxDate = expectedDate.getTime() !== MAX_DATE.getTime();
+          const selectedDate = calendar?.query<HTMLTableCellElement>(
+            elementSelectors.selectedCalendarDay
+          );
 
-          if (isNotLastDayOfCalendarMonth && isNotMaxDate) {
-            const expectedOneDayAfterMaxDate = toResolvedDate(
-              new Date(expectedDate).setUTCDate(
-                expectedDate.getUTCDate() + 1
-              )
-            );
-            const oneDayAfterMaxDate =
-              calendar?.query<HTMLTableCellElement>(
-                `${elementSelectors.calendarDay}[aria-label="${
-                  formatters.fullDateFormat(expectedOneDayAfterMaxDate)
-                }"]`
+          expect(calendar).exist;
+          expect(selectedDate).exist;
+
+          const expectedValueDate = new Date($expectedValue);
+
+          expect(el.max).equal($expectedMax);
+          expect(selectedDate?.getAttribute('aria-label')).equal(
+            formatters.fullDateFormat(expectedValueDate)
+          );
+          expect(selectedDate?.fullDate).deep.equal(expectedValueDate);
+
+          if (i) {
+            const isMaxDate = $expectedMax === toDateString(MAX_DATE);
+
+            if (isMaxDate) {
+              /**
+               * assert `$expectedMax` is the `MAX_DATE` supported and there will be no next month nav button
+               */
+               const nextMonthNavigationButton = el.query<Button>(
+                elementSelectors.nextMonthNavigationButton
+              );
+              const maxDate = calendar?.query<HTMLTableCellElement>(
+                elementSelectors.calendarDayWithLabel(formatters.fullDateFormat(MAX_DATE))
               );
 
-            expect(oneDayAfterMaxDate).exist;
-            expect(oneDayAfterMaxDate?.getAttribute('aria-disabled')).equal('true');
-            expect(oneDayAfterMaxDate?.getAttribute('aria-label')).equal(
-              formatters.fullDateFormat(expectedOneDayAfterMaxDate)
-            );
-            expect(oneDayAfterMaxDate?.fullDate).deep.equal(expectedOneDayAfterMaxDate);
+              expect(nextMonthNavigationButton).not.exist;
+              expect(maxDate).exist;
+
+              expect(maxDate?.getAttribute('aria-selected')).equal('false');
+              expect(maxDate?.getAttribute('aria-disabled')).equal('false');
+            } else {
+              /**
+               * assert `$expectedMax` is the last non-disabled date in the current calendar month
+               */
+              const expectedMaxDateDate = new Date($expectedMax);
+              const nextMaxDateDate = new Date(expectedMaxDateDate).setUTCDate(expectedMaxDateDate.getUTCDate() + 1);
+              const nextMaxDate = calendar?.query<HTMLTableCellElement>(
+                elementSelectors.calendarDayWithLabel(
+                  formatters.fullDateFormat(nextMaxDateDate)
+                )
+              );
+
+              expect(nextMaxDate).exist;
+              expect(nextMaxDate?.getAttribute('aria-selected')).equal('false');
+              expect(nextMaxDate?.getAttribute('aria-disabled')).equal('true');
+            }
           }
-        };
+        }
 
-        assertMaxDate(testMax, expectedMaxDate);
-
-        el.max = el.value = testNewMax as never;
-
-        await elementUpdated(calendar as AppMonthCalendar);
-        await elementUpdated(el);
-
-        assertMaxDate(testNewMax, expectedNewMaxDate);
       });
     }
   );

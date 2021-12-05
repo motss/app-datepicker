@@ -44,7 +44,7 @@ export class DemoApp extends RootElement {
   ];
 
   protected override firstUpdated(_changedProperties: Map<string | number | symbol, unknown>): void {
-      Object.defineProperty(globalThis, 'demoApp', {
+      Object.defineProperty(globalThis, '__demoApp', {
         value: {
           datePicker1: this.query('#datePicker1'),
           datePicker2: this.query('#datePicker2'),
