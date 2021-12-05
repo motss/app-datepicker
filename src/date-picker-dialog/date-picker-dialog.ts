@@ -1,5 +1,3 @@
-import '../date-picker/app-date-picker.js';
-
 import type { TemplateResult } from 'lit';
 
 import { datePickerSlot } from '../helpers/date-picker-slot.js';

@@ -54,8 +54,8 @@ describe(appDatePickerDialogName, () => {
     });
 
     const datePickerDialogDialog =
-      el.querySelector<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
-    const datePicker = el.querySelector(elementSelectors.datePicker);
+      el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+    const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
     await datePicker?.updateComplete;
     await datePickerDialogDialog?.updateComplete;
@@ -66,9 +66,9 @@ describe(appDatePickerDialogName, () => {
     expect(el.valueAsDate).deep.equal(new Date(value));
     expect(el.valueAsNumber).equal(+new Date(value));
 
-    const dialogActionReset = el.querySelector(elementSelectors.dialogActionReset);
-    const dialogActionCancel = el.querySelector(elementSelectors.dialogActionCancel);
-    const dialogActionSet = el.querySelector(elementSelectors.dialogActionSet);
+    const dialogActionReset = el.query(elementSelectors.dialogActionReset);
+    const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
+    const dialogActionSet = el.query(elementSelectors.dialogActionSet);
 
     expect(dialogActionReset).exist;
     expect(dialogActionCancel).exist;
@@ -87,21 +87,22 @@ describe(appDatePickerDialogName, () => {
     >(el, 'opened');
 
     const datePickerDialogDialog =
-      el.querySelector<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
-    let datePicker = el.querySelector(elementSelectors.datePicker);
+      el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+    let datePicker = datePickerDialogDialog?.query<AppDatePicker>(elementSelectors.datePicker);
 
     expect(datePickerDialogDialog).exist;
-    expect(datePicker).exist;
+    expect(datePicker).not.exist;
     expect(datePickerDialogDialog?.hasAttribute('open')).false;
 
     el.show();
     const opened = await openedTask;
+    await datePicker?.updateComplete;
+    await datePickerDialogDialog?.updateComplete;
     await el.updateComplete;
 
+    datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
     expect(opened).not.undefined;
-
-    datePicker = el.querySelector(elementSelectors.datePicker);
-
     expect(datePickerDialogDialog?.hasAttribute('open')).true;
 
     const closedTask = eventOnce<
@@ -112,12 +113,13 @@ describe(appDatePickerDialogName, () => {
 
     el.hide();
     const closed = await closedTask;
+    await datePicker?.updateComplete;
+    await datePickerDialogDialog?.updateComplete;
     await el.updateComplete;
 
+    datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
     expect(closed).not.undefined;
-
-    datePicker = el.querySelector(elementSelectors.datePicker);
-
     expect(datePickerDialogDialog?.hasAttribute('open')).false;
   });
 
@@ -154,26 +156,39 @@ describe(appDatePickerDialogName, () => {
           CustomEvent
         >(el, 'opened');
 
-        const datePickerDialogDialog =
-          el.querySelector<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
-        const datePicker =
-          el.querySelector<AppDatePicker>(elementSelectors.datePicker);
-        const monthCalendar =
+        let datePickerDialogDialog =
+          el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+        let datePicker =
+          datePickerDialogDialog?.query<AppDatePicker>(elementSelectors.datePicker);
+        let monthCalendar =
           datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
-        const dialogActionReset =
-          el.querySelector<Button>(elementSelectors.dialogActionReset);
-        const dialogActionCancel =
-          el.querySelector<Button>(elementSelectors.dialogActionCancel);
-        const dialogActionSet =
-          el.querySelector<Button>(elementSelectors.dialogActionSet);
 
         el.show();
         const opened = await openedTask;
+        await monthCalendar?.updateComplete;
+        await datePicker?.updateComplete;
+        await datePickerDialogDialog?.updateComplete;
         await el.updateComplete;
 
+        datePickerDialogDialog =
+          el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+        datePicker =
+          datePickerDialogDialog?.querySelector<AppDatePicker>(elementSelectors.datePicker);
+        monthCalendar =
+          datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+        const dialogActionReset =
+          datePickerDialogDialog?.querySelector<Button>(elementSelectors.dialogActionReset);
+        const dialogActionCancel =
+          datePickerDialogDialog?.querySelector<Button>(elementSelectors.dialogActionCancel);
+        const dialogActionSet =
+          datePickerDialogDialog?.querySelector<Button>(elementSelectors.dialogActionSet);
+
         expect(opened).not.undefined;
-        expect(datePickerDialogDialog).exist;
+        expect(monthCalendar).exist;
         expect(datePicker).exist;
+        expect(datePickerDialogDialog).exist;
+        expect(dialogActionReset).exist;
+        expect(dialogActionCancel).exist;
         expect(dialogActionSet).exist;
         expect(datePickerDialogDialog?.hasAttribute('open')).true;
         expect(el.value).equal(value);
@@ -186,14 +201,15 @@ describe(appDatePickerDialogName, () => {
           AppDatePicker,
           'date-updated',
           CustomEvent<CustomEventDetail['date-updated']>
-
-          >(datePicker as AppDatePicker, 'date-updated');
+        >(datePicker as AppDatePicker, 'date-updated');
 
         expect(newSelectedDate).exist;
 
         newSelectedDate?.click();
         await dateUpdatedTask;
+        await monthCalendar?.updateComplete;
         await datePicker?.updateComplete;
+        await datePickerDialogDialog?.updateComplete;
         await el.updateComplete;
 
         expect(el.value).equal(value);
@@ -224,7 +240,9 @@ describe(appDatePickerDialogName, () => {
         }
 
         const closed = await closedTask;
+        await monthCalendar?.updateComplete;
         await datePicker?.updateComplete;
+        await datePickerDialogDialog?.updateComplete;
         await el.updateComplete;
 
         if (testDialogAction === 'reset') {

@@ -1,5 +1,3 @@
-import '../date-picker/app-date-picker.js';
-
 import { TextField } from '@material/mwc-textfield';
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';

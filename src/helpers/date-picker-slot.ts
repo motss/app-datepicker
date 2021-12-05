@@ -1,3 +1,5 @@
+import '../date-picker/app-date-picker.js';
+
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 
@@ -48,3 +50,5 @@ export function datePickerSlot({
     @first-updated=${onDatePickerFirstUpdated}
   ></app-date-picker>`;
 }
+
+// FIXME: Make this a mixin instead

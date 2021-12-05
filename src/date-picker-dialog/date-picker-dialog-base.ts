@@ -2,9 +2,9 @@ import '@material/mwc-button';
 import '@material/mwc-dialog';
 import './app-date-picker-dialog-dialog.js';
 
-import type { ReactiveElement, TemplateResult } from 'lit';
-import { adoptStyles, html } from 'lit';
-import { property } from 'lit/decorators.js';
+import type { TemplateResult } from 'lit';
+import { html, nothing } from 'lit';
+import { property, state } from 'lit/decorators.js';
 
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -28,6 +28,7 @@ export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(
   @property({ type: String }) public dismissLabel = 'cancel';
   @property({ type: String }) public resetLabel = 'reset';
   @property({ type: Boolean }) public open = false;
+  @state() private _rendered = false;
 
   #isResetAction = false;
   #selectedDate: Date;
@@ -43,15 +44,12 @@ export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(
     this.#selectedDate = this.#valueAsDate = toResolvedDate();
   }
 
-  protected override createRenderRoot(): Element | ShadowRoot {
-    const renderRoot = this as unknown as ShadowRoot;
+  override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+      super.willUpdate(changedProperties);
 
-    adoptStyles(
-      renderRoot,
-      (this.constructor as typeof ReactiveElement).elementStyles
-    );
-
-    return renderRoot;
+      if (!this._rendered && this.open) {
+        this._rendered = true;
+      }
   }
 
   protected override render(): TemplateResult {
@@ -65,6 +63,7 @@ export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(
       @opened=${this.#onOpened}
       @opening=${this.#onOpening}
     >
+      ${this._rendered ? html`
       ${this.$renderSlot()}
 
       <div class=secondary-actions slot=secondaryAction>
@@ -81,6 +80,7 @@ export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(
         dialogAction=set
         slot=primaryAction
       >${this.confirmLabel}</mwc-button>
+      ` : nothing}
     </app-date-picker-dialog-dialog>
     `;
   }

@@ -1,6 +1,7 @@
+import '../date-picker-dialog/app-date-picker-dialog-base.js';
 import '../date-picker-dialog/app-date-picker-dialog.js';
-import '../date-picker-input/app-date-picker-input.js';
 import '../date-picker-input-surface/app-date-picker-input-surface.js';
+import '../date-picker-input/app-date-picker-input.js';
 import '../date-picker/app-date-picker.js';
 
 import { css, html } from 'lit';
@@ -8,7 +9,8 @@ import { customElement, queryAsync } from 'lit/decorators.js';
 
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
-import { appDatePickerDialogName } from '../date-picker-dialog/constants.js';
+import type { AppDatePickerDialogBase } from '../date-picker-dialog/app-date-picker-dialog-base.js';
+import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../date-picker-dialog/constants.js';
 import type { AppDatePickerInput } from '../date-picker-input/app-date-picker-input.js';
 import { appDatePickerInputName } from '../date-picker-input/constants.js';
 import { RootElement } from '../root-element/root-element.js';
@@ -17,6 +19,7 @@ import type { CustomEventDetail } from '../typings.js';
 @customElement('demo-app')
 export class DemoApp extends RootElement {
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
+  @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
   @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
 
   public static override styles = [
@@ -83,6 +86,11 @@ export class DemoApp extends RootElement {
     <button @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 
+    <button @click=${this.#showDialogBase}>Open Base</button>
+    <app-date-picker-dialog-base id="datePickerDialogBase1">
+      <div class=test slot=test>Test</div>
+    </app-date-picker-dialog-base>
+
     <!-- <app-date-picker-input></app-date-picker-input> -->
     <!-- <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog> -->
     <!-- <button class="open-btn" type="button">Open datepicker</button> -->
@@ -91,6 +99,12 @@ export class DemoApp extends RootElement {
 
   async #showDialog() {
     const dialog = await this.dialog;
+
+    dialog?.show();
+  }
+
+  async #showDialogBase() {
+    const dialog = await this.dialogBase;
 
     dialog?.show();
   }
