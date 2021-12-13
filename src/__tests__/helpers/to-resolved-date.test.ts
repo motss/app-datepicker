@@ -20,7 +20,7 @@ describe(toResolvedDate.name, () => {
     [new Date('2020-02-02'), new Date('2020-02-02')],
     [new Date('2020-02-02').toJSON(), new Date('2020-02-02')],
     [null, new Date(NaN)],
-    [undefined, toUTCDate(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())],
+    [undefined, toUTCDate(today.getFullYear(), today.getMonth(), today.getDate())],
   ];
 
   cases.forEach((a) => {
