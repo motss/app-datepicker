@@ -8,7 +8,7 @@ import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
-import { datePickerSlot } from '../helpers/date-picker-slot.js';
+import { slotDatePicker } from '../helpers/slot-date-picker.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { warnUndefinedElement } from '../helpers/warn-undefined-element.js';
 import { iconClear } from '../icons.js';
@@ -202,26 +202,45 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   protected $renderSlot(): TemplateResult {
-    return datePickerSlot({
-      disabledDates: this.disabledDates,
-      disabledDays: this.disabledDays,
-      firstDayOfWeek: this.firstDayOfWeek,
+    const {
+      disabledDates,
+      disabledDays,
+      firstDayOfWeek,
+      landscape,
+      locale,
+      max,
+      min,
+      nextMonthLabel,
+      previousMonthLabel,
+      selectedDateLabel,
+      showWeekNumber,
+      startView,
+      value,
+      weekLabel,
+      weekNumberType,
+      yearDropdownLabel,
+    } = this;
+
+    return slotDatePicker({
+      disabledDates,
+      disabledDays,
+      firstDayOfWeek,
       inline: true,
-      landscape: this.landscape,
-      locale: this.locale,
-      max: this.max,
-      min: this.min,
-      nextMonthLabel: this.nextMonthLabel,
+      landscape,
+      locale,
+      max,
+      min,
+      nextMonthLabel,
       onDatePickerDateUpdated: this.#onDatePickerDateUpdated,
       onDatePickerFirstUpdated: this.#onDatePickerFirstUpdated,
-      previousMonthLabel: this.previousMonthLabel,
-      selectedDateLabel: this.selectedDateLabel,
-      showWeekNumber: this.showWeekNumber,
-      startView: this.startView,
-      value: this.value,
-      weekLabel: this.weekLabel,
-      weekNumberType: this.weekNumberType,
-      yearDropdownLabel: this.yearDropdownLabel,
+      previousMonthLabel,
+      selectedDateLabel,
+      showWeekNumber,
+      startView,
+      value,
+      weekLabel,
+      weekNumberType,
+      yearDropdownLabel,
     });
   }
 

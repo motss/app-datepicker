@@ -7,7 +7,6 @@ import { yearGridButtonStyling } from './stylings.js';
 export class YearGridButton extends ElementMixin(ButtonBase) {
   static override styles = [
     styles,
-    // FIXME(motss): Remove this hack once @material updates to use latest lit
-    yearGridButtonStyling as unknown as typeof styles,
+    yearGridButtonStyling,
   ];
 }

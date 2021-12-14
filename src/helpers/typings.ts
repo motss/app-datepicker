@@ -3,11 +3,6 @@ import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calen
 import type { ElementMixinProperties } from '../mixins/typings.js';
 import type { CustomEventDetail, DatePickerProperties, Formatters, OmitKey, SupportedKey } from '../typings.js';
 
-export interface DatePickerSlotInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties> {
-  onDatePickerDateUpdated(event: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> | void;
-  onDatePickerFirstUpdated(event: CustomEvent<CustomEventDetail['first-updated']['detail']>): Promise<void> | void;
-}
-
 export interface DateValidatorResult {
   date: Date;
   isValid: boolean;
@@ -18,6 +13,11 @@ export type MaybeDate = Date | null | number | string;
 export interface MultiCalendars extends Omit<Calendar, 'calendar'> {
   calendars: Pick<Calendar, 'calendar' | 'key'>[];
   weekdays: CalendarWeekday[];
+}
+
+export interface SlotDatePickerInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties> {
+  onDatePickerDateUpdated(event: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> | void;
+  onDatePickerFirstUpdated(event: CustomEvent<CustomEventDetail['first-updated']['detail']>): Promise<void> | void;
 }
 
 export interface ToMultiCalendarsInit extends
