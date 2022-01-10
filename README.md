@@ -1,7 +1,7 @@
 <div align="center" style="text-align: center;">
   <h1 style="border-bottom: none;">app-datepicker</h1>
 
-  <p>Datepicker element built with lit and Material Design 2</p>
+  <p>Datepicker element built with lit and Material Design 2021</p>
 </div>
 
 <hr />
@@ -12,7 +12,6 @@
 
 [![Version][version-badge]][version-url]
 [![lit][lit-version-badge]][lit-url]
-[![Node version][node-version-badge]][node-version-url]
 [![MIT License][mit-license-badge]][mit-license-url]
 
 [![Downloads][downloads-badge]][downloads-url]
@@ -21,8 +20,8 @@
 [![Bundlephobia][bundlephobia-badge]][bundlephobia-url]
 
 [![ci][ga-ci-badge]][ga-ci-url]
-[![Sauce Labs][ga-sl-badge]][ga-sl-url]
-[![Dependency Status][daviddm-badge]][daviddm-url]
+[![ci-helpers][ga-ci-helpers-badge]][ga-ci-helpers-url]
+[![codecov][codecov-badge]][codecov-url]
 
 [![codebeat badge][codebeat-badge]][codebeat-url]
 [![Language grade: JavaScript][lgtm-badge]][lgtm-url]
@@ -51,8 +50,6 @@ The following are the list of tools used that makes it shine:
 - [Browser compatibility](#browser-compatibility)
 - [Q&A](#qa)
 - [API references](#api-references)
-- [Demo](#demo)
-- [Older versions](#older-versions)
 - [License](#license)
 
 ## Pre-requisite
@@ -134,7 +131,7 @@ export class MyApp extends LitElement {
   ];
 
   protected render() {
-    return html`<app-datepicker></app-datepicker>`;
+    return html`<app-date-picker></app-date-picker>`;
   }
 }
 ```
@@ -158,7 +155,7 @@ export class MyApp extends LitElement {
 
 ## Browser compatibility
 
-Both `app-datepicker` and `app-datepicker-dialog` works in last 2 versions of all evergreen browsers (Chrome, Firefox, Edge, and Safari). Internet Explorer 11 is no longer supported in favor of the [new Microsoft Edge].
+All the elements work in last 2 versions of all evergreen browsers (Chrome, Firefox, Edge, and Safari). Internet Explorer 11 is no longer supported in favor of the [new Microsoft Edge].
 
 Tested on the following browsers:
 
@@ -182,7 +179,7 @@ Tested on the following browsers:
 
 1. Does it work well with [material-components-web-components]?
 
-    For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-datepicker` inside [mwc-dialog].
+    For [material-components-web-components] users, you can create your own custom date picker element by wrapping `app-date-picker` inside [mwc-dialog].
 
     <!-- Feasible source code can be viewed [here][mwc-date-picker-url]. -->
 
@@ -193,7 +190,7 @@ Tested on the following browsers:
       render() {
         return html`
         <mwc-dialog>
-          <app-datepicker></app-datepicker>
+          <app-date-picker></app-date-picker>
 
           <mwc-button slot="secondaryAction" dialogAction="cancel">cancel</mwc-button>
           <mwc-button slot="primaryAction" dialogAction="set">set</mwc-button>
@@ -214,26 +211,21 @@ Tested on the following browsers:
      * NOTE: It is recommended to come up with alternative styling for focus state
      * instead of just hiding the focus ring.
      */
-    app-datepicker::part(calendar-day):focus {
+    app-date-picker::part(calendar-day):focus {
       outline: none;
     }
     ```
 
 ## API references
 
-- [AppDatepicker][app-datepicker-api-reference-url]
-- [AppDatepickerDialog][app-datepicker-dialog-api-reference-url]
+- _TBD_
 
-## Demo
+<!-- - [AppDatepicker][app-datepicker-api-reference-url]
+- [AppDatepickerDialog][app-datepicker-dialog-api-reference-url] -->
 
-[Configurable demo powered by Firebase]
+<!-- ## Demo
 
-## Older versions
-
-Meantime, feel free to check the older version out at:
-
-  1. [`2.x` branch][2-x-url] - Built with Material Design and [Polymer 2][polymer-2-url], published at Bower.
-  2. [`3.x` branch][3-x-url] - Built with Material Design and [Polymer 3][polymer-3-url], published at NPM.
+[Configurable demo powered by Firebase] -->
 
 ## License
 
@@ -284,7 +276,6 @@ Meantime, feel free to check the older version out at:
 
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/latest?icon=npm
 [lit-version-badge]: https://flat.badgen.net/npm/v/lit/latest?icon=npm&label=lit
-[node-version-badge]: https://flat.badgen.net/npm/node/app-datepicker
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
 [downloads-badge]: https://flat.badgen.net/npm/dm/app-datepicker
@@ -292,9 +283,9 @@ Meantime, feel free to check the older version out at:
 [packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40latest
 [bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@latest
 
-[ga-ci-badge]: https://github.com/motss/app-datepicker/workflows/ci/badge.svg
-[ga-sl-badge]: https://github.com/motss/app-datepicker/workflows/Sauce%20Labs/badge.svg
-[daviddm-badge]: https://flat.badgen.net/david/dep/motss/app-datepicker
+[ga-ci-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci.yml/badge.svg
+[ga-ci-helpers-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml/badge.svg
+[codecov-badge]: https://codecov.io/gh/motss/app-datepicker/branch/master/graph/badge.svg?token=0M1yaJNDxq
 
 [codebeat-badge]: https://codebeat.co/badges/3a212108-43cd-4a1f-ab2c-fe890ad734b6
 [lgtm-badge]: https://flat.badgen.net/lgtm/grade/javascript/g/motss/app-datepicker?icon=lgtm
@@ -305,16 +296,15 @@ Meantime, feel free to check the older version out at:
 [follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [version-url]: https://www.npmjs.com/package/app-datepicker/v/latest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[node-version-url]: https://nodejs.org/en/download?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40latest&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
-[ga-ci-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3Aci
-[ga-sl-url]: https://github.com/motss/app-datepicker/actions?query=workflow%3A%22Sauce+Labs%22
-[daviddm-url]: https://david-dm.org/motss/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[ga-ci-url]: https://github.com/motss/app-datepicker/actions/workflows/ci.yml
+[ga-ci-helpers-url]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml
+[codecov-url]: https://codecov.io/gh/motss/app-datepicker
 
 [codebeat-url]: https://codebeat.co/projects/github-com-motss-app-datepicker-master-68699d41-3539-4c5f-81df-c9202be34919?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [lgtm-url]: https://lgtm.com/projects/g/motss/app-datepicker/context:javascript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
