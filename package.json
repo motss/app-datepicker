@@ -32,6 +32,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/date-picker/app-date-picker.js",
+    "./date-picker-dialog/*": "./dist/date-picker-dialog/*",
     "./date-picker-input-surface/*": "./dist/date-picker-input-surface/*",
     "./date-picker-input/*": "./dist/date-picker-input/*",
     "./date-picker/*": "./dist/date-picker/*",
