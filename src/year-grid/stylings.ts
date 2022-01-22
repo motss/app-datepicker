@@ -19,7 +19,7 @@ export const yearGridStyling = css`
   position: relative;
   width: 56px;
   height: 32px;
-  color: var(--year-grid-color, var(--base-primary-color));
+  color: var(--base-primary-color);
   font-size: 13px;
 }
 @media (any-hover: hover) {
@@ -47,13 +47,13 @@ export const yearGridStyling = css`
   z-index: 1;
 }
 .year-grid > .year-grid-button[aria-selected="true"]::before {
-  color: var(--year-grid-color, var(--base-selected-color));
+  color: var(--base-selected-color);
 }
 .year-grid > .year-grid-button:focus::before {
-  border-color: var(--year-grid-focus-color, var(--base-focus-color));
+  border-color: var(--base-focus-color);
 }
 .year-grid > .year-grid-button:hover::before {
-  border-color: var(--year-grid-hover-color, var(--base-hover-color));
+  border-color: var(--base-hover-color);
 }
 
 .year-grid > .year-grid-button::after {
@@ -64,10 +64,10 @@ export const yearGridStyling = css`
   border-radius: 52px;
 }
 .year-grid > .year-grid-button[aria-selected="true"]::after {
-  background-color: var(--year-grid-background-color, var(--base-selected-background-color));
+  background-color: var(--base-selected-bg-color);
 }
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"])::after {
-  border-color: var(--year-grid-today-color, var(--base-today-color));
+  border-color: var(--base-today-color);
 }
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"]):focus::after,
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"]):hover::after {

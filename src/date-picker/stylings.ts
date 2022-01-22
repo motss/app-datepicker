@@ -2,16 +2,12 @@ import { css } from 'lit';
 
 export const datePickerStyling = css`
 :host {
-  --date-picker-header-base-height: 52px;
-  --date-picker-year-grid-base-height: calc(4px + (32px * 7));
-  --date-picker-base-width: calc((16px * 2) + (32px * 7));
-  --date-picker-base-height: calc(32px + 36px + 12px + (32px * 6) + 8px);
+  --base-width: calc((16px * 2) + (32px * 7));
+  --base-height: calc(32px + 36px + 12px + (32px * 6) + 8px);
+  --base-year-grid-height: calc(4px + (32px * 7));
 
-  --date-picker-with-week-number-width: calc(var(--date-picker-base-width) + 32px);
-  --date-picker-in-year-grid-height: calc(var(--date-picker-base-height) + var(--date-picker-year-grid-base-height));
-
-  --date-picker-width: var(--date-picker-base-width);
-  --date-picker-height: var(--date-picker-base-height);
+  --date-picker-width: var(--base-width);
+  --date-picker-height: var(--base-height);
 
   display: flex;
   flex-direction: column;
@@ -26,10 +22,10 @@ export const datePickerStyling = css`
   overscroll-behavior: contain;
 }
 :host([startview="calendar"][show-week-number]) {
-  --date-picker-width: var(--date-picker-with-week-number-width);
+  --date-picker-width: calc(var(--base-width) + 32px);
 }
 :host(startview="yearGrid") {
-  --date-picker-height: var(----date-picker-in-year-grid-height);
+  --date-picker-height: calc(var(--base-height) + var(--base-year-grid-height));
 }
 
 .header {
@@ -37,7 +33,7 @@ export const datePickerStyling = css`
   grid-auto-flow: column;
   justify-content: space-between;
 
-  max-height: var(--date-picker-base-height);
+  max-height: var(--base-height);
   height: 100%;
   margin: 4px 0 0;
   padding: 0 0 0 24px;
@@ -79,7 +75,7 @@ export const datePickerStyling = css`
 /** #endregion header */
 
 .year-grid {
-  max-height: var(--date-picker-year-grid-base-height);
+  max-height: var(--base-year-grid-height);
   height: 100%;
   padding: 4px 20px 8px 12px;
   overflow: auto;

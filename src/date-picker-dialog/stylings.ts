@@ -6,11 +6,9 @@ export const datePickerDialogDialogStyling = css`
 :host {
   display: block;
 
-  --date-picker-dialog-base-color: #000;
-
   --mdc-dialog-min-width: 256px;
-  --mdc-dialog-content-ink-color: var(--date-picker-dialog-color, var(--date-picker-dialog-base-color));
-  --mdc-theme-primary: var(--date-picker-dialog-color, var(--date-picker-dialog-base-color));
+  --mdc-dialog-content-ink-color: var(--base-primary-color);
+  --mdc-theme-primary: var(--base-primary-color);
 }
 .mdc-dialog .mdc-dialog__surface,
 .mdc-dialog .mdc-dialog__content {
