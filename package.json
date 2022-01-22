@@ -90,7 +90,7 @@
     "build": "tsc -p tsconfig.prod.json",
     "check": "package-check",
     "clean": "rm -rf .*cache *.log coverage/ dist/ logs/",
-    "postinstall": "if [ \"$CI\" != 'true' ] && [ \"$INIT_CWD\" != *'node_modules/app-datepicker' ]; then npm x -y -- simple-git-hooks && npm dedupe; fi",
+    "postinstall": "if [ \"$CI\" != 'true' ] && [[ \"$INIT_CWD\" != *'node_modules/app-datepicker' ]] && [[ \"$INIT_CWD\" == *'app-datepicker' ]]; then npm x -y -- simple-git-hooks && npm dedupe; fi",
     "lint": "eslint src --ext .js,.ts",
     "lint-commit": "npm x -y -- commitlint --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
