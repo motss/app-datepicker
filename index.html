@@ -16,15 +16,46 @@
 </head>
 <body>
   <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --text-color: #000;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --a: rgba(255, 255, 255, .55);
+        --b: #000;
+        --c: #fff;
+
+        --app-disabled-color: var(--a);
+        --app-focus-color: var(--c);
+        --app-hover-color: var(--c);
+        --app-primary-color: var(--c);
+        --app-selected-bg-color: var(--a);
+        --app-selected-color: var(--b);
+        --app-text-color: var(--b);
+        --app-today-color: var(--c);
+        --app-weekday-color: var(--a);
+
+        --bg-color: #000;
+        --text-color: #fff;
+      }
+    }
+
     html,
     body {
       font-family: 'Open Sans', sans-serif;
       min-height: 100vh;
-      scrollbar-width: thin;
+    }
+    @supports (scrollbar-width: thin) {
+      html,
+      body {
+        scrollbar-width: thin;
+      }
     }
 
     body {
-      background-color: #f5f5f5;
+      background-color: var(--bg-color);
+      color: var(--text-color);
     }
 
     /**

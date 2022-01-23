@@ -256,7 +256,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     const isStartViewYearGrid = startView === 'yearGrid';
 
     return html`
-    <div class=header>
+    <div class=header part=header>
       <div class=month-and-year-selector>
         <p class=selected-year-month>${selectedYearMonth}</p>
 
@@ -282,7 +282,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     <div class="body ${classMap({
       [`start-view--${isStartViewYearGrid ? 'year-grid' : 'calendar'}`]: true,
       'show-week-number': showWeekNumber,
-    })}">${
+    })}" part=body>${
       (isStartViewYearGrid ? this.#renderYearGrid : this.#renderCalendar)()
     }</div>
     `;

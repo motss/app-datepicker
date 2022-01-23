@@ -3,13 +3,21 @@ import { css } from 'lit';
 export const yearGridStyling = css`
 .year-grid {
   display: grid;
-  grid-auto-flow: row;
   grid-template-columns: repeat(4, minmax(56px, auto));
   grid-template-rows: repeat(auto-fit, 32px);
   align-items: center;
   justify-items: center;
 
   width: calc(56px * 4);
+  max-height: var(--base-year-grid-height);
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+@supports (scrollbar-width: thin) {
+  .year-grid {
+    scrollbar-width: thin;
+  }
 }
 
 .year-grid > .year-grid-button {

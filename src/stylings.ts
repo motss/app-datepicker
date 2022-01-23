@@ -4,15 +4,15 @@ export const absoluteHidden = css`[hidden] { display: none !important; }`;
 
 export const baseStyling = css`
 :host {
-  --base-disabled-color: rgba(0, 0, 0, .38);
-  --base-focus-color: #b5b5b5;
-  --base-hover-color: #b5b5b5;
-  --base-primary-color: #000;
-  --base-selected-bg-color: #1d1d1d;
-  --base-selected-color: #fff;
-  --base-text-color: #000;
-  --base-today-color: #000;
-  --base-weekday-color: #8c8c8c;
+  --base-disabled-color: var(--app-disabled-color, rgba(0, 0, 0, .38));
+  --base-focus-color: var(--app-focus-color, #b5b5b5);
+  --base-hover-color: var(--app-hover-color, #b5b5b5);
+  --base-primary-color: var(--app-primary-color, #000);
+  --base-selected-bg-color: var(--app-selected-bg-color, #1d1d1d);
+  --base-selected-color: var(--app-selected-color, #fff);
+  --base-text-color: var(--app-text-color, #000);
+  --base-today-color: var(--app-today-color, #000);
+  --base-weekday-color: var(--app-weekday-color, #8c8c8c);
 }
 `;
 

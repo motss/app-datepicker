@@ -35,8 +35,7 @@ export const datePickerStyling = css`
 
   max-height: var(--base-height);
   height: 100%;
-  margin: 4px 0 0;
-  padding: 0 0 0 24px;
+  padding: 4px 0 0 24px;
 }
 
 /** #region header */
@@ -75,11 +74,7 @@ export const datePickerStyling = css`
 /** #endregion header */
 
 .year-grid {
-  max-height: var(--base-year-grid-height);
-  height: 100%;
   padding: 4px 20px 8px 12px;
-  overflow: auto;
-  scrollbar-width: thin;
 }
 
 .calendar {

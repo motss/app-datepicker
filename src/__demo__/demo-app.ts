@@ -26,6 +26,8 @@ export class DemoApp extends RootElement {
     css`
     :host {
       display: block;
+
+      padding-bottom: 999px;
     }
     :host > * + * {
       margin: 16px 0 0;
@@ -35,13 +37,9 @@ export class DemoApp extends RootElement {
       box-sizing: border-box;
     }
 
-    app-date-picker,
-    app-date-picker-input {
-      background-color: #fcfcfc;
-    }
-
-    app-date-picker-input {
-      --mdc-text-field-fill-color: #fcfcfc;
+    app-date-picker {
+      border: 1px solid #fff;
+      border-radius: 4px;
     }
     `,
   ];

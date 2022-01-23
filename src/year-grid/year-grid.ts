@@ -4,7 +4,6 @@ import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 
 import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
-import { focusElement } from '../helpers/focus-element.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
@@ -16,9 +15,10 @@ import { toNextSelectedYear } from './to-next-selected-year.js';
 import type { YearGridChangedProperties, YearGridData, YearGridProperties, YearGridRenderButtonInit } from './typings.js';
 
 export class YearGrid extends RootElement implements YearGridProperties {
-  @property({ attribute: false }) public data?: YearGridData;
+  @property({ attribute: false }) public data: YearGridData;
 
   @queryAsync('button[data-year][aria-selected="true"]') public selectedYearGridButton!: Promise<HTMLButtonElement | null>;
+  @queryAsync('.year-grid') public yearGrid!: Promise<HTMLDivElement | null>;
 
   @state() protected $focusingYear: number;
 
@@ -61,7 +61,15 @@ export class YearGrid extends RootElement implements YearGridProperties {
   }
 
   protected override async firstUpdated(): Promise<void> {
-    await focusElement(this.selectedYearGridButton, element => element.scrollIntoView());
+    /**
+     * NOTE(motss): Unable to use `.focus()` nor `.scrollIntoView()` as it will trigger the document scrolling
+     * instead of just the year grid container. So what is doing here is to calculate the position of
+     * the selected year and updates the `.scrollTop`.
+     */
+    const yearGrid = await this.yearGrid;
+
+    yearGrid &&
+      (yearGrid.scrollTop = Math.floor((this.$focusingYear - this.data.min.getUTCFullYear()) / 4) * 32);
   }
 
   protected override render(): TemplateResult {
@@ -78,10 +86,11 @@ export class YearGrid extends RootElement implements YearGridProperties {
 
     return html`
     <div
-      class="year-grid"
       @click=${this.#updateYear}
       @keydown=${this.#updateYear}
       @keyup=${this.#updateYear}
+      class="year-grid"
+      part=year-grid
     >${
       yearList.map((year) => this.$renderButton({
         date,
@@ -101,11 +110,13 @@ export class YearGrid extends RootElement implements YearGridProperties {
   }: YearGridRenderButtonInit): TemplateResult {
     return html`
     <button
-      class="year-grid-button ${classMap({ 'year--today': this.#todayYear === year })}"
-      tabindex=${year === focusingYear ? '0' : '-1'}
-      data-year=${year}
+      .year=${year}
       aria-label=${label}
       aria-selected=${year === date.getUTCFullYear() ? 'true' : 'false'}
+      class="year-grid-button ${classMap({ 'year--today': this.#todayYear === year })}"
+      data-year=${year}
+      part=year
+      tabindex=${year === focusingYear ? '0' : '-1'}
     ></button>
     `;
   }

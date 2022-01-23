@@ -32,8 +32,14 @@ const config = {
     },
     nativeInstrumentation: true,
     exclude: [
-      './src/*tests*/**',
-      'node_modules/**'
+      'src/*tests*/**',
+      'node_modules/**',
+      ...(isTestHelpersOnly ? [
+        'src/mixins/**',
+        'src/root-element/**',
+      ] : [
+        'src/helpers/**'
+      ])
     ],
   },
   files: [
