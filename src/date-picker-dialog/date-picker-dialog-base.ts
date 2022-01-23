@@ -11,8 +11,9 @@ import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
+import { baseStyling } from '../stylings.js';
 import type { CustomEventDetail } from '../typings.js';
-import { datePickerDialogStyling } from './stylings.js';
+import { datePickerDialogBaseStyling } from './stylings.js';
 import type { DatePickerDialogProperties, DialogClosedEventDetail, DialogClosingEventDetail } from './typings.js';
 
 export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerDialogProperties {
@@ -35,7 +36,8 @@ export class DatePickerDialogBase extends DatePickerMixin(DatePickerMinMaxMixin(
   #valueAsDate: Date;
 
   public static override styles = [
-    datePickerDialogStyling,
+    baseStyling,
+    datePickerDialogBaseStyling,
   ];
 
   public constructor() {

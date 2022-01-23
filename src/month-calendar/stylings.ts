@@ -35,14 +35,14 @@ td {
 .weekday-value {
   max-height: 16px;
   height: 16px;
-  color: var(--base-weekday-color);
+  color: var(--base-on-weekday);
   line-height: 1;
 }
 
 .calendar-day {
   width: 32px;
   height: 32px;
-  color: var(--base-primary-color);
+  color: var(--base-on-primary);
 }
 @media (any-hover: hover) {
   .calendar-day:not([aria-hidden="true"]):not([aria-disabled="true"]):hover {
@@ -77,10 +77,10 @@ td {
   z-index: 1;
 }
 .calendar-day[aria-selected="true"]::before {
-  color: var(--base-selected-color);
+  color: var(--base-on-selected);
 }
 .calendar-day.day--today:not([aria-selected="true"])::before {
-  border-color: var(--base-today-color);
+  border-color: var(--base-today);
 }
 .calendar-day.day--today:not([aria-selected="true"]):focus::before,
 .calendar-day.day--today:not([aria-selected="true"]):hover::before {
@@ -94,15 +94,15 @@ td {
   content: '';
 }
 .calendar-day[aria-selected="true"]::after {
-  background-color: var(--base-selected-bg-color);
+  background-color: var(--base-selected);
 }
 .calendar-day:focus::after {
-  border-color: var(--base-focus-color);
+  border-color: var(--base-focus);
 }
 .calendar-day:hover::after {
-  border-color: var(--base-hover-color);
+  border-color: var(--base-hover);
 }
 .calendar-day[aria-disabled="true"] {
-  color: var(--base-disabled-color);
+  color: var(--base-on-disabled);
 }
 `;

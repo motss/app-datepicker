@@ -3,8 +3,8 @@ import { css } from 'lit';
 export const yearGridButtonStyling = css`
 :host {
   --mdc-button-horizontal-padding: 0;
-  --mdc-theme-primary: var(--base-primary-color);
-  --mdc-theme-on-primary: var(--base-text-color);
+  --mdc-theme-primary: var(--base-primary);
+  --mdc-theme-on-primary: var(--base-on-primary);
 
   align-items: center;
   justify-content: center;

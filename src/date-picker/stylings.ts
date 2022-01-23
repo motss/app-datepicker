@@ -19,6 +19,8 @@ export const datePickerStyling = css`
   max-height: var(--date-picker-height);
   width: 100%;
   height: 100%;
+  background-color: var(--base-primary);
+  color: var(--base-on-primary);
   overscroll-behavior: contain;
 }
 :host([startview="calendar"][show-week-number]) {
@@ -74,7 +76,11 @@ export const datePickerStyling = css`
 /** #endregion header */
 
 .year-grid {
+  max-height: var(--base-year-grid-height);
+  height: 100%;
   padding: 4px 20px 8px 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .calendar {

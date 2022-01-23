@@ -66,10 +66,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
      * instead of just the year grid container. So what is doing here is to calculate the position of
      * the selected year and updates the `.scrollTop`.
      */
-    const yearGrid = await this.yearGrid;
-
-    yearGrid &&
-      (yearGrid.scrollTop = Math.floor((this.$focusingYear - this.data.min.getUTCFullYear()) / 4) * 32);
+    this.scrollTop = Math.floor((this.$focusingYear - this.data.min.getUTCFullYear()) / 4) * 32;
   }
 
   protected override render(): TemplateResult {

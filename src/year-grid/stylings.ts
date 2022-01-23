@@ -9,10 +9,6 @@ export const yearGridStyling = css`
   justify-items: center;
 
   width: calc(56px * 4);
-  max-height: var(--base-year-grid-height);
-  height: 100%;
-  overflow: auto;
-  overscroll-behavior: contain;
 }
 @supports (scrollbar-width: thin) {
   .year-grid {
@@ -27,7 +23,7 @@ export const yearGridStyling = css`
   position: relative;
   width: 56px;
   height: 32px;
-  color: var(--base-primary-color);
+  color: var(--base-on-primary);
   font-size: 13px;
 }
 @media (any-hover: hover) {
@@ -55,13 +51,13 @@ export const yearGridStyling = css`
   z-index: 1;
 }
 .year-grid > .year-grid-button[aria-selected="true"]::before {
-  color: var(--base-selected-color);
+  color: var(--base-on-selected);
 }
 .year-grid > .year-grid-button:focus::before {
-  border-color: var(--base-focus-color);
+  border-color: var(--base-focus);
 }
 .year-grid > .year-grid-button:hover::before {
-  border-color: var(--base-hover-color);
+  border-color: var(--base-hover);
 }
 
 .year-grid > .year-grid-button::after {
@@ -72,10 +68,10 @@ export const yearGridStyling = css`
   border-radius: 52px;
 }
 .year-grid > .year-grid-button[aria-selected="true"]::after {
-  background-color: var(--base-selected-bg-color);
+  background-color: var(--base-selected);
 }
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"])::after {
-  border-color: var(--base-today-color);
+  border-color: var(--base-today);
 }
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"]):focus::after,
 .year-grid > .year-grid-button.year--today:not([aria-selected="true"]):hover::after {

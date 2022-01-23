@@ -26,7 +26,7 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { AppMonthCalendar } from '../month-calendar/app-month-calendar.js';
 import { RootElement } from '../root-element/root-element.js';
-import { resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
+import { baseStyling, resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { CustomEventDetail, DatePickerProperties, Formatters, StartView, ValueUpdatedEvent } from '../typings.js';
 import type { AppYearGrid } from '../year-grid/app-year-grid.js';
 import type { YearGridData } from '../year-grid/typings.js';
@@ -66,6 +66,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   #valueAsDate: Date;
 
   public static override styles = [
+    baseStyling,
     resetShadowRoot,
     datePickerStyling,
     webkitScrollbarStyling,

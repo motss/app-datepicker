@@ -1,17 +1,12 @@
-import { css, unsafeCSS } from 'lit';
-
-import { appDatePickerDialogName } from './constants.js';
+import { css } from 'lit';
 
 export const datePickerDialogDialogStyling = css`
-:host {
-  display: block;
-
-  --mdc-dialog-min-width: 256px;
-  --mdc-dialog-content-ink-color: var(--base-primary-color);
-  --mdc-theme-primary: var(--base-primary-color);
-}
 .mdc-dialog .mdc-dialog__surface,
 .mdc-dialog .mdc-dialog__content {
+  --mdc-dialog-content-ink-color: var(--base-on-primary);
+  --mdc-dialog-min-width: 256px;
+  --mdc-theme-surface: var(--base-primary);
+
   overflow: initial;
 }
 
@@ -19,18 +14,17 @@ export const datePickerDialogDialogStyling = css`
   background-color: inherit;
   padding: 0;
 }
+
+.mdc-dialog .mdc-dialog__actions {
+  --mdc-theme-primary: var(--base-on-primary);
+}
 `;
 
-export const datePickerDialogStyling = css`
-${unsafeCSS(appDatePickerDialogName)} {
-  display: block;
+export const datePickerDialogBaseStyling = css`
+.secondary-actions {
+  margin: 0;
 }
-
-${unsafeCSS(appDatePickerDialogName)} app-date-picker {
-  background-color: var(--mdc-theme-surface);
-}
-
-${unsafeCSS(appDatePickerDialogName)} .secondary-actions mwc-button + mwc-button {
+.secondary-actions mwc-button + mwc-button {
   margin: 0 0 0 8px;
 }
 `;

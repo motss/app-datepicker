@@ -17,6 +17,7 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
 import type { DatePickerMixinProperties } from '../mixins/typings.js';
+import { baseStyling } from '../stylings.js';
 import type { ChangedProperties, CustomEventDetail, DatePickerProperties } from '../typings.js';
 import { appDatePickerInputClearLabel, appDatePickerInputType } from './constants.js';
 import { datePickerInputStyling } from './stylings.js';
@@ -51,6 +52,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   public static override styles = [
     ...TextField.styles,
+    baseStyling,
     datePickerInputStyling,
   ];
 
