@@ -4,8 +4,10 @@ import './app-date-picker-dialog-base.js';
 
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property, queryAsync, state } from 'lit/decorators.js';
 
+import type { AppDatePicker } from '../date-picker/app-date-picker.js';
+import { appDatePickerName } from '../date-picker/constants.js';
 import { slotDatePicker } from '../helpers/slot-date-picker.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -28,8 +30,9 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
 
   @property({ type: String }) public confirmLabel = 'set';
   @property({ type: String }) public dismissLabel = 'cancel';
-  @property({ type: String }) public resetLabel = 'reset';
   @property({ type: Boolean }) public open = false;
+  @property({ type: String }) public resetLabel = 'reset';
+  @queryAsync(appDatePickerName) private _datePicker!: Promise<AppDatePicker>;
   @state() private _rendered = false;
 
   #isResetAction = false;
@@ -165,8 +168,11 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     });
   }
 
-  #onClosed = (ev: CustomEvent<DialogClosedEventDetail>) => {
+  #onClosed = async (ev: CustomEvent<DialogClosedEventDetail>) => {
+    const datePicker = await this._datePicker;
+
     this.hide();
+    datePicker && (datePicker.startView = 'calendar');
     this.fire({ detail: ev.detail, type: 'closed' });
   };
 

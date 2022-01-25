@@ -492,7 +492,7 @@ describe(appDatePickerInputName, () => {
     expect(closed).not.undefined;
   });
 
-  it('always opens date picker with startView=calendar', async () => {
+  it('always re-opens in calendar view', async () => {
     const el = await fixture<AppDatePickerInput>(
       html`<app-date-picker-input
         .label=${label}
@@ -505,24 +505,22 @@ describe(appDatePickerInputName, () => {
     );
 
     // show picker
-    const openedTask = eventOnce<
+    let openedTask = eventOnce<
       typeof el,
       'opened',
       CustomEvent<unknown>>(el, 'opened');
 
     el.showPicker();
-    const opened = await openedTask;
+    let opened = await openedTask;
     await el.updateComplete;
 
     expect(opened).not.undefined;
 
-    const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-    const yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
-    const yearGridButton = yearGrid?.query(elementSelectors.yearGridButton);
+    let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+    let yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
 
     // ensure year grid view when it first opens
     expect(yearGrid).exist;
-    expect(yearGridButton).exist;
 
     const closedTask = eventOnce<
       typeof el,
@@ -536,24 +534,22 @@ describe(appDatePickerInputName, () => {
     expect(closed).not.undefined;
 
     // show picker again
-    const openedTask2 = eventOnce<
+    openedTask = eventOnce<
       typeof el,
       'opened',
       CustomEvent<unknown>>(el, 'opened');
 
     el.showPicker();
-    const opened2 = await openedTask2;
+    opened = await openedTask;
     await el.updateComplete;
 
-    expect(opened2).not.undefined;
+    expect(opened).not.undefined;
 
-    const datePicker2 = el.query<AppDatePicker>(elementSelectors.datePicker);
-    const yearGrid2 = datePicker2?.query<AppYearGrid>(elementSelectors.yearGrid);
-    const yearGridButton2 = yearGrid2?.query<HTMLButtonElement>(elementSelectors.yearGridButton);
-    const monthCalendar = datePicker2?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+    datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+    yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
+    const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
 
     // ensure calendar view when it re-opens
-    expect(yearGridButton2).not.exist;
     expect(monthCalendar).exist;
   });
 
