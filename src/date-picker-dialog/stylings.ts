@@ -18,6 +18,10 @@ export const datePickerDialogBaseStyling = css`
 .mdc-dialog .mdc-dialog__actions {
   --mdc-theme-primary: var(--base-on-primary);
 }
+
+.mdc-dialog .mdc-dialog__scrim {
+  --mdc-dialog-scrim-color: var(--date-picker-dialog-base-scrim);
+}
 `;
 
 export const datePickerDialogStyling = css`
