@@ -263,6 +263,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   #onClosed({ detail }: CustomEvent): void {
     this._open = false;
+    this.#picker && (this.#picker.startView = 'calendar');
     this.fire({ detail, type: 'closed' });
   }
 

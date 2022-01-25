@@ -1,5 +1,5 @@
-import '../../date-picker-input/app-date-picker-input';
 import '../../date-picker-input-surface/app-date-picker-input-surface';
+import '../../date-picker-input/app-date-picker-input';
 
 import type { Button } from '@material/mwc-button';
 import { expect, fixture, html } from '@open-wc/testing';
@@ -17,6 +17,8 @@ import { iconClear } from '../../icons';
 import { keyEnter, keyEscape, keySpace, keyTab } from '../../key-values';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
+import type { AppYearGrid } from '../../year-grid/app-year-grid';
+import { appYearGridName } from '../../year-grid/constants';
 import { eventOnce } from '../test-utils/event-once';
 import { messageFormatter } from '../test-utils/message-formatter';
 import { queryDeepActiveElement } from '../test-utils/query-deep-active-element';
@@ -32,6 +34,8 @@ describe(appDatePickerInputName, () => {
     mdcTextFieldInput: '.mdc-text-field__input',
     monthCalendar: appMonthCalendarName,
     yearDropdown: '.year-dropdown',
+    yearGridButton: '.year-grid-button',
+    yearGrid: appYearGridName,
   } as const;
   const formatter = DateTimeFormat('en-US', {
     year: 'numeric',
@@ -486,6 +490,71 @@ describe(appDatePickerInputName, () => {
     await el.updateComplete;
 
     expect(closed).not.undefined;
+  });
+
+  it('always opens date picker with startView=calendar', async () => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .startView=${'yearGrid'}
+        .value=${value}
+      ></app-date-picker-input>`
+    );
+
+    // show picker
+    const openedTask = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent<unknown>>(el, 'opened');
+
+    el.showPicker();
+    const opened = await openedTask;
+    await el.updateComplete;
+
+    expect(opened).not.undefined;
+
+    const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+    const yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
+    const yearGridButton = yearGrid?.query(elementSelectors.yearGridButton);
+
+    // ensure year grid view when it first opens
+    expect(yearGrid).exist;
+    expect(yearGridButton).exist;
+
+    const closedTask = eventOnce<
+      typeof el,
+      'closed',
+      CustomEvent<DialogClosedEventDetail>>(el, 'closed');
+
+    // close picker
+    el.closePicker();
+    const closed = await closedTask;
+
+    expect(closed).not.undefined;
+
+    // show picker again
+    const openedTask2 = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent<unknown>>(el, 'opened');
+
+    el.showPicker();
+    const opened2 = await openedTask2;
+    await el.updateComplete;
+
+    expect(opened2).not.undefined;
+
+    const datePicker2 = el.query<AppDatePicker>(elementSelectors.datePicker);
+    const yearGrid2 = datePicker2?.query<AppYearGrid>(elementSelectors.yearGrid);
+    const yearGridButton2 = yearGrid2?.query<HTMLButtonElement>(elementSelectors.yearGridButton);
+    const monthCalendar = datePicker2?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+
+    // ensure calendar view when it re-opens
+    expect(yearGridButton2).not.exist;
+    expect(monthCalendar).exist;
   });
 
 });
