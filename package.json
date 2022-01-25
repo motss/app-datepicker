@@ -106,8 +106,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npm run check && npm run nano-staged && npm run ts -- --noEmit",
-    "commit-msg": "npm run lint-commit",
-    "post-commit": "npm run clean"
+    "commit-msg": "npm run lint-commit"
   },
   "commitlint": {
     "extends": [
@@ -131,8 +130,8 @@
     "@reallyland/tsconfig": "^4.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@skypack/package-check": "^0.2.2",
-    "@typescript-eslint/eslint-plugin": "^5.10.0",
-    "@typescript-eslint/parser": "^5.10.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
     "@web/dev-server-esbuild": "^0.2.16",
     "@web/dev-server-rollup": "^0.3.14",
     "@web/test-runner": "^0.13.25",

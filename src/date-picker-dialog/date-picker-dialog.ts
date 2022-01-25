@@ -1,6 +1,6 @@
 import '@material/mwc-button';
 import '@material/mwc-dialog';
-import './app-date-picker-dialog-dialog.js';
+import './app-date-picker-dialog-base.js';
 
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
