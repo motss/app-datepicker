@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const datePickerDialogDialogStyling = css`
+export const datePickerDialogBaseStyling = css`
 .mdc-dialog .mdc-dialog__surface,
 .mdc-dialog .mdc-dialog__content {
   --mdc-dialog-content-ink-color: var(--base-on-primary);
@@ -20,7 +20,7 @@ export const datePickerDialogDialogStyling = css`
 }
 `;
 
-export const datePickerDialogBaseStyling = css`
+export const datePickerDialogStyling = css`
 .secondary-actions {
   margin: 0;
 }

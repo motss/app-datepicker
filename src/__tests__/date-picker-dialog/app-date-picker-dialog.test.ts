@@ -7,8 +7,8 @@ import { DateTimeFormat } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import type { AppDatePickerDialog } from '../../date-picker-dialog/app-date-picker-dialog';
-import type { AppDatePickerDialogDialog } from '../../date-picker-dialog/app-date-picker-dialog-dialog';
-import { appDatePickerDialogDialogName, appDatePickerDialogName } from '../../date-picker-dialog/constants';
+import type { AppDatePickerDialogBase } from '../../date-picker-dialog/app-date-picker-dialog-base';
+import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../../date-picker-dialog/constants';
 import type { DialogClosedEventDetail, DialogClosingEventDetailAction } from '../../date-picker-dialog/typings';
 import { toDateString } from '../../helpers/to-date-string';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
@@ -23,7 +23,7 @@ describe(appDatePickerDialogName, () => {
   const elementSelectors = {
     calendarDay: (label: string) => `td.calendar-day[aria-label="${label}"]`,
     datePicker: appDatePickerName,
-    datePickerDialogDialog: appDatePickerDialogDialogName,
+    datePickerDialogBase: appDatePickerDialogBaseName,
     dialogActionCancel: `mwc-button[dialogaction="cancel"]`,
     dialogActionReset: `mwc-button[data-dialog-action="reset"]`,
     dialogActionSet: `mwc-button[dialogaction="set"]`,
@@ -54,7 +54,7 @@ describe(appDatePickerDialogName, () => {
     });
 
     const datePickerDialogDialog =
-      el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+      el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
     const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
     await datePicker?.updateComplete;
@@ -87,7 +87,7 @@ describe(appDatePickerDialogName, () => {
     >(el, 'opened');
 
     const datePickerDialogDialog =
-      el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+      el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
     let datePicker = datePickerDialogDialog?.query<AppDatePicker>(elementSelectors.datePicker);
 
     expect(datePickerDialogDialog).exist;
@@ -157,7 +157,7 @@ describe(appDatePickerDialogName, () => {
         >(el, 'opened');
 
         let datePickerDialogDialog =
-          el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+          el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
         let datePicker =
           datePickerDialogDialog?.query<AppDatePicker>(elementSelectors.datePicker);
         let monthCalendar =
@@ -171,7 +171,7 @@ describe(appDatePickerDialogName, () => {
         await el.updateComplete;
 
         datePickerDialogDialog =
-          el.query<AppDatePickerDialogDialog>(elementSelectors.datePickerDialogDialog);
+          el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
         datePicker =
           datePickerDialogDialog?.querySelector<AppDatePicker>(elementSelectors.datePicker);
         monthCalendar =
