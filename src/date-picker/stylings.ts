@@ -19,7 +19,7 @@ export const datePickerStyling = css`
   max-height: var(--date-picker-height);
   width: 100%;
   height: 100%;
-  background-color: var(--base-primary);
+  background-color: var(--base-surface);
   color: var(--base-on-primary);
   overscroll-behavior: contain;
 }

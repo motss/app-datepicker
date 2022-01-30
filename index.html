@@ -20,7 +20,10 @@
       --bg-color: #f5f5f5;
       --text-color: #000;
 
+      --a: rgba(255, 255, 255, .55);
       --b: #000;
+      --c: #fff;
+      --d: #1c1b1f;
       --e: #6200ee;
 
       --app-on-primary: var(--b);
@@ -28,21 +31,15 @@
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --a: rgba(255, 255, 255, .55);
-        --c: #fff;
-        --d: #1c1b1f;
-
-        /* --app-hover: var(--c); */
         --app-focus: var(--c);
         --app-ink: var(--c);
         --app-on-disabled: var(--a);
-        --app-on-selected: #fff;
+        --app-on-primary: var(--c);
+        --app-on-selected: var(--c);
         --app-on-weekday: var(--a);
-        --app-selected: rgba(255, 255, 255, .25);
+        --app-selected: var(--e);
+        --app-surface: var(--d);
         --app-today: var(--c);
-
-        --app-on-primary: var(--a);
-        /* --app-primary: var(--d); */
 
         --date-picker-dialog-scrim: rgba(0, 0, 0, .75);
 

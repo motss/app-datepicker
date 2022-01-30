@@ -12,6 +12,7 @@ export const baseStyling = css`
   --base-on-weekday: var(--app-on-weekday, #8c8c8c);
   --base-primary: var(--app-primary, #fff);
   --base-selected: var(--app-selected, #1d1d1d);
+  --base-surface: var(--app-surface, #fff);
   --base-today: var(--app-today, #000);
 }
 `;
