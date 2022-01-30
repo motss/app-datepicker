@@ -3,6 +3,7 @@ import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
+import { live } from 'lit/directives/live.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
@@ -162,7 +163,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
         ?disabled=${this.disabled}
         ?readonly=${true}
         ?required=${this.required}
-        .value=${this._valueText}
+        .value=${live(this._valueText)}
         @blur=${this.onInputBlur}
         @focus=${this.onInputFocus}
         aria-controls=${ifDefined(ariaControlsOrUndef)}
