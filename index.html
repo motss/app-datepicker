@@ -19,11 +19,16 @@
     :root {
       --bg-color: #f5f5f5;
       --text-color: #000;
+
+      --b: #000;
+      --e: #6200ee;
+
+      --app-on-primary: var(--b);
+      --app-primary: var(--e);
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --a: rgba(255, 255, 255, .55);
-        --b: #000;
         --c: #fff;
         --d: #1c1b1f;
 
@@ -31,13 +36,21 @@
         --app-focus: var(--c);
         --app-ink: var(--c);
         --app-on-disabled: var(--a);
-        --app-on-primary: var(--c);
         --app-on-selected: #fff;
         --app-on-weekday: var(--a);
-        --app-primary: var(--d);
         --app-selected: rgba(255, 255, 255, .25);
         --app-today: var(--c);
+
+        --app-on-primary: var(--a);
+        /* --app-primary: var(--d); */
+
+        --date-picker-dialog-scrim: rgba(0, 0, 0, .75);
+
+        --date-picker-input-fill: rgba(255, 255, 255, .25);
+        --date-picker-input-hover-line: var(--c);
+        --date-picker-input-idle-line: var(--a);
         --date-picker-input-on-icon: var(--a);
+        --date-picker-input-label-ink: var(--a);
 
         --bg-color: #000;
         --text-color: #fff;

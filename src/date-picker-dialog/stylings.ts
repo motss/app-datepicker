@@ -20,7 +20,7 @@ export const datePickerDialogBaseStyling = css`
 }
 
 .mdc-dialog .mdc-dialog__scrim {
-  --mdc-dialog-scrim-color: var(--date-picker-dialog-base-scrim);
+  --mdc-dialog-scrim-color: var(--date-picker-dialog-scrim);
 }
 `;
 
