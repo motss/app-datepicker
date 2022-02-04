@@ -84,28 +84,27 @@
     "dist/year-grid/.*js.map",
     "dist/year-grid/*.*js",
     "dist/year-grid/*.d.ts.map",
-    "dist/year-grid/*.d.ts"
+    "dist/year-grid/*.d.ts",
+    "postinstall.mjs"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.prod.json",
-    "check": "package-check",
-    "clean": "rm -rf .*cache *.log coverage/ dist/ logs/",
-    "postinstall": "if [ \"$CI\" != 'true' ] && [[ \"$INIT_CWD\" != *'node_modules/app-datepicker' ]] && [[ \"$INIT_CWD\" == *'app-datepicker' ]]; then npm x -y -- simple-git-hooks && npm dedupe; fi",
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf .*cache *.log .swc/ coverage/ dist/ logs/",
+    "postinstall": "npm x --prefer-online -y -- zx@latest ./postinstall.mjs",
     "lint": "eslint src --ext .js,.ts",
-    "lint-commit": "npm x -y -- commitlint --edit",
+    "lint-commit": "npm x -y -- commitlint@latest --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
-    "nano-staged": "nano-staged",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "npm run test:helpers && npm run test:elements",
     "test:elements": "npm run wtr -- --config wtr.config.mjs",
     "test:helpers": "TEST_HELPERS=1 npm run wtr -- --config wtr.config.mjs",
-    "ts": "tsc",
     "watch": "npm run clean && tsc --watch",
-    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
+    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js",
+    "pre-commit": "package-check && nano-staged && tsc --noEmit"
   },
   "simple-git-hooks": {
-    "pre-commit": "npm run check && npm run nano-staged && npm run ts -- --noEmit",
+    "pre-commit": "npm run pre-commit",
     "commit-msg": "npm run lint-commit"
   },
   "commitlint": {
@@ -121,7 +120,7 @@
     "@material/mwc-menu": "^0.25.3",
     "@material/mwc-textfield": "^0.25.3",
     "lit": "^2.1.2",
-    "nodemod": "^3.0.0",
+    "nodemod": "^3.0.4",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
@@ -130,11 +129,11 @@
     "@reallyland/tsconfig": "^4.0.1",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@skypack/package-check": "^0.2.2",
-    "@typescript-eslint/eslint-plugin": "^5.10.1",
-    "@typescript-eslint/parser": "^5.10.1",
+    "@typescript-eslint/eslint-plugin": "^5.10.2",
+    "@typescript-eslint/parser": "^5.10.2",
     "@web/dev-server-esbuild": "^0.2.16",
     "@web/dev-server-rollup": "^0.3.15",
-    "@web/test-runner": "^0.13.26",
+    "@web/test-runner": "^0.13.27",
     "@web/test-runner-commands": "^0.6.1",
     "@web/test-runner-playwright": "^0.8.8",
     "eslint-plugin-lit": "^1.6.1",

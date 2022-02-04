@@ -18,78 +18,87 @@ defaults:
 
 env:
   CI_SKIP: false
+  GITHUB_COMMIT_MESSAGE: ''
+  NODE_VERSION: v0.0.0
+  NPM_CACHE_DIR: ~/.npm
+  NPM_VERSION: 0.0.0
 
 jobs:
   test:
-    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, 'doc:')"
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'doc:')"
+    env:
+      GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
     name: ${{ matrix.os }} ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
     strategy:
       matrix:
         os: [ubuntu-latest]
         target: [16.x]
-    timeout-minutes: 120
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Git log
+      - name: CI skip check
         run: |
-          if [ -n "$(git log --format=%B -n 1 | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]; then
+          if [[ -n "$(echo $GITHUB_COMMIT_MESSAGE | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]]; then
+            echo "[INFO] SKIP CI"
             echo "CI_SKIP=true" >> $GITHUB_ENV
           fi
 
+      - name: Checkout
+        if: env.CI_SKIP == 'false'
+        uses: actions/checkout@v2
+
       - name: Setup node@${{ matrix.target }}
-        if: "env.CI_SKIP == 'false'"
-        uses: actions/setup-node@v1
+        if: env.CI_SKIP == 'false'
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.target }}
 
       - name: Setup Playwright
-        if: env.CI_SKIP != 'true'
+        if: env.CI_SKIP == 'false'
         uses: microsoft/playwright-github-action@v1
 
-      - name: List versions
-        if: "env.CI_SKIP == 'false'"
-        continue-on-error: true
+      - name: Install latest npm
+        if: env.CI_SKIP == 'false'
         run: |
           npm i -g npm@latest
-          node -v && npm version && which npm && pwd && npx envinfo
+          echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
+          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
+          echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+
+      - name: List versions
+        if: env.CI_SKIP == 'false'
+        run: |
+          pwd && ls -la && npx envinfo
 
       - name: Cache dependencies
+        if: env.CI_SKIP == 'false'
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ matrix.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: ${{ env.NPM_CACHE_DIR }}
+          key: ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ matrix.os }}-npm-
+            ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-
 
       - name: Install dependencies
-        if: "env.CI_SKIP == 'false'"
+        if: env.CI_SKIP == 'false'
         run: |
           npm ci --quiet
 
       - name: Lint
-        if: "env.CI_SKIP == 'false'"
+        if: env.CI_SKIP == 'false'
         run: |
           npm run lint:build
 
-      - name: Check build
-        if: "env.CI_SKIP == 'false'"
-        shell: bash
-        run: |
-          pwd && ls -la
-
       - name: Run Test
-        if: "env.CI_SKIP == 'false'"
+        if: env.CI_SKIP == 'false'
         run: |
           npm run test:elements
 
       - name: Upload coverage to codecov
+        if: env.CI_SKIP == 'false' && success()
         uses: codecov/codecov-action@v1
-        if: env.CI_SKIP != 'true' && success()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info

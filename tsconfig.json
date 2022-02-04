@@ -2,6 +2,7 @@
   "extends": "@reallyland/tsconfig/browser/tsconfig.json",
   "compilerOptions": {
     "declarationDir": "dist",
+    "importHelpers": true,
     "inlineSources": false,
     "outDir": "dist",
     "rootDir": "src",
