@@ -90,7 +90,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf .*cache *.log .swc/ coverage/ dist/ logs/",
-    "postinstall": "npm x --prefer-online -y -- zx@latest ./postinstall.mjs",
+    "postinstall": "npm x --cache=./.cache -y -- zx@latest ./postinstall.mjs",
     "lint": "eslint src --ext .js,.ts",
     "lint-commit": "npm x -y -- commitlint@latest --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
