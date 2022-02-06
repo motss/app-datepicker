@@ -122,7 +122,7 @@
     "@material/mwc-menu": "^0.25.3",
     "@material/mwc-textfield": "^0.25.3",
     "lit": "^2.1.2",
-    "nodemod": "^3.0.5-rc.1",
+    "nodemod": "^3.0.5-rc.2",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
