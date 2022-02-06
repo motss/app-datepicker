@@ -100,10 +100,10 @@
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "npm run test:helpers && npm run test:elements",
     "test:coverage": "export COVERAGE=true && npm run test:helpers && npm run test:elements",
-    "test:elements": "npm run wtr -- --config wtr.config.mjs",
-    "test:helpers": "export TEST_HELPERS=true && npm run wtr -- --config wtr.config.mjs",
+    "test:elements": "npm run wtr",
+    "test:helpers": "export TEST_HELPERS=true && npm run wtr",
     "watch": "npm run clean && tsc --watch",
-    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
+    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js --config wtr.config.mjs"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run pre-commit",

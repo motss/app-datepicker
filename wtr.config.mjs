@@ -1,8 +1,8 @@
-import { fromRollup } from '@web/dev-server-rollup';
-import { esbuildPlugin } from '@web/dev-server-esbuild';
-import { playwrightLauncher } from '@web/test-runner-playwright';
-import { sendKeysPlugin } from '@web/test-runner-commands/plugins';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { esbuildPlugin } from '@web/dev-server-esbuild';
+import { fromRollup } from '@web/dev-server-rollup';
+import { sendKeysPlugin } from '@web/test-runner-commands/plugins';
+import { playwrightLauncher } from '@web/test-runner-playwright';
 
 const nodeResolvePlugin = fromRollup(nodeResolve);
 
@@ -28,9 +28,9 @@ const config = {
   browserStartTimeout: 60e3,
   concurrency: 3,
   concurrentBrowsers: 9,
-  coverage: true,
   ...(
     isCoverage && ({
+      coverage: true,
       coverageConfig: {
         report: true,
         threshold: {
