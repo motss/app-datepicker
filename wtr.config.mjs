@@ -6,8 +6,15 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const nodeResolvePlugin = fromRollup(nodeResolve);
 
-const isCI = String(process.env.CI) === 'true';
-const isTestHelpersOnly = String(process.env.TEST_HELPERS) === '1';
+const {
+  CI = 'false',
+  COVERAGE = 'false',
+  TEST_HELPERS = 'false',
+} = process.env;
+
+const isCI = CI === 'true';
+const isCoverage = COVERAGE === 'true';
+const isTestHelpersOnly = TEST_HELPERS === 'true';
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
@@ -22,26 +29,30 @@ const config = {
   concurrency: 3,
   concurrentBrowsers: 9,
   coverage: true,
-  coverageConfig: {
-    report: true,
-    threshold: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80
-    },
-    nativeInstrumentation: true,
-    exclude: [
-      'src/*tests*/**',
-      'node_modules/**',
-      ...(isTestHelpersOnly ? [
-        'src/mixins/**',
-        'src/root-element/**',
-      ] : [
-        'src/helpers/**'
-      ])
-    ],
-  },
+  ...(
+    isCoverage && ({
+      coverageConfig: {
+        report: true,
+        threshold: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80
+        },
+        nativeInstrumentation: true,
+        exclude: [
+          'src/*tests*/**',
+          'node_modules/**',
+          ...(isTestHelpersOnly ? [
+            'src/mixins/**',
+            'src/root-element/**',
+          ] : [
+            'src/helpers/**'
+          ])
+        ],
+      },
+    })
+  ),
   files: [
     `src/*tests*/${isTestHelpersOnly ? 'helpers' : '!(helpers)'}/*.test.ts`
   ],

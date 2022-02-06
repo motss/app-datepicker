@@ -40,7 +40,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci --quiet
+          npm ci
 
       - name: Publish to npm (Prerelease)
         if: contains(github.ref, '-') == true

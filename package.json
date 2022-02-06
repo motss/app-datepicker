@@ -85,23 +85,25 @@
     "dist/year-grid/*.*js",
     "dist/year-grid/*.d.ts.map",
     "dist/year-grid/*.d.ts",
-    "postinstall.mjs"
+    "postinstall.*",
+    "!**/*test*/**/*.*"
   ],
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf .*cache *.log .swc/ coverage/ dist/ logs/",
-    "postinstall": "npm x --cache=./.cache -y -- zx@latest ./postinstall.mjs",
+    "postinstall": "bash postinstall.bash",
     "lint": "eslint src --ext .js,.ts",
     "lint-commit": "npm x -y -- commitlint@latest --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
+    "pre-commit": "package-check && nano-staged && tsc --noEmit",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "npm run test:helpers && npm run test:elements",
+    "test:coverage": "export COVERAGE=true && npm run test:helpers && npm run test:elements",
     "test:elements": "npm run wtr -- --config wtr.config.mjs",
-    "test:helpers": "TEST_HELPERS=1 npm run wtr -- --config wtr.config.mjs",
+    "test:helpers": "export TEST_HELPERS=true && npm run wtr -- --config wtr.config.mjs",
     "watch": "npm run clean && tsc --watch",
-    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js",
-    "pre-commit": "package-check && nano-staged && tsc --noEmit"
+    "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run pre-commit",
@@ -120,7 +122,7 @@
     "@material/mwc-menu": "^0.25.3",
     "@material/mwc-textfield": "^0.25.3",
     "lit": "^2.1.2",
-    "nodemod": "^3.0.4",
+    "nodemod": "^3.0.5-rc.1",
     "tslib": "^2.3.1"
   },
   "devDependencies": {

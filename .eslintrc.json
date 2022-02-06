@@ -10,7 +10,10 @@
     "plugin:lit/recommended",
     "plugin:lit-a11y/recommended"
   ],
-  "ignorePatterns": "wtr.config.mjs",
+  "ignorePatterns": [
+    "**/*.mjs",
+    "*.config.ts"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -37,6 +40,13 @@
         "imports": "always-multiline",
         "exports": "always-multiline",
         "functions": "never"
+      }
+    ],
+    "comma-spacing": "off",
+    "@typescript-eslint/comma-spacing": [
+      "error", {
+        "before": false,
+        "after": true
       }
     ],
     "@typescript-eslint/consistent-type-exports": [

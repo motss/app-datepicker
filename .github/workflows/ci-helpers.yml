@@ -18,7 +18,9 @@ defaults:
 
 env:
   CI_SKIP: false
+  COVERAGE: false
   GITHUB_COMMIT_MESSAGE: ''
+  IS_UBUNTU: false
   NODE_VERSION: v0.0.0
   NPM_CACHE_DIR: ~/.npm
   NPM_VERSION: 0.0.0
@@ -54,46 +56,56 @@ jobs:
         with:
           node-version: ${{ matrix.target }}
 
-      - name: Install latest npm
-        if: env.CI_SKIP == 'false'
-        run: |
-          npm i -g npm@latest
-          echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
-          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
-          echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+      # - name: Install latest npm
+      #   if: env.CI_SKIP == 'false'
+      #   run: |
+      #     npm i -g npm@latest
 
       - name: List versions
         if: env.CI_SKIP == 'false'
         run: |
           pwd && ls -la
+          echo "IS_UBUNTU=${{ contains(matrix.os, 'ubuntu') }}" >> $GITHUB_ENV
+          echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
+          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
+          echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
 
       - name: Cache dependencies
         if: env.CI_SKIP == 'false'
         id: npm-cache
         uses: actions/cache@v2
         with:
-          path: ${{ env.NPM_CACHE_DIR }}
+          # See this glob workaround at https://github.com/actions/toolkit/issues/713.
+          path: |
+            ${{ env.NPM_CACHE_DIR }}/*
+            !${{ env.NPM_CACHE_DIR }}/_npx
           key: ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-
+            ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}
 
       - name: Install dependencies
         if: env.CI_SKIP == 'false'
         run: |
-          npm ci --quiet
+          npm ci
 
       - name: Lint
         if: env.CI_SKIP == 'false'
         run: |
           npm run lint:build
 
-      - name: Run Test
-        if: env.CI_SKIP == 'false'
+      - name: Test
+        if: env.CI_SKIP == 'false' && env.IS_UBUNTU == 'false'
         run: |
           npm run test:helpers
 
+      - name: Test with coverage
+        if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
+        run: |
+          echo "COVERAGE=true" >> $GITHUB_ENV
+          npm run test:helpers
+
       - name: Upload coverage to codecov
-        if: env.CI_SKIP == 'false' && success()
+        if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false' && success()
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
