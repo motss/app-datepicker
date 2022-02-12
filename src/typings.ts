@@ -1,4 +1,4 @@
-import type { LitElement } from 'lit';
+import type { LitElement, PropertyValues } from 'lit';
 import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
 import type { startViews } from './constants.js';
@@ -6,7 +6,7 @@ import type { DatePicker } from './date-picker/date-picker.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
 
-export type ChangedProperties<T = Record<string, unknown>> = Map<keyof T, T[keyof T]>;
+export type ChangedProperties<T = Record<string, unknown>> = PropertyValues & Map<keyof T, T[keyof T]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Constructor<T> = new (...args: any[]) => T;
