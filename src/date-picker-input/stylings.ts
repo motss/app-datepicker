@@ -2,19 +2,19 @@ import { css } from 'lit';
 
 export const datePickerInputStyling = css`
 :host {
-  --mdc-text-field-disabled-fill-color: var(--date-picker-input-disabled-fill);
-  --mdc-text-field-disabled-ink-color: var(--date-picker-input-disabled-ink);
-  --mdc-text-field-disabled-line-color: var(--date-picker-input-disabled-line);
-  --mdc-text-field-fill-color: var(--date-picker-input-fill);
-  --mdc-text-field-filled-border-radius: var(--date-picker-input-filled-border-radius);
-  --mdc-text-field-hover-line-color: var(--date-picker-input-hover-line);
-  --mdc-text-field-idle-line-color: var(--date-picker-input-idle-line);
-  --mdc-text-field-ink-color: var(--base-on-primary);
-  --mdc-text-field-label-ink-color: var(--date-picker-input-label-ink);
-  --mdc-text-field-outlined-disabled-border-color: var(--date-picker-input-disabled-line);
-  --mdc-text-field-outlined-hover-border-color: var(--date-picker-input-hover-line);
-  --mdc-text-field-outlined-idle-border-color: var(--date-picker-input-idle-line);
-  --mdc-theme-primary: var(--base-primary);
+  /* mwc-textfield CSS variables: */
+  /* --mdc-text-field-filled-border-radius: 4px 4px 0 0 */
+  /* --mdc-text-field-idle-line-color: rgba(0, 0, 0, 0.42) */
+  /* --mdc-text-field-hover-line-color: rgba(0, 0, 0, 0.87) */
+  /* --mdc-text-field-disabled-line-color: rgba(0, 0, 0, 0.06) */
+  /* --mdc-text-field-outlined-idle-border-color: rgba(0, 0, 0, 0.38) */
+  /* --mdc-text-field-outlined-hover-border-color: rgba(0, 0, 0, 0.87) */
+  /* --mdc-text-field-outlined-disabled-border-color: rgba(0, 0, 0, 0.06) */
+  /* --mdc-text-field-fill-color: rgb(245, 245, 245) */
+  /* --mdc-text-field-disabled-fill-color: rgb(250, 250, 250) */
+  /* --mdc-text-field-ink-color: rgba(0, 0, 0, 0.87) */
+  /* --mdc-text-field-label-ink-color: rgba(0, 0, 0, 0.6) */
+  /* --mdc-text-field-disabled-ink-color: rgba(0, 0, 0, 0.37) */
 
   position: relative;
 }
@@ -24,7 +24,7 @@ export const datePickerInputStyling = css`
 }
 
 .mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__icon--trailing {
+  color: var(--date-picker-input-icon, rgba(0, 0, 0, 0.54));
   pointer-events: auto;
-  color: var(--date-picker-input-on-icon, rgba(0, 0, 0, 0.54));
 }
 `;

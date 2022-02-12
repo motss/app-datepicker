@@ -39,7 +39,6 @@ export class DemoApp extends RootElement {
 
     app-date-picker {
       border: 1px solid #000;
-      border-radius: 4px;
     }
 
     @media (prefers-color-scheme: dark) {

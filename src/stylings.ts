@@ -4,16 +4,22 @@ export const absoluteHidden = css`[hidden] { display: none !important; }`;
 
 export const baseStyling = css`
 :host {
-  --base-focus: var(--app-focus, #b5b5b5);
-  --base-hover: var(--app-hover, #b5b5b5);
-  --base-on-disabled: var(--app-on-disabled, rgba(0, 0, 0, .38));
-  --base-on-primary: var(--app-on-primary, #000);
-  --base-on-selected: var(--app-on-selected, #fff);
-  --base-on-weekday: var(--app-on-weekday, #8c8c8c);
-  --base-primary: var(--app-primary, #fff);
-  --base-selected: var(--app-selected, #1d1d1d);
-  --base-surface: var(--app-surface, #fff);
-  --base-today: var(--app-today, #000);
+  --_focus: var(--app-focus, #b5b5b5);
+  --_hover: var(--app-hover, #b5b5b5);
+  --_on-disabled: var(--app-on-disabled, rgba(0, 0, 0, .38));
+  --_on-focus: var(--app-on-focus, #b5b5b5);
+  --_on-hover: var(--app-on-hover, #b5b5b5);
+  --_on-primary: var(--app-on-primary, #fff);
+  --_on-surface: var(--app-on-surface, #000);
+  --_on-today: var(--app-on-today, #000);
+  --_on-weekday: var(--app-on-weekday, #8c8c8c);
+  --_primary: var(--app-primary, #6200ee);
+  --_selected-focus: var(--app-selected-focus);
+  --_selected-hover: var(--app-selected-hover);
+  --_selected-on-focus: var(--app-selected-on-focus);
+  --_selected-on-hover: var(--app-selected-on-hover);
+  --_shape: var(--app-shape, 0px);
+  --_today: var(--app-today, #000);
 }
 `;
 
@@ -58,7 +64,7 @@ button {
 
 export const resetShadowRoot = css`
 :host {
-  display: block;
+  position: relative;
 }
 
 * {

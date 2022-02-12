@@ -17,39 +17,107 @@
 <body>
   <style>
     :root {
-      --bg-color: #f5f5f5;
-      --text-color: #000;
-
-      --a: rgba(255, 255, 255, .55);
-      --b: #000;
-      --c: #fff;
-      --d: #1c1b1f;
-      --e: #6200ee;
-
-      --app-on-primary: var(--b);
-      --app-primary: var(--e);
+      /** MDC CSS Variables */
+      --primary: #6750A4;
+      --on-primary: #FFFFFF;
+      --primary-container: #EADDFF;
+      --on-primary-container: #21005D;
+      --secondary: #625B71;
+      --on-secondary: #FFFFFF;
+      --secondary-container: #E8DEF8;
+      --on-secondary-container: #1D192B;
+      --tertiary: #7D5260;
+      --on-tertiary: #FFFFFF;
+      --tertiary-container: #FFD8E4;
+      --on-tertiary-container: #31111D;
+      --error: #B3261E;
+      --error-container: #F9DEDC;
+      --on-error: #FFFFFF;
+      --on-error-container: #410E0B;
+      --background: #FFFBFE;
+      --on-background: #1C1B1F;
+      --surface: #FFFBFE;
+      --on-surface: #1C1B1F;
+      --surface-variant: #E7E0EC;
+      --on-surface-variant: #49454F;
+      --outline: #79747E;
+      --inverse-on-surface: #F4EFF4;
+      --inverse-surface: #313033;
+      --inverse-primary: #D0BCFF;
+      --shadow: #000000;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --app-focus: var(--c);
-        --app-on-disabled: var(--a);
-        --app-on-primary: var(--c);
-        --app-on-selected: var(--c);
-        --app-on-weekday: var(--a);
-        --app-selected: var(--e);
-        --app-surface: var(--d);
-        --app-today: var(--c);
+        /* --date-picker-dialog-scrim: rgba(0, 0, 0, .75); */
 
-        --date-picker-dialog-scrim: rgba(0, 0, 0, .75);
-
-        --date-picker-input-fill: rgba(255, 255, 255, .25);
+        /* --date-picker-input-fill: rgba(255, 255, 255, .25); */
+        /* --date-picker-input-fill: #3b3b3b;
         --date-picker-input-hover-line: var(--c);
         --date-picker-input-idle-line: var(--a);
         --date-picker-input-on-icon: var(--a);
-        --date-picker-input-label-ink: var(--a);
+        --date-picker-input-label-ink: var(--a); */
 
-        --bg-color: #000;
-        --text-color: #fff;
+        /** MDC CSS Variables */
+        --primary: #D0BCFF;
+        --on-primary: #381E72;
+        --primary-container: #4F378B;
+        --on-primary-container: #EADDFF;
+        --secondary: #CCC2DC;
+        --on-secondary: #332D41;
+        --secondary-container: #4A4458;
+        --on-secondary-container: #E8DEF8;
+        --tertiary: #EFB8C8;
+        --on-tertiary: #492532;
+        --tertiary-container: #633B48;
+        --on-tertiary-container: #FFD8E4;
+        --error: #F2B8B5;
+        --error-container: #8C1D18;
+        --on-error: #601410;
+        --on-error-container: #F9DEDC;
+        --background: #1C1B1F;
+        --on-background: #E6E1E5;
+        --surface: #1C1B1F;
+        --on-surface: #E6E1E5;
+        --surface-variant: #49454F;
+        --on-surface-variant: #CAC4D0;
+        --outline: #938F99;
+        --inverse-on-surface: #1C1B1F;
+        --inverse-surface: #E6E1E5;
+        --inverse-primary: #6750A4;
+        --shadow: #000000;
+
+        /** Custom app CSS Variables */
+        --white: #fff;
+        --a: rgba(255, 255, 255, .55);
+        --e: #6200ee;
+
+        /** Override MDC CSS Variables */
+        --mdc-text-field-ink-color: var(--white);
+        --mdc-text-field-label-ink-color: var(--a);
+        --mdc-text-field-outlined-hover-border-color: var(--a);
+        --mdc-text-field-outlined-idle-border-color: var(--a);
+        --mdc-theme-on-surface: var(--on-surface);
+        --mdc-theme-primary: var(--primary);
+        --mdc-theme-surface: var(--surface);
+
+        /** Override app CSS Variables */
+        --app-focus: var(--primary);
+        --app-hover : var(--primary);
+        --app-on-disabled: var(--a);
+        --app-on-focus: var(--primary);
+        --app-on-hover  : var(--primary);
+        --app-on-primary: var(--on-primary);
+        --app-on-surface: var(--on-surface);
+        --app-on-today: var(--white);
+        --app-on-weekday: var(--a);
+        --app-primary: var(--primary);
+        --app-selected-focus: var(--inverse-primary);
+        --app-selected-hover: var(--primary);
+        --app-selected-on-focus: var(--on-primary);
+        --app-selected-on-hover: var(--on-primary);
+        --app-shape: 8px;
+        --app-today: var(--white);
+        --date-picker-input-icon: var(--white);
       }
     }
 
@@ -66,8 +134,8 @@
     }
 
     body {
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background-color: var(--background);
+      color: var(--on-background);
     }
 
     /**
