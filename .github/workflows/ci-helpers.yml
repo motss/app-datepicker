@@ -102,6 +102,10 @@ jobs:
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
         run: |
           echo "COVERAGE=true" >> $GITHUB_ENV
+          echo $COVERAGE;
+          echo $GITHUB_ENV;
+          echo ${{ env.COVERAGE }}
+          echo ${{ toJson(env) }}
           npm run test:helpers
 
       - name: Upload coverage to codecov
