@@ -105,7 +105,7 @@ jobs:
           echo $COVERAGE;
           echo $GITHUB_ENV;
           echo ${{ env.COVERAGE }}
-          echo ${{ toJson(env) }}
+          env;
           npm run test:helpers
 
       - name: Upload coverage to codecov
