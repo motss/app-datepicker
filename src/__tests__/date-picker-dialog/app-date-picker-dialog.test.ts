@@ -229,7 +229,7 @@ describe(appDatePickerDialogName, () => {
 
         const newValueDate = new Date(testNewValue);
         const newSelectedDate =
-          monthCalendar?.query(elementSelectors.calendarDay(formatter.format(newValueDate)))
+          monthCalendar?.query(elementSelectors.calendarDay(formatter.format(newValueDate)));
 
         const dateUpdatedTask = eventOnce<
           AppDatePicker,
@@ -292,7 +292,7 @@ describe(appDatePickerDialogName, () => {
         expect(el.valueAsDate).deep.equal(new Date(expectedDatePickerDialogValue));
         expect(el.valueAsNumber).equal(+new Date(expectedDatePickerDialogValue));
       }
-    )
+    );
   });
 
 });

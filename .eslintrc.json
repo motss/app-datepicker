@@ -60,6 +60,8 @@
         "disallowTypeAnnotations": false
       }
     ],
+    "semi": "off",
+    "@typescript-eslint/semi": ["error", "always"],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
   }

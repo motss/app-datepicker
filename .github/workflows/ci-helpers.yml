@@ -101,7 +101,8 @@ jobs:
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
         run: |
           export COVERAGE=true
-          npm run test:helpers
+          export TEST_HELPERS=true
+          npm run wtr
 
       - name: Upload coverage to codecov
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false' && success()

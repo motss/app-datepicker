@@ -66,7 +66,7 @@ export class SwipeTracker {
     }
 
     this.#element = element;
-    this.#move = onMove
+    this.#move = onMove;
     this.#up = onUp;
     this.disconnect = (): void => {
       if (element?.removeEventListener) {

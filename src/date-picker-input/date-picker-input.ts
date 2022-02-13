@@ -81,7 +81,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
           if (!isTabInsideInputSurface) this.closePicker();
         }
-      }
+      };
       const onClick = () => this._open = true;
       const onKeyup = (ev: KeyboardEvent) => {
         if ([keySpace, keyEnter].some(n => n === ev.key)) {

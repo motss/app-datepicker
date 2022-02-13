@@ -10,11 +10,13 @@ const {
   CI = 'false',
   COVERAGE = 'false',
   TEST_HELPERS = 'false',
+  WATCH = 'false',
 } = process.env;
 
 const isCI = CI === 'true';
 const isCoverage = COVERAGE === 'true';
 const isTestHelpersOnly = TEST_HELPERS === 'true';
+const isWatch = WATCH === 'true';
 
 /** @type {import('@web/test-runner').TestRunnerConfig} */
 const config = {
@@ -75,6 +77,7 @@ const config = {
       }),
     }
   },
+  watch: isWatch,
 };
 
 export default config;

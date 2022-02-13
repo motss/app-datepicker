@@ -6,6 +6,7 @@ import { sendKeys } from '@web/test-runner-commands';
 import type { confirmKeySet} from '../../constants';
 import { labelSelectedYear, labelTodayYear } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
+import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
@@ -22,6 +23,8 @@ describe(appYearGridName, () => {
     todayYearLabel: labelTodayYear,
   };
   const elementSelectors = {
+    selectedYear: '.year-grid-button[aria-selected="true"]',
+    todayYear: '.year-grid-button.year--today',
     yearGrid: '.year-grid',
     yearGridButton: '.year-grid-button',
   };
@@ -178,6 +181,62 @@ describe(appYearGridName, () => {
       ['2020', '2020', '0', 'true'],
       ['2021', '2021', '-1', 'false'],
     ]);
+  });
+
+  type TestTitle = [
+    testSelectedYearLabel: string | undefined,
+    testTodayYearLabel: string | undefined,
+    expectedSelectedYearLabel: string | undefined,
+    expectedTodayYearLabel: string | undefined
+  ];
+  const testTitleCases: TestTitle[] = [
+    [undefined, undefined, undefined, undefined],
+    ['', '', '', ''],
+    ['選擇年份', '選擇月份', '選擇年份', '選擇月份'],
+  ];
+  testTitleCases.forEach(a => {
+    const [
+      testSelectedYearLabel,
+      testTodayYearLabel,
+      expectedSelectedYearLabel,
+      expectedTodayYearLabel,
+    ] = a;
+
+    it.only(
+      messageFormatter('renders title correctly when hovered (selectedYearLabel=%s, todayYearLabel=%s)', a),
+      async () => {
+        const dataMax = new Date(data.max);
+        const dataMin = new Date(data.min);
+        const todayFullYear = toResolvedDate().getUTCFullYear();
+
+        const min = new Date(dataMin.setUTCFullYear(todayFullYear - 2));
+        const testData: YearGridData = {
+          ...data,
+          max: new Date(dataMax.setUTCFullYear(todayFullYear + 1)),
+          min,
+          date: min,
+          selectedYearLabel: testSelectedYearLabel as string,
+          todayYearLabel: testTodayYearLabel as string,
+        };
+
+        const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${testData}></app-year-grid>`);
+
+        const selectedYear = el.query<HTMLButtonElement>(elementSelectors.selectedYear);
+        const todayYear = el.query<HTMLButtonElement>(elementSelectors.todayYear);
+
+        expect(selectedYear).exist;
+        expect(todayYear).exist;
+
+        if (expectedSelectedYearLabel == null && expectedTodayYearLabel == null) {
+          expect(selectedYear).not.attr('title');
+          expect(todayYear).not.attr('title');
+        } else {
+          expect(selectedYear).attr('title', expectedSelectedYearLabel);
+
+          expect(todayYear).attr('title', expectedTodayYearLabel);
+        }
+      }
+    );
   });
 
 });

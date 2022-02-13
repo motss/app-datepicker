@@ -56,7 +56,7 @@ export function toNextSelectableDate({
       iaAfterMaxTime = newSelectableDateTime > maxTime;
 
       if (iaAfterMaxTime) {
-        newSelectableDate = new Date(maxTime)
+        newSelectableDate = new Date(maxTime);
         d = newSelectableDate.getUTCDate();
       }
     }

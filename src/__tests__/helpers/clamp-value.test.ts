@@ -21,6 +21,6 @@ describe(clampValue.name, () => {
 
         expect(result).equal(expected);
       }
-    )
+    );
   });
 });
