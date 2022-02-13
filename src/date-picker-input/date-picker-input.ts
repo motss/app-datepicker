@@ -4,6 +4,7 @@ import { html, nothing } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { live } from 'lit/directives/live.js';
+import { until } from 'lit/directives/until.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
@@ -126,7 +127,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   public override render(): TemplateResult {
     return html`
     ${super.render()}
-    ${this._rendered ? this.$renderContent() : nothing}
+    ${until(this._rendered ? this.$renderContent() : nothing)}
     `;
   }
 
@@ -191,8 +192,15 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     `;
   }
 
-  protected $renderContent(): TemplateResult {
+  protected async $renderContent(): Promise<TemplateResult> {
     warnUndefinedElement(appDatePickerInputSurfaceName);
+
+    /**
+     * NOTE(motss): `.updateComplete` is required here to resolve a rendering bug where ripple
+     * inside a `mwc-icon-button` where the ripple appears to be smaller than expected and
+     * is placed at the top-left of its parent.
+     */
+    await this.updateComplete;
 
     return html`
     <app-date-picker-input-surface

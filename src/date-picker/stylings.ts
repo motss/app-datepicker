@@ -54,6 +54,17 @@ export const datePickerStyling = css`
   white-space: nowrap;
 }
 
+.year-dropdown,
+[data-navigation="previous"],
+[data-navigation="next"] {
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  width: 48px;
+  height: 48px;
+}
+
 .year-dropdown {
   margin: 0 0 0 -8px;
   transition: transform 300ms cubic-bezier(0, 0, .4, 1);
@@ -66,16 +77,6 @@ export const datePickerStyling = css`
 .month-pagination {
   display: flex;
   margin: 0 -4px 0 0;
-}
-
-.month-pagination > [data-navigation="previous"],
-.month-pagination > [data-navigation="next"] {
-  min-width: 48px;
-  min-height: 48px;
-  max-width: 48px;
-  max-height: 48px;
-  width: 48px;
-  height: 48px;
 }
 /** #endregion header */
 
