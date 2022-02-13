@@ -228,12 +228,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       previousMonthLabel,
       selectedDateLabel,
       selectedYearLabel,
+      shortWeekLabel,
       showWeekNumber,
       startView,
       todayDateLabel,
       todayYearLabel,
       value,
       weekLabel,
+      weekNumberTemplate,
       weekNumberType,
     } = this;
 
@@ -254,12 +256,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       previousMonthLabel,
       selectedDateLabel,
       selectedYearLabel,
+      shortWeekLabel,
       showWeekNumber,
       startView,
       todayDateLabel,
       todayYearLabel,
       value,
       weekLabel,
+      weekNumberTemplate,
       weekNumberType,
     });
   }

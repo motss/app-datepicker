@@ -140,12 +140,14 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       previousMonthLabel,
       selectedDateLabel,
       selectedYearLabel,
+      shortWeekLabel,
       showWeekNumber,
       startView,
       todayDateLabel,
       todayYearLabel,
       value,
       weekLabel,
+      weekNumberTemplate,
       weekNumberType,
     } = this;
 
@@ -166,12 +168,14 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       previousMonthLabel,
       selectedDateLabel,
       selectedYearLabel,
+      shortWeekLabel,
       showWeekNumber,
       startView,
       todayDateLabel,
       todayYearLabel,
       value,
       weekLabel,
+      weekNumberTemplate,
       weekNumberType,
     });
   }

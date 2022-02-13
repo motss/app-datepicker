@@ -1,10 +1,10 @@
 import type { Calendar, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
-import type { ChangedProperties, Formatters } from '../typings.js';
+import type { ChangedProperties, DatePickerProperties, Formatters } from '../typings.js';
 
 export type MonthCalendarChangedProperties = ChangedProperties<MonthCalendarProperties>;
 
-export interface MonthCalendarData {
+export interface MonthCalendarData extends PickDatePickerProperties {
   calendar: Calendar['calendar'];
   currentDate: Date;
   date: Date;
@@ -13,11 +13,8 @@ export interface MonthCalendarData {
   formatters?: Formatters;
   max: Date;
   min: Date;
-  selectedDateLabel?: string;
   showCaption?: boolean;
-  showWeekNumber?: boolean;
   todayDate: Date;
-  todayDateLabel?: string;
   weekdays: CalendarWeekday[];
 }
 
@@ -29,3 +26,10 @@ export interface MonthCalendarRenderCalendarDayInit extends HTMLElement {
   day: string;
   fullDate: Date;
 }
+
+type PickDatePickerProperties = Pick<
+  DatePickerProperties,
+  | 'selectedDateLabel'
+  | 'showWeekNumber'
+  | 'todayDateLabel'
+>;

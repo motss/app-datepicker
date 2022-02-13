@@ -1,7 +1,7 @@
 import { property } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectedDate, labelSelectedYear, labelTodayDate, labelTodayYear } from '../constants.js';
+import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectedDate, labelSelectedYear, labelShortWeek, labelTodayDate, labelTodayYear, labelWeek, weekNumberTemplate } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -15,28 +15,18 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public chooseYearLabel = labelChooseYear;
     @property() public chooseMonthLabel = labelChooseMonth;
     @property() public disabledDays = '';
-
     @property() public disabledDates = '';
-
     @property({ type: Number, reflect: true }) public firstDayOfWeek = 0;
-
     @property({ type: Boolean }) public inline = false;
-
     @property({ type: Boolean, reflect: true }) public landscape = false;
-
     @property() public locale: string = DateTimeFormat().resolvedOptions().locale;
-
     @property() public nextMonthLabel = labelNextMonth;
-
     @property() public previousMonthLabel = labelPreviousMonth;
-
     @property() public selectedDateLabel = labelSelectedDate;
     @property() public selectedYearLabel = labelSelectedYear;
-
+    @property() public shortWeekLabel = labelShortWeek;
     @property({ type: Boolean, reflect: true }) public showWeekNumber = false;
-
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public startView: StartView = 'calendar';
-
     @property() public todayDateLabel = labelTodayDate;
     @property() public todayYearLabel = labelTodayYear;
 
@@ -46,8 +36,8 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
      */
     @property() public value = toDateString(toResolvedDate());
 
-    @property() public weekLabel = 'Wk';
-
+    @property() public weekLabel = labelWeek;
+    @property() public weekNumberTemplate = weekNumberTemplate;
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public weekNumberType: WeekNumberType = 'first-4-day-week';
   }
 

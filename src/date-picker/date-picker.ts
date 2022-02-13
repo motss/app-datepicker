@@ -338,9 +338,11 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       firstDayOfWeek,
       locale,
       selectedDateLabel,
+      shortWeekLabel,
       showWeekNumber,
       todayDateLabel,
       weekLabel,
+      weekNumberTemplate,
       weekNumberType,
     } = this;
     const currentDate = _currentDate;
@@ -356,9 +358,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     } = this.#formatters;
 
     const weekdays = getWeekdays({
+      firstDayOfWeek,
       longWeekdayFormat,
       narrowWeekdayFormat,
-      firstDayOfWeek,
+      shortWeekLabel,
       showWeekNumber,
       weekLabel,
     });
@@ -377,6 +380,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       max,
       min,
       showWeekNumber,
+      weekNumberTemplate,
       weekNumberType,
     });
 

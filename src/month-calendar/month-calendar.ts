@@ -47,18 +47,18 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
 
     this.data = {
       calendar: [],
+      currentDate: todayDate,
       date: todayDate,
       disabledDatesSet: new Set(),
       disabledDaysSet: new Set(),
-      currentDate: todayDate,
       formatters: undefined,
       max: todayDate,
       min: todayDate,
+      selectedDateLabel: labelSelectedDate,
       showCaption: false,
       showWeekNumber: false,
       todayDate,
       todayDateLabel: labelTodayDate,
-      selectedDateLabel: labelSelectedDate,
       weekdays: [],
     };
   }
@@ -143,16 +143,17 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
         <thead>
           <tr class=weekdays part=weekdays role=row>${
             weekdays.map(
-              ({ label, value }) => html`
-              <th
-                aria-label=${label}
-                class=weekday
-                part=weekday
-                role=columnheader
-                title=${label}
-              >
-                <div class=weekday-value part=weekday-value>${value}</div>
-              </th>`
+              ({ label, value }) =>
+                html`
+                <th
+                  aria-label=${label}
+                  class=${`weekday${showWeekNumber ? ' week-number' : ''}`}
+                  part=weekday
+                  role=columnheader
+                  title=${label}
+                >
+                  <div class=weekday-value part=weekday-value>${value}</div>
+                </th>`
             )
           }</tr>
         </thead>
@@ -176,6 +177,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                     title=${label}
                   >${value}</th>`;
                 }
+
                 /** Empty day */
                 if (!value || !fullDate) {
                   return html`<td class="calendar-day day--empty" aria-hidden="true" part=calendar-day></td>`;

@@ -192,7 +192,7 @@ describe(appYearGridName, () => {
   const testTitleCases: TestTitle[] = [
     [undefined, undefined, undefined, undefined],
     ['', '', '', ''],
-    ['選擇年份', '選擇月份', '選擇年份', '選擇月份'],
+    [labelSelectedYear, labelTodayYear, labelSelectedYear, labelTodayYear],
   ];
   testTitleCases.forEach(a => {
     const [
