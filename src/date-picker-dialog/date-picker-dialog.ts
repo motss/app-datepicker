@@ -127,6 +127,8 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
 
   protected $renderSlot(): TemplateResult {
     const {
+      chooseMonthLabel,
+      chooseYearLabel,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -137,15 +139,19 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       nextMonthLabel,
       previousMonthLabel,
       selectedDateLabel,
+      selectedYearLabel,
       showWeekNumber,
       startView,
+      todayDateLabel,
+      todayYearLabel,
       value,
       weekLabel,
       weekNumberType,
-      yearDropdownLabel,
     } = this;
 
     return slotDatePicker({
+      chooseMonthLabel,
+      chooseYearLabel,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -159,12 +165,14 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       onDatePickerFirstUpdated: this.$onDatePickerFirstUpdated,
       previousMonthLabel,
       selectedDateLabel,
+      selectedYearLabel,
       showWeekNumber,
       startView,
+      todayDateLabel,
+      todayYearLabel,
       value,
       weekLabel,
       weekNumberType,
-      yearDropdownLabel,
     });
   }
 

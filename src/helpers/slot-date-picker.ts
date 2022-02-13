@@ -6,6 +6,8 @@ import { html } from 'lit';
 import type { SlotDatePickerInit } from './typings.js';
 
 export function slotDatePicker({
+  chooseMonthLabel,
+  chooseYearLabel,
   disabledDates,
   disabledDays,
   firstDayOfWeek,
@@ -23,10 +25,11 @@ export function slotDatePicker({
   value,
   weekLabel,
   weekNumberType,
-  yearDropdownLabel,
 }: SlotDatePickerInit): TemplateResult {
   return html`<app-date-picker
     ?showWeekNumber=${showWeekNumber}
+    .chooseMonthLabel=${chooseMonthLabel}
+    .chooseYearLabel=${chooseYearLabel}
     .disabledDates=${disabledDates}
     .disabledDays=${disabledDays}
     .firstDayOfWeek=${firstDayOfWeek}
@@ -41,7 +44,6 @@ export function slotDatePicker({
     .value=${value}
     .weekLabel=${weekLabel}
     .weekNumberType=${weekNumberType}
-    .yearDropdownLabel=${yearDropdownLabel}
     @date-updated=${onDatePickerDateUpdated}
     @first-updated=${onDatePickerFirstUpdated}
   ></app-date-picker>`;

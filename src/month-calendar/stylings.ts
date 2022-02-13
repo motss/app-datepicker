@@ -47,8 +47,8 @@ td {
 }
 
 .calendar-day,
-.calendar-day:not([aria-hidden="true"])::before,
-.calendar-day:not([aria-hidden="true"])::after {
+.calendar-day:not(.week-number):not([aria-hidden="true"])::before,
+.calendar-day:not(.week-number):not([aria-hidden="true"])::after {
   position: relative;
   width: var(--_size);
   height: var(--_size);
@@ -72,13 +72,13 @@ td {
   color: var(--_on-disabled);
 }
 @media (any-hover: hover) {
-  .calendar-day:not([aria-hidden="true"]):not([aria-disabled="true"]):hover {
+  .calendar-day:not(.week-number):not([aria-hidden="true"]):not([aria-disabled="true"]):hover {
     cursor: pointer;
   }
 }
 
-.calendar-day:not([aria-hidden="true"])::before,
-.calendar-day:not([aria-hidden="true"])::after {
+.calendar-day:not(.week-number):not([aria-hidden="true"])::before,
+.calendar-day:not(.week-number):not([aria-hidden="true"])::after {
   --_size: (var(--_size) - (var(--_inset) * 2) - (var(--_border-width) * 2));
 
   content: attr(data-day);
@@ -125,7 +125,7 @@ td {
   color: var(--_on-today);
 }
 
-.calendar-day:not([aria-hidden="true"])::after {
+.calendar-day:not(.week-number):not([aria-hidden="true"])::after {
   content: '';
 }
 .calendar-day:not([aria-disabled="true"]):focus::after,

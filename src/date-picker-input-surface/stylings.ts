@@ -13,6 +13,7 @@ export const DatePickerInputSurfaceStyling = css`
   --mdc-shape-medium: var(--_shape);
 
   display: block;
+  position: absolute; /* NOTE(motss): Set this so that surface can be placed on top of its anchor element */
 }
 
 .mdc-menu-surface.mdc-menu-surface--open {

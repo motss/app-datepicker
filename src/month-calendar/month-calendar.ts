@@ -1,8 +1,9 @@
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { confirmKeySet, navigationKeySetGrid } from '../constants.js';
+import { confirmKeySet, labelSelectedDate, labelTodayDate, navigationKeySetGrid } from '../constants.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
@@ -56,6 +57,8 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       showCaption: false,
       showWeekNumber: false,
       todayDate,
+      todayDateLabel: labelTodayDate,
+      selectedDateLabel: labelSelectedDate,
       weekdays: [],
     };
   }
@@ -74,17 +77,19 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
   protected override render(): TemplateResult | typeof nothing {
     const {
       calendar,
+      currentDate,
       date,
       disabledDatesSet,
       disabledDaysSet,
-      currentDate,
+      formatters,
       max,
       min,
+      selectedDateLabel,
       showCaption = false,
       showWeekNumber = false,
       todayDate,
+      todayDateLabel,
       weekdays,
-      formatters,
     } = this.data as MonthCalendarData;
 
     let calendarContent: TemplateResult | typeof nothing = nothing;
@@ -138,14 +143,15 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
         <thead>
           <tr class=weekdays part=weekdays role=row>${
             weekdays.map(
-              weekday => html`
+              ({ label, value }) => html`
               <th
+                aria-label=${label}
                 class=weekday
                 part=weekday
                 role=columnheader
-                aria-label=${weekday.label}
+                title=${label}
               >
-                <div class=weekday-value part=weekday-value>${weekday.value}</div>
+                <div class=weekday-value part=weekday-value>${value}</div>
               </th>`
             )
           }</tr>
@@ -161,12 +167,13 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                 /** Week label, if any */
                 if (!fullDate && value && showWeekNumber && i < 1) {
                   return html`<th
-                    class="calendar-day week-number"
-                    part=calendar-day
-                    scope=row
-                    role=rowheader
                     abbr=${label}
                     aria-label=${label}
+                    class="calendar-day week-number"
+                    part=week-number
+                    role=rowheader
+                    scope=row
+                    title=${label}
                   >${value}</th>`;
                 }
                 /** Empty day */
@@ -175,15 +182,23 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                 }
                 const curTime = +new Date(fullDate);
                 const shouldTab = tabbableDate.getUTCDate() === Number(value);
+                const isSelected = +date === curTime;
+                const isToday = +todayDate === curTime;
+                const title = isSelected ?
+                  selectedDateLabel :
+                  isToday ?
+                    todayDateLabel :
+                    undefined;
 
                 return this.$renderCalendarDay({
                   ariaDisabled: String(disabled),
                   ariaLabel: label,
-                  ariaSelected: String(+date === curTime),
-                  className: +todayDate === curTime ? 'day--today' : '',
+                  ariaSelected: String(isSelected),
+                  className: isToday ? 'day--today' : '',
                   day: value,
                   fullDate,
                   tabIndex: shouldTab ? 0 : -1,
+                  title,
                 } as MonthCalendarRenderCalendarDayInit);
               })
             }</tr>`;
@@ -204,6 +219,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     day,
     fullDate,
     tabIndex,
+    title,
   }: MonthCalendarRenderCalendarDayInit): TemplateResult {
     return html`
     <td
@@ -216,6 +232,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       part=calendar-day
       role=gridcell
       tabindex=${tabIndex}
+      title=${ifDefined(title)}
     >
     </td>
     `;

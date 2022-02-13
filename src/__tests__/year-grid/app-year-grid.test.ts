@@ -3,7 +3,8 @@ import '../../year-grid/app-year-grid';
 import { expect, fixture, html } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 
-import type { confirmKeySet } from '../../constants';
+import type { confirmKeySet} from '../../constants';
+import { labelSelectedYear, labelTodayYear } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
@@ -17,6 +18,8 @@ describe(appYearGridName, () => {
     formatters: toFormatters('en-US'),
     max: new Date('2021-03-03'),
     min: new Date('2019-01-01'),
+    selectedYearLabel: labelSelectedYear,
+    todayYearLabel: labelTodayYear,
   };
   const elementSelectors = {
     yearGrid: '.year-grid',

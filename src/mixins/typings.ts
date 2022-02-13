@@ -8,6 +8,8 @@ export interface DatePickerMinMaxProperties {
 }
 
 export interface DatePickerMixinProperties {
+  chooseMonthLabel: string;
+  chooseYearLabel: string;
   disabledDates: string;
   disabledDays: string;
   firstDayOfWeek: number;
@@ -17,12 +19,14 @@ export interface DatePickerMixinProperties {
   nextMonthLabel: string;
   previousMonthLabel: string;
   selectedDateLabel: string;
+  selectedYearLabel: string;
   showWeekNumber: boolean;
   startView: StartView;
+  todayDateLabel: string;
+  todayYearLabel: string;
   value?: string | null;
   weekLabel: string;
   weekNumberType: WeekNumberType;
-  yearDropdownLabel: string;
 }
 
 export interface ElementMixinProperties {

@@ -68,16 +68,17 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     const input = await this.$input;
     if (input) {
-      const onBodyKeyup = (ev: KeyboardEvent) => {
+      const onBodyKeyup = async (ev: KeyboardEvent) => {
         if (ev.key === keyEscape) {
           this.closePicker();
         } else if (ev.key === keyTab) {
-          const isTabInside = (ev.composedPath() as HTMLElement[]).find(
+          const inputSurface = await this.$inputSurface;
+          const isTabInsideInputSurface = (ev.composedPath() as HTMLElement[]).find(
             n => n.nodeType === Node.ELEMENT_NODE &&
-            this.isEqualNode(n)
+            n.isEqualNode(inputSurface)
           );
 
-          if (!isTabInside) this.closePicker();
+          if (!isTabInsideInputSurface) this.closePicker();
         }
       }
       const onClick = () => this._open = true;
@@ -195,17 +196,19 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     return html`
     <app-date-picker-input-surface
+      @opened=${this.#onOpened}
       ?open=${this._open}
       ?stayOpenOnBodyClick=${true}
       .anchor=${this as HTMLElement}
       @closed=${this.#onClosed}
-      @opened=${this.#onOpened}
     >${this.$renderSlot()}</app-date-picker-input-surface>
     `;
   }
 
   protected $renderSlot(): TemplateResult {
     const {
+      chooseMonthLabel,
+      chooseYearLabel,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -216,15 +219,19 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       nextMonthLabel,
       previousMonthLabel,
       selectedDateLabel,
+      selectedYearLabel,
       showWeekNumber,
       startView,
+      todayDateLabel,
+      todayYearLabel,
       value,
       weekLabel,
       weekNumberType,
-      yearDropdownLabel,
     } = this;
 
     return slotDatePicker({
+      chooseMonthLabel,
+      chooseYearLabel,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -238,12 +245,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       onDatePickerFirstUpdated: this.#onDatePickerFirstUpdated,
       previousMonthLabel,
       selectedDateLabel,
+      selectedYearLabel,
       showWeekNumber,
       startView,
+      todayDateLabel,
+      todayYearLabel,
       value,
       weekLabel,
       weekNumberType,
-      yearDropdownLabel,
     });
   }
 

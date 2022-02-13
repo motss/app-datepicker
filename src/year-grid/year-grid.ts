@@ -2,8 +2,9 @@ import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { MAX_DATE, navigationKeySetGrid } from '../constants.js';
+import { labelSelectedYear, labelTodayYear, MAX_DATE, navigationKeySetGrid } from '../constants.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
@@ -41,6 +42,8 @@ export class YearGrid extends RootElement implements YearGridProperties {
       formatters: undefined,
       max: MAX_DATE,
       min: todayDate,
+      selectedYearLabel: labelSelectedYear,
+      todayYearLabel: labelTodayYear,
     };
 
     this.$focusingYear = this.#todayYear = todayDate.getUTCFullYear();
@@ -75,6 +78,8 @@ export class YearGrid extends RootElement implements YearGridProperties {
       formatters,
       max,
       min,
+      selectedYearLabel,
+      todayYearLabel,
     } = this.data as YearGridData;
     const focusingYear =this.$focusingYear;
 
@@ -93,6 +98,8 @@ export class YearGrid extends RootElement implements YearGridProperties {
         date,
         focusingYear,
         label: yearFormat(new Date(`${year}-01-01`)),
+        selectedYearLabel,
+        todayYearLabel,
         year,
       }))
     }</div>
@@ -103,17 +110,29 @@ export class YearGrid extends RootElement implements YearGridProperties {
     date,
     focusingYear,
     label,
+    selectedYearLabel,
+    todayYearLabel,
     year,
   }: YearGridRenderButtonInit): TemplateResult {
+    const isSelected = year === date.getUTCFullYear();
+    const isToday = this.#todayYear === year;
+
+    const title = isSelected ?
+      selectedYearLabel :
+      isToday
+        ? todayYearLabel
+        : undefined;
+
     return html`
     <button
       .year=${year}
       aria-label=${label}
-      aria-selected=${year === date.getUTCFullYear() ? 'true' : 'false'}
-      class="year-grid-button ${classMap({ 'year--today': this.#todayYear === year })}"
+      aria-selected=${isSelected ? 'true' : 'false'}
+      class="year-grid-button ${classMap({ 'year--today': isToday })}"
       data-year=${year}
       part=year
       tabindex=${year === focusingYear ? '0' : '-1'}
+      title=${ifDefined(title)}
     ></button>
     `;
   }

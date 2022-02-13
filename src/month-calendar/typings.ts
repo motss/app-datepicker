@@ -6,16 +6,18 @@ export type MonthCalendarChangedProperties = ChangedProperties<MonthCalendarProp
 
 export interface MonthCalendarData {
   calendar: Calendar['calendar'];
-  date: Date;
-  disabledDaysSet: Set<number>;
-  disabledDatesSet: Set<number>;
-  formatters?: Formatters;
   currentDate: Date;
+  date: Date;
+  disabledDatesSet: Set<number>;
+  disabledDaysSet: Set<number>;
+  formatters?: Formatters;
   max: Date;
   min: Date;
+  selectedDateLabel?: string;
   showCaption?: boolean;
   showWeekNumber?: boolean;
   todayDate: Date;
+  todayDateLabel?: string;
   weekdays: CalendarWeekday[];
 }
 

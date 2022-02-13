@@ -1,4 +1,7 @@
-import type { ChangedProperties, Formatters, SupportedKey } from '../typings.js';
+import type { ChangedProperties, DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
+
+type PickDatePickerProperties = Pick<DatePickerProperties, 'selectedYearLabel' | 'todayYearLabel'>;
+type PickYearGridData = Pick<YearGridData, 'date' | keyof PickDatePickerProperties>;
 
 export interface ToNextSelectableYearInit {
   key: SupportedKey;
@@ -9,7 +12,7 @@ export interface ToNextSelectableYearInit {
 
 export type YearGridChangedProperties = ChangedProperties<YearGridProperties>;
 
-export interface YearGridData {
+export interface YearGridData extends PickDatePickerProperties {
   date: Date;
   formatters?: Formatters
   max: Date;
@@ -20,7 +23,7 @@ export interface YearGridProperties {
   data?: YearGridData;
 }
 
-export interface YearGridRenderButtonInit extends Pick<YearGridData, 'date'> {
+export interface YearGridRenderButtonInit extends PickYearGridData {
   focusingYear: number;
   label: string;
   year: number;

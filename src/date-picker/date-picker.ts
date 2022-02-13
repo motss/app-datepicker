@@ -29,7 +29,6 @@ import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot, webkitScrollbarStyling } from '../stylings.js';
 import type { CustomEventDetail, DatePickerProperties, Formatters, StartView, ValueUpdatedEvent } from '../typings.js';
 import type { AppYearGrid } from '../year-grid/app-year-grid.js';
-import type { YearGridData } from '../year-grid/typings.js';
 import { datePickerStyling } from './stylings.js';
 import type { DatePickerChangedProperties } from './typings.js';
 
@@ -246,15 +245,20 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
 
   protected override render(): TemplateResult {
     const formatters = this.#formatters;
-    const currentDate = this._currentDate;
-    const max = this._max;
-    const min = this._min;
-    const showWeekNumber = this.showWeekNumber;
-    const startView = this.startView;
+    const {
+      _currentDate,
+      _max,
+      _min,
+      chooseMonthLabel,
+      chooseYearLabel,
+      showWeekNumber,
+      startView,
+    } = this;
 
     const { longMonthYearFormat } = formatters;
-    const selectedYearMonth = longMonthYearFormat(currentDate);
+    const selectedYearMonth = longMonthYearFormat(_currentDate);
     const isStartViewYearGrid = startView === 'yearGrid';
+    const label = startView === 'calendar' ? chooseYearLabel : chooseMonthLabel;
 
     return html`
     <div class=header part=header>
@@ -262,9 +266,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         <p class=selected-year-month>${selectedYearMonth}</p>
 
         <mwc-icon-button
-          class=year-dropdown
-          .ariaLabel=${this.yearDropdownLabel}
+          .ariaLabel=${label}
           @click=${this.#updateStartView}
+          class=year-dropdown
+          title=${label}
         >${iconArrowDropdown}</mwc-icon-button>
       </div>
 
@@ -273,15 +278,15 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
           nothing :
           html`
           <div class=month-pagination>
-            ${this.#renderNavigationButton('previous', isInCurrentMonth(min, currentDate))}
-            ${this.#renderNavigationButton('next', isInCurrentMonth(max, currentDate))}
+            ${this.#renderNavigationButton('previous', isInCurrentMonth(_min, _currentDate))}
+            ${this.#renderNavigationButton('next', isInCurrentMonth(_max, _currentDate))}
           </div>
           `
       }
     </div>
 
     <div class="body ${classMap({
-      [`start-view--${isStartViewYearGrid ? 'year-grid' : 'calendar'}`]: true,
+      [`start-view--${startView}`]: true,
       'show-week-number': showWeekNumber,
     })}" part=body>${
       (isStartViewYearGrid ? this.#renderYearGrid : this.#renderCalendar)()
@@ -323,13 +328,26 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   };
 
   #renderCalendar = (): TemplateResult => {
-    const currentDate = this._currentDate;
-    const firstDayOfWeek = this.firstDayOfWeek;
+    const {
+      _currentDate,
+      _max,
+      _min,
+      _selectedDate,
+      disabledDates,
+      disabledDays,
+      firstDayOfWeek,
+      locale,
+      selectedDateLabel,
+      showWeekNumber,
+      todayDateLabel,
+      weekLabel,
+      weekNumberType,
+    } = this;
+    const currentDate = _currentDate;
     const formatters = this.#formatters;
-    const max = this._max;
-    const min = this._min;
-    const selectedDate = this._selectedDate;
-    const showWeekNumber = this.showWeekNumber;
+    const max = _max;
+    const min = _min;
+    const selectedDate = _selectedDate;
     const {
       dayFormat,
       fullDateFormat,
@@ -340,9 +358,9 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     const weekdays = getWeekdays({
       longWeekdayFormat,
       narrowWeekdayFormat,
-      firstDayOfWeek: this.firstDayOfWeek,
+      firstDayOfWeek,
       showWeekNumber,
-      weekLabel: this.weekLabel,
+      weekLabel,
     });
     const {
       calendar: calendarMonth,
@@ -351,15 +369,15 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     } = calendar({
       date: currentDate,
       dayFormat,
-      disabledDates: splitString(this.disabledDates, toResolvedDate),
-      disabledDays: splitString(this.disabledDays, Number),
+      disabledDates: splitString(disabledDates, toResolvedDate),
+      disabledDays: splitString(disabledDays, Number),
       firstDayOfWeek,
       fullDateFormat,
-      locale: this.locale,
+      locale,
       max,
       min,
       showWeekNumber,
-      weekNumberType: this.weekNumberType,
+      weekNumberType,
     });
 
     return html`
@@ -373,8 +391,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         formatters,
         max,
         min,
+        selectedDateLabel,
         showWeekNumber,
         todayDate: this.#today,
+        todayDateLabel,
         weekdays,
       }}
       @date-updated=${this.#updateSelectedDate}
@@ -388,28 +408,40 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     shouldSkipRender = true
   ): TemplateResult {
     const isPreviousNavigationType = navigationType === 'previous';
+    const label = isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel;
 
     return shouldSkipRender ?
       html`<div data-navigation=${navigationType}></div>` :
       html`
       <mwc-icon-button
-        data-navigation=${navigationType}
-        .ariaLabel=${isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel}
+        .ariaLabel=${label}
         @click=${this.#navigateMonth}
+        data-navigation=${navigationType}
+        title=${label}
       >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
       `;
   }
 
   #renderYearGrid = (): TemplateResult => {
+    const {
+      _max,
+      _min,
+      _selectedDate,
+      selectedYearLabel,
+      todayYearLabel,
+    } = this;
+
     return html`
     <app-year-grid
       class=year-grid
       .data=${{
-        date: this._selectedDate,
+        date: _selectedDate,
         formatters: this.#formatters,
-        max: this._max,
-        min: this._min,
-      } as YearGridData}
+        max: _max,
+        min: _min,
+        selectedYearLabel,
+        todayYearLabel,
+      }}
       @year-updated=${this.#updateYear}
     ></app-year-grid>
     `;
