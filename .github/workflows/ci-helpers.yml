@@ -106,6 +106,14 @@ jobs:
           echo $GITHUB_ENV;
           echo ${{ env.COVERAGE }}
           env;
+
+          export COVERAGE=true;
+
+          echo $COVERAGE;
+          echo $GITHUB_ENV;
+          echo ${{ env.COVERAGE }}
+          env;
+
           npm run test:helpers
 
       - name: Upload coverage to codecov
