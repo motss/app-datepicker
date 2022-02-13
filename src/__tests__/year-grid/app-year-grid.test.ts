@@ -202,7 +202,7 @@ describe(appYearGridName, () => {
       expectedTodayYearLabel,
     ] = a;
 
-    it.only(
+    it(
       messageFormatter('renders title correctly when hovered (selectedYearLabel=%s, todayYearLabel=%s)', a),
       async () => {
         const dataMax = new Date(data.max);
