@@ -18,7 +18,6 @@ defaults:
 
 env:
   CI_SKIP: false
-  COVERAGE: false
   GITHUB_COMMIT_MESSAGE: ''
   IS_UBUNTU: false
   NODE_VERSION: v0.0.0
@@ -101,19 +100,7 @@ jobs:
       - name: Test with coverage
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
         run: |
-          echo "COVERAGE=true" >> $GITHUB_ENV
-          echo $COVERAGE;
-          echo $GITHUB_ENV;
-          echo ${{ env.COVERAGE }}
-          env;
-
-          export COVERAGE=true;
-
-          echo $COVERAGE;
-          echo $GITHUB_ENV;
-          echo ${{ env.COVERAGE }}
-          env;
-
+          export COVERAGE=true
           npm run test:helpers
 
       - name: Upload coverage to codecov
