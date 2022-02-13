@@ -63,7 +63,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
     }
   }
 
-  protected override async firstUpdated(): Promise<void> {
+  protected override async updated(): Promise<void> {
     /**
      * NOTE(motss): Unable to use `.focus()` nor `.scrollIntoView()` as it will trigger the document scrolling
      * instead of just the year grid container. So what is doing here is to calculate the position of
