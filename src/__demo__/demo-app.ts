@@ -76,6 +76,13 @@ export class DemoApp extends RootElement {
       @date-updated=${this.#dateUpdated}
     ></app-date-picker>
 
+    <app-date-picker
+      id="datePicker2"
+      .min=${'1970-01-01'}
+      @date-updated=${this.#dateUpdated}
+      showWeekNumber
+    ></app-date-picker>
+
     <app-date-picker-input
       id="datePickerInput1"
       ?outlined=${true}

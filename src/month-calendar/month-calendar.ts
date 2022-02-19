@@ -143,11 +143,11 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
         <thead>
           <tr class=weekdays part=weekdays role=row>${
             weekdays.map(
-              ({ label, value }) =>
+              ({ label, value }, idx) =>
                 html`
                 <th
                   aria-label=${label}
-                  class=${`weekday${showWeekNumber ? ' week-number' : ''}`}
+                  class=${`weekday${showWeekNumber && idx < 1 ? ' week-number' : ''}`}
                   part=weekday
                   role=columnheader
                   title=${label}

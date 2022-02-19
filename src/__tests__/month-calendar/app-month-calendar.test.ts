@@ -6,9 +6,14 @@ import type { SendKeysPayload } from '@web/test-runner-commands';
 import { sendKeys } from '@web/test-runner-commands';
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
+import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings';
 import type { CalendarInit } from 'nodemod/dist/calendar/typings';
 
-import type { confirmKeySet, navigationKeySetGrid } from '../../constants';
+import type { confirmKeySet, navigationKeySetGrid} from '../../constants';
+import { labelShortWeek} from '../../constants';
+import { weekNumberTemplate } from '../../constants';
+import { labelWeek } from '../../constants';
+import { labelSelectedDate, labelTodayDate } from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
@@ -32,8 +37,16 @@ describe(appMonthCalendarName, () => {
     max: new Date('2100-12-31'),
     min: new Date('1970-01-01'),
     showWeekNumber: false,
-    weekLabel: 'Wk',
+    weekNumberTemplate,
     weekNumberType: 'first-4-day-week',
+  };
+  const weekdaysInit: GetWeekdaysInit = {
+    longWeekdayFormat: formatters.longWeekdayFormat,
+    narrowWeekdayFormat: formatters.narrowWeekdayFormat,
+    firstDayOfWeek: calendarInit.firstDayOfWeek,
+    showWeekNumber: calendarInit.showWeekNumber,
+    shortWeekLabel: labelShortWeek,
+    weekLabel: labelWeek,
   };
   const calendarResult = calendar(calendarInit);
   const data: MonthCalendarData = {
@@ -42,17 +55,15 @@ describe(appMonthCalendarName, () => {
     date: calendarInit.date,
     disabledDatesSet: calendarResult.disabledDatesSet,
     disabledDaysSet: calendarResult.disabledDaysSet,
+    formatters,
     max: calendarInit.max as Date,
     min: calendarInit.min as Date,
+    selectedDateLabel: labelSelectedDate,
+    showCaption: false,
+    showWeekNumber: false,
     todayDate: calendarInit.date,
-    weekdays: getWeekdays({
-      longWeekdayFormat: formatters.longWeekdayFormat,
-      narrowWeekdayFormat: formatters.narrowWeekdayFormat,
-      firstDayOfWeek: calendarInit.firstDayOfWeek,
-      showWeekNumber: calendarInit.showWeekNumber,
-      weekLabel: calendarInit.weekLabel,
-    }),
-    formatters,
+    todayDateLabel: labelTodayDate,
+    weekdays: getWeekdays(weekdaysInit),
   };
   const elementSelectors = {
     calendarCaption: '.calendar-caption',
@@ -64,6 +75,8 @@ describe(appMonthCalendarName, () => {
     monthCalendar: '.month-calendar',
     selectedCalendarDay: 'td.calendar-day[aria-selected="true"]',
     tabbableCalendarDay: 'td.calendar-day[tabindex="0"]',
+    todayCalendarDay: 'td.calendar-day.day--today',
+    weekday: 'th.weekday',
   } as const;
 
   type A = [string, MonthCalendarData | undefined, boolean];
@@ -351,10 +364,121 @@ describe(appMonthCalendarName, () => {
           elementSelectors.selectedCalendarDay
         );
 
+        /**
+         * NOTE(motss): Selected date remains unchanged after selecting new date
+         */
         expect(selectedDate).exist;
         expect(selectedDate?.getAttribute('aria-label')).equal(
           formatters.fullDateFormat(data.date)
         );
+      }
+    );
+  });
+
+  it('renders with correct title for selected today', async () => {
+    const el = await fixture<AppMonthCalendar>(
+      html`<app-month-calendar .data=${data}></app-month-calendar>`
+    );
+
+    const selectedDate = el.query<HTMLTableCellElement>(elementSelectors.selectedCalendarDay);
+    const todayDate = el.query<HTMLTableCellElement>(elementSelectors.todayCalendarDay);
+
+    expect(selectedDate).exist;
+    expect(todayDate).exist;
+    expect(selectedDate?.isEqualNode(todayDate)).true;
+
+    expect(selectedDate).attr('title', labelSelectedDate);
+    expect(todayDate).attr('title', labelSelectedDate);
+  });
+
+  type TestWeekdayTitles = [Partial<MonthCalendarData>, Partial<GetWeekdaysInit>, string[]];
+  const testWeekdayTitles: TestWeekdayTitles[] = [
+    [{}, {}, ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
+    [{ showWeekNumber: true }, { showWeekNumber: true }, [labelWeek, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
+    [{ showWeekNumber: true }, { showWeekNumber: true, shortWeekLabel: '週', weekLabel: '週目' }, ['週目', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
+  ];
+  testWeekdayTitles.forEach((a) => {
+    const [
+      testPartialMonthCalendarData,
+      testPartialWeekdaysInit,
+      expectedWeekdayTitles,
+    ] = a;
+
+    it(
+      messageFormatter('renders correct title for weekdays (partialMonthCalendarData=%j, partialWeekdaysInit=%j)', a),
+      async () => {
+        const testData: MonthCalendarData = {
+          ...data,
+          ...testPartialMonthCalendarData,
+        };
+
+        const el = await fixture<AppMonthCalendar>(
+          html`<app-month-calendar .data=${{
+            ...testData,
+            weekdays: getWeekdays({
+              ...weekdaysInit,
+              ...testPartialWeekdaysInit,
+            }),
+          }}></app-month-calendar>`
+        );
+
+        const weekdays = el.queryAll(elementSelectors.weekday);
+
+        expect(weekdays.map(n => n.title)).deep.equal(expectedWeekdayTitles);
+      }
+    );
+  });
+
+  type TestTitle = [
+    testSelectedDateLabel: string | undefined,
+    testTodayDateLabel: string | undefined,
+    expectedSelectedDateLabel: string | undefined,
+    expectedTodayDateLabel: string | undefined
+  ];
+  const testTitleCases: TestTitle[] = [
+    [undefined, undefined, undefined, undefined],
+    ['', '', '', ''],
+    [labelSelectedDate, labelTodayDate, labelSelectedDate, labelTodayDate],
+  ];
+  testTitleCases.forEach((a) => {
+    const [
+      testSelectedDateLabel,
+      testTodayDateLabel,
+      expectedSelectedDateLabel,
+      expectedTodayDateLabel,
+    ] = a;
+
+    it(
+      messageFormatter('renders with correct title (selectedDateLabel=%s, todayDateLabel=%s)', a),
+      async () => {
+        const todayFullDate = new Date(data.todayDate);
+        const todayUTCDate = todayFullDate.getUTCDate();
+
+        const date = new Date(new Date(todayFullDate).setUTCDate(todayUTCDate + 2));
+        const testData: MonthCalendarData = {
+          ...data,
+          date,
+          selectedDateLabel: testSelectedDateLabel as string,
+          todayDateLabel: testTodayDateLabel as string,
+        };
+
+        const el = await fixture<AppMonthCalendar>(
+          html`<app-month-calendar .data=${testData}></app-month-calendar>`
+        );
+
+        const selectedDate = el.query<HTMLTableCellElement>(elementSelectors.selectedCalendarDay);
+        const todayDate = el.query<HTMLTableCellElement>(elementSelectors.todayCalendarDay);
+
+        expect(selectedDate).exist;
+        expect(todayDate).exist;
+
+        if (expectedSelectedDateLabel == null && expectedTodayDateLabel == null) {
+          expect(selectedDate).not.attr('title');
+          expect(todayDate).not.attr('title');
+        } else {
+          expect(selectedDate).attr('title', expectedSelectedDateLabel);
+          expect(todayDate).attr('title', expectedTodayDateLabel);
+        }
       }
     );
   });
