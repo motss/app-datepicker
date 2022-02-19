@@ -88,13 +88,17 @@ describe(appYearGridName, () => {
     ]);
   });
 
-  type A2 = ['click' | 'keyup', InferredFromSet<typeof confirmKeySet>, number];
-  const cases2: A2[] = [
+  type CaseSelectNewYear = [
+    eventType: 'click' | 'keyup',
+    key: InferredFromSet<typeof confirmKeySet>,
+    newSelectedYear: number
+  ];
+  const casesSelectNewYear: CaseSelectNewYear[] = [
     ['click', ' ', data.max.getUTCFullYear()],
     ['keyup', ' ', data.date.getUTCFullYear()],
     ['keyup', 'Enter', data.date.getUTCFullYear()],
   ];
-  cases2.forEach(a => {
+  casesSelectNewYear.forEach(a => {
     const [testEventType, testKey, testNewSelectedYear] = a;
 
     it(
@@ -207,18 +211,18 @@ describe(appYearGridName, () => {
     expect(todayYear).attr('title', labelSelectedYear);
   });
 
-  type TestTitle = [
-    testSelectedYearLabel: string | undefined,
-    testTodayYearLabel: string | undefined,
+  type CaseSelectedYearLabelAndTodayYearLabel = [
+    selectedYearLabel: string | undefined,
+    todayYearLabel: string | undefined,
     expectedSelectedYearLabel: string | undefined,
     expectedTodayYearLabel: string | undefined
   ];
-  const testTitleCases: TestTitle[] = [
+  const casesSelectedYearLabelAndTodayYearLabel: CaseSelectedYearLabelAndTodayYearLabel[] = [
     [undefined, undefined, undefined, undefined],
     ['', '', '', ''],
     [labelSelectedYear, labelTodayYear, labelSelectedYear, labelTodayYear],
   ];
-  testTitleCases.forEach(a => {
+  casesSelectedYearLabelAndTodayYearLabel.forEach(a => {
     const [
       testSelectedYearLabel,
       testTodayYearLabel,

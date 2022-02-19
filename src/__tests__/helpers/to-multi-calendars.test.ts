@@ -22,9 +22,11 @@ describe(toMultiCalendars.name, () => {
     narrowWeekdayFormat,
   };
 
-  type A = [Partial<ToMultiCalendarsInit>, number];
-
-  const cases: A[] = [
+  type CaseOptionalCount = [
+    partialInit: Partial<ToMultiCalendarsInit>,
+    expected: number
+  ];
+  const casesOptionalCount: CaseOptionalCount[] = [
     [
       {},
       1,
@@ -37,7 +39,7 @@ describe(toMultiCalendars.name, () => {
     ],
   ];
 
-  cases.forEach((a) => {
+  casesOptionalCount.forEach((a) => {
     const [testPartialInit, expected] = a;
 
     it(
@@ -55,9 +57,12 @@ describe(toMultiCalendars.name, () => {
     );
   });
 
-  type A1 = [Partial<ToMultiCalendarsInit>, number, number[]];
-
-  const cases1: A1[] = [
+  type CaseOptionalMinMax = [
+    partialInit: Partial<ToMultiCalendarsInit>,
+    expectedCalendars: number,
+    expectedMonthRows: number[]
+  ];
+  const casesOptionalMinMax: CaseOptionalMinMax[] = [
     [
       {
         min: new Date('2020-01-01'),
@@ -95,8 +100,7 @@ describe(toMultiCalendars.name, () => {
       [0],
     ],
   ];
-
-  cases1.forEach((a) => {
+  casesOptionalMinMax.forEach((a) => {
     const [testPartialInit, expectedCalendars, expectedMonthRows] = a;
 
     it(
@@ -117,9 +121,12 @@ describe(toMultiCalendars.name, () => {
     );
   });
 
-  type A2 = [Partial<ToMultiCalendarsInit>, number, number];
-
-  const cases2: A2[] = [
+  type CaseOptionalDisabledDatesDays = [
+    partialInit: Partial<ToMultiCalendarsInit>,
+    expectedDisabledDates: number,
+    expectedDisabledDays: number
+  ];
+  const casesOptionalDisabledDatesDays: CaseOptionalDisabledDatesDays[] = [
     [
       {
         disabledDates: [new Date('2020-02-01'), new Date('2020-02-10')],
@@ -135,8 +142,7 @@ describe(toMultiCalendars.name, () => {
       2,
     ],
   ];
-
-  cases2.forEach((a) => {
+  casesOptionalDisabledDatesDays.forEach((a) => {
     const [testPartialInit, expectedDisabledDates, expectedDisabledDays] = a;
 
     it(

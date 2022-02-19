@@ -18,8 +18,11 @@ describe(toNextSelectedYear.name, () => {
     year: 2022,
   };
 
-  type A = [Partial<ToNextSelectableYearInit>, number];
-  const cases: A[] = [
+  type CaseNextSelectedYear = [
+    partialInit: Partial<ToNextSelectableYearInit>,
+    expected: number
+  ];
+  const casesNextSelectedYear: CaseNextSelectedYear[] = [
     // cap at min or max
     [
       {},
@@ -80,8 +83,7 @@ describe(toNextSelectedYear.name, () => {
       defaultInitWithGrid.year,
     ],
   ];
-
-  cases.forEach(a => {
+  casesNextSelectedYear.forEach(a => {
     const [testPartialInit, expected] = a;
 
     it(

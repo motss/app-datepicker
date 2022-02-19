@@ -14,9 +14,11 @@ describe(toNextSelectableDate.name, () => {
     minTime: +new Date('2020-01-01'),
   };
 
-  type A = [Partial<ToNextSelectableDateInit>, Date];
-
-  const cases: A[] = [
+  type CaseNextSelectableDateFOrNonDisabledDate = [
+    partialInit: Partial<ToNextSelectableDateInit>,
+    expected: Date
+  ];
+  const casesNextSelectableDateForNonDisabledDate: CaseNextSelectableDateFOrNonDisabledDate[] = [
     [
       {},
       new Date('2020-02-02'),
@@ -29,8 +31,7 @@ describe(toNextSelectableDate.name, () => {
       new Date('2020-02-02'),
     ],
   ];
-
-  cases.forEach((a) => {
+  casesNextSelectableDateForNonDisabledDate.forEach((a) => {
     const [partialInit, expected] = a;
 
     it(
@@ -46,9 +47,11 @@ describe(toNextSelectableDate.name, () => {
     );
   });
 
-  type A1 = [Partial<ToNextSelectableDateInit>, Date];
-
-  const cases1: A1[] = [
+  type CaseNextSelectableDateForDisabledDate = [
+    partialInit: Partial<ToNextSelectableDateInit>,
+    expected: Date
+  ];
+  const casesNextSelectableDateForDisabledDate: CaseNextSelectableDateForDisabledDate[] = [
     // disabled dates to non-disabled dates
     [
       {
@@ -181,8 +184,7 @@ describe(toNextSelectableDate.name, () => {
       new Date('2020-04-02'),
     ],
   ];
-
-  cases1.forEach((a) => {
+  casesNextSelectableDateForDisabledDate.forEach((a) => {
     const [partialInit, expected] = a;
 
     it(

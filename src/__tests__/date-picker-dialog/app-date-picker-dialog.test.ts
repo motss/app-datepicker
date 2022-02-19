@@ -193,14 +193,20 @@ describe(appDatePickerDialogName, () => {
     expect(datePickerDialogBase?.hasAttribute('open')).true;
   });
 
-  type CaseSelectsAndConfirmsNewDate = [string, string, DialogClosingEventDetailAction, boolean, string];
-  const casesSelectsAndConfirmsNewDate: CaseSelectsAndConfirmsNewDate[] = [
+  type CaseSelectsAndConfirmsNewDate = [
+    _message: string,
+    newValue: string,
+    dialogAction: DialogClosingEventDetailAction,
+    expectedDialogOpen: boolean,
+    expectedDialogValue: string
+  ];
+  const casesSelectAndConfirmNewDate: CaseSelectsAndConfirmsNewDate[] = [
     ['but does not confirm a new date', '2020-02-04', 'cancel', false, properties.value],
     ['and confirms a new date', '2020-02-04', 'set', false, '2020-02-04'],
     ['a new date but resets it', '2020-02-04', 'reset', true, toDateString(toResolvedDate())],
   ];
 
-  casesSelectsAndConfirmsNewDate.forEach((a) => {
+  casesSelectAndConfirmNewDate.forEach((a) => {
     const [
       ,
       testNewValue,

@@ -4,15 +4,18 @@ import { toClosestTarget } from '../../helpers/to-closest-target';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toClosestTarget.name, () => {
-  type A = [string, unknown, string | undefined];
+  type CaseToClosestTarget = [
+    selector: string,
+    elementNode: unknown,
+    textContext: string | undefined
+  ];
 
-  const cases: A[] = [
+  const casesToClosestTarget: CaseToClosestTarget[] = [
     ['button', HTMLButtonElement, 'Click me'],
     ['input', undefined, undefined],
   ];
-
-  cases.forEach((a) => {
-    const [testSelector, testElementNode, testTextContext] = a;
+  casesToClosestTarget.forEach((a) => {
+    const [testSelector, expectedElementNode, expectedTextContext] = a;
 
     it(
       messageFormatter('returns closest target (selector=%s)', a),
@@ -31,7 +34,7 @@ describe(toClosestTarget.name, () => {
         const el = await fixture(
           html`
             <div @click=${onClick} @keyup=${onClick}>
-              <button>${testTextContext}</button>
+              <button>${expectedTextContext}</button>
             </div>
           `
         );
@@ -42,11 +45,11 @@ describe(toClosestTarget.name, () => {
 
         const closest = await task;
 
-        testElementNode ?
-          expect(closest).instanceOf(testElementNode) :
-          expect(closest).equal(testElementNode);
+        expectedElementNode ?
+          expect(closest).instanceOf(expectedElementNode) :
+          expect(closest).equal(expectedElementNode);
 
-        expect(closest?.textContent).equal(testTextContext);
+        expect(closest?.textContent).equal(expectedTextContext);
       }
     );
   });

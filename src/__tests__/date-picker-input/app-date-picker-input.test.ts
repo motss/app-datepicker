@@ -48,14 +48,19 @@ describe(appDatePickerInputName, () => {
   const placeholder = 'Select your date of birth';
   const value = '2020-02-02';
 
-  type CaseRenders = [string | undefined | null, string, Date | null, number];
-  const casesRenders: CaseRenders[] = [
+  type CaseValue = [
+    value: string | undefined | null,
+    expectedValue: string,
+    expectedValueAsDate: Date | null,
+    expectedValueAsNumber: number
+  ];
+  const casesValue: CaseValue[] = [
     ['', '', null, NaN],
     [undefined, '', null, NaN],
     [null, '', null, NaN],
     [value, value, new Date(value), +new Date(value)],
   ];
-  casesRenders.forEach((a) => {
+  casesValue.forEach((a) => {
     const [testValue, expectedValue, expectedValueAsDate, expectedValueAsNumber] = a;
 
     it(
@@ -94,13 +99,16 @@ describe(appDatePickerInputName, () => {
     );
   });
 
-  type A1 = [string | undefined | null, string];
-  const cases1: A1[] = [
+  type CaseOptionalLocale = [
+    locale: string | undefined | null,
+    expectedLocale: string
+  ];
+  const casesOptionalLocale: CaseOptionalLocale[] = [
     ['zh-TW', 'zh-TW'],
     [null, 'en-US'],
     [undefined, 'en-US'],
   ];
-  cases1.forEach(a => {
+  casesOptionalLocale.forEach(a => {
     const [testLocale, expectedLocale] = a;
     it(
       messageFormatter('renders with optional locale (%s)', testLocale),
@@ -210,13 +218,16 @@ describe(appDatePickerInputName, () => {
     expect(datePicker).exist;
   });
 
-  type CaseCloseDatePickerBy = [string, 'click' | 'escape' | 'tab'];
-  const casesCloseDatePicker: CaseCloseDatePickerBy[] = [
+  type CaseCloseDatePickerByTriggerType = [
+    _message: string,
+    triggerType: 'click' | 'escape' | 'tab'
+  ];
+  const casesCloseDatePickerByTriggerType: CaseCloseDatePickerByTriggerType[] = [
     ['clicking outside of date picker input', 'click'],
     ['pressing Escape key', 'escape'],
     ['tabbing outside of date picker input', 'tab'],
   ];
-  casesCloseDatePicker.forEach((a) => {
+  casesCloseDatePickerByTriggerType.forEach((a) => {
     const [, testTriggerType] = a;
 
     it(
@@ -291,12 +302,12 @@ describe(appDatePickerInputName, () => {
     );
   });
 
-  type A2 = typeof keyEnter | typeof keySpace;
-  const cases2: A2[] = [
+  type CaseOpenDatePickerWithKeyboard = typeof keyEnter | typeof keySpace;
+  const casesOpenDatePickerWithKeyboard: CaseOpenDatePickerWithKeyboard[] = [
     keyEnter,
     keySpace,
   ];
-  cases2.forEach((a) => {
+  casesOpenDatePickerWithKeyboard.forEach((a) => {
     const testKey = a;
 
     it(
@@ -335,12 +346,15 @@ describe(appDatePickerInputName, () => {
     );
   });
 
-  type CaseResetsValue = [string, 'reset' | 'click'];
-  const casesResetsValue: CaseResetsValue[] = [
+  type CaseResetValue = [
+    _message: string,
+    triggerType: 'reset' | 'click'
+  ];
+  const casesResetValue: CaseResetValue[] = [
     ['calls .reset()', 'reset'],
     ['clicks clear icon button', 'click'],
   ];
-  casesResetsValue.forEach((a) => {
+  casesResetValue.forEach((a) => {
     const [_, testTriggerType] = a;
 
     it(
@@ -386,12 +400,12 @@ describe(appDatePickerInputName, () => {
     );
   });
 
-  type A3 = typeof keyEnter | typeof keySpace;
-  const cases3: A3[] = [
+  type CaseSelectNewDateWithKeyboard = typeof keyEnter | typeof keySpace;
+  const casesSelectNewDateWithKeyboard: CaseSelectNewDateWithKeyboard[] = [
     keyEnter,
     keySpace,
   ];
-  cases3.forEach((a) => {
+  casesSelectNewDateWithKeyboard.forEach((a) => {
     const testKey = a;
 
     it(

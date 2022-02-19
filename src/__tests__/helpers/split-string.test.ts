@@ -7,14 +7,15 @@ describe(splitString.name, () => {
   const str = 'hello, world, everyone';
   const expected = str.split(/,\s*/);
 
-  type A = [string, string[]];
-
-  const cases: A[] = [
+  type CaseSplitString = [
+    source: string,
+    expected: string[]
+  ];
+  const casesSplitString: CaseSplitString[] = [
     ['', []],
     [str, expected],
   ];
-
-  cases.forEach((a) => {
+  casesSplitString.forEach((a) => {
     it(
       messageFormatter('splits string (%s)', a),
       () => {
@@ -26,14 +27,14 @@ describe(splitString.name, () => {
     );
   });
 
-  type A1 = [RegExp?];
-
-  const cases1: A1[] = [
+  type CaseSplitStringWithOptionalCallbackAndSeparator = [
+    separator?: RegExp
+  ];
+  const casesSplitStringWithOptionalCallback: CaseSplitStringWithOptionalCallbackAndSeparator[] = [
     [],
     [/,\s/],
   ];
-
-  cases1.forEach((a) => {
+  casesSplitStringWithOptionalCallback.forEach((a) => {
     it(
       messageFormatter('splits string with optional callback and optional separator (%s)', a),
       () => {

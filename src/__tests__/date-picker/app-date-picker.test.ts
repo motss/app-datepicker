@@ -36,8 +36,12 @@ describe(appDatePickerName, () => {
   const formatters: Formatters = toFormatters('en-US');
   const todayDate = toResolvedDate();
 
-  type A = [StartView | undefined, ('body' | 'calendar' | 'header' | 'yearGrid')[], ('body' | 'calendar' | 'header' | 'yearGrid')[]];
-  const cases: A[] = [
+  type CaseStartView = [
+    startView: StartView | undefined,
+    expectedVisibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
+    expectedHiddenElements: ('body' | 'calendar' | 'header' | 'yearGrid')[]
+  ];
+  const casesStartView: CaseStartView[] = [
     [
       undefined,
       ['body', 'calendar', 'header'],
@@ -54,8 +58,8 @@ describe(appDatePickerName, () => {
       ['calendar'],
     ],
   ];
-  cases.forEach((a) => {
-    const [testCalendarView, testElementsShouldRender, testElementsShouldNotRender] = a;
+  casesStartView.forEach((a) => {
+    const [testCalendarView, expectedVisibleElements, expectedHiddenElements] = a;
     it(
       messageFormatter('renders (startView=%s)', a),
       async () => {
@@ -63,7 +67,7 @@ describe(appDatePickerName, () => {
           html`<app-date-picker .startView=${testCalendarView as never}></app-date-picker>`
         );
 
-        testElementsShouldRender.forEach((n) => {
+        expectedVisibleElements.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).exist;
@@ -75,7 +79,7 @@ describe(appDatePickerName, () => {
             .exist
             .attr(
               'title',
-              testElementsShouldRender.includes('calendar') ?
+              expectedVisibleElements.includes('calendar') ?
                 labelChooseYear :
                 labelChooseMonth
             );
@@ -85,7 +89,7 @@ describe(appDatePickerName, () => {
             expect(element).have.class(`start-view--${testCalendarView || 'calendar'}`);
           }
         });
-        testElementsShouldNotRender.forEach((n) => {
+        expectedHiddenElements.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
@@ -94,12 +98,16 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type A2 = [string | undefined, string, string];
-  const cases2: A2[] = [
+  type CaseLocale = [
+    locale: string | undefined,
+    expectedLocale: string,
+    expectedYearMonthLabel: string
+  ];
+  const casesLocale: CaseLocale[] = [
     [undefined, Intl.DateTimeFormat().resolvedOptions().locale, 'February 2020'],
     ['zh-TW', 'zh-TW', '2020年2月'],
   ];
-  cases2.forEach((a) => {
+  casesLocale.forEach((a) => {
     const [testLocale, expectedLocale, expectedYearMonthLabel] = a;
     it(
       messageFormatter('renders (locale=%s)', a),
@@ -120,14 +128,14 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type A3 = [
-    string,
-    string,
-    string,
-    (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
-    (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[]
+  type CaseMonthNavigationButtons = [
+    max: string,
+    min: string,
+    value: string,
+    expectedVisibleElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
+    expectedHiddenElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[]
   ];
-  const cases3: A3[] = [
+  const casesMonthNavigationButtons: CaseMonthNavigationButtons[] = [
     [
       '2020-03-03',
       '2020-01-01',
@@ -150,8 +158,8 @@ describe(appDatePickerName, () => {
       ['nextMonthNavigationButton'],
     ],
   ];
-  cases3.forEach((a) => {
-    const [testMax, testMin, testValue, testElementsShouldRender, testElementsShouldNotRender] = a;
+  casesMonthNavigationButtons.forEach((a) => {
+    const [testMax, testMin, testValue, expectedVisibleElements, expectedHiddenElements] = a;
     it(
       messageFormatter(
         'renders month navigation buttons (min=%s, max=%s, value=%s)',
@@ -166,14 +174,14 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        testElementsShouldRender.forEach((n) => {
+        expectedVisibleElements.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element)
             .exist
             .attr('title', n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
         });
-        testElementsShouldNotRender.forEach((n) => {
+        expectedHiddenElements.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
@@ -182,11 +190,11 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type TestTitle = [
+  type CaseTitle = [
     properties: Partial<DatePickerProperties>,
     expected: Partial<DatePickerProperties>
   ];
-  const casesTestTitle: TestTitle[] = [
+  const casesTitle: CaseTitle[] = [
     [
       {
         chooseMonthLabel: undefined,
@@ -230,7 +238,7 @@ describe(appDatePickerName, () => {
       },
     ],
   ];
-  casesTestTitle.forEach((a) => {
+  casesTitle.forEach((a) => {
     const [testPartialProperties, expectedProperties] = a;
 
     it(
@@ -273,16 +281,16 @@ describe(appDatePickerName, () => {
     );
   });
 
-  type A4 = [
-    keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
-    Date
+  type CaseNavigateToNewMonth = [
+    navigationButtonElementSelector: keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
+    expectedCurrentDate: Date
   ];
-  const cases4: A4[] = [
+  const casesNavigateToNewMonth: CaseNavigateToNewMonth[] = [
     ['previousMonthNavigationButton', new Date('2020-01-01')],
     ['nextMonthNavigationButton', new Date('2020-03-01')],
   ];
-  cases4.forEach((a) => {
-    const [testMonthNavigationElementSelector, testCurrentDate] = a;
+  casesNavigateToNewMonth.forEach((a) => {
+    const [testMonthNavigationElementSelector, expectedCurrentDate] = a;
     it(
       messageFormatter('navigates to new month by clicking %s', a),
       async () => {
@@ -308,7 +316,7 @@ describe(appDatePickerName, () => {
         );
 
         expect(selectedYearMonth?.textContent).equal(
-          formatters.longMonthYearFormat(testCurrentDate)
+          formatters.longMonthYearFormat(expectedCurrentDate)
         );
       }
     );
@@ -529,13 +537,13 @@ describe(appDatePickerName, () => {
     expect(calendar).exist;
   });
 
-  type A5 = [
-    MaybeDate | undefined,
-    MaybeDate | undefined,
-    Date,
-    Date
+  type CaseOptionalValue = [
+    value: MaybeDate | undefined,
+    newValue: MaybeDate | undefined,
+    expectedValueDate: Date,
+    expectedNewValueDate: Date
   ];
-  const cases5: A5[] = [
+  const casesOptionalValue: CaseOptionalValue[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
     [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
@@ -543,7 +551,7 @@ describe(appDatePickerName, () => {
     [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
-  cases5.forEach((a) => {
+  casesOptionalValue.forEach((a) => {
     const [testValue, testNewValue, expectedValueDate, expectedNewValueDate] = a;
     it(
       messageFormatter('updates optional value (value=%s, newValue=%s)', a),
@@ -594,13 +602,13 @@ describe(appDatePickerName, () => {
     }
   );
 
-  type A6 = [
-    MaybeDate | undefined,
-    MaybeDate | undefined,
-    Date,
-    Date
+  type CaseOptionalMin = [
+    min: MaybeDate | undefined,
+    newMin: MaybeDate | undefined,
+    expectedMinDate: Date,
+    expectedNewMinDate: Date
   ];
-  const cases6: A6[] = [
+  const casesOptionalMin: CaseOptionalMin[] = [
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
     ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
@@ -613,7 +621,7 @@ describe(appDatePickerName, () => {
     ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
     ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
   ];
-  cases6.forEach((a) => {
+  casesOptionalMin.forEach((a) => {
     const [testMin, testNewMin, expectedMinDate, expectedNewMinDate] = a;
     it(
       messageFormatter('updates optional min (min=%s, newMin=%s)', a),

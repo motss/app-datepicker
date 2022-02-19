@@ -16,9 +16,11 @@ describe(toNextSelectedDate.name, () => {
     minTime: +new Date('2020-03-03'),
   };
 
-  type A = [Partial<ToNextSelectedDateInit>, Date];
-
-  const cases: A[] = [
+  type CaseNextSelectedDate = [
+    partialInit: Partial<ToNextSelectedDateInit>,
+    expected: Date
+  ];
+  const casesNextSelectedDate: CaseNextSelectedDate[] = [
     // all supported keys
     [
       { key: ' ' },
@@ -107,12 +109,11 @@ describe(toNextSelectedDate.name, () => {
       new Date('2021-02-28'),
     ],
   ];
-
-  cases.forEach((a) => {
+  casesNextSelectedDate.forEach((a) => {
     const [testPartialInit, expected] = a;
 
     it(
-      messageFormatter('returns selected date (partialInit=%j)', a),
+      messageFormatter('returns next selected date (partialInit=%j)', a),
       () => {
         const result = toNextSelectedDate({
           ...defaultInit,

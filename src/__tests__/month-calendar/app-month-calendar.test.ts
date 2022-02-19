@@ -79,12 +79,16 @@ describe(appMonthCalendarName, () => {
     weekday: 'th.weekday',
   } as const;
 
-  type A = [string, MonthCalendarData | undefined, boolean];
-  const cases: A[] = [
+  type CaseRenderMonthCalendar = [
+    _message: string,
+    data: MonthCalendarData | undefined,
+    shouldRender: boolean
+  ];
+  const casesRenderMonthCalendar: CaseRenderMonthCalendar[] = [
     ['', data, true],
     ['nothing', undefined, false],
   ];
-  cases.forEach(a => {
+  casesRenderMonthCalendar.forEach(a => {
     const [, testData, testShouldRender] = a;
 
     it(messageFormatter('renders %s(data=%j)', a), async () => {
@@ -132,8 +136,12 @@ describe(appMonthCalendarName, () => {
     expect(tabbableCalendarDay?.fullDate).deep.equal(expected);
   });
 
-  type A2 = [string, Partial<MonthCalendarData>, string];
-  const cases2: A2[] = [
+  type CaseRenderElement = [
+    _message: string,
+    partialData: Partial<MonthCalendarData>,
+    elementSelector: string
+  ];
+  const casesRenderElement: CaseRenderElement[] = [
     ['calendar caption', { showCaption: true }, elementSelectors.calendarCaption],
     ['week numbers', { showWeekNumber: true }, elementSelectors.calendarDayWeekNumber],
     [
@@ -146,7 +154,7 @@ describe(appMonthCalendarName, () => {
       }"]`,
     ],
   ];
-  cases2.forEach(a => {
+  casesRenderElement.forEach(a => {
     const [, testPartialData, testElementSelector] = a;
     it(messageFormatter('renders %s', a), async () => {
       const testCalendar = calendar({
@@ -174,15 +182,15 @@ describe(appMonthCalendarName, () => {
     });
   });
 
-  type A3 = [
-    'click' | 'keydown',
-    (Partial<Record<
+  type CaseSelectNewDate = [
+    eventType: 'click' | 'keydown',
+    keyPayloads: (Partial<Record<
       'down' | 'up' | 'press',
       InferredFromSet<typeof confirmKeySet> | InferredFromSet<typeof navigationKeySetGrid>
     >>)[],
-    Date
+    selectedDate: Date
   ];
-  const cases3: A3[] = [
+  const casesSelectNewDate: CaseSelectNewDate[] = [
     ['click', [], new Date('2020-02-09')],
     [
       'keydown',
@@ -211,7 +219,7 @@ describe(appMonthCalendarName, () => {
       data.date,
     ],
   ];
-  cases3.forEach(a => {
+  casesSelectNewDate.forEach(a => {
     const [testEventType, testKeyPayloads, testSelectedDate] = a;
     it(
       messageFormatter('selects new date (eventType=%s, sendKeysPayloads=%j)', a),
@@ -277,41 +285,41 @@ describe(appMonthCalendarName, () => {
     );
   });
 
-  it(
-    'tabs new element',
-    async () => {
-      const el = await fixture<AppMonthCalendar>(
-        html`<app-month-calendar .data=${data}></app-month-calendar>`
-      );
+  it('tabs new element', async () => {
+    const el = await fixture<AppMonthCalendar>(
+      html`<app-month-calendar .data=${data}></app-month-calendar>`
+    );
 
-      const calendarTable = el.query<HTMLTableElement>(elementSelectors.calendarTable);
+    const calendarTable = el.query<HTMLTableElement>(elementSelectors.calendarTable);
 
-      expect(calendarTable).exist;
+    expect(calendarTable).exist;
 
-      calendarTable?.focus();
+    calendarTable?.focus();
 
-      let activeElement = queryDeepActiveElement();
+    let activeElement = queryDeepActiveElement();
 
-      expect(activeElement?.isEqualNode(calendarTable)).true;
+    expect(activeElement?.isEqualNode(calendarTable)).true;
 
-      await sendKeys({ down: 'Tab' } as SendKeysPayload);
-      await sendKeys({ up: 'Tab' } as SendKeysPayload);
+    await sendKeys({ down: 'Tab' } as SendKeysPayload);
+    await sendKeys({ up: 'Tab' } as SendKeysPayload);
 
-      activeElement = queryDeepActiveElement();
+    activeElement = queryDeepActiveElement();
 
-      const selectedDate = el.query<HTMLTableCellElement>(
-        `${elementSelectors.calendarDay}[aria-label="${
-          formatters.fullDateFormat(calendarInit.date)
-        }"]`
-      );
+    const selectedDate = el.query<HTMLTableCellElement>(
+      `${elementSelectors.calendarDay}[aria-label="${
+        formatters.fullDateFormat(calendarInit.date)
+      }"]`
+    );
 
-      expect(activeElement).exist;
-      expect(activeElement?.isEqualNode(selectedDate)).true;
-    }
-  );
+    expect(activeElement).exist;
+    expect(activeElement?.isEqualNode(selectedDate)).true;
+  });
 
-  type A4 = [Partial<MonthCalendarData>, string];
-  const cases4: A4[] = [
+  type CaseNotSelectNewDate = [
+    partialDate: Partial<MonthCalendarData>,
+    elementSelector: string
+  ];
+  const casesNotSelectNewDate: CaseNotSelectNewDate[] = [
     [{}, elementSelectors.calendarTable],
     [{}, elementSelectors.hiddenCalendarDay],
     [
@@ -329,7 +337,7 @@ describe(appMonthCalendarName, () => {
       }"]`,
     ],
   ];
-  cases4.forEach(a => {
+  casesNotSelectNewDate.forEach(a => {
     const [testPartialData, testElementSelector] = a;
     it(
       messageFormatter('does not select new date (partialData=%j, elementSelector=%s)', a),
@@ -391,13 +399,17 @@ describe(appMonthCalendarName, () => {
     expect(todayDate).attr('title', labelSelectedDate);
   });
 
-  type TestWeekdayTitles = [Partial<MonthCalendarData>, Partial<GetWeekdaysInit>, string[]];
-  const testWeekdayTitles: TestWeekdayTitles[] = [
+  type CaseWeekdayTitles = [
+    partialMonthCalendarData: Partial<MonthCalendarData>,
+    partialWeekdaysInit: Partial<GetWeekdaysInit>,
+    expectedWeekdayTitles: string[]
+  ];
+  const casesWeekdayTitles: CaseWeekdayTitles[] = [
     [{}, {}, ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
     [{ showWeekNumber: true }, { showWeekNumber: true }, [labelWeek, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
     [{ showWeekNumber: true }, { showWeekNumber: true, shortWeekLabel: '週', weekLabel: '週目' }, ['週目', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
   ];
-  testWeekdayTitles.forEach((a) => {
+  casesWeekdayTitles.forEach((a) => {
     const [
       testPartialMonthCalendarData,
       testPartialWeekdaysInit,
@@ -429,18 +441,18 @@ describe(appMonthCalendarName, () => {
     );
   });
 
-  type TestTitle = [
+  type CaseSelectedDateLabelAndTodayDateLabel = [
     testSelectedDateLabel: string | undefined,
     testTodayDateLabel: string | undefined,
     expectedSelectedDateLabel: string | undefined,
     expectedTodayDateLabel: string | undefined
   ];
-  const testTitleCases: TestTitle[] = [
+  const casesSelectedDateLabelAndTodayDateLabel: CaseSelectedDateLabelAndTodayDateLabel[] = [
     [undefined, undefined, undefined, undefined],
     ['', '', '', ''],
     [labelSelectedDate, labelTodayDate, labelSelectedDate, labelTodayDate],
   ];
-  testTitleCases.forEach((a) => {
+  casesSelectedDateLabelAndTodayDateLabel.forEach((a) => {
     const [
       testSelectedDateLabel,
       testTodayDateLabel,

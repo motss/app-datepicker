@@ -4,14 +4,19 @@ import { clampValue } from '../../helpers/clamp-value';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(clampValue.name, () => {
-  type A = [number, number, number, number];
-  const cases: A[] = [
+  type CaseClampValue = [
+    min: number,
+    max: number,
+    value: number,
+    expected: number
+  ];
+  const casesClampValue: CaseClampValue[] = [
     [100, 300, 100, 100],
     [100, 300, 200, 200],
     [100, 300, 301, 300],
     [100, 300, 99, 100],
   ];
-  cases.forEach((a) => {
+  casesClampValue.forEach((a) => {
     const [testMin, testMax, testValue, expected] = a;
 
     it(

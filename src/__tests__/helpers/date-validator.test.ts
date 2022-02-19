@@ -6,10 +6,15 @@ import type { DateValidatorResult, MaybeDate } from '../../helpers/typings';
 import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(dateValidator.name, () => {
-  type A = [MaybeDate, Date, DateValidatorResult];
   const date1 = new Date(1);
   const date1Utc = toUTCDate(date1.getUTCFullYear(), date1.getUTCMonth(), date1.getUTCDate());
-  const cases: A[] = [
+
+  type CaseValidateDate = [
+    value: MaybeDate,
+    defaultDate: Date,
+    expected: DateValidatorResult
+  ];
+  const casesValidateDate: CaseValidateDate[] = [
     [
       null,
       new Date('2020-02-02'),
@@ -83,7 +88,7 @@ describe(dateValidator.name, () => {
       },
     ],
   ];
-  cases.forEach((a) => {
+  casesValidateDate.forEach((a) => {
     const [testValue, testDefaultDate, expected] = a;
     it(
       messageFormatter('validates date (value=%s, defaultDate=%s)', a),
