@@ -7,6 +7,7 @@ import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
@@ -174,7 +175,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
 
     if (changedProperties.has('startView')) {
       const oldStartView =
-        (changedProperties.get('startView') || this.startView) as StartView;
+        (changedProperties.get('startView') || 'calendar') as StartView;
 
       /**
        * NOTE: Reset to old `startView` to ensure a valid value.
@@ -244,7 +245,6 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   }
 
   protected override render(): TemplateResult {
-    const formatters = this.#formatters;
     const {
       _currentDate,
       _max,
@@ -254,11 +254,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       showWeekNumber,
       startView,
     } = this;
+    const formatters = this.#formatters;
 
     const { longMonthYearFormat } = formatters;
     const selectedYearMonth = longMonthYearFormat(_currentDate);
     const isStartViewYearGrid = startView === 'yearGrid';
-    const label = startView === 'calendar' ? chooseYearLabel : chooseMonthLabel;
+    const label = isStartViewYearGrid ? chooseMonthLabel : chooseYearLabel;
 
     return html`
     <div class=header part=header>
@@ -269,7 +270,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
           .ariaLabel=${label}
           @click=${this.#updateStartView}
           class=year-dropdown
-          title=${label}
+          title=${ifDefined(label)}
         >${iconArrowDropdown}</mwc-icon-button>
       </div>
 
@@ -421,7 +422,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         .ariaLabel=${label}
         @click=${this.#navigateMonth}
         data-navigation=${navigationType}
-        title=${label}
+        title=${ifDefined(label)}
       >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
       `;
   }

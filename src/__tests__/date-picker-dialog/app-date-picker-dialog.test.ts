@@ -44,7 +44,6 @@ describe(appDatePickerDialogName, () => {
     disabledDates: '2020-02-02',
     disabledDays: '2',
     firstDayOfWeek: 2,
-    inline: false,
     landscape: false,
     locale: 'en-SG',
     max: '2200-12-31',
@@ -97,11 +96,7 @@ describe(appDatePickerDialogName, () => {
     await datePickerDialogBase?.updateComplete;
 
     for (const [key, value] of Object.entries(properties)) {
-      if (key === 'inline') {
-        expect(datePicker?.[key as keyof DatePickerProperties]).true;
-      } else {
-        expect(datePicker?.[key as keyof DatePickerProperties]).equal(value, `${key} not matched`);
-      }
+      expect(datePicker?.[key as keyof DatePickerProperties]).equal(value, `${key} not matched`);
     }
 
     expect(datePickerDialogBase).exist;
@@ -114,13 +109,9 @@ describe(appDatePickerDialogName, () => {
     const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
     const dialogActionSet = el.query(elementSelectors.dialogActionSet);
 
-    expect(dialogActionReset).exist;
-    expect(dialogActionCancel).exist;
-    expect(dialogActionSet).exist;
-
-    expect(dialogActionReset).text(resetLabel);
-    expect(dialogActionCancel).text(dismissLabel);
-    expect(dialogActionSet).text(confirmLabel);
+    expect(dialogActionReset).exist.text(resetLabel);
+    expect(dialogActionCancel).exist.text(dismissLabel);
+    expect(dialogActionSet).exist.text(confirmLabel);
   });
 
   it('always re-opens in calendar view', async () => {

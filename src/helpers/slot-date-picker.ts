@@ -11,7 +11,6 @@ export function slotDatePicker({
   disabledDates,
   disabledDays,
   firstDayOfWeek,
-  inline,
   landscape,
   locale,
   max,
@@ -39,7 +38,6 @@ export function slotDatePicker({
     .disabledDates=${disabledDates}
     .disabledDays=${disabledDays}
     .firstDayOfWeek=${firstDayOfWeek}
-    .inline=${inline}
     .landscape=${landscape}
     .locale=${locale}
     .max=${max}

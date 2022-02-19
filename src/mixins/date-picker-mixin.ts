@@ -17,7 +17,6 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public disabledDays = '';
     @property() public disabledDates = '';
     @property({ type: Number, reflect: true }) public firstDayOfWeek = 0;
-    @property({ type: Boolean }) public inline = false;
     @property({ type: Boolean, reflect: true }) public landscape = false;
     @property() public locale: string = DateTimeFormat().resolvedOptions().locale;
     @property() public nextMonthLabel: string = labelNextMonth;

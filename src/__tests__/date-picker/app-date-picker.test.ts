@@ -4,7 +4,7 @@ import type { Button } from '@material/mwc-button';
 import { expect } from '@open-wc/testing';
 import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 
-import { MAX_DATE } from '../../constants';
+import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, MAX_DATE } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import { toDateString } from '../../helpers/to-date-string';
@@ -12,7 +12,7 @@ import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { MaybeDate } from '../../helpers/typings';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
-import type { CustomEventDetail, Formatters, StartView } from '../../typings';
+import type { CustomEventDetail, DatePickerProperties, Formatters, StartView } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { eventOnce } from '../test-utils/event-once';
 import { messageFormatter } from '../test-utils/message-formatter';
@@ -67,6 +67,23 @@ describe(appDatePickerName, () => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).exist;
+
+          // Verify year dropdown title
+          const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+
+          expect(yearDropdown)
+            .exist
+            .attr(
+              'title',
+              testElementsShouldRender.includes('calendar') ?
+                labelChooseYear :
+                labelChooseMonth
+            );
+
+          // Verify body class to ensure .start-view--{calendar|yearGrid} is always set
+          if (n === 'body') {
+            expect(element).have.class(`start-view--${testCalendarView || 'calendar'}`);
+          }
         });
         testElementsShouldNotRender.forEach((n) => {
           const element = el.query(elementSelectors[n]);
@@ -137,7 +154,7 @@ describe(appDatePickerName, () => {
     const [testMax, testMin, testValue, testElementsShouldRender, testElementsShouldNotRender] = a;
     it(
       messageFormatter(
-        'renders with month navigation buttons (min=%s, max=%s, value=%s)',
+        'renders month navigation buttons (min=%s, max=%s, value=%s)',
         a
       ),
       async () => {
@@ -152,13 +169,106 @@ describe(appDatePickerName, () => {
         testElementsShouldRender.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
-          expect(element).exist;
+          expect(element)
+            .exist
+            .attr('title', n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
         });
         testElementsShouldNotRender.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
         });
+      }
+    );
+  });
+
+  type TestTitle = [
+    properties: Partial<DatePickerProperties>,
+    expected: Partial<DatePickerProperties>
+  ];
+  const casesTestTitle: TestTitle[] = [
+    [
+      {
+        chooseMonthLabel: undefined,
+        chooseYearLabel: undefined,
+        nextMonthLabel: undefined,
+        previousMonthLabel: undefined,
+      },
+      {
+        chooseMonthLabel: undefined,
+        chooseYearLabel: undefined,
+        nextMonthLabel: undefined,
+        previousMonthLabel: undefined,
+      },
+    ],
+    [
+      {
+        chooseMonthLabel: '',
+        chooseYearLabel: '',
+        nextMonthLabel: '',
+        previousMonthLabel: '',
+      },
+      {
+        chooseMonthLabel: '',
+        chooseYearLabel: '',
+        nextMonthLabel: '',
+        previousMonthLabel: '',
+      },
+    ],
+    [
+      {
+        chooseMonthLabel: '選擇月份',
+        chooseYearLabel: '選擇年份',
+        nextMonthLabel: '下個月份',
+        previousMonthLabel: '上個月份',
+      },
+      {
+        chooseMonthLabel: '選擇月份',
+        chooseYearLabel: '選擇年份',
+        nextMonthLabel: '下個月份',
+        previousMonthLabel: '上個月份',
+      },
+    ],
+  ];
+  casesTestTitle.forEach((a) => {
+    const [testPartialProperties, expectedProperties] = a;
+
+    it(
+      messageFormatter('renders correct title for buttons (partialProperties=%j)', a),
+      async () => {
+        const el = await fixture<AppDatePicker>(
+          html`<app-date-picker
+            .chooseMonthLabel=${testPartialProperties.chooseMonthLabel as string}
+            .chooseYearLabel=${testPartialProperties.chooseYearLabel as string}
+            .max=${'2020-12-02'}
+            .min=${'1970-01-01'}
+            .nextMonthLabel=${testPartialProperties.nextMonthLabel as string}
+            .previousMonthLabel=${testPartialProperties.previousMonthLabel as string}
+            .value=${'2020-02-02'}
+          ></app-date-picker>`
+        );
+
+        const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+        const nextMonthNavigationButton= el.query<Button>(elementSelectors.nextMonthNavigationButton);
+        const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
+
+        expect(yearDropdown).exist;
+        expect(nextMonthNavigationButton).exist;
+        expect(previousMonthNavigationButton).exist;
+
+        if (
+          expectedProperties.chooseYearLabel == null &&
+          expectedProperties.nextMonthLabel == null &&
+          expectedProperties.previousMonthLabel == null
+        ) {
+          expect(yearDropdown).not.attr('title');
+          expect(nextMonthNavigationButton).not.attr('title');
+          expect(previousMonthNavigationButton).not.attr('title');
+        } else {
+          expect(yearDropdown).attr('title', expectedProperties.chooseYearLabel);
+          expect(nextMonthNavigationButton).attr('title', expectedProperties.nextMonthLabel);
+          expect(previousMonthNavigationButton).attr('title', expectedProperties.previousMonthLabel);
+        }
       }
     );
   });
@@ -275,7 +385,6 @@ describe(appDatePickerName, () => {
       newSelectedDate2Label
     );
     expect(newSelectedCalendarDay?.fullDate).deep.equal(newSelectedDate2);
-
 
     const dateUpdatedEventTask =
       eventOnce<

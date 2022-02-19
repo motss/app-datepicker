@@ -36,7 +36,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     return Number(this.#valueAsDate || NaN);
   }
 
-
   @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
@@ -245,7 +244,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       disabledDates,
       disabledDays,
       firstDayOfWeek,
-      inline: true,
       landscape,
       locale,
       max,

@@ -174,7 +174,6 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       disabledDates,
       disabledDays,
       firstDayOfWeek,
-      inline: true,
       landscape,
       locale,
       max,

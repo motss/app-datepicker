@@ -62,6 +62,11 @@
     ],
     "semi": "off",
     "@typescript-eslint/semi": ["error", "always"],
+    "no-multiple-empty-lines": ["error", {
+      "max": 1,
+      "maxBOF": 0,
+      "maxEOF": 0
+    }],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error"
   }

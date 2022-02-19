@@ -14,7 +14,6 @@ export interface DatePickerMixinProperties {
   disabledDates: string;
   disabledDays: string;
   firstDayOfWeek: number;
-  inline: boolean;
   landscape: boolean;
   locale: string;
   nextMonthLabel: string;
