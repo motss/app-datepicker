@@ -375,7 +375,7 @@ describe(appMonthCalendarName, () => {
     );
   });
 
-  it('renders with correct title for selected today', async () => {
+  it('renders correct title for selected today', async () => {
     const el = await fixture<AppMonthCalendar>(
       html`<app-month-calendar .data=${data}></app-month-calendar>`
     );
@@ -449,7 +449,7 @@ describe(appMonthCalendarName, () => {
     ] = a;
 
     it(
-      messageFormatter('renders with correct title (selectedDateLabel=%s, todayDateLabel=%s)', a),
+      messageFormatter('renders correct title (selectedDateLabel=%s, todayDateLabel=%s)', a),
       async () => {
         const todayFullDate = new Date(data.todayDate);
         const todayUTCDate = todayFullDate.getUTCDate();

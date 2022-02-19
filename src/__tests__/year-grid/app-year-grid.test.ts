@@ -183,6 +183,30 @@ describe(appYearGridName, () => {
     ]);
   });
 
+  it('renders correct title for selected today year', async () => {
+    const todayDate = toResolvedDate();
+    const max = new Date(new Date(todayDate).setUTCFullYear(todayDate.getUTCFullYear() + 2));
+    const min = new Date(new Date(todayDate).setUTCFullYear(todayDate.getUTCFullYear() - 2));
+
+    const testData: YearGridData = {
+      ...data,
+      date: todayDate,
+      max,
+      min,
+    };
+    const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${testData}></app-year-grid>`);
+
+    const selectedYear = el.query<HTMLButtonElement>(elementSelectors.selectedYear);
+    const todayYear = el.query<HTMLButtonElement>(elementSelectors.todayYear);
+
+    expect(selectedYear).exist;
+    expect(todayYear).exist;
+    expect(selectedYear?.isEqualNode(todayYear)).true;
+
+    expect(selectedYear).attr('title', labelSelectedYear);
+    expect(todayYear).attr('title', labelSelectedYear);
+  });
+
   type TestTitle = [
     testSelectedYearLabel: string | undefined,
     testTodayYearLabel: string | undefined,
@@ -203,7 +227,7 @@ describe(appYearGridName, () => {
     ] = a;
 
     it(
-      messageFormatter('renders with correct title (selectedYearLabel=%s, todayYearLabel=%s)', a),
+      messageFormatter('renders correct title (selectedYearLabel=%s, todayYearLabel=%s)', a),
       async () => {
         const dataMax = new Date(data.max);
         const dataMin = new Date(data.min);
