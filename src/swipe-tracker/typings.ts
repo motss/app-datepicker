@@ -27,4 +27,3 @@ export interface TrackerHandlers {
   move(startPointer: ResolvedPointer, oldPointer: null | ResolvedPointer, ev: PointerType): void;
   up(startPointer: ResolvedPointer, oldPointer: null | ResolvedPointer, ev: PointerType): void;
 }
-

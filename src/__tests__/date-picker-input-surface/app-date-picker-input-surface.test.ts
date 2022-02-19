@@ -14,8 +14,6 @@ describe(appDatePickerInputSurfaceName, () => {
   } as const;
 
   it('renders', async () => {
-
-
     const el = await new Promise<AppDatePickerInputSurface>(async (resolve) => {
       const element = await fixture<AppDatePickerInputSurface>(
         html`<app-date-picker-input-surface .open=${true} @opened=${() => resolve(element)}>

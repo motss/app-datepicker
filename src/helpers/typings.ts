@@ -41,7 +41,6 @@ export interface ToNextSelectableDateInit {
   minTime: number;
 }
 
-
 export interface ToNextSelectedDateInit {
   currentDate: Date;
   date: Date;
