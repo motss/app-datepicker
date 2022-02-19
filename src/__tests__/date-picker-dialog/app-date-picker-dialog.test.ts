@@ -14,7 +14,8 @@ import { toDateString } from '../../helpers/to-date-string';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
-import type { CustomEventDetail } from '../../typings';
+import type { CustomEventDetail, DatePickerProperties } from '../../typings';
+import type { DeepNonNullableAndRequired, OmitKey } from '../../utility-typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
 import { promiseTimeout } from '../constants';
@@ -37,21 +38,53 @@ describe(appDatePickerDialogName, () => {
     month: 'short',
     day: 'numeric',
   });
-  const max = '2100-12-31';
-  const min = '1970-01-01';
-  const value = '2020-02-02';
+  const properties: DeepNonNullableAndRequired<OmitKey<DatePickerProperties, 'fire' | 'query' | 'queryAll' | 'root'>> = {
+    chooseMonthLabel: '選擇月份',
+    chooseYearLabel: '選擇年份',
+    disabledDates: '2020-02-02',
+    disabledDays: '2',
+    firstDayOfWeek: 2,
+    inline: false,
+    landscape: false,
+    locale: 'en-SG',
+    max: '2200-12-31',
+    min: '1970-12-31',
+    nextMonthLabel: '下個月份',
+    previousMonthLabel: '上個月份',
+    selectedDateLabel: '選定日期',
+    selectedYearLabel: '選定年份',
+    shortWeekLabel: '週',
+    showWeekNumber: true,
+    startView: 'yearGrid',
+    todayDateLabel: '今日',
+    todayYearLabel: '今年',
+    value: '2020-02-02',
+    weekLabel: '週目',
+    weekNumberTemplate: '%s週目',
+    weekNumberType: 'first-day-of-year',
+  };
 
   it('renders', async () => {
+    const confirmLabel = '確定' as const;
+    const dismissLabel = '取消' as const;
+    const resetLabel = '重置' as const;
+
     const el = await new Promise<AppDatePickerDialog>(async (resolve) => {
       const element = await fixture<AppDatePickerDialog>(
         html`<app-date-picker-dialog
-          .max=${max}
-          .min=${min}
+          .confirmLabel=${confirmLabel}
+          .dismissLabel=${dismissLabel}
           .open=${true}
-          .value=${value}
+          .resetLabel=${resetLabel}
           @opened=${() => resolve(element)}
         ></app-date-picker-dialog>`
       );
+
+      for (const [key, value] of Object.entries(properties)) {
+        Object.assign(element, { [key]: value });
+      }
+
+      await element.updateComplete;
 
       globalThis.setTimeout(() => resolve(element), promiseTimeout);
     });
@@ -63,11 +96,19 @@ describe(appDatePickerDialogName, () => {
     await datePicker?.updateComplete;
     await datePickerDialogBase?.updateComplete;
 
+    for (const [key, value] of Object.entries(properties)) {
+      if (key === 'inline') {
+        expect(datePicker?.[key as keyof DatePickerProperties]).true;
+      } else {
+        expect(datePicker?.[key as keyof DatePickerProperties]).equal(value, `${key} not matched`);
+      }
+    }
+
     expect(datePickerDialogBase).exist;
     expect(datePicker).exist;
     expect(datePickerDialogBase?.hasAttribute('open')).true;
-    expect(el.valueAsDate).deep.equal(new Date(value));
-    expect(el.valueAsNumber).equal(+new Date(value));
+    expect(el.valueAsDate).deep.equal(new Date(properties.value));
+    expect(el.valueAsNumber).equal(+new Date(properties.value));
 
     const dialogActionReset = el.query(elementSelectors.dialogActionReset);
     const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
@@ -76,6 +117,10 @@ describe(appDatePickerDialogName, () => {
     expect(dialogActionReset).exist;
     expect(dialogActionCancel).exist;
     expect(dialogActionSet).exist;
+
+    expect(dialogActionReset).text(resetLabel);
+    expect(dialogActionCancel).text(dismissLabel);
+    expect(dialogActionSet).text(confirmLabel);
   });
 
   it('always re-opens in calendar view', async () => {
@@ -159,7 +204,7 @@ describe(appDatePickerDialogName, () => {
 
   type CaseSelectsAndConfirmsNewDate = [string, string, DialogClosingEventDetailAction, boolean, string];
   const casesSelectsAndConfirmsNewDate: CaseSelectsAndConfirmsNewDate[] = [
-    ['but does not confirm a new date', '2020-02-04', 'cancel', false, value],
+    ['but does not confirm a new date', '2020-02-04', 'cancel', false, properties.value],
     ['and confirms a new date', '2020-02-04', 'set', false, '2020-02-04'],
     ['a new date but resets it', '2020-02-04', 'reset', true, toDateString(toResolvedDate())],
   ];
@@ -178,9 +223,9 @@ describe(appDatePickerDialogName, () => {
       async () => {
         const el = await fixture<AppDatePickerDialog>(
           html`<app-date-picker-dialog
-            .max=${max}
-            .min=${min}
-            .value=${value}
+            .max=${properties.max}
+            .min=${properties.min}
+            .value=${properties.value}
           ></app-date-picker-dialog>`
         );
 
@@ -225,7 +270,7 @@ describe(appDatePickerDialogName, () => {
         expect(dialogActionCancel).exist;
         expect(dialogActionSet).exist;
         expect(datePickerDialogBase?.hasAttribute('open')).true;
-        expect(el.value).equal(value);
+        expect(el.value).equal(properties.value);
 
         const newValueDate = new Date(testNewValue);
         const newSelectedDate =
@@ -246,7 +291,7 @@ describe(appDatePickerDialogName, () => {
         await datePickerDialogBase?.updateComplete;
         await el.updateComplete;
 
-        expect(el.value).equal(value);
+        expect(el.value).equal(properties.value);
         expect(datePicker?.value).equal(testNewValue);
         expect(datePicker?.valueAsDate).deep.equal(newValueDate);
         expect(datePicker?.valueAsNumber).equal(+newValueDate);
@@ -288,6 +333,7 @@ describe(appDatePickerDialogName, () => {
         expect(
           datePickerDialogBase?.hasAttribute('open')
         ).equal(expectedDatePickerDialogHasAttributeOpen);
+
         expect(el.value).equal(expectedDatePickerDialogValue);
         expect(el.valueAsDate).deep.equal(new Date(expectedDatePickerDialogValue));
         expect(el.valueAsNumber).equal(+new Date(expectedDatePickerDialogValue));

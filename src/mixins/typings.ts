@@ -1,6 +1,7 @@
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import type { Constructor, CustomEventAction, LitConstructor, StartView } from '../typings.js';
+import type { CustomEventAction, LitConstructor, StartView } from '../typings.js';
+import type { Constructor } from '../utility-typings.js';
 
 export interface DatePickerMinMaxProperties {
   max?: string;

@@ -58,10 +58,27 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       }
   }
 
+  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    /**
+     * NOTE(motss): `value` should always update `#selectedDate` and `#valueAsDate`.
+     */
+    if (changedProperties.has('value')) {
+      this.#selectedDate = this.#valueAsDate = toResolvedDate(this.value);
+    }
+  }
+
   protected override render(): TemplateResult {
+    const {
+      _rendered,
+      confirmLabel,
+      dismissLabel,
+      open,
+      resetLabel,
+    } = this;
+
     return html`
     <app-date-picker-dialog-base
-      ?open=${this.open}
+      ?open=${open}
       @closed=${this.#onClosed}
       @closing=${this.#onClosing}
       @date-updated=${this.$onDatePickerDateUpdated}
@@ -69,23 +86,23 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       @opened=${this.#onOpened}
       @opening=${this.#onOpening}
     >
-      ${this._rendered ? html`
+      ${_rendered ? html`
       ${this.$renderSlot()}
 
       <div class=secondary-actions slot=secondaryAction>
         <mwc-button
           @click=${this.#onResetClick}
           data-dialog-action=reset
-        >${this.resetLabel}</mwc-button>
+        >${resetLabel}</mwc-button>
         <mwc-button
           dialogAction=cancel
-        >${this.dismissLabel}</mwc-button>
+        >${dismissLabel}</mwc-button>
       </div>
 
       <mwc-button
         dialogAction=set
         slot=primaryAction
-      >${this.confirmLabel}</mwc-button>
+      >${confirmLabel}</mwc-button>
       ` : nothing}
     </app-date-picker-dialog-base>
     `;

@@ -5,11 +5,9 @@ import type { startViews } from './constants.js';
 import type { DatePicker } from './date-picker/date-picker.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
+import type { Constructor } from './utility-typings.js';
 
 export type ChangedProperties<T = Record<string, unknown>> = PropertyValues & Map<keyof T, T[keyof T]>;
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Constructor<T> = new (...args: any[]) => T;
 
 export interface CustomEventAction<T extends string, CustomEventDetail> {
   detail: CustomEventDetail;
@@ -61,8 +59,6 @@ interface KeyEvent {
 }
 
 export type LitConstructor = Constructor<LitElement>;
-
-export type OmitKey<T, K extends keyof T> = Omit<T, K>;
 
 export type StartView = StartViewTuple[number];
 

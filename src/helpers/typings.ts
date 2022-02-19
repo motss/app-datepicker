@@ -1,7 +1,8 @@
 import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
 
 import type { ElementMixinProperties } from '../mixins/typings.js';
-import type { CustomEventDetail, DatePickerProperties, Formatters, OmitKey, SupportedKey } from '../typings.js';
+import type { CustomEventDetail, DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
+import type { OmitKey } from '../utility-typings.js';
 
 export interface DateValidatorResult {
   date: Date;

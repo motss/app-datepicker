@@ -1,4 +1,3 @@
-import '../date-picker-dialog/app-date-picker-dialog-base.js';
 import '../date-picker-dialog/app-date-picker-dialog.js';
 import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '../date-picker-input/app-date-picker-input.js';
@@ -93,30 +92,31 @@ export class DemoApp extends RootElement {
       .value=${'2020-02-02'}
     ></app-date-picker-input>
 
-    <button @click=${this.#showDialog}>Open</button>
+    <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 
-    <button @click=${this.#showDialogBase}>Open Base</button>
-    <app-date-picker-dialog-base id="datePickerDialogBase1">
-      <div class=test slot=test>Test</div>
-    </app-date-picker-dialog-base>
-
-    <!-- <app-date-picker-input></app-date-picker-input> -->
-    <!-- <app-datepicker-dialog class="datepicker-dialog"></app-datepicker-dialog> -->
-    <!-- <button class="open-btn" type="button">Open datepicker</button> -->
+    <button data-id="datePickerDialog2" @click=${this.#showDialog}>Open with optional properties</button>
+    <app-date-picker-dialog
+      .max=${'2022-12-31'}
+      .min=${'2020-01-01'}
+      .value=${'2020-02-02'}
+      id="datePickerDialog2"
+    ></app-date-picker-dialog>
     `;
   }
 
-  async #showDialog() {
-    const dialog = await this.dialog;
+  async #showDialog(ev: MouseEvent) {
+    const { dataset } = ev.currentTarget as HTMLButtonElement;
+
+    const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
 
     dialog?.show();
-  }
 
-  async #showDialogBase() {
-    const dialog = await this.dialogBase;
-
-    dialog?.show();
+    console.debug(`Dialog #${dataset.id}`, {
+      value: dialog?.value,
+      valueAsDate: dialog?.valueAsDate,
+      valueAsNumber: new Date(dialog?.valueAsNumber as number),
+    });
   }
 
   #dateUpdated({

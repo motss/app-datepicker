@@ -12,23 +12,23 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
   SuperClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, DatePickerMixinProperties> => {
   class DatePickerMixinClass extends SuperClass implements DatePickerMixinProperties {
-    @property() public chooseYearLabel = labelChooseYear;
-    @property() public chooseMonthLabel = labelChooseMonth;
+    @property() public chooseYearLabel: string = labelChooseYear;
+    @property() public chooseMonthLabel: string = labelChooseMonth;
     @property() public disabledDays = '';
     @property() public disabledDates = '';
     @property({ type: Number, reflect: true }) public firstDayOfWeek = 0;
     @property({ type: Boolean }) public inline = false;
     @property({ type: Boolean, reflect: true }) public landscape = false;
     @property() public locale: string = DateTimeFormat().resolvedOptions().locale;
-    @property() public nextMonthLabel = labelNextMonth;
-    @property() public previousMonthLabel = labelPreviousMonth;
-    @property() public selectedDateLabel = labelSelectedDate;
-    @property() public selectedYearLabel = labelSelectedYear;
-    @property() public shortWeekLabel = labelShortWeek;
+    @property() public nextMonthLabel: string = labelNextMonth;
+    @property() public previousMonthLabel: string = labelPreviousMonth;
+    @property() public selectedDateLabel: string = labelSelectedDate;
+    @property() public selectedYearLabel: string = labelSelectedYear;
+    @property() public shortWeekLabel: string = labelShortWeek;
     @property({ type: Boolean, reflect: true }) public showWeekNumber = false;
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public startView: StartView = 'calendar';
-    @property() public todayDateLabel = labelTodayDate;
-    @property() public todayYearLabel = labelTodayYear;
+    @property() public todayDateLabel: string = labelTodayDate;
+    @property() public todayYearLabel: string = labelTodayYear;
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
@@ -36,8 +36,8 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
      */
     @property() public value = toDateString(toResolvedDate());
 
-    @property() public weekLabel = labelWeek;
-    @property() public weekNumberTemplate = weekNumberTemplate;
+    @property() public weekLabel: string = labelWeek;
+    @property() public weekNumberTemplate: string = weekNumberTemplate;
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public weekNumberType: WeekNumberType = 'first-4-day-week';
   }
 

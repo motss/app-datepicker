@@ -11,6 +11,7 @@ export function slotDatePicker({
   disabledDates,
   disabledDays,
   firstDayOfWeek,
+  inline,
   landscape,
   locale,
   max,
@@ -20,10 +21,15 @@ export function slotDatePicker({
   onDatePickerFirstUpdated,
   previousMonthLabel,
   selectedDateLabel,
+  selectedYearLabel,
+  shortWeekLabel,
   showWeekNumber,
   startView,
+  todayDateLabel,
+  todayYearLabel,
   value,
   weekLabel,
+  weekNumberTemplate,
   weekNumberType,
 }: SlotDatePickerInit): TemplateResult {
   return html`<app-date-picker
@@ -33,6 +39,7 @@ export function slotDatePicker({
     .disabledDates=${disabledDates}
     .disabledDays=${disabledDays}
     .firstDayOfWeek=${firstDayOfWeek}
+    .inline=${inline}
     .landscape=${landscape}
     .locale=${locale}
     .max=${max}
@@ -40,9 +47,14 @@ export function slotDatePicker({
     .nextMonthLabel=${nextMonthLabel}
     .previousMonthLabel=${previousMonthLabel}
     .selectedDateLabel=${selectedDateLabel}
+    .selectedYearLabel=${selectedYearLabel}
+    .shortWeekLabel=${shortWeekLabel}
     .startView=${startView}
+    .todayDateLabel=${todayDateLabel}
+    .todayYearLabel=${todayYearLabel}
     .value=${value}
     .weekLabel=${weekLabel}
+    .weekNumberTemplate=${weekNumberTemplate}
     .weekNumberType=${weekNumberType}
     @date-updated=${onDatePickerDateUpdated}
     @first-updated=${onDatePickerFirstUpdated}
