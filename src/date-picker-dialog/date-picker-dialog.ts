@@ -1,5 +1,6 @@
 import '@material/mwc-button';
 import '@material/mwc-dialog';
+import '../date-picker/app-date-picker.js';
 import './app-date-picker-dialog-base.js';
 
 import type { TemplateResult } from 'lit';
@@ -17,7 +18,7 @@ import { RootElement } from '../root-element/root-element.js';
 import { baseStyling } from '../stylings.js';
 import type { CustomEventDetail } from '../typings.js';
 import { datePickerDialogStyling } from './stylings.js';
-import type { DatePickerDialogProperties, DialogClosedEventDetail, DialogClosingEventDetail } from './typings.js';
+import type { DatePickerDialogChangedProperties, DatePickerDialogProperties, DialogClosedEventDetail, DialogClosingEventDetail } from './typings.js';
 
 export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements DatePickerDialogProperties {
   public get valueAsDate(): Date {
@@ -50,7 +51,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     this.#selectedDate = this.#valueAsDate = toResolvedDate();
   }
 
-  override willUpdate(changedProperties: Map<string | number | symbol, unknown>): void {
+  protected override willUpdate(changedProperties: DatePickerDialogChangedProperties): void {
       super.willUpdate(changedProperties);
 
       if (!this._rendered && this.open) {
@@ -58,7 +59,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       }
   }
 
-  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+  protected override updated(changedProperties: DatePickerDialogChangedProperties): void {
     /**
      * NOTE(motss): `value` should always update `#selectedDate` and `#valueAsDate`.
      */
@@ -120,7 +121,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     detail: {
       valueAsDate,
     },
-  }: CustomEvent<CustomEventDetail['date-updated']['detail']>) {
+  }: CustomEvent<CustomEventDetail['date-updated']['detail']>): void {
     this.#selectedDate = new Date(valueAsDate);
 
     /**
@@ -138,7 +139,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     detail: {
       valueAsDate,
     },
-  }: CustomEvent<CustomEventDetail['first-updated']['detail']>) {
+  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void {
     this.#selectedDate = this.#valueAsDate = valueAsDate;
   }
 
@@ -196,7 +197,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     });
   }
 
-  #onClosed = async (ev: CustomEvent<DialogClosedEventDetail>) => {
+  #onClosed = async (ev: CustomEvent<DialogClosedEventDetail>): Promise<void> => {
     const datePicker = await this._datePicker;
 
     this.hide();
@@ -226,8 +227,8 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     this.fire({ detail, type: 'opening' });
   };
 
-  #onResetClick() {
+  #onResetClick = () => {
     this.#isResetAction = true;
     this.value = undefined;
-  }
+  };
 }

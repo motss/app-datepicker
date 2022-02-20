@@ -154,6 +154,9 @@
     "access": "public"
   },
   "nano-staged": {
-    "*.ts": ["npm run lint:build -- --fix", "git add"]
+    "*.ts": [
+      "npm run lint:build -- --fix",
+      "git add"
+    ]
   }
 }

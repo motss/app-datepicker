@@ -31,7 +31,6 @@ import { datePickerInputStyling } from './stylings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
   public override iconTrailing = 'clear';
-  public lazyLoad?:() => Promise<void>;
   public override type = appDatePickerInputType;
 
   public get valueAsDate(): Date | null {
@@ -46,13 +45,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
   @queryAsync(appDatePickerName) protected $picker!: Promise<AppDatePicker | null>;
+  @state() private _lazyLoaded = false;
   @state() private _open = false;
-  @state() private _rendered = false;
   @state() private _valueText = '';
 
   #disconnect: () => void = () => undefined;
   #focusElement: HTMLElement | undefined = undefined;
   #isClearAction = false;
+  #lazyLoading = false;
   #picker: AppDatePicker | undefined = undefined;
   #selectedDate: Date | undefined;
   #valueAsDate: Date | undefined;
@@ -64,7 +64,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     datePickerInputStyling,
   ];
 
-  public override async disconnectedCallback(): Promise<void> {
+  public override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.#disconnect();
@@ -107,7 +107,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }
   }
 
-  public override willUpdate(changedProperties: ChangedProperties<DatePickerProperties>) {
+  public override willUpdate(changedProperties: ChangedProperties<DatePickerProperties>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('locale')) {
@@ -126,8 +126,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }
   }
 
-  public override async updated() {
-    if (this._open && this._rendered) {
+  public override async updated(): Promise<void> {
+    if (this._open && this._lazyLoaded) {
       const picker = await this.$picker;
 
       picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
@@ -135,7 +135,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   public override render(): TemplateResult {
-    if (!this._rendered && this._open) this.#lazyLoad();
+    if (!this._lazyLoaded && this._open) this.#lazyLoad();
 
     return html`
     ${super.render()}
@@ -280,38 +280,58 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     });
   }
 
-  async #lazyLoad() {
+  /**
+   * FIXME(motss): Unable to test the lazy loading in `wtr` due to:
+   * 1. Unable to dynamically import `.js` file
+   * 2. Unable to dedupe the same custom element caused by dynamic import with import maps
+   *
+   * Therefore, defer testing the lazy loading until there is a way to test it in `wtr`.
+   */
+  /* c8 ignore start */
+  #lazyLoad = async (): Promise<void> => {
+    if (this._lazyLoaded || this.#lazyLoading) return;
+
     const deps = [
       appDatePickerName,
       appDatePickerInputSurfaceName,
-    ];
+    ] as const;
 
     if (deps.some(n => globalThis.customElements.get(n) == null)) {
-      const tasks = deps.map(
-        n => globalThis.customElements.whenDefined(n)
-      );
+      this.#lazyLoading = true;
 
-      await this.lazyLoad?.();
-      await Promise.all(tasks);
+      const tasks = deps.map(n => globalThis.customElements.whenDefined(n));
+      const imports = [
+        '../date-picker/app-date-picker.js',
+        '../date-picker-input-surface/app-date-picker-input-surface.js',
+      ].map(n => import(n));
+
+      try {
+        await Promise.all(imports);
+        await Promise.all(tasks);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
-    this._rendered = true;
-  }
+    this.#lazyLoading = false;
+    this._lazyLoaded = true;
+  };
+  /* c8 ignore stop */
 
-  #onResetClick()  {
+  #onResetClick = (): void => {
     this.#isClearAction = true;
     this.#selectedDate = this.#valueAsDate = undefined;
 
     this.value = this._valueText = '';
-  }
+  };
 
-  #onClosed({ detail }: CustomEvent): void {
+  #onClosed = ({ detail }: CustomEvent): void => {
     this._open = false;
     this.#picker && (this.#picker.startView = 'calendar');
     this.fire({ detail, type: 'closed' });
-  }
+  };
 
-  async #onDatePickerDateUpdated(ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> {
+  #onDatePickerDateUpdated = async (ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> => {
     const {
       isKeypress,
       key,
@@ -339,29 +359,29 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     } else {
       this.#isClearAction = false;
     }
-  }
+  };
 
-  #onDatePickerFirstUpdated({
+  #onDatePickerFirstUpdated = ({
     currentTarget,
     detail: {
       focusableElements: [focusableElement],
       valueAsDate,
     },
-  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void {
+  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void => {
     this.#focusElement = focusableElement;
     this.#picker = currentTarget as AppDatePicker;
     this.#selectedDate = valueAsDate;
-  }
+  };
 
-  async #onOpened({ detail }: CustomEvent): Promise<void> {
+  #onOpened = async ({ detail }: CustomEvent): Promise<void> => {
     await this.#picker?.updateComplete;
     await this.updateComplete;
 
     this.#focusElement?.focus();
     this.fire({ detail, type: 'opened' });
-  }
+  };
 
-  #updateValues(value: string): void {
+  #updateValues = (value: string): void => {
     if (value) {
       const valueDate = new Date(value);
 
@@ -370,5 +390,5 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     } else {
       this.#onResetClick();
     }
-  }
+  };
 }

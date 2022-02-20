@@ -90,16 +90,6 @@ export class DemoApp extends RootElement {
       .max=${'2100-12-31'}
       .min=${'1970-01-01'}
       .value=${'2020-02-02'}
-      .lazyLoad=${async () => {
-        const deps = [
-          '../date-picker/app-date-picker.js',
-          '../date-picker-input-surface/app-date-picker-input-surface.js',
-        ];
-
-        await Promise.all(deps.map(n => import(n)));
-
-        console.debug('Lazy loaded');
-      }}
     ></app-date-picker-input>
 
     <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
@@ -115,10 +105,13 @@ export class DemoApp extends RootElement {
     `;
   }
 
-  async #showDialog(ev: MouseEvent) {
+  #showDialog = async (ev: MouseEvent) => {
     const { dataset } = ev.currentTarget as HTMLButtonElement;
-
     const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
+    const task = globalThis.customElements.whenDefined(appDatePickerDialogName);
+
+    await import('../date-picker-dialog/app-date-picker-dialog.js');
+    await task;
 
     dialog?.show();
 
@@ -127,17 +120,17 @@ export class DemoApp extends RootElement {
       valueAsDate: dialog?.valueAsDate,
       valueAsNumber: new Date(dialog?.valueAsNumber as number),
     });
-  }
+  };
 
-  #dateUpdated({
+  #dateUpdated = ({
     detail,
     currentTarget,
-  }: CustomEvent<CustomEventDetail['date-updated']['detail']>): void {
+  }: CustomEvent<CustomEventDetail['date-updated']['detail']>): void => {
     const { id } = currentTarget as AppDatePicker;
 
     console.debug({
       id,
       detail,
     });
-  }
+  };
 }

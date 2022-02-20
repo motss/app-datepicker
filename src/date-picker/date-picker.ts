@@ -1,6 +1,6 @@
+import '../icon-button/app-icon-button.js';
 import '../month-calendar/app-month-calendar.js';
 import '../year-grid/app-year-grid.js';
-import '../icon-button/app-icon-button.js';
 
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
@@ -296,7 +296,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     `;
   }
 
-  #navigateMonth(ev: MouseEvent): void {
+  #navigateMonth = (ev: MouseEvent): void =>{
     const currentDate = this._currentDate;
     const isPreviousNavigation = (
       ev.currentTarget as HTMLButtonElement
@@ -314,7 +314,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
      * `.detail=1` means mouse click in `@click` for all browsers except IE11.
      */
     this.#focusNavButtonWithKey = ev.detail === 0;
-  }
+  };
 
   #queryAllFocusable = async () : Promise<HTMLElement[]> => {
     const isStartViewCalendar = this.startView === 'calendar';
@@ -409,10 +409,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     `;
   };
 
-  #renderNavigationButton (
+  #renderNavigationButton = (
     navigationType: 'previous' | 'next',
     shouldSkipRender = true
-  ): TemplateResult {
+  ): TemplateResult => {
     const isPreviousNavigationType = navigationType === 'previous';
     const label = isPreviousNavigationType ? this.previousMonthLabel : this.nextMonthLabel;
 
@@ -426,7 +426,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         title=${ifDefined(label)}
       >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</app-icon-button>
       `;
-  }
+  };
 
   #renderYearGrid = (): TemplateResult => {
     const {
@@ -453,7 +453,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     `;
   };
 
-  #updateSelectedAndCurrentDate(maybeDate: Date | number | string): void {
+  #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {
     const newSelectedDate = new Date(maybeDate);
 
     this._selectedDate = newSelectedDate;
@@ -463,22 +463,22 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
      * Always update `value` just like other native element such as `input`.
      */
     this.value = toDateString(newSelectedDate);
-  }
+  };
 
-  #updateSelectedDate({
+  #updateSelectedDate = ({
     detail: { value },
-  }: CustomEvent<ValueUpdatedEvent>): void {
+  }: CustomEvent<ValueUpdatedEvent>): void => {
     this.#updateSelectedAndCurrentDate(value);
-  }
+  };
 
-  #updateStartView(): void {
+  #updateStartView = (): void => {
     this.startView = this.startView === 'yearGrid' ? 'calendar' : 'yearGrid';
-  }
+  };
 
-  #updateYear({
+  #updateYear = ({
     detail: { year },
-  }: CustomEvent<CustomEventDetail['year-updated']['detail']>): void {
+  }: CustomEvent<CustomEventDetail['year-updated']['detail']>): void => {
     this.#updateSelectedAndCurrentDate(this._selectedDate.setUTCFullYear(year));
     this.startView = 'calendar';
-  }
+  };
 }

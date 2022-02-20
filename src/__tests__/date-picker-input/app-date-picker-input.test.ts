@@ -1,6 +1,6 @@
 import '../../date-picker/app-date-picker';
-import '../../date-picker-input/app-date-picker-input';
 import '../../date-picker-input-surface/app-date-picker-input-surface';
+import '../../date-picker-input/app-date-picker-input';
 
 import type { Button } from '@material/mwc-button';
 import { expect, fixture, html } from '@open-wc/testing';
