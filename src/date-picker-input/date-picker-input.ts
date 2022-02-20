@@ -1,10 +1,12 @@
+import '@material/mwc-textfield';
+import '../icon-button/app-icon-button.js';
+
 import { TextField } from '@material/mwc-textfield';
 import type { TemplateResult } from 'lit';
-import { html, nothing } from 'lit';
+import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { live } from 'lit/directives/live.js';
-import { until } from 'lit/directives/until.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
@@ -28,8 +30,9 @@ import { appDatePickerInputClearLabel, appDatePickerInputType } from './constant
 import { datePickerInputStyling } from './stylings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
-  public override type = appDatePickerInputType;
   public override iconTrailing = 'clear';
+  public lazyLoad?:() => Promise<void>;
+  public override type = appDatePickerInputType;
 
   public get valueAsDate(): Date | null {
     return this.#valueAsDate || null;
@@ -121,24 +124,22 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     if (changedProperties.has('value')) {
       this.#updateValues(this.value);
     }
-
-    if (!this._rendered && this._open) {
-      this._rendered = true;
-    }
   }
 
   public override async updated() {
     if (this._open && this._rendered) {
       const picker = await this.$picker;
 
-      picker?.queryAll<AppIconButton>(appIconButtonName).forEach(n => n.layout());
+      picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
     }
   }
 
   public override render(): TemplateResult {
+    if (!this._rendered && this._open) this.#lazyLoad();
+
     return html`
     ${super.render()}
-    ${until(this._rendered ? this.$renderContent() : nothing)}
+    ${this.$renderContent()}
     `;
   }
 
@@ -203,7 +204,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     `;
   }
 
-  protected async $renderContent(): Promise<TemplateResult> {
+  protected $renderContent(): TemplateResult {
     warnUndefinedElement(appDatePickerInputSurfaceName);
 
     return html`
@@ -277,6 +278,17 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       month: 'short',
       day: 'numeric',
     });
+  }
+
+  async #lazyLoad() {
+    const pickerTask = globalThis.customElements.whenDefined(appDatePickerName);
+    const surfaceTask = globalThis.customElements.whenDefined(appDatePickerInputSurfaceName);
+
+    await this.lazyLoad?.();
+    await pickerTask;
+    await surfaceTask;
+
+    this._rendered = true;
   }
 
   #onResetClick()  {

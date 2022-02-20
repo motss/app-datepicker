@@ -1,7 +1,7 @@
-import '../date-picker-dialog/app-date-picker-dialog.js';
-import '../date-picker-input-surface/app-date-picker-input-surface.js';
+// import '../date-picker/app-date-picker.js';
+// import '../date-picker-dialog/app-date-picker-dialog.js';
+// import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '../date-picker-input/app-date-picker-input.js';
-import '../date-picker/app-date-picker.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync } from 'lit/decorators.js';
@@ -90,6 +90,16 @@ export class DemoApp extends RootElement {
       .max=${'2100-12-31'}
       .min=${'1970-01-01'}
       .value=${'2020-02-02'}
+      .lazyLoad=${async () => {
+        const deps = [
+          '../date-picker/app-date-picker.js',
+          '../date-picker-input-surface/app-date-picker-input-surface.js',
+        ];
+
+        await Promise.all(deps.map(n => import(n)));
+
+        console.debug('Lazy loaded');
+      }}
     ></app-date-picker-input>
 
     <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>

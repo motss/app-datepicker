@@ -1,9 +1,9 @@
-import '../date-picker/app-date-picker.js';
-
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 
+import { appDatePickerName } from '../date-picker/constants.js';
 import type { SlotDatePickerInit } from './typings.js';
+import { warnUndefinedElement } from './warn-undefined-element.js';
 
 export function slotDatePicker({
   chooseMonthLabel,
@@ -31,6 +31,8 @@ export function slotDatePicker({
   weekNumberTemplate,
   weekNumberType,
 }: SlotDatePickerInit): TemplateResult {
+  warnUndefinedElement(appDatePickerName);
+
   return html`<app-date-picker
     ?showWeekNumber=${showWeekNumber}
     .chooseMonthLabel=${chooseMonthLabel}
