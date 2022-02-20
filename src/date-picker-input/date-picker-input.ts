@@ -8,11 +8,14 @@ import { until } from 'lit/directives/until.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
+import { appDatePickerName } from '../date-picker/constants.js';
 import type { AppDatePickerInputSurface } from '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { appDatePickerInputSurfaceName } from '../date-picker-input-surface/constants.js';
 import { slotDatePicker } from '../helpers/slot-date-picker.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { warnUndefinedElement } from '../helpers/warn-undefined-element.js';
+import type { AppIconButton } from '../icon-button/app-icon-button.js';
+import { appIconButtonName } from '../icon-button/constants.js';
 import { iconClear } from '../icons.js';
 import { keyEnter, keyEscape, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
@@ -39,6 +42,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
+  @queryAsync(appDatePickerName) protected $picker!: Promise<AppDatePicker | null>;
   @state() private _open = false;
   @state() private _rendered = false;
   @state() private _valueText = '';
@@ -123,6 +127,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }
   }
 
+  public override async updated() {
+    if (this._open && this._rendered) {
+      const picker = await this.$picker;
+
+      picker?.queryAll<AppIconButton>(appIconButtonName).forEach(n => n.layout());
+    }
+  }
+
   public override render(): TemplateResult {
     return html`
     ${super.render()}
@@ -181,25 +193,18 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   protected override renderTrailingIcon(): TemplateResult {
     return html`
-    <mwc-icon-button
+    <app-icon-button
       @click=${this.#onResetClick}
       aria-label=${this.clearLabel}
       class="mdc-text-field__icon mdc-text-field__icon--trailing"
     >
       ${iconClear}
-    </mwc-icon-button>
+    </app-icon-button>
     `;
   }
 
   protected async $renderContent(): Promise<TemplateResult> {
     warnUndefinedElement(appDatePickerInputSurfaceName);
-
-    /**
-     * NOTE(motss): `.updateComplete` is required here to resolve a rendering bug where ripple
-     * inside a `mwc-icon-button` where the ripple appears to be smaller than expected and
-     * is placed at the top-left of its parent.
-     */
-    await this.updateComplete;
 
     return html`
     <app-date-picker-input-surface

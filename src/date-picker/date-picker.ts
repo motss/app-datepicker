@@ -1,8 +1,7 @@
-import '@material/mwc-icon-button';
 import '../month-calendar/app-month-calendar.js';
 import '../year-grid/app-year-grid.js';
+import '../icon-button/app-icon-button.js';
 
-import type { IconButton } from '@material/mwc-icon-button';
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
@@ -22,6 +21,8 @@ import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import type { MaybeDate } from '../helpers/typings.js';
+import { appIconButtonName } from '../icon-button/constants.js';
+import type { IconButton } from '../icon-button/icon-button.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
@@ -266,12 +267,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       <div class=month-and-year-selector>
         <p class=selected-year-month>${selectedYearMonth}</p>
 
-        <mwc-icon-button
+        <app-icon-button
           .ariaLabel=${label}
           @click=${this.#updateStartView}
           class=year-dropdown
           title=${ifDefined(label)}
-        >${iconArrowDropdown}</mwc-icon-button>
+        >${iconArrowDropdown}</app-icon-button>
       </div>
 
       ${
@@ -318,7 +319,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   #queryAllFocusable = async () : Promise<HTMLElement[]> => {
     const isStartViewCalendar = this.startView === 'calendar';
     const focusable = [
-      ...this.queryAll('mwc-icon-button'),
+      ...this.queryAll(appIconButtonName),
       (await (isStartViewCalendar ? this._monthCalendar : this._yearGrid))
         ?.query(`.${
           isStartViewCalendar ? 'calendar-day' : 'year-grid-button'
@@ -418,12 +419,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     return shouldSkipRender ?
       html`<div data-navigation=${navigationType}></div>` :
       html`
-      <mwc-icon-button
+      <app-icon-button
         .ariaLabel=${label}
         @click=${this.#navigateMonth}
         data-navigation=${navigationType}
         title=${ifDefined(label)}
-      >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</mwc-icon-button>
+      >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</app-icon-button>
       `;
   }
 
