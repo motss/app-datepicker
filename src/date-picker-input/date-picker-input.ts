@@ -281,12 +281,19 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   async #lazyLoad() {
-    const pickerTask = globalThis.customElements.whenDefined(appDatePickerName);
-    const surfaceTask = globalThis.customElements.whenDefined(appDatePickerInputSurfaceName);
+    const deps = [
+      appDatePickerName,
+      appDatePickerInputSurfaceName,
+    ];
 
-    await this.lazyLoad?.();
-    await pickerTask;
-    await surfaceTask;
+    if (deps.some(n => globalThis.customElements.get(n) == null)) {
+      const tasks = deps.map(
+        n => globalThis.customElements.whenDefined(n)
+      );
+
+      await this.lazyLoad?.();
+      await Promise.all(tasks);
+    }
 
     this._rendered = true;
   }

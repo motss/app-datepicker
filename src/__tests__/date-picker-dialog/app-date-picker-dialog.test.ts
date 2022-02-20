@@ -1,3 +1,4 @@
+import '../../date-picker/app-date-picker';
 import '../../date-picker-dialog/app-date-picker-dialog';
 
 import type { Button } from '@material/mwc-button';
