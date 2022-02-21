@@ -55,11 +55,6 @@ jobs:
         with:
           node-version: ${{ matrix.target }}
 
-      - name: Setup Playwright
-        if: env.CI_SKIP == 'false'
-        run: |
-          npm x -y -- playwright@latest install-deps
-
       # - name: Install latest npm
       #   if: env.CI_SKIP == 'false'
       #   run: |
