@@ -89,6 +89,11 @@ jobs:
           npm ci
           bash ./list-npx-cache.bash
 
+      - name: Setup Playwright
+        if: env.CI_SKIP == 'false'
+        run: |
+          ./node_modules/.bin/playwright install-deps
+
       - name: Lint
         if: env.CI_SKIP == 'false'
         run: |
