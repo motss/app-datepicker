@@ -58,10 +58,8 @@ jobs:
       - name: Setup Playwright
         if: env.CI_SKIP == 'false'
         uses: microsoft/playwright-github-action@v1
-        # FIXME: Continue using the Github Action until it is deprecated because Playwright CLI is too slow.
-        # CLI takes >1m whereas Github Action takes ~44s.
-        # run: |
-        #   npm x -y -- playwright@latest install-deps
+        run: |
+          npm x -y -- playwright@latest install-deps
 
       # - name: Install latest npm
       #   if: env.CI_SKIP == 'false'
