@@ -57,7 +57,6 @@ jobs:
 
       - name: Setup Playwright
         if: env.CI_SKIP == 'false'
-        uses: microsoft/playwright-github-action@v1
         run: |
           npm x -y -- playwright@latest install-deps
 

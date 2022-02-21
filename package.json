@@ -143,7 +143,7 @@
     "eslint-plugin-regexp": "^1.5.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "hanbi": "^1.0.1",
-    "nano-staged": "^0.5.0",
+    "nano-staged": "^0.6.0",
     "typescript": "^4.5.5"
   },
   "engines": {
