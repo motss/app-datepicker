@@ -14,6 +14,8 @@ export const DatePickerInputSurfaceStyling = css`
 
   display: block;
   position: absolute; /* NOTE(motss): Set this so that surface can be placed on top of its anchor element */
+  top: 0; /** NOTE(motss): This ensures inputSurface renders downwards on top of input */
+  bottom: 0; /** NOTE(motss): This ensures inputSurface renders upwards on top of input */
 }
 
 .mdc-menu-surface.mdc-menu-surface--open {

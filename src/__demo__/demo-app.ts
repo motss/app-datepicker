@@ -92,6 +92,17 @@ export class DemoApp extends RootElement {
       .value=${'2020-02-02'}
     ></app-date-picker-input>
 
+    <app-date-picker-input
+      id="datePickerInput1"
+      ?outlined=${true}
+      .label=${'DOB'}
+      .placeholder=${'Select your date of birth'}
+      .max=${'2100-12-31'}
+      .min=${'1970-01-01'}
+      .value=${'2020-02-02'}
+      .startView=${'yearGrid'}
+    ></app-date-picker-input>
+
     <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 

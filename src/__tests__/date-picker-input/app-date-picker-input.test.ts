@@ -111,6 +111,7 @@ describe(appDatePickerInputName, () => {
   ];
   casesOptionalLocale.forEach(a => {
     const [testLocale, expectedLocale] = a;
+
     it(
       messageFormatter('renders with optional locale (%s)', testLocale),
       async () => {
@@ -216,7 +217,7 @@ describe(appDatePickerInputName, () => {
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
     expect(datePickerInputSurface).exist;
-    expect(datePicker).exist;
+    expect(datePicker).not.exist;
   });
 
   type CaseCloseDatePickerByTriggerType = [
@@ -273,8 +274,7 @@ describe(appDatePickerInputName, () => {
             break;
           }
           case 'escape': {
-            await sendKeys({ down: keyEscape });
-            await sendKeys({ up: keyEscape });
+            await sendKeys({ press: keyEscape });
             break;
           }
           case 'tab': {
@@ -283,7 +283,11 @@ describe(appDatePickerInputName, () => {
             expect(yearDropdown).exist;
 
             yearDropdown?.focus();
-            for (const _ of Array(4)) await sendKeys({ press: keyTab });
+
+            for (const _ of Array(4)) {
+              await sendKeys({ press: keyTab });
+            }
+
             break;
           }
           default:
@@ -298,7 +302,7 @@ describe(appDatePickerInputName, () => {
         datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
         expect(datePickerInputSurface).exist;
-        expect(datePicker).exist;
+        expect(datePicker).not.exist;
       }
     );
   });
@@ -330,8 +334,7 @@ describe(appDatePickerInputName, () => {
           CustomEvent<unknown>>(el, 'opened');
 
         el.focus();
-        await sendKeys({ down: testKey });
-        await sendKeys({ up: testKey });
+        await sendKeys({ press: testKey });
 
         const opened = await openedTask;
         await el.updateComplete;
@@ -449,8 +452,7 @@ describe(appDatePickerInputName, () => {
           CustomEvent<DialogClosedEventDetail>>(el, 'closed');
 
         newSelectedDate?.focus();
-        await sendKeys({ down: testKey });
-        await sendKeys({ up: testKey });
+        await sendKeys({ press: testKey });
 
         await closedTask;
         await el.updateComplete;
@@ -507,7 +509,7 @@ describe(appDatePickerInputName, () => {
     expect(closed).not.undefined;
   });
 
-  it('always re-opens in calendar view', async () => {
+  it('always re-opens in the correct startView', async () => {
     const el = await fixture<AppDatePickerInput>(
       html`<app-date-picker-input
         .label=${label}
@@ -564,8 +566,11 @@ describe(appDatePickerInputName, () => {
     yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
     const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
 
-    // ensure calendar view when it re-opens
-    expect(monthCalendar).exist;
+    /**
+     * NOTE: Year view should render when it re-opens because `.startView=${'yearGrid'}` is set
+     */
+    expect(monthCalendar).not.exist;
+    expect(yearGrid).exist;
   });
 
 });

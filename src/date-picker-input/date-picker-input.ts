@@ -145,7 +145,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     return html`
     ${super.render()}
-    ${_lazyLoaded && _open ? this.$renderContent() : nothing}
+    ${_lazyLoaded ? this.$renderContent() : nothing}
     `;
   }
 
@@ -220,7 +220,12 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       ?stayOpenOnBodyClick=${true}
       .anchor=${this as HTMLElement}
       @closed=${this.#onClosed}
-    >${this.$renderSlot()}</app-date-picker-input-surface>
+    >${
+      /**
+       * NOTE(motss): This removes/ renders datePicker with a clean slate.
+       */
+      this._open ? this.$renderSlot() : nothing
+    }</app-date-picker-input-surface>
     `;
   }
 
@@ -319,6 +324,12 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       }
     }
 
+    /**
+     * NOTE(motss): `#lazyLoad()` is called within `render()` so this needs to wait for next update
+     * to re-trigger update when it updates `_lazyLoaded`.
+     */
+    await this.updateComplete;
+
     this.#lazyLoading = false;
     this._lazyLoaded = true;
   };
@@ -333,7 +344,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   #onClosed = ({ detail }: CustomEvent): void => {
     this._open = false;
-    this.#picker && (this.#picker.startView = 'calendar');
     this.fire({ detail, type: 'closed' });
   };
 
