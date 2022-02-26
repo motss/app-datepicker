@@ -3,6 +3,7 @@ import '../icon-button/app-icon-button.js';
 
 import { TextField } from '@material/mwc-textfield';
 import type { TemplateResult } from 'lit';
+import { nothing } from 'lit';
 import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -135,11 +136,16 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   public override render(): TemplateResult {
-    if (!this._lazyLoaded && this._open) this.#lazyLoad();
+    const {
+      _lazyLoaded,
+      _open,
+    } = this;
+
+    if (!_lazyLoaded && _open) this.#lazyLoad();
 
     return html`
     ${super.render()}
-    ${this.$renderContent()}
+    ${_lazyLoaded && _open ? this.$renderContent() : nothing}
     `;
   }
 
