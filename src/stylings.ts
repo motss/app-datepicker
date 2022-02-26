@@ -19,6 +19,7 @@ export const baseStyling = css`
   --_selected-on-focus: var(--app-selected-on-focus);
   --_selected-on-hover: var(--app-selected-on-hover);
   --_shape: var(--app-shape, 0px);
+  --_surface: var(--app-surface, #fff);
   --_today: var(--app-today, #000);
 }
 `;
