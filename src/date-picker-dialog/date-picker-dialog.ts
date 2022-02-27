@@ -88,7 +88,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       @opening=${this.#onOpening}
     >
       ${_rendered ? html`
-      ${this.$renderSlot()}
+      ${this.open ? this.$renderSlot() : nothing}
 
       <div class=secondary-actions slot=secondaryAction>
         <mwc-button

@@ -509,7 +509,7 @@ describe(appDatePickerInputName, () => {
     expect(closed).not.undefined;
   });
 
-  it('always re-opens in the correct startView', async () => {
+  it('always reopens with the correct startView', async () => {
     const el = await fixture<AppDatePickerInput>(
       html`<app-date-picker-input
         .label=${label}
@@ -567,7 +567,7 @@ describe(appDatePickerInputName, () => {
     const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
 
     /**
-     * NOTE: Year view should render when it re-opens because `.startView=${'yearGrid'}` is set
+     * NOTE: Year view should render when it reopens because `.startView=${'yearGrid'}` is set
      */
     expect(monthCalendar).not.exist;
     expect(yearGrid).exist;

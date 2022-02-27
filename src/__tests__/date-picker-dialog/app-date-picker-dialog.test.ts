@@ -115,7 +115,7 @@ describe(appDatePickerDialogName, () => {
     expect(dialogActionSet).exist.text(confirmLabel);
   });
 
-  it('always re-opens in calendar view', async () => {
+  it('always reopens with the correct startView', async () => {
     const el = await fixture<AppDatePickerDialog>(
       html`<app-date-picker-dialog
         .startView=${'yearGrid'}
@@ -166,9 +166,8 @@ describe(appDatePickerDialogName, () => {
 
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
-    // ensure date picker still in the down after closing
     expect(closed).not.undefined;
-    expect(datePicker).exist;
+    expect(datePicker).not.exist;
     expect(datePickerDialogBase?.hasAttribute('open')).false;
 
     openedTask = eventOnce<
@@ -187,10 +186,11 @@ describe(appDatePickerDialogName, () => {
     const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
     yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
 
-    // ensure dialog re-opens with date picker rendered in calendar view
     expect(opened).not.undefined;
-    expect(monthCalendar).exist;
-    expect(yearGrid).not.exist;
+    expect(datePicker).exist;
+    expect(monthCalendar).not.exist;
+    expect(yearGrid).exist;
+
     expect(datePickerDialogBase?.hasAttribute('open')).true;
   });
 
