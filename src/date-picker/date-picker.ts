@@ -178,24 +178,30 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       const oldStartView =
         (changedProperties.get('startView') || 'calendar') as StartView;
 
+      const {
+        _max,
+        _min,
+        _selectedDate,
+        startView,
+      } = this;
+
       /**
        * NOTE: Reset to old `startView` to ensure a valid value.
        */
-      if (!startViews.includes(this.startView)) {
+      if (!startViews.includes(startView)) {
         this.startView = oldStartView;
       }
 
-      if (this.startView === 'calendar') {
+      if (startView === 'calendar') {
         const newSelectedYear = new Date(
           clampValue(
-            +this._min,
-            +this._max,
-            +this._selectedDate
+            +_min,
+            +_max,
+            +_selectedDate
           )
         );
 
         this._selectedDate = newSelectedYear;
-        this._currentDate = new Date(newSelectedYear);
       }
     }
 
@@ -218,14 +224,24 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   protected override async updated(
     changedProperties: DatePickerChangedProperties
   ): Promise<void> {
+    const {
+      _currentDate,
+      _max,
+      _min,
+      _navigationNext,
+      _navigationPrevious,
+      _yearDropdown,
+      startView,
+    } = this;
+
     /**
      * NOTE: Focus `.year-dropdown` when switching from year grid to calendar view.
      */
     if (
       changedProperties.get('startView') === 'yearGrid' as StartView &&
-      this.startView === 'calendar'
+      startView === 'calendar'
     ) {
-      (await this._yearDropdown)?.focus();
+      (await _yearDropdown)?.focus();
     }
 
     /**
@@ -233,12 +249,10 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
      * next button will not show in Dec 2020 when `max=2020-12-31` so previous button should be
      * focused instead.
      */
-    if (this.startView === 'calendar') {
+    if (startView === 'calendar') {
       if (changedProperties.has('_currentDate') && this.#focusNavButtonWithKey) {
-        const currentDate = this._currentDate;
-
-        isInCurrentMonth(this._min, currentDate) && focusElement(this._navigationNext);
-        isInCurrentMonth(this._max, currentDate) && focusElement(this._navigationPrevious);
+        isInCurrentMonth(_min, _currentDate) && focusElement(_navigationNext);
+        isInCurrentMonth(_max, _currentDate) && focusElement(_navigationPrevious);
 
         this.#focusNavButtonWithKey = false;
       }
@@ -453,22 +467,18 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     `;
   };
 
-  #updateSelectedAndCurrentDate = (maybeDate: Date | number | string): void => {
-    const newSelectedDate = new Date(maybeDate);
+  #updateSelectedDate = ({
+    detail: { value },
+  }: CustomEvent<ValueUpdatedEvent>): void => {
+    const selectedDate = new Date(value);
 
-    this._selectedDate = newSelectedDate;
-    this._currentDate = new Date(newSelectedDate);
+    this._selectedDate = selectedDate;
+    this._currentDate = new Date(selectedDate);
 
     /**
      * Always update `value` just like other native element such as `input`.
      */
-    this.value = toDateString(newSelectedDate);
-  };
-
-  #updateSelectedDate = ({
-    detail: { value },
-  }: CustomEvent<ValueUpdatedEvent>): void => {
-    this.#updateSelectedAndCurrentDate(value);
+    this.value = toDateString(selectedDate);
   };
 
   #updateStartView = (): void => {
@@ -478,7 +488,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
   #updateYear = ({
     detail: { year },
   }: CustomEvent<CustomEventDetail['year-updated']['detail']>): void => {
-    this.#updateSelectedAndCurrentDate(this._selectedDate.setUTCFullYear(year));
+    this._currentDate = new Date(this._currentDate.setUTCFullYear(year));
     this.startView = 'calendar';
   };
 }
