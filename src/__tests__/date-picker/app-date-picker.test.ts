@@ -28,6 +28,7 @@ describe(appDatePickerName, () => {
     nextMonthNavigationButton: 'app-icon-button[data-navigation="next"]',
     previousMonthNavigationButton: 'app-icon-button[data-navigation="previous"]',
     selectedCalendarDay: '.calendar-day[aria-selected="true"]',
+    selectedYear: '.year-grid-button[aria-selected="true"]',
     selectedYearMonth: '.selected-year-month',
     yearDropdown: '.year-dropdown',
     yearGrid: '.year-grid',
@@ -302,9 +303,7 @@ describe(appDatePickerName, () => {
           ></app-date-picker>`
         );
 
-        const element = el.query<HTMLButtonElement>(
-          elementSelectors[testMonthNavigationElementSelector]
-        );
+        const element = el.query<Button>(elementSelectors[testMonthNavigationElementSelector]);
 
         element?.focus();
         element?.click();
@@ -314,22 +313,104 @@ describe(appDatePickerName, () => {
         const selectedYearMonth = el.query<HTMLParagraphElement>(
           elementSelectors.selectedYearMonth
         );
+        const oldSelectedDate = el.query<HTMLTableCellElement>(
+          elementSelectors.selectedCalendarDay
+        );
 
         expect(selectedYearMonth?.textContent).equal(
           formatters.longMonthYearFormat(expectedCurrentDate)
         );
+        expect(oldSelectedDate).not.exist;
       }
     );
   });
 
-  it('selects new year then new date', async () => {
-    const testMax = '2021-12-31';
-    const testMin = '2019-01-01';
+  it('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
+    const testMin = '2000-01-01';
     const testValue = '2020-02-02';
-    const newSelectedDate = new Date(
-      new Date(testValue)
-        .setUTCFullYear(new Date(testMax).getUTCFullYear())
+
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${'2020-12-31'}
+        .min=${testMin}
+        .value=${testValue}
+      ></app-date-picker>`
     );
+
+    // START: Go to year grid view
+    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+
+    yearDropdown?.focus();
+    yearDropdown?.click();
+
+    await elementUpdated(el);
+
+    const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
+
+    expect(yearGrid).exist;
+    // END: Go to year grid view
+
+    // START: Select new year in year grid view
+    let newSelectedDateDate = new Date(
+      new Date(testValue).setUTCFullYear(new Date(testMin).getUTCFullYear())
+    );
+    const newSelectedYear = yearGrid?.query<HTMLButtonElement>(
+      `${elementSelectors.yearGridButton}[data-year="${newSelectedDateDate.getUTCFullYear()}"]`
+    );
+    let selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
+
+    expect(newSelectedDateDate).exist;
+    expect(selectedYear).exist;
+    expect(selectedYear).attr('aria-label', new Date(testValue).getUTCFullYear().toString());
+
+    newSelectedYear?.focus();
+    newSelectedYear?.click();
+
+    await elementUpdated(el);
+
+    const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
+    const oldSelectedDate = el.query<HTMLTableCellElement>(elementSelectors.selectedCalendarDay);
+    let selectedYearMonth = el.query<HTMLParagraphElement>(elementSelectors.selectedYearMonth);
+
+    expect(calendar).exist;
+    expect(oldSelectedDate).not.exist;
+    expect(selectedYearMonth?.textContent).equal(
+      formatters.longMonthYearFormat(newSelectedDateDate)
+    );
+    // END: Select new year in year grid view
+
+    // START: Select new month in calendar view to update current date
+    const nextMonthNavigationButton = el.query<Button>(elementSelectors.nextMonthNavigationButton);
+
+    nextMonthNavigationButton?.focus();
+    nextMonthNavigationButton?.click();
+
+    await elementUpdated(el);
+
+    selectedYearMonth = el.query<HTMLParagraphElement>(elementSelectors.selectedYearMonth);
+    newSelectedDateDate = new Date(new Date(newSelectedDateDate).setUTCMonth(newSelectedDateDate.getUTCMonth() + 1));
+
+    expect(selectedYearMonth).text(formatters.longMonthYearFormat(newSelectedDateDate));
+    // END: Select new month in calendar view to update current date
+
+    // START: Ensure old selected year remains unchanged
+    yearDropdown?.focus();
+    yearDropdown?.click();
+
+    await elementUpdated(el);
+
+    selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
+
+    expect(selectedYear).exist;
+    expect(selectedYear).attr('aria-label', new Date(testValue).getUTCFullYear().toString());
+    // END: Ensure old selected year remains unchanged
+  });
+
+  it('navigates to new year then new date', async () => {
+    const testMax = '2020-12-31';
+    const testMin = '2000-01-01';
+    const testValue = '2020-02-02';
+
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
         .max=${testMax}
@@ -338,7 +419,8 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.query<HTMLButtonElement>(
+    // START: Go to year grid view
+    const yearDropdown = el.query<Button>(
       elementSelectors.yearDropdown
     );
 
@@ -350,49 +432,41 @@ describe(appDatePickerName, () => {
     const yearGrid = el.query<AppYearGrid>(
       elementSelectors.yearGrid
     );
+    // END: Go to year grid view
 
-    expect(yearGrid).exist;
-
+    // START: Select new year in year grid view
+    let newSelectedDate = new Date(
+      new Date(testValue).setUTCFullYear(new Date(testMin).getUTCFullYear())
+    );
     const newSelectedYear = yearGrid?.query<HTMLButtonElement>(
       `${elementSelectors.yearGridButton}[data-year="${newSelectedDate.getUTCFullYear()}"]`
     );
-
-    expect(newSelectedYear).exist;
 
     newSelectedYear?.focus();
     newSelectedYear?.click();
 
     await elementUpdated(el);
+    // END: Select new year in year grid view
+
+    // START: Select new date in calendar view
+    newSelectedDate = new Date(
+      new Date(newSelectedDate).setUTCDate(15)
+    );
+    const newSelectedDateLabel = formatters.fullDateFormat(newSelectedDate);
 
     const calendar = el.query<AppMonthCalendar>(
       elementSelectors.calendar
     );
-
-    expect(calendar).exist;
-
-    const selectedYearMonth = el.query<HTMLParagraphElement>(
-      elementSelectors.selectedYearMonth
-    );
-
-    expect(selectedYearMonth?.textContent).equal(
-      formatters.longMonthYearFormat(newSelectedDate)
-    );
-
-    const newSelectedDate2 = new Date(
-      new Date(newSelectedDate).setUTCDate(15)
-    );
-    const newSelectedDate2Label = formatters.fullDateFormat(newSelectedDate2);
-
     const newSelectedCalendarDay =
       calendar?.query<HTMLTableCellElement>(
-        `${elementSelectors.calendarDay}[aria-label="${newSelectedDate2Label}"]`
+        `${elementSelectors.calendarDay}[aria-label="${newSelectedDateLabel}"]`
       );
 
     expect(newSelectedCalendarDay).exist;
     expect(newSelectedCalendarDay?.getAttribute('aria-label')).equal(
-      newSelectedDate2Label
+      newSelectedDateLabel
     );
-    expect(newSelectedCalendarDay?.fullDate).deep.equal(newSelectedDate2);
+    expect(newSelectedCalendarDay?.fullDate).deep.equal(newSelectedDate);
 
     const dateUpdatedEventTask =
       eventOnce<
@@ -405,7 +479,6 @@ describe(appDatePickerName, () => {
     newSelectedCalendarDay?.click();
 
     const dateUpdatedEvent = await dateUpdatedEventTask;
-
     await elementUpdated(calendar as AppMonthCalendar);
     await elementUpdated(el);
 
@@ -413,23 +486,21 @@ describe(appDatePickerName, () => {
       calendar?.query<HTMLTableCellElement>(
         elementSelectors.selectedCalendarDay
       );
+    const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
+      isKeypress: false,
+      value: toDateString(newSelectedDate),
+      valueAsDate: newSelectedDate,
+      valueAsNumber: +newSelectedDate,
+    };
 
     expect(selectedCalendarDay).exist;
     expect(selectedCalendarDay?.getAttribute('aria-label')).equal(
-      newSelectedDate2Label
+      newSelectedDateLabel
     );
-    expect(selectedCalendarDay?.fullDate).deep.equal(
-      newSelectedDate2
-    );
-
-    const expectedDateUpdatedEvent: CustomEventDetail['date-updated']['detail'] = {
-      isKeypress: false,
-      value: toDateString(newSelectedDate2),
-      valueAsDate: newSelectedDate2,
-      valueAsNumber: +newSelectedDate2,
-    };
+    expect(selectedCalendarDay?.fullDate).deep.equal(newSelectedDate);
 
     expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
+    // END: Select new date in calendar view
   });
 
   it('selects new date', async () => {
@@ -506,18 +577,14 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.query<HTMLButtonElement>(
-      elementSelectors.yearDropdown
-    );
+    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
 
     yearDropdown?.focus();
     yearDropdown?.click();
 
     await elementUpdated(el);
 
-    const yearGrid = el.query<AppYearGrid>(
-      elementSelectors.yearGrid
-    );
+    let yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
     expect(yearGrid).exist;
 
@@ -526,14 +593,10 @@ describe(appDatePickerName, () => {
 
     await elementUpdated(el);
 
-    const calendar = el.query<AppMonthCalendar>(
-      elementSelectors.calendar
-    );
-    const yearGrid2 = el.query<AppYearGrid>(
-      elementSelectors.yearGrid
-    );
+    const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
+    yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
-    expect(yearGrid2).not.exist;
+    expect(yearGrid).not.exist;
     expect(calendar).exist;
   });
 
@@ -689,10 +752,7 @@ describe(appDatePickerName, () => {
         );
         expect(minDate2?.fullDate).deep.equal(expectedNewMinDate);
 
-        const previousMonthNavigationButton =
-          el.query<HTMLButtonElement>(
-            elementSelectors.previousMonthNavigationButton
-          );
+        const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
 
         expect(previousMonthNavigationButton).not.exist;
 
