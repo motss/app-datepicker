@@ -13,46 +13,82 @@ defaults:
 
 env:
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NODE_VERSION: v0.0.0
+  NPM_CACHE_DIR: ~/.npm
+  NPM_VERSION: 0.0.0
 
 jobs:
   build:
-    name: ${{ matrix.os }} ${{ matrix.target }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     strategy:
       matrix:
         os: [ubuntu-latest]
-        target: [16.x]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Setup node@${{ matrix.target }}
-        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.target }}
-          registry-url: 'https://registry.npmjs.org'
+          fetch-depth: 0
+
+      # - name: Setup node@${{ matrix.target }}
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: ${{ matrix.target }}
+      #     registry-url: 'https://registry.npmjs.org'
 
       - name: List versions
         run: |
-          node -v && npm version && which npm
+          pwd
+          ls -la
+          npm version
+          which npm
+          npm config list
+          echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
+          echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
+          echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+
+      - name: Cache dependencies
+        if: env.CI_SKIP == 'false'
+        id: npm-cache
+        uses: actions/cache@v2
+        with:
+          # See this glob workaround at https://github.com/actions/toolkit/issues/713.
+          path: |
+            ${{ env.NPM_CACHE_DIR }}/*
+            !${{ env.NPM_CACHE_DIR }}/_npx
+          key: ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}
 
       - name: Install dependencies
         run: |
           npm ci
 
-      - name: Publish to npm (Prerelease)
-        if: contains(github.ref, '-') == true
-        run: |
-          npm config list
-          npm publish . --tag=next
+      # - name: Publish to npm (Prerelease)
+      #   if: contains(github.ref, '-') == true
+      #   run: |
+      #     npm publish . --tag=next
 
-      - name: Publish to npm
+      # - name: Publish to npm
+      #   if: contains(github.ref, '-') == false
+      #   run: |
+      #     npm publish .
+
+      - name: Generate changeset then publish to npm (Prerelease)
+        if: contains(github.ref, '-') == true
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npm publish . --tag=next
+
+      - name: Generate changeset then publish to npm
         if: contains(github.ref, '-') == false
-        run: |
-          npm config list
-          npm publish .
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npm publish .
 
       # See https://github.com/actions/setup-node/issues/73.
       # - name: Setup node@${{ matrix.target }}

@@ -9,6 +9,7 @@
 <a href="https://www.buymeacoffee.com/RLmMhgXFb" target="_blank" rel="noopener noreferrer"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 20px !important;width: auto !important;" ></a>
 [![tippin.me][tippin-me-badge]][tippin-me-url]
 [![Follow me][follow-me-badge]][follow-me-url]
+[![Join Discord][join-discord-badge]][join-discord-url]
 
 [![Version][version-badge]][version-url]
 [![lit][lit-version-badge]][lit-url]
@@ -271,6 +272,7 @@ Tested on the following browsers:
 <!-- Badges -->
 [tippin-me-badge]: https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@igarshmyb/F0918E
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
+[join-discord-badge]: https://badgen.net/discord/members/ps8mCrvTKR?label=app-datepicker&icon=discord
 
 [version-badge]: https://flat.badgen.net/npm/v/app-datepicker/latest?icon=npm
 [lit-version-badge]: https://flat.badgen.net/npm/v/lit/latest?icon=npm&label=lit
@@ -290,6 +292,7 @@ Tested on the following browsers:
 <!-- Links -->
 [tippin-me-url]: https://tippin.me/@igarshmyb
 [follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[join-discord-url]: https://discord.gg/ps8mCrvTKR
 
 [version-url]: https://www.npmjs.com/package/app-datepicker/v/latest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
