@@ -23,6 +23,7 @@ env:
   NODE_VERSION: v0.0.0
   NPM_CACHE_DIR: ~/.npm
   NPM_VERSION: 0.0.0
+  TEST_HELPERS: true
 
 jobs:
   test:
@@ -49,11 +50,11 @@ jobs:
         if: env.CI_SKIP == 'false'
         uses: actions/checkout@v2
 
-      - name: Setup node@${{ matrix.target }}
-        if: env.CI_SKIP == 'false'
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.target }}
+      # - name: Setup node@${{ matrix.target }}
+      #   if: env.CI_SKIP == 'false'
+      #   uses: actions/setup-node@v2
+      #   with:
+      #     node-version: ${{ matrix.target }}
 
       # - name: Install latest npm
       #   if: env.CI_SKIP == 'false'
@@ -63,11 +64,14 @@ jobs:
       - name: List versions
         if: env.CI_SKIP == 'false'
         run: |
-          pwd && ls -la
           echo "IS_UBUNTU=${{ contains(matrix.os, 'ubuntu') }}" >> $GITHUB_ENV
           echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+
+          pwd
+          ls -la
+          which npm
 
       - name: Cache dependencies
         if: env.CI_SKIP == 'false'
@@ -95,7 +99,9 @@ jobs:
       - name: Test
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU == 'false'
         run: |
-          npm run test:helpers
+          printf "%s" "$TEST_HELPERS"
+          export TEST_HELPERS=true
+          npm run wtr
 
       - name: Test with coverage
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'

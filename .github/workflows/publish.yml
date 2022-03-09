@@ -40,14 +40,14 @@ jobs:
 
       - name: List versions
         run: |
-          pwd
-          ls -la
-          npm version
-          which npm
-          npm config list
           echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+
+          pwd
+          ls -la
+          which npm
+          npm config list
 
       - name: Cache dependencies
         if: env.CI_SKIP == 'false'
