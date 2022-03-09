@@ -99,13 +99,13 @@ jobs:
       - name: Test
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU == 'false'
         run: |
-          printf "%s" "$TEST_HELPERS"
           export TEST_HELPERS=true
           npm run wtr
 
       - name: Test with coverage
         if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
         run: |
+          printf "%s" "$TEST_HELPERS"
           export COVERAGE=true
           export TEST_HELPERS=true
           npm run wtr
