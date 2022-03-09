@@ -97,7 +97,7 @@ td {
 }
 .calendar-day:not([aria-disabled="true"]):focus::before,
 .calendar-day:not([aria-disabled="true"]):hover::before {
-  --_border-color: var(--_selected-focus);
+  --_border-color: var(--_focus);
   --_border-width: 1px;
   --_inset: 0px;
 
@@ -113,9 +113,13 @@ td {
   color: var(--_on-primary);
 }
 .calendar-day[aria-selected="true"]:focus::before {
+  --_border-color: var(--_selected-focus);
+
   color: var(--_selected-on-focus);
 }
 .calendar-day[aria-selected="true"]:hover::before {
+  --_border-color: var(--_selected-hover);
+
   color: var(--_selected-on-hover);
 }
 .calendar-day.day--today:not([aria-selected="true"])::before {
