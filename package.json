@@ -95,12 +95,12 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf .*cache *.log .swc/ coverage/ dist/ logs/",
+    "commit-msg": "npm x -y -- commitlint@latest --edit && sh generate-changelog.sh git add CHANGELOG.md",
     "dev": "npm run serve & npm run watch",
     "postinstall": "sh postinstall.sh",
     "lint": "eslint src --ext .js,.ts",
-    "lint-commit": "npm x -y -- commitlint@latest --edit",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
-    "pre-commit": "package-check && nano-staged && tsc --noEmit && sh generate-changelog.sh git add CHANGELOG.md",
+    "pre-commit": "package-check && nano-staged && tsc --noEmit",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
@@ -110,7 +110,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npm run pre-commit",
-    "commit-msg": "npm run lint-commit"
+    "commit-msg": "npm run commit-msg"
   },
   "commitlint": {
     "extends": [
