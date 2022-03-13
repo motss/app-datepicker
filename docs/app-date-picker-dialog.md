@@ -30,7 +30,7 @@ This includes all the methods from [MwcDialog](mwc-dialog-methods-url).
 
 ## Events
 
-It includes all the events from [AppDatePicker](app-date-picker-events-url) and [MwcDialog](mwc-dialog-events-url).
+It includes all the events from [AppDatePicker](app-date-picker-events-url) and all from [MwcDialog](mwc-dialog-events-url).
 
 
 
@@ -47,15 +47,10 @@ It includes all the CSS Shadow Parts from [AppDatePicker](app-date-picker-css-sh
 
 
 <!-- References -->
-[1970-01-01]: https://en.wikipedia.org/wiki/Epoch_(computing)
 [app-date-picker-css-custom-properties-url]: /docs/app-date-picker.md#css-custom-properties
+[app-date-picker-css-shadow-parts-url]: /docs/app-date-picker.md#css-shadow-parts
 [app-date-picker-events-url]: /docs/app-date-picker.md#events
 [app-date-picker-properties-url]: /docs/app-date-picker.md#properties
-[app-date-picker-css-shadow-parts-url]: /docs/app-date-picker.md#css-shadow-parts
-[AppDatePicker]: /docs/app-date-picker.md
-[ECMAScript epoch]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#the_ecmascript_epoch_and_timestamps
-[ISO 639]: https://en.wikipedia.org/wiki/ISO_639
-[ISO 8601 date and time format]: https://en.wikipedia.org/wiki/ISO_8601
 [mwc-dialog-css-custom-properties-url]: https://github.com/material-components/material-web/tree/master/packages/dialog#css-custom-properties
 [mwc-dialog-events-url]: https://github.com/material-components/material-web/tree/master/packages/dialog#events
 [mwc-dialog-methods-url]: https://github.com/material-components/material-web/tree/master/packages/dialog#methods

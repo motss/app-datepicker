@@ -91,6 +91,8 @@ export const datePickerStyling = css`
   min-height: var(--_body-h);
   max-height: var(--_body-h);
   height: 100%;
+  overflow-x: hidden; /** NOTE(rongsen): Disabling overflow-x to avoid infrequent overflowing. */
+  overflow-y: auto;
 }
 
 .calendar {
@@ -99,7 +101,6 @@ export const datePickerStyling = css`
 
 .year-grid {
   padding: 4px 20px 8px 12px;
-  overflow: auto;
   overscroll-behavior: contain;
 }
 `;
