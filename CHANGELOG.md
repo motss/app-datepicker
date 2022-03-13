@@ -4,15 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...c5874120b3ef217f2a34cca99d9a4c99cbf9cf5b) (2022-03-13)
+# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...9152ad7071f16123fc71e255fbbb9c502e4a8137) (2022-03-13)
 
 
 ### build
 
 * convert all bash scripts to shell scripts ([a317814](https://github.com/motss/app-datepicker/commit/a317814365b2c238e767c087a172d0755b8666a8))
+* minor update ([9152ad7](https://github.com/motss/app-datepicker/commit/9152ad7071f16123fc71e255fbbb9c502e4a8137))
 * trigger commit ([9b35c9e](https://github.com/motss/app-datepicker/commit/9b35c9ec0db90a1f0c243860e182ed672bc02833))
 * trying to adopt changesets ([0410aef](https://github.com/motss/app-datepicker/commit/0410aefaa9856d24775ad4236fc81c84a3af9d87))
 * trying to commit unreleased in changelogs ([af3e230](https://github.com/motss/app-datepicker/commit/af3e230a8479de891aebbe59386102f7beaf8b03))
+* trying to fix auto changelog ([e34530b](https://github.com/motss/app-datepicker/commit/e34530b194ed7f7f0ccd1005603276437ac51103))
 * trying to update changelog with new commit message ([4206b7c](https://github.com/motss/app-datepicker/commit/4206b7c830b6256f22216c77b45c3fa6223379f0))
 * trying to update the changelogs on every commit ([fb53463](https://github.com/motss/app-datepicker/commit/fb53463158f3079b9629694756ae877d90a1d38d))
 
@@ -28,6 +30,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### doc
 
+* update changelogs ([aca5547](https://github.com/motss/app-datepicker/commit/aca55474009b294ea86bf39307c2ae29c8d8f3be))
 * update changelogs ([c587412](https://github.com/motss/app-datepicker/commit/c5874120b3ef217f2a34cca99d9a4c99cbf9cf5b))
 * update changelogs ([45919b6](https://github.com/motss/app-datepicker/commit/45919b6197b2589f12ab0f0d605973adafdd5c07))
 * update changelogs ([102bc09](https://github.com/motss/app-datepicker/commit/102bc0979ad029e147e6e34406bc01c5bb522f49))

@@ -101,6 +101,7 @@
     "postinstall": "sh postinstall.sh",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
+    "post-commit": "echo 'post-commit'",
     "pre-commit": "package-check && nano-staged && tsc --noEmit",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
@@ -113,7 +114,7 @@
   "simple-git-hooks": {
     "pre-commit": "npm run pre-commit",
     "commit-msg": "npm run commit-msg",
-    "post-commit": "echo 'post-commit'"
+    "post-commit": "npm run post-commit"
   },
   "commitlint": {
     "extends": [
