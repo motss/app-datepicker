@@ -101,20 +101,19 @@
     "postinstall": "sh postinstall.sh",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
-    "post-commit": "sh update-changelog-and-recommit.sh",
-    "pre-commit": "package-check && nano-staged && tsc --noEmit",
+    "pre-commit": "package-check && nano-staged && tsc --noEmit && npm run changelogs",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
     "test:helpers": "TEST_HELPERS=true npm run test",
-    "version": "sh generate-changelogs.sh && git add *CHANGELOG.md",
+    "version": "npm run changelogs",
+    "changelogs": "sh generate-changelogs.sh && git add *CHANGELOG.md",
     "watch": "npm run clean && tsc --watch",
     "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js --config wtr.config.mjs"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run pre-commit",
-    "commit-msg": "npm run commit-msg",
-    "post-commit": "npm run post-commit"
+    "commit-msg": "npm run commit-msg"
   },
   "commitlint": {
     "extends": [
