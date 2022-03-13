@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...b1d2a77145064b39c0a31c55e8c0990247a506e0) (2022-03-13)
+# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...5764e0b33710634d0f55f773e7f2b90b5aad71c4) (2022-03-13)
 
 
 ### build
@@ -28,6 +28,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### doc
 
+* update changelogs ([5764e0b](https://github.com/motss/app-datepicker/commit/5764e0b33710634d0f55f773e7f2b90b5aad71c4))
 * update changelogs ([b1d2a77](https://github.com/motss/app-datepicker/commit/b1d2a77145064b39c0a31c55e8c0990247a506e0))
 * update changelogs ([08f2f25](https://github.com/motss/app-datepicker/commit/08f2f25baea1251efa195148dc26ed126601dcf2))
 * update changelogs ([645349b](https://github.com/motss/app-datepicker/commit/645349b8e199c6254117522244b63ce2c03528a8))
