@@ -1,7 +1,6 @@
 import type { TemplateResult } from 'lit';
 import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
 
 import { confirmKeySet, labelSelectedDate, labelTodayDate, navigationKeySetGrid } from '../constants.js';
 import { focusElement } from '../helpers/focus-element.js';
@@ -227,14 +226,14 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     <td
       .fullDate=${fullDate}
       aria-disabled=${ariaDisabled as 'true' | 'false'}
-      aria-label=${ariaLabel}
+      aria-label=${ariaLabel as string}
       aria-selected=${ariaSelected as 'true' | 'false'}
       class="calendar-day ${className}"
       data-day=${day}
       part=calendar-day
       role=gridcell
       tabindex=${tabIndex}
-      title=${ifDefined(title)}
+      title=${title}
     >
     </td>
     `;

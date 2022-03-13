@@ -12,7 +12,7 @@
 [![Join Discord][join-discord-badge]][join-discord-url]
 
 [![Version][version-badge]][version-url]
-[![lit][lit-version-badge]][lit-url]
+[![lit][lit-version-badge]][lit]
 [![MIT License][mit-license-badge]][mit-license-url]
 
 [![Downloads][downloads-badge]][downloads-url]
@@ -26,13 +26,28 @@
 
 [![Code of Conduct][coc-badge]][coc-url]
 
-> A different way of `datepicker`-ing on the web.
+## Table of contents <!-- omit in toc -->
+
+- [Pre-requisite](#pre-requisite)
+- [Installation](#installation)
+- [How to use](#how-to-use)
+  - [Polyfills](#polyfills)
+  - [ES Modules](#es-modules)
+    - [my-app.js](#my-appjs)
+    - [index.html](#indexhtml)
+- [Browser compatibility](#browser-compatibility)
+- [Q&A](#qa)
+- [API references](#api-references)
+- [Demo](#demo)
+- [License](#license)
+
+> Miracle happens when marrying Material Design with date pickers on the web.
 >
 > 💯 Also, featured in [awesome-lit-html].
 
 This marks another completion of an important milestone of `app-datepicker` with all the love from the [Web Components community][web-components-community-url] in making this element great and wonderful. As Web Components getting more and more traction and better at providing a web standard way of creating shareable components, it plays an important role in the JavaScript community as many developers depend on a plethora of development tools written in JavaScript for the web to create a better developer experience when developing a library, a component, or even a large scalable application.
 
-![app-datepicker](https://user-images.githubusercontent.com/10607759/67633824-ce170c80-f8ef-11e9-8d20-856eb0e62409.jpg)
+![date-pickers-in-different-themes](https://user-images.githubusercontent.com/10607759/158053308-b43cb0e1-f510-4f0e-9804-827a349d5fc7.png)
 
 Today, `app-datepicker` has been completely rewritten to adapt to the best of both worlds by leveraging the modern technologies the community most familiar with since year 2018.
 
@@ -46,16 +61,21 @@ The following are the list of tools used that makes it shine:
 - [Pre-requisite](#pre-requisite)
 - [Installation](#installation)
 - [How to use](#how-to-use)
+  - [Polyfills](#polyfills)
+  - [ES Modules](#es-modules)
+    - [my-app.js](#my-appjs)
+    - [index.html](#indexhtml)
 - [Browser compatibility](#browser-compatibility)
 - [Q&A](#qa)
 - [API references](#api-references)
+- [Demo](#demo)
 - [License](#license)
 
 ## Pre-requisite
 
 - [ES2019] _(The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers.)_
-- [lit] >= 2.2.1
-- [OPTIONAL] [TypeScript] >= 3.8.3 _(TypeScript users only)_
+- [lit] >= 2.2.0
+- [OPTIONAL] [TypeScript] >= 4.5.5 _(TypeScript users only)_
 
 ## Installation
 
@@ -67,12 +87,12 @@ The following are the list of tools used that makes it shine:
 
 - Alternatively, it can be downloaded from any of the following awesome CDNs:
 
-  1. [jsdelivr (ESM)][jsdelivr-url]
-  2. [unpkg (ESM)][unpkg-url]
+  1. [esm.run/ jsdelivr][jsdelivr-url]
+  2. [esm.sh][esm-sh-url]
 
 ## How to use
 
-**Polyfills**
+### Polyfills
 
 Please make sure you have all these features available on the browsers you are supporting. If no, please consider polyfill-ing in order to run the datepicker element.
 
@@ -95,7 +115,7 @@ The following snippet shows a simple script used in the demo to load polyfills v
   if (!window.Intl) {
     var wa = document.createElement('script');
     /** NOTE: Pin package version due to https://github.com/andyearnshaw/Intl.js/issues/256 */
-    wa.src = 'https://unpkg.com/intl@1.2.4/dist/Intl.complete.js';
+    wa.src = 'https://esm.run/intl@1.2.4/dist/Intl.complete.js';
     wa.onload = function onLoad() { console.info('🌐 Intl polyfill loaded'); };
     wa.onerror = console.error;
     document.head.appendChild(wa);
@@ -103,20 +123,23 @@ The following snippet shows a simple script used in the demo to load polyfills v
 </script>
 ```
 
-**my-app.ts**
+### ES Modules
+
+#### my-app.js
 
 ```ts
 /**
  * Say you've already installed the element via NPM, simply import the package to your application.
  * Here I'm using `lit` for developing my application.
  */
-import { css, customElement, html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
+import { customElement } from 'lit/decorators.js';
 import 'app-datepicker';
 
-@customElement(MyApp.is)
-export class MyApp extends LitElement {
-  static is() { return 'my-app'; }
+const localName = 'my-app';
 
+@customElement(localName)
+export class MyApp extends LitElement {
   static styles = [
     css`
     :host {
@@ -129,13 +152,13 @@ export class MyApp extends LitElement {
     `
   ];
 
-  protected render() {
+  render() {
     return html`<app-date-picker></app-date-picker>`;
   }
 }
 ```
 
-**index.html**
+#### index.html
 
 ```html
 <!doctype html>
@@ -154,25 +177,18 @@ export class MyApp extends LitElement {
 
 ## Browser compatibility
 
-All the elements work in last 2 versions of all evergreen browsers (Chrome, Firefox, Edge, and Safari). Internet Explorer 11 is no longer supported in favor of the [new Microsoft Edge].
+All the elements work in last 2 versions of all evergreen browsers (Chrome/ Edge, Firefox, and Safari). Internet Explorer 11 is no longer supported in favor of the [new Microsoft Edge].
 
 Tested on the following browsers:
 
-| Name | OS |
-| --- | --- |
-| Chrome 79 | Windows 10 |
-| Edge 18 | Windows 10 |
-| Firefox 72 | Windows 10 |
-| Safari 13 | mac 10.13 |
+1. `Chrome/ Edge 100`
+2. `Firefox 96`
+3. `Safari 15.4`
 
+Not tested on the following browsers but it should work with all the polyfills needed:
 
-<!-- | Chrome 69 ([WRE 2019][wre-2019-url]) | Windows 10 |
-| Edge 15 | Windows 10 |
-| Edge 17 | Windows 10 |
-| Firefox 62 (w/o native Shadow DOM) | macOS Mojave (10.14) |
-| Internet Explorer 11 | Windows 10 |
-| Safari 10.1 | Mac OS 10.12 |
-| Safari 9 | Mac OS X 10.11 | -->
+1. `Edge 18` and below
+3. `Safari 13.1` and below
 
 ## Q&A
 
@@ -199,75 +215,42 @@ Tested on the following browsers:
     }
     ```
 
-2. How can I hide the focus outline?
-
-    For a11y reason, focus outline is shown when a calendar day is being focused. However, this can be modified via [CSS Shadow Parts].
-
-    ```css
-    /**
-     * Hide focus ring.
-     * 
-     * NOTE: It is recommended to come up with alternative styling for focus state
-     * instead of just hiding the focus ring.
-     */
-    app-date-picker::part(calendar-day):focus {
-      outline: none;
-    }
-    ```
-
 ## API references
 
+- [AppDatePicker]
 - _TBD_
 
-<!-- - [AppDatepicker][app-datepicker-api-reference-url]
-- [AppDatepickerDialog][app-datepicker-dialog-api-reference-url] -->
+## Demo
 
-<!-- ## Demo
-
-[Configurable demo powered by Firebase] -->
+- [`app-datepicker` demo with configurable code snippets](demo-url)
 
 ## License
 
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
 
 <!-- References -->
-[2-x-url]: https://github.com/motss/app-datepicker/tree/2.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[3-x-url]: https://github.com/motss/app-datepicker/tree/3.x?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[app-datepicker-api-reference-url]: /api-references.md#appdatepicker
-[app-datepicker-dialog-api-reference-url]: /api-references.md#appdatepickerdialog
+[AppDatePicker]: /docs/app-date-picker.md
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-[Configurable demo powered by Firebase]: https://motss-app.web.app/demo/app-datepicker.html
+[awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
+[demo-url]: https://motss.xyz/demos/app-datepicker
+[ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
+[esm-sh-url]: https://esm.sh/app-datepicker@next?target=es2019
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [lit]: https://github.com/lit/lit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[lit-url]: https://github.com/lit/lit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[material-design-2-url]: https://material.io/design/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[polymer-2-url]: https://polymer-library.polymer-project.org/2.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[polymer-3-url]: https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[material-components-web-components]: https://github.com/material-components/material-components-web-components
+[mwc-date-picker-url]: https://motss-app.web.app/demo/app-datepicker/mwc-date-picker.js
+[mwc-dialog]: https://github.com/material-components/material-components-web-components/tree/master/packages/dialog
+[new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
 [TypeScript]: https://github.com/Microsoft/TypeScript?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[unpkg-url]: https://unpkg.com/app-datepicker@latest/?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [web-components-community-url]: https://www.webcomponents.org?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [wre-2019-url]: https://www.deepcrawl.com/blog/news/what-version-of-chrome-is-google-actually-using-for-rendering
-[wre-url]: https://developers.google.com/search/docs/guides/rendering
-[new Microsoft Edge]: https://blogs.windows.com/msedgedev/2020/01/15/upgrading-new-microsoft-edge-79-chromium
-[ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
-[awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
-[material-components-web-components]: https://github.com/material-components/material-components-web-components
-[mwc-dialog]: https://github.com/material-components/material-components-web-components/tree/master/packages/dialog
-[mwc-date-picker-url]: https://motss-app.web.app/demo/app-datepicker/mwc-date-picker.js
-[CSS Shadow Parts]: https://developer.mozilla.org/en-US/docs/Web/CSS/::part
-
-<!-- Browsers logo -->
-[ie-img-url]: https://cdn.jsdelivr.net/npm/@browser-logos/internet-explorer_9-11@1.1.3/internet-explorer_9-11_64x64.png
 
 <!-- MDN -->
-[map-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map?utm_source=github.com&amp;utm_medium=referral
 [string-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String?utm_source=github.com&amp;utm_medium=referral
 [object-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object?utm_source=github.com&amp;utm_medium=referral
 [number-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number?utm_source=github.com&amp;utm_medium=referral
 [boolean-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean?utm_source=github.com&amp;utm_medium=referral
-[html-style-element-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/API/HTMLStyleElement?utm_source=github.com&amp;utm_medium=referral
-[promise-mdn-url]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise?utm_source=github.com&amp;utm_medium=referral
 
 <!-- Badges -->
 [tippin-me-badge]: https://badgen.net/badge/%E2%9A%A1%EF%B8%8Ftippin.me/@igarshmyb/F0918E
@@ -306,7 +289,3 @@ Tested on the following browsers:
 [codecov-url]: https://codecov.io/gh/motss/app-datepicker
 
 [coc-url]: https://github.com/motss/app-datepicker/blob/master/code-of-conduct.md?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-
-<!-- [intl-polyfill-url]: https://github.com/andyearnshaw/Intl.js -->
-<!-- [web-animations-js-polyfill-url]: https://www.npmjs.com/package/web-animations-js -->
-<!-- [polymer-3-browser-support-url]: https://polymer-library.polymer-project.org/3.0/docs/browsers -->
