@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...45629c45cbf66fe6cfd7ab76be30f0a456ac01e2) (2022-03-13)
+# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...adad3c873c901d75bf72d69c5abc9a7cd548ad8e) (2022-03-13)
 
 
 ### build
 
 * convert all bash scripts to shell scripts ([a317814](https://github.com/motss/app-datepicker/commit/a317814365b2c238e767c087a172d0755b8666a8))
 * fix script failed to execute as expected ([98fbe37](https://github.com/motss/app-datepicker/commit/98fbe3739c68d7324dd5d3eaba8eaac6ab9a92bd))
+* minor update ([adad3c8](https://github.com/motss/app-datepicker/commit/adad3c873c901d75bf72d69c5abc9a7cd548ad8e))
 * minor update ([45629c4](https://github.com/motss/app-datepicker/commit/45629c45cbf66fe6cfd7ab76be30f0a456ac01e2))
 * minor update ([30fa5fe](https://github.com/motss/app-datepicker/commit/30fa5fe0dfd4cf66e968b08a8e536f3ec6af0755))
 * minor update ([3e3c783](https://github.com/motss/app-datepicker/commit/3e3c783ea25dae925e3067863b3771743edb9f17))
