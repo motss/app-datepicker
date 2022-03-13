@@ -101,7 +101,7 @@
     "postinstall": "sh postinstall.sh",
     "lint": "eslint src --ext .js,.ts",
     "lint:build": "npm run lint -- --config .build.eslintrc.json",
-    "post-commit": "echo 'post-commit'",
+    "post-commit": "sh update-changelog-and-recommit.sh",
     "pre-commit": "package-check && nano-staged && tsc --noEmit",
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",

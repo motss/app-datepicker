@@ -6,7 +6,7 @@ LAST_COMMIT_MESSAGE=$(git log -1 --format=%s)
 # Update changelog and commit the changes
 sh generate-changelogs.sh
 git add -- *CHANGELOG.md
-git commit -m 'doc: update changelogs' --no-verify
+git commit -m 'chore(changelog): update changelogs' --no-verify
 
 # Soft reset and commit all the changes
 git reset --soft HEAD~2
