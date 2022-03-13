@@ -6,7 +6,7 @@
 
 ## Properties
 
-It includes all properties from [AppDatePicker](app-date-picker-properties-url) and some of the properties from [MwcTextfield](mwc-textfield-properties-url).
+It includes all properties from [AppDatePicker][app-date-picker-properties-url] and some of the properties from [MwcTextfield][mwc-textfield-properties-url].
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -16,7 +16,7 @@ It includes all properties from [AppDatePicker](app-date-picker-properties-url) 
 
 ## Methods
 
-This includes all the methods from [MwcTextfield](mwc-textfield-methods-url).
+This includes all the methods from [MwcTextfield][mwc-textfield-methods-url].
 
 | Method | Returns | Description |
 | --- | --- | --- |
@@ -28,13 +28,13 @@ This includes all the methods from [MwcTextfield](mwc-textfield-methods-url).
 
 ## Events
 
-It includes all the events from [AppDatePicker](app-date-picker-events-url) and all from [MwcMenu](mwc-menu-events-url) except that the event target is `app-date-picker-input`.
+It includes all the events from [AppDatePicker][app-date-picker-events-url] and all from [MwcMenu][mwc-menu-events-url] except that the event target is `app-date-picker-input`.
 
 
 
 ## CSS Custom Properties
 
-It includes all the CSS Custom properties from [AppDatePicker](app-date-picker-css-custom-properties-url) and all from [MwcTextfield](mwc-textfield-css-custom-properties-url).
+It includes all the CSS Custom properties from [AppDatePicker][app-date-picker-css-custom-properties-url] and all from [MwcTextfield][mwc-textfield-css-custom-properties-url].
 
 | Property | Default | Description |
 | --- | --- | --- |
@@ -43,7 +43,7 @@ It includes all the CSS Custom properties from [AppDatePicker](app-date-picker-c
 
 ## CSS Shadow Parts
 
-It includes all the CSS Shadow Parts from [AppDatePicker](app-date-picker-css-shadow-parts-url).
+It includes all the CSS Shadow Parts from [AppDatePicker][app-date-picker-css-shadow-parts-url].
 
 
 

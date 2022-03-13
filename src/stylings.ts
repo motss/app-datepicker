@@ -18,7 +18,7 @@ export const baseStyling = css`
   --_selected-hover: var(--app-selected-hover, #6200ee);
   --_selected-on-focus: var(--app-selected-on-focus, #fff);
   --_selected-on-hover: var(--app-selected-on-hover, #fff);
-  --_shape: var(--app-shape, 0px);
+  --_shape: var(--app-shape, 8px);
   --_surface: var(--app-surface, #fff);
   --_today: var(--app-today, #000);
 }

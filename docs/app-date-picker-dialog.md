@@ -6,7 +6,7 @@
 
 ## Properties
 
-It includes all properties from [AppDatePicker](app-date-picker-properties-url) and some of the properties from [MwcDialog](mwc-dialog-properties-url).
+It includes all properties from [AppDatePicker][app-date-picker-properties-url] and some of the properties from [MwcDialog][mwc-dialog-properties-url].
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ It includes all properties from [AppDatePicker](app-date-picker-properties-url) 
 
 ## Methods
 
-This includes all the methods from [MwcDialog](mwc-dialog-methods-url).
+This includes all the methods from [MwcDialog][mwc-dialog-methods-url].
 
 | Method | Returns | Description |
 | --- | --- | --- |
@@ -30,19 +30,19 @@ This includes all the methods from [MwcDialog](mwc-dialog-methods-url).
 
 ## Events
 
-It includes all the events from [AppDatePicker](app-date-picker-events-url) and all from [MwcDialog](mwc-dialog-events-url).
+It includes all the events from [AppDatePicker][app-date-picker-events-url] and all from [MwcDialog][mwc-dialog-events-url].
 
 
 
 ## CSS Custom Properties
 
-It includes all the CSS Custom properties from [AppDatePicker](app-date-picker-css-custom-properties-url) and all from [MwcDialog](mwc-dialog-css-custom-properties-url) except `--mdc-dialog-min-width` and `--mdc-shape-medium`.
+It includes all the CSS Custom properties from [AppDatePicker][app-date-picker-css-custom-properties-url] and all from [MwcDialog][mwc-dialog-css-custom-properties-url] except `--mdc-dialog-min-width` and `--mdc-shape-medium`.
 
 
 
 ## CSS Shadow Parts
 
-It includes all the CSS Shadow Parts from [AppDatePicker](app-date-picker-css-shadow-parts-url).
+It includes all the CSS Shadow Parts from [AppDatePicker][app-date-picker-css-shadow-parts-url].
 
 
 
