@@ -12,5 +12,5 @@ git commit -m 'doc: update changelogs' --no-verify
 git reset --soft HEAD~2
 git commit -m "$LAST_COMMIT_MESSAGE" --no-verify
 
-# Push new commit
-git push origin "$(git_current_branch)"
+# Force push the new commit
+git push origin "$(git branch --show-current)" --force
