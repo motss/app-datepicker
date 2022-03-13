@@ -3,7 +3,7 @@
 # Grab last commit git message
 # LAST_COMMIT_MESSAGE=$(git log -1 --format=%s)
 
-printf "%b" "$(git log --online)"
+printf "%b" "$(git log --oneline)"
 
 # Update changelog and commit the changes
 sh generate-changelogs.sh
