@@ -959,3 +959,620 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Code refactoring to make each helper function a module ([90d9b25](https://github.com/motss/app-datepicker/commit/90d9b25632a7f377e9e4c3f02809dd7b42b8f23c))
 * Reduce use of const enums in favor of type ([d6bca9b](https://github.com/motss/app-datepicker/commit/d6bca9bf0618eb04ccbd51272499196e1be646c0))
+
+
+
+# [4.0.0-rc.36](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.35...v4.0.0-rc.36) (2019-10-27)
+
+
+### refactor
+
+* Disable more codes related to calendar swiping feature ([909c654](https://github.com/motss/app-datepicker/commit/909c65489bb43ff9315203d85c0d01e360f5ef74))
+* Remove calendar swiping feature ([b1f7d72](https://github.com/motss/app-datepicker/commit/b1f7d72fc13daec98a245f550a3390772e0fe794))
+
+### test
+
+* Disable tests for calendar swiping feature ([fef93a5](https://github.com/motss/app-datepicker/commit/fef93a53de27857fa72aeec1cfbe208c09ceac91))
+
+
+
+# [4.0.0-rc.35](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.34...v4.0.0-rc.35) (2019-10-27)
+
+
+### fix
+
+* Use <button tabindex=-1> for calendar day and minor CSS update ([7282489](https://github.com/motss/app-datepicker/commit/72824891971cb55d46d5a61396281cb8710db9d1))
+
+### test
+
+* Update tests that querySelector calendar day ([2507de5](https://github.com/motss/app-datepicker/commit/2507de55943211f4db73c84211f09c3722d36a1f))
+
+
+
+# [4.0.0-rc.34](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.33...v4.0.0-rc.34) (2019-10-26)
+
+
+### chore
+
+* Pin axe-core version at 3.3.0 ([53270c3](https://github.com/motss/app-datepicker/commit/53270c3b7cae6b9b1d10eccf4772330d98ddc0e8))
+* Upgrade deps ([dc06a39](https://github.com/motss/app-datepicker/commit/dc06a39916f9d44e7a4b10ac2f0a9788ecd603b3))
+
+### docs
+
+* Glitch needs to improve on boot up time. Moved demo to my own site ([d5d5a90](https://github.com/motss/app-datepicker/commit/d5d5a9042f34bc901cd4d50465327151ef215ff9))
+
+### feat
+
+* Add pre-commit hook ([af3956f](https://github.com/motss/app-datepicker/commit/af3956f74d5e639a85999b33db073de021e7e5f4))
+* Support dark theme by exposing more CSS variables for styling ([521e039](https://github.com/motss/app-datepicker/commit/521e0396cc8a4745ef5d342a52e5e375fb73e6b4))
+
+### fix
+
+* Sorry but it's a pain in the neck to host demo at CodeSandbox. ([f087864](https://github.com/motss/app-datepicker/commit/f087864106fe42e19bde95660723eaefa65ee5e4))
+* Trying to load axe-core/axe.min.js ([7503519](https://github.com/motss/app-datepicker/commit/75035191420ea4b9d5f3c42d516a4be65614e3fb))
+
+### style
+
+* Add .js extension to all imports ([ae700fe](https://github.com/motss/app-datepicker/commit/ae700feb4a8ff17a9c587a0f82a7d98526aa4252))
+
+### test
+
+* Trying to load axe-core script in HTML ([2b5213f](https://github.com/motss/app-datepicker/commit/2b5213f3f90607bddb9a76db9e3f6ffb030cea5e))
+
+
+
+# [4.0.0-rc.33](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.32...v4.0.0-rc.33) (2019-10-19)
+
+
+### chore
+
+* Upgrade deps ([d0feb86](https://github.com/motss/app-datepicker/commit/d0feb86c5f84f90af9c704519b80872f15c8291d))
+
+
+
+# [4.0.0-rc.32](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.31...v4.0.0-rc.32) (2019-10-18)
+
+
+### fix
+
+* Minor refactoring to always do strict null check on calendar ([e3cc449](https://github.com/motss/app-datepicker/commit/e3cc4494917cfc2f0e30d0ee5792b0b2832638ed))
+
+
+
+# [4.0.0-rc.31](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.30...v4.0.0-rc.31) (2019-10-18)
+
+
+### chore
+
+* Upgrade deps ([39c39ff](https://github.com/motss/app-datepicker/commit/39c39ff71a46f916c7828de4eac3e18c821a9885))
+
+### fix
+
+* Add .js extension for all imports, fix missing element for Tracker ([5313bc5](https://github.com/motss/app-datepicker/commit/5313bc54e4a6cc36ab3a5bac95eb2066f8303b38))
+
+
+
+# [4.0.0-rc.30](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.29...v4.0.0-rc.30) (2019-09-06)
+
+
+
+
+# [4.0.0-rc.29](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.28...v4.0.0-rc.29) (2019-09-05)
+
+
+
+
+# [4.0.0-rc.28](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.27...v4.0.0-rc.28) (2019-09-03)
+
+
+
+
+# [4.0.0-rc.27](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.26...v4.0.0-rc.27) (2019-07-15)
+
+
+
+
+# [4.0.0-rc.26](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.25...v4.0.0-rc.26) (2019-07-10)
+
+
+
+
+# [4.0.0-rc.25](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.24...v4.0.0-rc.25) (2019-07-09)
+
+
+
+
+# [4.0.0-rc.24](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.23...v4.0.0-rc.24) (2019-06-18)
+
+
+
+
+# [4.0.0-rc.23](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.22...v4.0.0-rc.23) (2019-06-16)
+
+
+
+
+# [4.0.0-rc.22](https://github.com/motss/app-datepicker/compare/v2.12.0...v4.0.0-rc.22) (2019-05-19)
+
+
+
+
+# [2.12.0](https://github.com/motss/app-datepicker/compare/v2.11.2...v2.12.0) (2018-03-04)
+
+
+
+
+## [2.11.2](https://github.com/motss/app-datepicker/compare/v2.11.1...v2.11.2) (2017-10-07)
+
+
+
+
+## [2.11.1](https://github.com/motss/app-datepicker/compare/v2.11.0...v2.11.1) (2017-08-01)
+
+
+
+
+# [2.11.0](https://github.com/motss/app-datepicker/compare/v2.10.1...v2.11.0) (2017-06-13)
+
+
+
+
+## [2.10.1](https://github.com/motss/app-datepicker/compare/v2.10.0...v2.10.1) (2017-05-21)
+
+
+
+
+# [2.10.0](https://github.com/motss/app-datepicker/compare/v2.9.1...v2.10.0) (2017-05-20)
+
+
+
+
+## [2.9.1](https://github.com/motss/app-datepicker/compare/v2.9.0...v2.9.1) (2017-04-28)
+
+
+
+
+# [2.9.0](https://github.com/motss/app-datepicker/compare/v2.8.1...v2.9.0) (2016-11-05)
+
+
+
+
+## [2.8.1](https://github.com/motss/app-datepicker/compare/v2.8.0...v2.8.1) (2016-09-23)
+
+
+### fix
+
+* add `disable-dates` to `app-datepicker-dialog` (#52) ([608d346](https://github.com/motss/app-datepicker/commit/608d346e09d401b3f362594d7067cc31a70f2adb)), closes [#52](https://github.com/motss/app-datepicker/issues/52)
+
+
+
+# [2.8.0](https://github.com/motss/app-datepicker/compare/v2.7.7...v2.8.0) (2016-09-15)
+
+
+### feat
+
+* add support for disable dates (#45) ([539126a](https://github.com/motss/app-datepicker/commit/539126a97e2e1cdb820af6ff3f5ab80ad7c94027)), closes [#45](https://github.com/motss/app-datepicker/issues/45)
+
+
+
+## [2.7.7](https://github.com/motss/app-datepicker/compare/v2.7.6...v2.7.7) (2016-08-22)
+
+
+
+
+## [2.7.6](https://github.com/motss/app-datepicker/compare/v2.7.5...v2.7.6) (2016-08-07)
+
+
+
+
+## [2.7.5](https://github.com/motss/app-datepicker/compare/v2.7.4...v2.7.5) (2016-08-04)
+
+
+
+
+## [2.7.4](https://github.com/motss/app-datepicker/compare/v2.7.3...v2.7.4) (2016-07-22)
+
+
+
+
+## [2.7.3](https://github.com/motss/app-datepicker/compare/v2.7.1...v2.7.3) (2016-07-05)
+
+
+
+
+## [2.7.1](https://github.com/motss/app-datepicker/compare/v2.6.4...v2.7.1) (2016-06-30)
+
+
+
+
+## [2.6.4](https://github.com/motss/app-datepicker/compare/v2.6.3...v2.6.4) (2016-06-15)
+
+
+
+
+## [2.6.3](https://github.com/motss/app-datepicker/compare/v2.6.1...v2.6.3) (2016-06-13)
+
+
+
+
+## [2.6.1](https://github.com/motss/app-datepicker/compare/v2.6.0...v2.6.1) (2016-06-09)
+
+
+
+
+# [2.6.0](https://github.com/motss/app-datepicker/compare/v2.5.1...v2.6.0) (2016-06-09)
+
+
+
+
+## [2.5.1](https://github.com/motss/app-datepicker/compare/v2.5.0...v2.5.1) (2016-06-09)
+
+
+
+
+# [2.5.0](https://github.com/motss/app-datepicker/compare/v2.4.4...v2.5.0) (2016-05-15)
+
+
+
+
+## [2.4.4](https://github.com/motss/app-datepicker/compare/v2.4.3...v2.4.4) (2016-04-19)
+
+
+
+
+## [2.4.3](https://github.com/motss/app-datepicker/compare/v2.4.2...v2.4.3) (2016-03-28)
+
+
+
+
+## [2.4.2](https://github.com/motss/app-datepicker/compare/v2.4.1...v2.4.2) (2016-03-28)
+
+
+
+
+## [2.4.1](https://github.com/motss/app-datepicker/compare/v2.4.0...v2.4.1) (2016-03-28)
+
+
+
+
+# [2.4.0](https://github.com/motss/app-datepicker/compare/v2.3.6...v2.4.0) (2016-03-28)
+
+
+
+
+## [2.3.6](https://github.com/motss/app-datepicker/compare/v2.3.5...v2.3.6) (2016-03-23)
+
+
+
+
+## [2.3.5](https://github.com/motss/app-datepicker/compare/v2.3.4...v2.3.5) (2016-03-20)
+
+
+
+
+## [2.3.4](https://github.com/motss/app-datepicker/compare/v2.3.3...v2.3.4) (2016-03-15)
+
+
+
+
+## [2.3.3](https://github.com/motss/app-datepicker/compare/v2.3.2...v2.3.3) (2016-03-15)
+
+
+
+
+## [2.3.2](https://github.com/motss/app-datepicker/compare/v2.3.1...v2.3.2) (2016-03-13)
+
+
+
+
+## [2.3.1](https://github.com/motss/app-datepicker/compare/v2.3.0...v2.3.1) (2016-03-13)
+
+
+
+
+# [2.3.0](https://github.com/motss/app-datepicker/compare/v2.2.0...v2.3.0) (2016-03-13)
+
+
+
+
+# [2.2.0](https://github.com/motss/app-datepicker/compare/v2.1.13...v2.2.0) (2016-03-13)
+
+
+
+
+## [2.1.13](https://github.com/motss/app-datepicker/compare/v2.1.12...v2.1.13) (2016-03-05)
+
+
+
+
+## [2.1.12](https://github.com/motss/app-datepicker/compare/v2.1.11...v2.1.12) (2016-02-29)
+
+
+
+
+## [2.1.11](https://github.com/motss/app-datepicker/compare/v2.1.10...v2.1.11) (2016-02-29)
+
+
+
+
+## [2.1.10](https://github.com/motss/app-datepicker/compare/v2.1.9...v2.1.10) (2016-02-25)
+
+
+
+
+## [2.1.9](https://github.com/motss/app-datepicker/compare/v2.1.8...v2.1.9) (2016-01-24)
+
+
+
+
+## [2.1.8](https://github.com/motss/app-datepicker/compare/v2.1.7...v2.1.8) (2016-01-19)
+
+
+
+
+## [2.1.7](https://github.com/motss/app-datepicker/compare/v2.1.6...v2.1.7) (2016-01-19)
+
+
+
+
+## [2.1.6](https://github.com/motss/app-datepicker/compare/v2.1.5...v2.1.6) (2016-01-19)
+
+
+
+
+## [2.1.5](https://github.com/motss/app-datepicker/compare/v2.1.4...v2.1.5) (2016-01-17)
+
+
+
+
+## [2.1.4](https://github.com/motss/app-datepicker/compare/v2.1.3...v2.1.4) (2016-01-17)
+
+
+
+
+## [2.1.3](https://github.com/motss/app-datepicker/compare/v2.1.2...v2.1.3) (2016-01-17)
+
+
+
+
+## [2.1.2](https://github.com/motss/app-datepicker/compare/v2.1.1...v2.1.2) (2016-01-17)
+
+
+
+
+## [2.1.1](https://github.com/motss/app-datepicker/compare/v2.1.0...v2.1.1) (2016-01-17)
+
+
+
+
+# [2.1.0](https://github.com/motss/app-datepicker/compare/v2.0.2...v2.1.0) (2016-01-17)
+
+
+
+
+## [2.0.2](https://github.com/motss/app-datepicker/compare/v2.0.1...v2.0.2) (2015-11-09)
+
+
+
+
+## [2.0.1](https://github.com/motss/app-datepicker/compare/v2.0.0...v2.0.1) (2015-11-09)
+
+
+
+
+# [2.0.0](https://github.com/motss/app-datepicker/compare/v1.7.2...v2.0.0) (2015-11-09)
+
+
+
+
+## [1.7.2](https://github.com/motss/app-datepicker/compare/v1.7.1...v1.7.2) (2015-09-27)
+
+
+
+
+## [1.7.1](https://github.com/motss/app-datepicker/compare/v1.7.0...v1.7.1) (2015-09-26)
+
+
+
+
+# [1.7.0](https://github.com/motss/app-datepicker/compare/v1.6.0...v1.7.0) (2015-09-26)
+
+
+
+
+# [1.6.0](https://github.com/motss/app-datepicker/compare/v1.5.4...v1.6.0) (2015-09-26)
+
+
+
+
+## [1.5.4](https://github.com/motss/app-datepicker/compare/v1.5.3...v1.5.4) (2015-09-26)
+
+
+
+
+## [1.5.3](https://github.com/motss/app-datepicker/compare/v1.5.2...v1.5.3) (2015-09-26)
+
+
+
+
+## [1.5.2](https://github.com/motss/app-datepicker/compare/v1.5.1...v1.5.2) (2015-09-25)
+
+
+
+
+## [1.5.1](https://github.com/motss/app-datepicker/compare/v1.5.0...v1.5.1) (2015-09-25)
+
+
+
+
+# [1.5.0](https://github.com/motss/app-datepicker/compare/v1.4.15...v1.5.0) (2015-09-25)
+
+
+
+
+## [1.4.15](https://github.com/motss/app-datepicker/compare/v1.4.14...v1.4.15) (2015-09-20)
+
+
+
+
+## [1.4.14](https://github.com/motss/app-datepicker/compare/v1.4.13...v1.4.14) (2015-09-19)
+
+
+
+
+## [1.4.13](https://github.com/motss/app-datepicker/compare/v1.4.12...v1.4.13) (2015-09-16)
+
+
+
+
+## [1.4.12](https://github.com/motss/app-datepicker/compare/v1.4.11...v1.4.12) (2015-09-16)
+
+
+
+
+## [1.4.11](https://github.com/motss/app-datepicker/compare/v1.4.10...v1.4.11) (2015-09-16)
+
+
+
+
+## [1.4.10](https://github.com/motss/app-datepicker/compare/v1.4.9...v1.4.10) (2015-09-16)
+
+
+
+
+## [1.4.9](https://github.com/motss/app-datepicker/compare/v1.4.8...v1.4.9) (2015-09-16)
+
+
+
+
+## [1.4.8](https://github.com/motss/app-datepicker/compare/v1.4.7...v1.4.8) (2015-09-14)
+
+
+
+
+## [1.4.7](https://github.com/motss/app-datepicker/compare/v1.4.6...v1.4.7) (2015-09-14)
+
+
+
+
+## [1.4.6](https://github.com/motss/app-datepicker/compare/v1.4.5...v1.4.6) (2015-09-14)
+
+
+
+
+## [1.4.5](https://github.com/motss/app-datepicker/compare/v1.4.4...v1.4.5) (2015-09-14)
+
+
+
+
+## [1.4.4](https://github.com/motss/app-datepicker/compare/v1.4.3...v1.4.4) (2015-09-14)
+
+
+
+
+## [1.4.3](https://github.com/motss/app-datepicker/compare/v1.4.2...v1.4.3) (2015-09-14)
+
+
+
+
+## [1.4.2](https://github.com/motss/app-datepicker/compare/v1.4.1...v1.4.2) (2015-09-14)
+
+
+
+
+## [1.4.1](https://github.com/motss/app-datepicker/compare/v1.4.0...v1.4.1) (2015-09-13)
+
+
+
+
+# [1.4.0](https://github.com/motss/app-datepicker/compare/v1.3.0...v1.4.0) (2015-09-13)
+
+
+
+
+# [1.3.0](https://github.com/motss/app-datepicker/compare/v1.2.19...v1.3.0) (2015-09-13)
+
+
+
+
+## [1.2.19](https://github.com/motss/app-datepicker/compare/v1.2.18...v1.2.19) (2015-09-13)
+
+
+
+
+## [1.2.18](https://github.com/motss/app-datepicker/compare/v1.2.17...v1.2.18) (2015-09-12)
+
+
+
+
+## [1.2.17](https://github.com/motss/app-datepicker/compare/v1.2.16...v1.2.17) (2015-09-11)
+
+
+
+
+## [1.2.16](https://github.com/motss/app-datepicker/compare/v1.2.15...v1.2.16) (2015-09-11)
+
+
+
+
+## [1.2.15](https://github.com/motss/app-datepicker/compare/v1.2.14...v1.2.15) (2015-09-10)
+
+
+
+
+## [1.2.14](https://github.com/motss/app-datepicker/compare/v1.2.13...v1.2.14) (2015-09-10)
+
+
+
+
+## [1.2.13](https://github.com/motss/app-datepicker/compare/v1.2.12...v1.2.13) (2015-09-08)
+
+
+
+
+## [1.2.12](https://github.com/motss/app-datepicker/compare/v1.2.11...v1.2.12) (2015-09-08)
+
+
+
+
+## [1.2.11](https://github.com/motss/app-datepicker/compare/v1.2.10...v1.2.11) (2015-09-08)
+
+
+
+
+## [1.2.10](https://github.com/motss/app-datepicker/compare/v1.2.9...v1.2.10) (2015-09-08)
+
+
+
+
+## [1.2.9](https://github.com/motss/app-datepicker/compare/v1.2.8...v1.2.9) (2015-09-08)
+
+
+
+
+## [1.2.8](https://github.com/motss/app-datepicker/compare/v1.2.7...v1.2.8) (2015-09-04)
+
+
+
+
+## [1.2.7](https://github.com/motss/app-datepicker/compare/v1.2.6...v1.2.7) (2015-09-04)
+
+
+
+
+## [1.2.6](https://github.com/motss/app-datepicker/compare/v1.2.5...v1.2.6) (2015-09-04)
+
+
+
+
+## [1.2.5](https://github.com/motss/app-datepicker/compare/v1.2.4...v1.2.5) (2015-09-03)
+
+
+
+
+## [1.2.4](https://github.com/motss/app-datepicker/compare/v1.2.3...v1.2.4) (2015-09-03)
+
+
+
+
+## 1.2.3 (2015-08-31)

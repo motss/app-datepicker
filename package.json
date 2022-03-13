@@ -95,7 +95,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rm -rf .*cache *.log .swc/ coverage/ dist/ logs/",
-    "commit-msg": "npm x -y -- commitlint@latest --edit && sh generate-changelog.sh git add CHANGELOG.md",
+    "commit-msg": "npm x -y -- commitlint@latest --edit",
     "dev": "npm run serve & npm run watch",
     "postinstall": "sh postinstall.sh",
     "lint": "eslint src --ext .js,.ts",
@@ -105,6 +105,7 @@
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
     "test:helpers": "TEST_HELPERS=true npm run test",
+    "version": "sh generate-changelogs.sh && git add *CHANGELOG.md",
     "watch": "npm run clean && tsc --watch",
     "wtr": "node --max-old-space-size=8192 --trace-deprecation node_modules/@web/test-runner/dist/bin.js --config wtr.config.mjs"
   },
