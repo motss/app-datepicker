@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...adad3c873c901d75bf72d69c5abc9a7cd548ad8e) (2022-03-13)
+# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...29b32ea428833864fa2cba90aeb506c6567091ae) (2022-03-13)
 
 
 ### build
@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. See [standa
 * minor update ([45629c4](https://github.com/motss/app-datepicker/commit/45629c45cbf66fe6cfd7ab76be30f0a456ac01e2))
 * minor update ([30fa5fe](https://github.com/motss/app-datepicker/commit/30fa5fe0dfd4cf66e968b08a8e536f3ec6af0755))
 * minor update ([3e3c783](https://github.com/motss/app-datepicker/commit/3e3c783ea25dae925e3067863b3771743edb9f17))
+* minor update [ci skip] ([29b32ea](https://github.com/motss/app-datepicker/commit/29b32ea428833864fa2cba90aeb506c6567091ae))
 * trigger commit ([9b35c9e](https://github.com/motss/app-datepicker/commit/9b35c9ec0db90a1f0c243860e182ed672bc02833))
 * trying to adopt changesets ([0410aef](https://github.com/motss/app-datepicker/commit/0410aefaa9856d24775ad4236fc81c84a3af9d87))
 * trying to commit unreleased in changelogs ([af3e230](https://github.com/motss/app-datepicker/commit/af3e230a8479de891aebbe59386102f7beaf8b03))
