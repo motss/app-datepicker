@@ -2,6 +2,8 @@
 
 ![date-pickers-in-different-themes](https://user-images.githubusercontent.com/10607759/158053308-b43cb0e1-f510-4f0e-9804-827a349d5fc7.png)
 
+
+
 ## Properties
 
 | Property | Type | Default | Description |
@@ -37,6 +39,8 @@
 ## Methods
 
 _None_
+
+
 
 ## Events
 
@@ -96,6 +100,8 @@ via the read-only `detail` property.
   </tbody>
 </table>
 
+
+
 ## CSS Custom Properties
 
 ### Base properties used for all elements
@@ -129,6 +135,8 @@ via the read-only `detail` property.
 | `--date-picker-min-width` | `calc((16px * 2) + (32px * 7))` | Minimum width of the picker. |
 | `--date-picker-mx-width` | `calc((16px * 2) + (32px * 7))` | Maximum width of the picker. |
 
+
+
 ## CSS Shadow Parts
 
 | Part | Description |
@@ -145,6 +153,8 @@ via the read-only `detail` property.
 | `weekdays` | Calendar weekdays. |
 | `year-grid` | Year grid. |
 | `year` | Year grid button. |
+
+
 
 <!-- References -->
 [ISO 8601 date and time format]: https://en.wikipedia.org/wiki/ISO_8601

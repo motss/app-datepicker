@@ -222,17 +222,17 @@ Not tested on the following browsers but it should work with all the polyfills n
 
 ## Demo
 
-- [`app-datepicker` demo with configurable code snippets](demo-url)
+- [`app-datepicker` demo with configurable code snippets]
 
 ## License
 
 [MIT License](http://motss.mit-license.org/) © Rong Sen Ng
 
 <!-- References -->
+[`app-datepicker` demo with configurable code snippets]: https://motss.xyz/demos/app-datepicker
 [AppDatePicker]: /docs/app-date-picker.md
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 [awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
-[demo-url]: https://motss.xyz/demos/app-datepicker
 [ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
 [esm-sh-url]: https://esm.sh/app-datepicker@next?target=es2019
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
