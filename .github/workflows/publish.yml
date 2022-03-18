@@ -29,25 +29,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      # - name: Setup node@${{ matrix.target }}
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: ${{ matrix.target }}
-      #     registry-url: 'https://registry.npmjs.org'
 
       - name: List versions
         run: |
           echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
 
           pwd
           ls -la
           which npm
-          npm config list
+          npm config ls -l
 
       - name: Cache dependencies
         if: env.CI_SKIP == 'false'
