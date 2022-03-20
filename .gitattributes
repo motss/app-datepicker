@@ -1,5 +1,5 @@
 # Automatically normalize line endings for all text-based files
-# http://git-scm.com/docs/gitattributes#_end_of_line_conversion
+# https://git-scm.com/docs/gitattributes#_end_of_line_conversion
 * text=auto
 
 # For the following file types, normalize line endings to LF on
@@ -8,10 +8,13 @@
 # for example, after the build script is run)
 .*      text eol=lf
 *.css   text eol=lf
+*.dart   text eol=lf
 *.html  text eol=lf
 *.js    text eol=lf
 *.json  text eol=lf
+*.jsx   text eol=lf
 *.md    text eol=lf
+*.rs    text eol=lf
 *.scss  text eol=lf
 *.sh    text eol=lf
 *.ts    text eol=lf

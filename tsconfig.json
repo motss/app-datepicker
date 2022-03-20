@@ -1,16 +1,12 @@
 {
-  "extends": "@reallyland/tsconfig/browser/tsconfig.json",
+  "extends": "./node_modules/@reallyland/tools/browser/lit/tsconfig.json",
   "compilerOptions": {
     "declarationDir": "dist",
-    "importHelpers": true,
     "inlineSources": false,
     "outDir": "dist",
     "rootDir": "src",
-    "sourceMap": false,
-    "target": "ES2019"
+    "sourceMap": false
   },
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }
