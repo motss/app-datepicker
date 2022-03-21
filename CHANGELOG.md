@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
-# [Unreleased](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...4206b7c830b6256f22216c77b45c3fa6223379f0) (2022-03-13)
+# [6.0.0-rc.19](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...v6.0.0-rc.19) (2022-03-21)
 
 
 ### build
@@ -21,11 +21,22 @@ All notable changes to this project will be documented in this file. See [standa
 
 * improve setting ENV in CI ([46a4848](https://github.com/motss/app-datepicker/commit/46a48482200e75f561f9304ee198019a582da7a3))
 * trying to improve CI ([97a058d](https://github.com/motss/app-datepicker/commit/97a058dfc2c1f9c7335f0482f6f0681a1a9ab1f4))
+* update CI script ([c8b8dfa](https://github.com/motss/app-datepicker/commit/c8b8dfab91b9adfc668145629c17063b43788079))
+* update CI script ([cfa6652](https://github.com/motss/app-datepicker/commit/cfa665233643fdbb967f602c6d23ee0d1c60b20d))
 * update scripts ([b249e4f](https://github.com/motss/app-datepicker/commit/b249e4f38c67066bd5c2fcfcc12ea5f316e7858d))
+
+### docs
+
+* add docs for AppDatePicker ([f462721](https://github.com/motss/app-datepicker/commit/f46272132b4882fdd88f371430c21ccff77a3b6d))
+* add docs for AppDatePickerDialog ([b8968d6](https://github.com/motss/app-datepicker/commit/b8968d6e72cb89c13cf00fe74fc0968e779071f4))
+* add docs for AppDatePickerInput ([f531c50](https://github.com/motss/app-datepicker/commit/f531c505c7bb9133b331002f998aa7647007ec1d))
+* fix broken URLs in docs ([83c06d5](https://github.com/motss/app-datepicker/commit/83c06d5e156fc47b5eefd44393b0768d8f607125))
 
 ### feat
 
 * add script to generate changelog ([70534f8](https://github.com/motss/app-datepicker/commit/70534f8f79295158b0ac1697f27df3dd0e8e0ec0))
+* add today, toyear parts, and exportparts for calendar and yearGrid ([969d1ac](https://github.com/motss/app-datepicker/commit/969d1ac01b20007b4db321c6b49e1ba8c097f366))
+* integrate @reallyland/tools ([30dc8a1](https://github.com/motss/app-datepicker/commit/30dc8a1689811ffc14b591629618d52d0d7e716c))
 
 ### fix
 
