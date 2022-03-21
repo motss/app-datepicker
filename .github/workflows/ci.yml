@@ -90,9 +90,8 @@ jobs:
       - name: Install dependencies
         if: env.CI_SKIP == 'false'
         run: |
-          sh ./list-npx-cache.sh
           npm ci
-          sh ./list-npx-cache.sh
+          sh $(npm root)/@reallyland/tools/list-npx-cache.sh
 
       - name: Setup Playwright
         if: env.CI_SKIP == 'false'
