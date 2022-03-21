@@ -1,6 +1,6 @@
 {
   "name": "app-datepicker",
-  "version": "6.0.0-rc.19",
+  "version": "6.0.0-rc.20",
   "description": "Google Material Design based date picker built with lit",
   "keywords": [
     "buildwithlit",

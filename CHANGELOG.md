@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.20](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.19...v6.0.0-rc.20) (2022-03-21)
+
+
+### ci
+
+* update CI scripts ([4b1959d](https://github.com/motss/app-datepicker/commit/4b1959d619bfb8fbe31f6298b6dd8cf18e350d74))
+
+
+
 # [6.0.0-rc.19](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...v6.0.0-rc.19) (2022-03-21)
 
 
@@ -941,32 +950,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### ci
 
 * Update CI to skip running tests for version bump ([ae431e1](https://github.com/motss/app-datepicker/commit/ae431e146b997dfd139cc5484e9ca98606dc3682))
-
-
-
-# [4.0.0-rc.37](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.36...v4.0.0-rc.37) (2020-01-13)
-
-
-### chore
-
-* Upgrade deps ([20681cd](https://github.com/motss/app-datepicker/commit/20681cdcd9d7e2c5e83022e5e2e9c65f31848287))
-* Upgrade deps ([56a6a02](https://github.com/motss/app-datepicker/commit/56a6a024c4492c4f358cf2b267be63940a22dbab))
-* Upgrade deps ([645bc04](https://github.com/motss/app-datepicker/commit/645bc040493cdd31c1878b6643b71781a4b1b506))
-
-### doc
-
-* Update API References ([fcf5a33](https://github.com/motss/app-datepicker/commit/fcf5a33d466c84b131954b15738026ea155ed3e0))
-
-### feat
-
-* Re-enable calendar drag feature with better x-browser support ([af37d09](https://github.com/motss/app-datepicker/commit/af37d091442b242a75214befd7a6c72d71e71e37))
-
-### fix
-
-* Minor fix in rendering when week number is shown ([7b71ea1](https://github.com/motss/app-datepicker/commit/7b71ea153ec0beb51389a5a8ff198efef5895a6a))
-* Minor patch to render datepicker ([283c5ff](https://github.com/motss/app-datepicker/commit/283c5ff60cd013f1c0919bfab5f486caf1ca0a94))
-
-### refactor
-
-* Code refactoring to make each helper function a module ([90d9b25](https://github.com/motss/app-datepicker/commit/90d9b25632a7f377e9e4c3f02809dd7b42b8f23c))
-* Reduce use of const enums in favor of type ([d6bca9b](https://github.com/motss/app-datepicker/commit/d6bca9bf0618eb04ccbd51272499196e1be646c0))

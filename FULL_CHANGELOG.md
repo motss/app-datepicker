@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.20](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.19...v6.0.0-rc.20) (2022-03-21)
+
+
+### ci
+
+* update CI scripts ([4b1959d](https://github.com/motss/app-datepicker/commit/4b1959d619bfb8fbe31f6298b6dd8cf18e350d74))
+
+
+
 # [6.0.0-rc.19](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.18...v6.0.0-rc.19) (2022-03-21)
 
 
