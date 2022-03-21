@@ -17,9 +17,9 @@ defaults:
     shell: bash
 
 env:
-  CI_SKIP: false
+  # CI_SKIP: false
   COVERAGE: false
-  GITHUB_COMMIT_MESSAGE: ''
+  # GITHUB_COMMIT_MESSAGE: ''
   IS_UBUNTU: false
   NODE_VERSION: v0.0.0
   NPM_CACHE_DIR: ~/.npm
@@ -27,9 +27,10 @@ env:
 
 jobs:
   test:
-    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'docs:')"
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'docs:') && !contains(github.event.head_commit.message, 'chore(release)')"
     env:
-      GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      # GITHUB_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      IS_UBUNTU: ${{ contains(matrix.os, 'ubuntu') }}
     name: ${{ matrix.os }} ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -39,15 +40,15 @@ jobs:
         target: [16.x]
 
     steps:
-      - name: CI skip check
-        run: |
-          if [[ -n "$(echo $GITHUB_COMMIT_MESSAGE | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]]; then
-            echo "[INFO] SKIP CI"
-            echo "CI_SKIP=true" >> $GITHUB_ENV
-          fi
+      # - name: CI skip check
+      #   run: |
+      #     if [[ -n "$(echo $GITHUB_COMMIT_MESSAGE | grep -iE '^[0-9]+[.]{1,}[0-9]+[.]{1,}[0-9]+')" ]]; then
+      #       echo "[INFO] SKIP CI"
+      #       echo "CI_SKIP=true" >> $GITHUB_ENV
+      #     fi
 
       - name: Checkout
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         uses: actions/checkout@v2
 
       # - name: Setup node@${{ matrix.target }}
@@ -62,9 +63,9 @@ jobs:
       #     npm i -g npm@latest
 
       - name: List versions
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         run: |
-          echo "IS_UBUNTU=${{ contains(matrix.os, 'ubuntu') }}" >> $GITHUB_ENV
+          # echo "IS_UBUNTU=${{ contains(matrix.os, 'ubuntu') }}" >> $GITHUB_ENV
           echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
@@ -72,10 +73,10 @@ jobs:
           pwd
           ls -la
           which npm
-          npm x -y -- envinfo
+          # npm x -y -- envinfo@latest
 
       - name: Cache dependencies
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         id: npm-cache
         uses: actions/cache@v2
         with:
@@ -88,35 +89,35 @@ jobs:
             ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}
 
       - name: Install dependencies
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         run: |
           npm ci
           sh $(npm root)/@reallyland/tools/list-npx-cache.sh
 
       - name: Setup Playwright
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         run: |
-          ./node_modules/.bin/playwright install-deps
+          $(npm bin)/playwright install-deps
 
       - name: Lint
-        if: env.CI_SKIP == 'false'
+        # if: env.CI_SKIP == 'false'
         run: |
           npm run lint:build
 
       - name: Test
-        if: env.CI_SKIP == 'false' && env.IS_UBUNTU == 'false'
+        if: env.IS_UBUNTU == 'false'
         run: |
           npm run wtr
 
       - name: Test with coverage
-        if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false'
+        if: env.IS_UBUNTU != 'false'
         run: |
           npm run wtr
         env:
           COVERAGE: true
 
       - name: Upload coverage to codecov
-        if: env.CI_SKIP == 'false' && env.IS_UBUNTU != 'false' && success()
+        if: env.IS_UBUNTU != 'false' && success()
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

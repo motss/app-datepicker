@@ -43,7 +43,6 @@ jobs:
           npm config ls -l
 
       - name: Cache dependencies
-        if: env.CI_SKIP == 'false'
         id: npm-cache
         uses: actions/cache@v2
         with:
@@ -60,12 +59,12 @@ jobs:
           npm ci
 
       - name: Publish to npm (Prerelease)
-        if: contains(github.ref, '-') == true
+        if: contains(github.ref, '-rc') == true || contains(github.ref, '-') == true
         run: |
           npm publish . --tag=next
 
       - name: Publish to npm
-        if: contains(github.ref, '-') == false
+        if: contains(github.ref, '-rc') == false && contains(github.ref, '-') == false
         run: |
           npm publish .
 
