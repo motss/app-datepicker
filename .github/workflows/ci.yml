@@ -58,6 +58,7 @@ jobs:
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
 
+          echo "${{ github.workflow }}-${{ github.ref || github.run_id }}"
           pwd
           ls -la
           which npm
