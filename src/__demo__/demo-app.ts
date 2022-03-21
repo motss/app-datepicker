@@ -39,6 +39,11 @@ export class DemoApp extends RootElement {
     app-date-picker {
       border: 1px solid #000;
     }
+    /* app-date-picker::part(today),
+    app-date-picker::part(today)::before,
+    app-date-picker::part(toyear)::before {
+      color: red;
+    } */
 
     @media (prefers-color-scheme: dark) {
       app-date-picker {

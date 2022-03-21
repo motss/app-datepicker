@@ -383,7 +383,7 @@ describe(appMonthCalendarName, () => {
     );
   });
 
-  it('renders correct title for selected today', async () => {
+  it('renders correct attributes for selected today', async () => {
     const el = await fixture<AppMonthCalendar>(
       html`<app-month-calendar .data=${data}></app-month-calendar>`
     );
@@ -397,6 +397,8 @@ describe(appMonthCalendarName, () => {
 
     expect(selectedDate).attr('title', labelSelectedDate);
     expect(todayDate).attr('title', labelSelectedDate);
+
+    expect(todayDate?.part.contains('today')).true;
   });
 
   type CaseWeekdayTitles = [

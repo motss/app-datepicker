@@ -90,11 +90,25 @@ describe(appDatePickerName, () => {
             expect(element).have.class(`start-view--${testCalendarView || 'calendar'}`);
           }
         });
+
         expectedHiddenElements.forEach((n) => {
           const element = el.query(elementSelectors[n]);
 
           expect(element).not.exist;
         });
+
+        if (testCalendarView === 'yearGrid') {
+          const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
+
+          expect(yearGrid).exist.attr('exportparts', 'year-grid,year,toyear');
+        } else {
+          const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
+
+          expect(calendar).exist.attr(
+            'exportparts',
+            'table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar'
+          );
+        }
       }
     );
   });

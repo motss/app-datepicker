@@ -22,9 +22,10 @@ export interface MonthCalendarProperties {
   data?: MonthCalendarData;
 }
 
-export interface MonthCalendarRenderCalendarDayInit extends HTMLElement {
+export interface MonthCalendarRenderCalendarDayInit extends Omit<HTMLElement, 'part'> {
   day: string;
   fullDate: Date;
+  part: string;
 }
 
 type PickDatePickerProperties = Pick<

@@ -187,7 +187,7 @@ describe(appYearGridName, () => {
     ]);
   });
 
-  it('renders correct title for selected today year', async () => {
+  it('renders correct attributes for selected today year', async () => {
     const todayDate = toResolvedDate();
     const max = new Date(new Date(todayDate).setUTCFullYear(todayDate.getUTCFullYear() + 2));
     const min = new Date(new Date(todayDate).setUTCFullYear(todayDate.getUTCFullYear() - 2));
@@ -209,6 +209,8 @@ describe(appYearGridName, () => {
 
     expect(selectedYear).attr('title', labelSelectedYear);
     expect(todayYear).attr('title', labelSelectedYear);
+
+    expect(todayYear?.part.contains('toyear')).true;
   });
 
   type CaseSelectedYearLabelAndTodayYearLabel = [

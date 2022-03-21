@@ -23,8 +23,9 @@ export interface YearGridProperties {
   data?: YearGridData;
 }
 
-export interface YearGridRenderButtonInit extends PickYearGridData {
+export interface YearGridRenderButtonInit extends Omit<HTMLElement, 'part'>, PickYearGridData {
   focusingYear: number;
   label: string;
+  part: string;
   year: number;
 }

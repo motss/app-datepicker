@@ -419,6 +419,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       }}
       @date-updated=${this.#updateSelectedDate}
       class=calendar
+      exportparts=table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar
     ></app-month-calendar>
     `;
   };
@@ -463,6 +464,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         todayYearLabel,
       }}
       @year-updated=${this.#updateYear}
+      exportparts=year-grid,year,toyear
     ></app-year-grid>
     `;
   };

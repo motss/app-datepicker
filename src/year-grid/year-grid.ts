@@ -1,7 +1,6 @@
 import type { TemplateResult } from 'lit';
 import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
 import { labelSelectedYear, labelTodayYear, MAX_DATE, navigationKeySetGrid } from '../constants.js';
@@ -94,44 +93,50 @@ export class YearGrid extends RootElement implements YearGridProperties {
       class="year-grid"
       part=year-grid
     >${
-      yearList.map((year) => this.$renderButton({
-        date,
-        focusingYear,
-        label: yearFormat(new Date(`${year}-01-01`)),
-        selectedYearLabel,
-        todayYearLabel,
-        year,
-      }))
+      yearList.map((year) => {
+        const isSelected = year === date.getUTCFullYear();
+        const isToday = this.#todayYear === year;
+
+        const title = isSelected ?
+          selectedYearLabel :
+          isToday
+            ? todayYearLabel
+            : undefined;
+
+        return this.$renderButton({
+          ariaLabel: yearFormat(new Date(`${year}-01-01`)),
+          ariaSelected: isSelected ? 'true' : 'false',
+          className: isToday ? ' year--today' : '',
+          date,
+          part: `year${isToday ? ' toyear' : ''}`,
+          tabIndex: year === focusingYear ? 0 : -1,
+          title,
+          todayYearLabel,
+          year,
+        } as YearGridRenderButtonInit);
+      })
     }</div>
     `;
   }
 
   protected $renderButton({
-    date,
-    focusingYear,
-    label,
-    selectedYearLabel,
-    todayYearLabel,
+    ariaLabel,
+    ariaSelected,
+    className,
+    part,
+    tabIndex,
+    title,
     year,
   }: YearGridRenderButtonInit): TemplateResult {
-    const isSelected = year === date.getUTCFullYear();
-    const isToday = this.#todayYear === year;
-
-    const title = isSelected ?
-      selectedYearLabel :
-      isToday
-        ? todayYearLabel
-        : undefined;
-
     return html`
     <button
       .year=${year}
-      aria-label=${label}
-      aria-selected=${isSelected ? 'true' : 'false'}
-      class="year-grid-button ${classMap({ 'year--today': isToday })}"
+      aria-label=${ariaLabel as string}
+      aria-selected=${ariaSelected as 'true' | 'false'}
+      class="year-grid-button${className}"
       data-year=${year}
-      part=year
-      tabindex=${year === focusingYear ? '0' : '-1'}
+      part=${part}
+      tabindex=${tabIndex}
       title=${ifDefined(title)}
     ></button>
     `;

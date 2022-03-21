@@ -201,6 +201,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                   fullDate,
                   tabIndex: shouldTab ? 0 : -1,
                   title,
+                  part: `calendar-day${isToday ? ' today' : ''}`,
                 } as MonthCalendarRenderCalendarDayInit);
               })
             }</tr>`;
@@ -220,6 +221,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     className,
     day,
     fullDate,
+    part,
     tabIndex,
     title,
   }: MonthCalendarRenderCalendarDayInit): TemplateResult {
@@ -231,7 +233,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       aria-selected=${ariaSelected as 'true' | 'false'}
       class="calendar-day ${className}"
       data-day=${day}
-      part=calendar-day
+      part=${part}
       role=gridcell
       tabindex=${tabIndex}
       title=${ifDefined(title)}
