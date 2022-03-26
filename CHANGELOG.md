@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.21](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.20...v6.0.0-rc.21) (2022-03-26)
+
+
+### chore
+
+* remove unused comments ([c2ee020](https://github.com/motss/app-datepicker/commit/c2ee0208f5de2ee4b1c907375a2bce536602e8f2))
+* update dependencies ([c781463](https://github.com/motss/app-datepicker/commit/c781463cccc17b3f6ea9f6c639c0dacc60e92871))
+* update dependencies ([7ee2066](https://github.com/motss/app-datepicker/commit/7ee20664b8899cd881a2ffadf6f08fa6dacc2c61))
+
+### ci
+
+* echo group name ([64ff901](https://github.com/motss/app-datepicker/commit/64ff901909a42dd9fcf9b47443471448196868d7))
+* improve CI scripts ([46cbf3a](https://github.com/motss/app-datepicker/commit/46cbf3ad8c31a3a3e192745400e2b5444f1e8a14))
+
+
+
 # [6.0.0-rc.20](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.19...v6.0.0-rc.20) (2022-03-21)
 
 
@@ -940,13 +956,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 # [4.0.0-rc.39](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.38...v4.0.0-rc.39) (2020-01-13)
-
-
-
-
-# [4.0.0-rc.38](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.37...v4.0.0-rc.38) (2020-01-13)
-
-
-### ci
-
-* Update CI to skip running tests for version bump ([ae431e1](https://github.com/motss/app-datepicker/commit/ae431e146b997dfd139cc5484e9ca98606dc3682))
