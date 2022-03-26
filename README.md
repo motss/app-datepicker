@@ -278,7 +278,7 @@ Not tested on the following browsers but it should work with all the polyfills n
 
 [ga-ci-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci.yml/badge.svg
 [ga-ci-helpers-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml/badge.svg
-[codecov-badge]: https://codecov.io/gh/motss/app-datepicker/branch/master/graph/badge.svg?token=0M1yaJNDxq
+[codecov-badge]: https://codecov.io/gh/motss/app-datepicker/branch/main/graph/badge.svg?token=0M1yaJNDxq
 
 [coc-badge]: https://flat.badgen.net/badge/code%20of/conduct/pink
 
@@ -289,7 +289,7 @@ Not tested on the following browsers but it should work with all the polyfills n
 [join-discord-url]: https://discord.gg/ps8mCrvTKR
 
 [version-url]: https://www.npmjs.com/package/app-datepicker/v/next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[mit-license-url]: https://github.com/motss/app-datepicker/blob/main/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker@next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
@@ -299,4 +299,4 @@ Not tested on the following browsers but it should work with all the polyfills n
 [ga-ci-helpers-url]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml
 [codecov-url]: https://codecov.io/gh/motss/app-datepicker
 
-[coc-url]: https://github.com/motss/app-datepicker/blob/master/code-of-conduct.md?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[coc-url]: https://github.com/motss/app-datepicker/blob/main/code-of-conduct.md?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
