@@ -14,7 +14,6 @@ export interface DatePickerMixinProperties {
   disabledDates: string;
   disabledDays: string;
   firstDayOfWeek: number;
-  landscape: boolean;
   locale: string;
   nextMonthLabel: string;
   previousMonthLabel: string;
@@ -23,8 +22,8 @@ export interface DatePickerMixinProperties {
   shortWeekLabel: string;
   showWeekNumber: boolean;
   startView: StartView;
-  todayDateLabel: string;
-  todayYearLabel: string;
+  todayLabel: string;
+  toyearLabel: string;
   value?: string | null;
   weekLabel: string;
   weekNumberTemplate: string;

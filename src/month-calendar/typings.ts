@@ -32,5 +32,5 @@ type PickDatePickerProperties = Pick<
   DatePickerProperties,
   | 'selectedDateLabel'
   | 'showWeekNumber'
-  | 'todayDateLabel'
+  | 'todayLabel'
 >;

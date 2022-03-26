@@ -101,7 +101,7 @@
     "lint:build": "sh $(npm root)/@reallyland/tools/lint-build.sh -c $(npm root)/@reallyland/tools/browser/lit/.build.eslintrc.json",
     "pre-commit": "sh $(npm root)/@reallyland/tools/pre-commit.sh",
     "prepublishOnly": "npm run lint:build && npm run build",
-    "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3000 -a index.html",
+    "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3030 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
     "test:helpers": "TEST_HELPERS=true npm run test",
     "version": "sh $(npm root)/@reallyland/tools/generate-changelogs.sh && git add *CHANGELOG.md",

@@ -3,7 +3,7 @@ import { html, nothing } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { confirmKeySet, labelSelectedDate, labelTodayDate, navigationKeySetGrid } from '../constants.js';
+import { confirmKeySet, labelSelectedDate, labelToday, navigationKeySetGrid } from '../constants.js';
 import { focusElement } from '../helpers/focus-element.js';
 import { isInCurrentMonth } from '../helpers/is-in-current-month.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
@@ -58,7 +58,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       showCaption: false,
       showWeekNumber: false,
       todayDate,
-      todayDateLabel: labelTodayDate,
+      todayLabel: labelToday,
       weekdays: [],
     };
   }
@@ -88,7 +88,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
       showCaption = false,
       showWeekNumber = false,
       todayDate,
-      todayDateLabel,
+      todayLabel,
       weekdays,
     } = this.data as MonthCalendarData;
 
@@ -189,7 +189,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                 const title = isSelected ?
                   selectedDateLabel :
                   isToday ?
-                    todayDateLabel :
+                    todayLabel :
                     undefined;
 
                 return this.$renderCalendarDay({

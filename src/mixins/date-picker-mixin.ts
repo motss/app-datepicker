@@ -1,7 +1,7 @@
 import { property } from 'lit/decorators.js';
 import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
-import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectedDate, labelSelectedYear, labelShortWeek, labelTodayDate, labelTodayYear, labelWeek, weekNumberTemplate } from '../constants.js';
+import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectedDate, labelSelectedYear, labelShortWeek, labelToday, labelToyear, labelWeek, weekNumberTemplate } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -17,7 +17,6 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public disabledDays = '';
     @property() public disabledDates = '';
     @property({ type: Number, reflect: true }) public firstDayOfWeek = 0;
-    @property({ type: Boolean, reflect: true }) public landscape = false;
     @property() public locale: string = DateTimeFormat().resolvedOptions().locale;
     @property() public nextMonthLabel: string = labelNextMonth;
     @property() public previousMonthLabel: string = labelPreviousMonth;
@@ -26,8 +25,8 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public shortWeekLabel: string = labelShortWeek;
     @property({ type: Boolean, reflect: true }) public showWeekNumber = false;
     @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public startView: StartView = 'calendar';
-    @property() public todayDateLabel: string = labelTodayDate;
-    @property() public todayYearLabel: string = labelTodayYear;
+    @property() public todayLabel: string = labelToday;
+    @property() public toyearLabel: string = labelToyear;
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to

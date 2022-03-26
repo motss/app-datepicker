@@ -25,6 +25,8 @@ export const datePickerDialogBaseStyling = css`
 }
 
 .mdc-dialog .mdc-dialog__content {
+  align-self: center;
+
   background-color: inherit;
   padding: 0;
 }
@@ -43,6 +45,9 @@ app-date-picker {
 
 export const datePickerDialogStyling = css`
 .secondary-actions {
+  display: flex;
+  justify-content: flex-end;
+
   margin: 0;
 }
 .secondary-actions mwc-button + mwc-button {

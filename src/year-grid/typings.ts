@@ -1,6 +1,6 @@
 import type { ChangedProperties, DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
 
-type PickDatePickerProperties = Pick<DatePickerProperties, 'selectedYearLabel' | 'todayYearLabel'>;
+type PickDatePickerProperties = Pick<DatePickerProperties, 'selectedYearLabel' | 'toyearLabel'>;
 type PickYearGridData = Pick<YearGridData, 'date' | keyof PickDatePickerProperties>;
 
 export interface ToNextSelectableYearInit {

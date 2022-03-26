@@ -3,15 +3,20 @@ import { css } from 'lit';
 export const monthCalendarStyling = css`
 :host {
   --_border-width: 0px;
-  --_inset: 2px;
+  --_inset: 0px;
   --_size: 32px;
 
   display: block;
   font-size: 13px;
 }
 
+table,
+thead,
+tbody,
+tr,
 th,
 td {
+  position: relative;
   padding: 0;
 }
 
@@ -27,11 +32,6 @@ td {
 
   border-collapse: collapse;
   border-spacing: 0;
-}
-
-.calendar-day,
-.weekday {
-  position: relative;
 }
 
 .weekday {
@@ -67,6 +67,9 @@ td {
   min-height: var(--_size);
   max-width: var(--_size);
   max-height: var(--_size);
+}
+.calendar-day.week-number {
+  color: var(--_on-week-number);
 }
 .calendar-day[aria-disabled="true"] {
   color: var(--_on-disabled);

@@ -13,7 +13,7 @@ import type { confirmKeySet, navigationKeySetGrid} from '../../constants';
 import { labelShortWeek} from '../../constants';
 import { weekNumberTemplate } from '../../constants';
 import { labelWeek } from '../../constants';
-import { labelSelectedDate, labelTodayDate } from '../../constants';
+import { labelSelectedDate, labelToday } from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
@@ -62,7 +62,7 @@ describe(appMonthCalendarName, () => {
     showCaption: false,
     showWeekNumber: false,
     todayDate: calendarInit.date,
-    todayDateLabel: labelTodayDate,
+    todayLabel: labelToday,
     weekdays: getWeekdays(weekdaysInit),
   };
   const elementSelectors = {
@@ -452,7 +452,7 @@ describe(appMonthCalendarName, () => {
   const casesSelectedDateLabelAndTodayDateLabel: CaseSelectedDateLabelAndTodayDateLabel[] = [
     [undefined, undefined, undefined, undefined],
     ['', '', '', ''],
-    [labelSelectedDate, labelTodayDate, labelSelectedDate, labelTodayDate],
+    [labelSelectedDate, labelToday, labelSelectedDate, labelToday],
   ];
   casesSelectedDateLabelAndTodayDateLabel.forEach((a) => {
     const [
@@ -473,7 +473,7 @@ describe(appMonthCalendarName, () => {
           ...data,
           date,
           selectedDateLabel: testSelectedDateLabel as string,
-          todayDateLabel: testTodayDateLabel as string,
+          todayLabel: testTodayDateLabel as string,
         };
 
         const el = await fixture<AppMonthCalendar>(

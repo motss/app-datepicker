@@ -4,7 +4,7 @@ import { expect, fixture, html } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 
 import type { confirmKeySet} from '../../constants';
-import { labelSelectedYear, labelTodayYear } from '../../constants';
+import { labelSelectedYear, labelToyear } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
@@ -20,7 +20,7 @@ describe(appYearGridName, () => {
     max: new Date('2021-03-03'),
     min: new Date('2019-01-01'),
     selectedYearLabel: labelSelectedYear,
-    todayYearLabel: labelTodayYear,
+    toyearLabel: labelToyear,
   };
   const elementSelectors = {
     selectedYear: '.year-grid-button[aria-selected="true"]',
@@ -222,7 +222,7 @@ describe(appYearGridName, () => {
   const casesSelectedYearLabelAndTodayYearLabel: CaseSelectedYearLabelAndTodayYearLabel[] = [
     [undefined, undefined, undefined, undefined],
     ['', '', '', ''],
-    [labelSelectedYear, labelTodayYear, labelSelectedYear, labelTodayYear],
+    [labelSelectedYear, labelToyear, labelSelectedYear, labelToyear],
   ];
   casesSelectedYearLabelAndTodayYearLabel.forEach(a => {
     const [
@@ -246,7 +246,7 @@ describe(appYearGridName, () => {
           min,
           date: min,
           selectedYearLabel: testSelectedYearLabel as string,
-          todayYearLabel: testTodayYearLabel as string,
+          toyearLabel: testTodayYearLabel as string,
         };
 
         const el = await fixture<AppYearGrid>(html`<app-year-grid .data=${testData}></app-year-grid>`);

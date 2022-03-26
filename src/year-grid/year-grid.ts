@@ -3,7 +3,7 @@ import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { labelSelectedYear, labelTodayYear, MAX_DATE, navigationKeySetGrid } from '../constants.js';
+import { labelSelectedYear, labelToyear, MAX_DATE, navigationKeySetGrid } from '../constants.js';
 import { toClosestTarget } from '../helpers/to-closest-target.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { toYearList } from '../helpers/to-year-list.js';
@@ -42,7 +42,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
       max: MAX_DATE,
       min: todayDate,
       selectedYearLabel: labelSelectedYear,
-      todayYearLabel: labelTodayYear,
+      toyearLabel: labelToyear,
     };
 
     this.$focusingYear = this.#todayYear = todayDate.getUTCFullYear();
@@ -78,7 +78,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
       max,
       min,
       selectedYearLabel,
-      todayYearLabel,
+      toyearLabel,
     } = this.data as YearGridData;
     const focusingYear =this.$focusingYear;
 
@@ -100,7 +100,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
         const title = isSelected ?
           selectedYearLabel :
           isToday
-            ? todayYearLabel
+            ? toyearLabel
             : undefined;
 
         return this.$renderButton({
@@ -111,7 +111,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
           part: `year${isToday ? ' toyear' : ''}`,
           tabIndex: year === focusingYear ? 0 : -1,
           title,
-          todayYearLabel,
+          toyearLabel,
           year,
         } as YearGridRenderButtonInit);
       })

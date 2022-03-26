@@ -11,7 +11,6 @@ export function slotDatePicker({
   disabledDates,
   disabledDays,
   firstDayOfWeek,
-  landscape,
   locale,
   max,
   min,
@@ -24,8 +23,8 @@ export function slotDatePicker({
   shortWeekLabel,
   showWeekNumber,
   startView,
-  todayDateLabel,
-  todayYearLabel,
+  todayLabel,
+  toyearLabel,
   value,
   weekLabel,
   weekNumberTemplate,
@@ -40,7 +39,6 @@ export function slotDatePicker({
     .disabledDates=${disabledDates}
     .disabledDays=${disabledDays}
     .firstDayOfWeek=${firstDayOfWeek}
-    .landscape=${landscape}
     .locale=${locale}
     .max=${max}
     .min=${min}
@@ -50,8 +48,8 @@ export function slotDatePicker({
     .selectedYearLabel=${selectedYearLabel}
     .shortWeekLabel=${shortWeekLabel}
     .startView=${startView}
-    .todayDateLabel=${todayDateLabel}
-    .todayYearLabel=${todayYearLabel}
+    .todayLabel=${todayLabel}
+    .toyearLabel=${toyearLabel}
     .value=${value}
     .weekLabel=${weekLabel}
     .weekNumberTemplate=${weekNumberTemplate}

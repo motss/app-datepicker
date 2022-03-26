@@ -356,7 +356,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       selectedDateLabel,
       shortWeekLabel,
       showWeekNumber,
-      todayDateLabel,
+      todayLabel,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
@@ -414,7 +414,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         selectedDateLabel,
         showWeekNumber,
         todayDate: this.#today,
-        todayDateLabel,
+        todayLabel,
         weekdays,
       }}
       @date-updated=${this.#updateSelectedDate}
@@ -449,7 +449,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       _min,
       _selectedDate,
       selectedYearLabel,
-      todayYearLabel,
+      toyearLabel,
     } = this;
 
     return html`
@@ -461,7 +461,7 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
         max: _max,
         min: _min,
         selectedYearLabel,
-        todayYearLabel,
+        toyearLabel,
       }}
       @year-updated=${this.#updateYear}
       exportparts=year-grid,year,toyear
