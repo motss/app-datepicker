@@ -172,7 +172,7 @@ export class MyApp extends LitElement {
     </my-app>
   </body>
   ...
-</html> 
+</html>
 ```
 
 ## Browser compatibility
@@ -236,7 +236,7 @@ Not tested on the following browsers but it should work with all the polyfills n
 [ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
 [esm-sh-url]: https://esm.sh/app-datepicker@next?target=es2019
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
-[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [lit]: https://github.com/lit/lit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [material-components-web-components]: https://github.com/material-components/material-components-web-components
 [mwc-date-picker-url]: https://motss-app.web.app/demo/app-datepicker/mwc-date-picker.js
@@ -257,14 +257,14 @@ Not tested on the following browsers but it should work with all the polyfills n
 [follow-me-badge]: https://flat.badgen.net/twitter/follow/igarshmyb?icon=twitter
 [join-discord-badge]: https://badgen.net/discord/members/ps8mCrvTKR?label=app-datepicker&icon=discord
 
-[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/latest?icon=npm
+[version-badge]: https://flat.badgen.net/npm/v/app-datepicker/next?icon=npm
 [lit-version-badge]: https://flat.badgen.net/npm/v/lit/latest?icon=npm&label=lit
 [mit-license-badge]: https://flat.badgen.net/npm/license/app-datepicker
 
 [downloads-badge]: https://flat.badgen.net/npm/dm/app-datepicker
 [total-downloads-badge]: https://flat.badgen.net/npm/dt/app-datepicker?label=total%20downloads
-[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker%40latest
-[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@latest
+[packagephobia-badge]: https://flat.badgen.net/packagephobia/install/app-datepicker@next
+[bundlephobia-badge]: https://flat.badgen.net/bundlephobia/minzip/app-datepicker@next
 
 [ga-ci-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci.yml/badge.svg
 [ga-ci-helpers-badge]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml/badge.svg
@@ -277,12 +277,12 @@ Not tested on the following browsers but it should work with all the polyfills n
 [follow-me-url]: https://twitter.com/igarshmyb?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [join-discord-url]: https://discord.gg/ps8mCrvTKR
 
-[version-url]: https://www.npmjs.com/package/app-datepicker/v/latest?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[version-url]: https://www.npmjs.com/package/app-datepicker/v/next?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 [mit-license-url]: https://github.com/motss/app-datepicker/blob/master/LICENSE?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [downloads-url]: http://www.npmtrends.com/app-datepicker?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker%40latest&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
-[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@latest&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[packagephobia-url]: https://packagephobia.now.sh/result?p=app-datepicker@next&utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
+[bundlephobia-url]: https://bundlephobia.com/result?p=app-datepicker@next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
 
 [ga-ci-url]: https://github.com/motss/app-datepicker/actions/workflows/ci.yml
 [ga-ci-helpers-url]: https://github.com/motss/app-datepicker/actions/workflows/ci-helpers.yml
