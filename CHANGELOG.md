@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.24](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.23...v6.0.0-rc.24) (2022-03-26)
+
+
+### chore
+
+* remove unused shell script ([f052bb8](https://github.com/motss/app-datepicker/commit/f052bb80469074ac5012832002b99ef1f1f3b86d))
+
+### docs
+
+* update link in README to point to main branch ([d1b2a0f](https://github.com/motss/app-datepicker/commit/d1b2a0f52a2ddcd8f3fb12dd81e2998fbe837e17))
+
+
+
 # [6.0.0-rc.23](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.22...v6.0.0-rc.23) (2022-03-26)
 
 
@@ -926,26 +939,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Fix test failed on Safari ([d876496](https://github.com/motss/app-datepicker/commit/d87649638fcbe10f2037c671e8364a0543ba1461))
 * Simplify test ([220df30](https://github.com/motss/app-datepicker/commit/220df3062b2ca0d3de45a940175a08f4d0010bed))
-
-
-
-# [4.0.0-rc.41](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.40...v4.0.0-rc.41) (2020-02-03)
-
-
-### chore
-
-* Upgrade dependencies ([0ba04a2](https://github.com/motss/app-datepicker/commit/0ba04a24294b17f1f94ee181c72e3cffe67f63cc))
-* Upgrade dependencies ([f5c074b](https://github.com/motss/app-datepicker/commit/f5c074b4c0eb5feb485b42dabd64deac62fb5487))
-
-### ci
-
-* Remove redundant Lint step ([95c7bd2](https://github.com/motss/app-datepicker/commit/95c7bd2d45c8b5941983da5c7642e132f8402e37))
-
-### doc
-
-* Update doc on browsers support and use Edge 18 in CI for testing ([a424037](https://github.com/motss/app-datepicker/commit/a424037d4b6dbe226eae64eadd911c377c5dd943))
-* Update docs with latest events ([17ea421](https://github.com/motss/app-datepicker/commit/17ea421c2db0d4909e833fa521e84eed61656c48))
-
-### feat
-
-* Add `datepicker-value-updated` when focused date updates, fix #165 ([cace473](https://github.com/motss/app-datepicker/commit/cace473db67722740a8e1f1101959b49f07972d0)), closes [#165](https://github.com/motss/app-datepicker/issues/165)

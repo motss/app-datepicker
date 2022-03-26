@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.24](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.23...v6.0.0-rc.24) (2022-03-26)
+
+
+### chore
+
+* remove unused shell script ([f052bb8](https://github.com/motss/app-datepicker/commit/f052bb80469074ac5012832002b99ef1f1f3b86d))
+
+### docs
+
+* update link in README to point to main branch ([d1b2a0f](https://github.com/motss/app-datepicker/commit/d1b2a0f52a2ddcd8f3fb12dd81e2998fbe837e17))
+
+
+
 # [6.0.0-rc.23](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.22...v6.0.0-rc.23) (2022-03-26)
 
 
