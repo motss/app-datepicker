@@ -75,7 +75,7 @@ export const yearGridStyling = css`
 .year-grid-button::before {
   z-index: 1;
 }
-.year-grid-button:focus::before,
+.year-grid-button:focus-visible::before,
 .year-grid-button:hover::before {
   --_border-color: var(--_focus);
   --_border-width: 1px;
@@ -92,7 +92,7 @@ export const yearGridStyling = css`
 .year-grid-button[aria-selected="true"]::before {
   color: var(--_on-primary);
 }
-.year-grid-button[aria-selected="true"]:focus::before {
+.year-grid-button[aria-selected="true"]:focus-visible::before {
   --_border-color: var(--_selected-focus);
 
   color: var(--_selected-on-focus);
@@ -112,7 +112,7 @@ export const yearGridStyling = css`
 .year-grid-button::after {
   content: '';
 }
-.year-grid-button:focus::after,
+.year-grid-button:focus-visible::after,
 .year-grid-button:hover::after {
   --_inset: 3px;
 }

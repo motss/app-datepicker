@@ -37,8 +37,10 @@ a {
   text-decoration: none;
   outline: none;
 }
-a:focus,
-a:focus.page-selected {
+a:focus:not(:focus-visible) {
+  text-decoration: none;
+}
+a:focus-visible {
   text-decoration: underline;
 }
 `;
