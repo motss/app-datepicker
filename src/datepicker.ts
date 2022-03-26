@@ -901,7 +901,7 @@ export class Datepicker extends LitElement {
                       'day--today': +todayDate === curTime,
                       'day--focused': !disabled && isCurrentDate,
                     })}"
-                    .part="calendar-day${+todayDate === curTime ? ' calendar-today' : ''}"
+                    part="calendar-day${+todayDate === curTime ? ' calendar-today' : ''}"
                     role="gridcell"
                     aria-disabled="${disabled ? 'true' : 'false'}"
                     aria-label="${label}"
@@ -911,7 +911,7 @@ export class Datepicker extends LitElement {
                   >
                     <div
                       class="calendar-day"
-                      .part="day${+todayDate === curTime ? ' today' : ''}"
+                      part="day${+todayDate === curTime ? ' today' : ''}"
                     >${value}</div>
                   </td>
                   `;
