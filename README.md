@@ -39,6 +39,7 @@
 - [Q&A](#qa)
 - [API references](#api-references)
 - [Demo](#demo)
+- [Older versions](#older-versions)
 - [License](#license)
 
 > Miracle happens when marrying Material Design with date pickers on the web.
@@ -69,6 +70,7 @@ The following are the list of tools used that makes it shine:
 - [Q&A](#qa)
 - [API references](#api-references)
 - [Demo](#demo)
+- [Older versions](#older-versions)
 - [License](#license)
 
 ## Pre-requisite
@@ -218,11 +220,16 @@ Not tested on the following browsers but it should work with all the polyfills n
 ## API references
 
 - [AppDatePicker]
-- _TBD_
+- [AppDatePickerDialog]
+- [AppDatePickerInput]
 
 ## Demo
 
 - [`app-datepicker` demo with configurable code snippets]
+
+## Older versions
+
+- [`4-5.x`](https://github.com/motss/app-datepicker/tree/4-5.x)
 
 ## License
 
@@ -231,6 +238,8 @@ Not tested on the following browsers but it should work with all the polyfills n
 <!-- References -->
 [`app-datepicker` demo with configurable code snippets]: https://motss.xyz/demos/app-datepicker
 [AppDatePicker]: /docs/app-date-picker.md
+[AppDatePickerDialog]: /docs/app-date-picker-dialog.md
+[AppDatePickerInput]: /docs/app-date-picker-input.md
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 [awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
 [ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
