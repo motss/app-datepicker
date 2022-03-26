@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.23](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.22...v6.0.0-rc.23) (2022-03-26)
+
+
+### docs
+
+* update badges in README ([6207802](https://github.com/motss/app-datepicker/commit/6207802a9362b1f5b3933a90d6fbe722d83a3902))
+* update links in README ([0b9a622](https://github.com/motss/app-datepicker/commit/0b9a62297d5f8c338ab95b46fee9f40d7a664fb3))
+* use buymeacoffee icon from flatbadgen ([39776a9](https://github.com/motss/app-datepicker/commit/39776a9a4cc6abbe186b7aca7d657c99a4a345c8))
+
+
+
 # [6.0.0-rc.22](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.21...v6.0.0-rc.22) (2022-03-26)
 
 
@@ -938,27 +949,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### feat
 
 * Add `datepicker-value-updated` when focused date updates, fix #165 ([cace473](https://github.com/motss/app-datepicker/commit/cace473db67722740a8e1f1101959b49f07972d0)), closes [#165](https://github.com/motss/app-datepicker/issues/165)
-
-
-
-# [4.0.0-rc.40](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.39...v4.0.0-rc.40) (2020-01-19)
-
-
-### chore
-
-* Update dependencies ([4f453f5](https://github.com/motss/app-datepicker/commit/4f453f5c55b437c4dd311798653f576c723f5128))
-
-### ci
-
-* Use latest node ([68fb5fe](https://github.com/motss/app-datepicker/commit/68fb5fe2560e5df0d2d5871fc8f8dacc0ebf757d))
-
-### fix
-
-* Fix month not updated correctly when clicks and keyboard involve ([933174f](https://github.com/motss/app-datepicker/commit/933174f58d8c24eaa2cd34793fbc6f1bd879b7df))
-
-### test
-
-* Add tests for edge cases where keyboards + mouses are used ([e69764b](https://github.com/motss/app-datepicker/commit/e69764b703571bf8f997cc7c9fd51ce25952be6b))
-* Fix tests broken due to bug in test helper and missing min ([ca103df](https://github.com/motss/app-datepicker/commit/ca103df96762fdede1ce541293d8b59952901b76))
-* Revert change in test helper ([2c38d26](https://github.com/motss/app-datepicker/commit/2c38d2696f53c856f200501b330beda52f137ae4))
-* Revert change in test helper ([b45913e](https://github.com/motss/app-datepicker/commit/b45913e9bf3b7b03fd8e720c28ff6f99495ebdd8))

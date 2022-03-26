@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.23](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.22...v6.0.0-rc.23) (2022-03-26)
+
+
+### docs
+
+* update badges in README ([6207802](https://github.com/motss/app-datepicker/commit/6207802a9362b1f5b3933a90d6fbe722d83a3902))
+* update links in README ([0b9a622](https://github.com/motss/app-datepicker/commit/0b9a62297d5f8c338ab95b46fee9f40d7a664fb3))
+* use buymeacoffee icon from flatbadgen ([39776a9](https://github.com/motss/app-datepicker/commit/39776a9a4cc6abbe186b7aca7d657c99a4a345c8))
+
+
+
 # [6.0.0-rc.22](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.21...v6.0.0-rc.22) (2022-03-26)
 
 
