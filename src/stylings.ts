@@ -12,8 +12,8 @@ export const baseStyling = css`
   --_on-primary: var(--app-on-primary, #fff);
   --_on-surface: var(--app-on-surface, #000);
   --_on-today: var(--app-on-today, #000);
-  --_on-weekday: var(--app-on-weekday, #8c8c8c);
   --_on-week-number: var(--app-on-week-number, #8c8c8c);
+  --_on-weekday: var(--app-on-weekday, #8c8c8c);
   --_primary: var(--app-primary, #6200ee);
   --_selected-focus: var(--app-selected-focus, #000);
   --_selected-hover: var(--app-selected-hover, #6200ee);
