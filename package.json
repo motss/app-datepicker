@@ -115,13 +115,13 @@
     "@material/mwc-icon-button": "^0.25.3",
     "@material/mwc-menu": "^0.25.3",
     "@material/mwc-textfield": "^0.25.3",
-    "lit": "^2.2.0",
+    "lit": "^2.2.1",
     "nodemod": "^3.0.6",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@open-wc/testing": "^3.1.2",
-    "@reallyland/tools": "^0.0.12",
+    "@reallyland/tools": "^0.0.13",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@web/dev-server-esbuild": "^0.2.16",
     "@web/dev-server-rollup": "^0.3.15",
