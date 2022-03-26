@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.22](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.21...v6.0.0-rc.22) (2022-03-26)
+
+
+### refactor
+
+* minor update ([4287782](https://github.com/motss/app-datepicker/commit/4287782babb7af1a0db37da4984b82e0274c8881))
+* rename toyearLabel, update docs, fix stylings, minor cleanup ([0ee4e3f](https://github.com/motss/app-datepicker/commit/0ee4e3fa663d44734b579bb2b565e7ff673842a5))
+
+
+
 # [6.0.0-rc.21](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.20...v6.0.0-rc.21) (2022-03-26)
 
 
@@ -952,7 +962,3 @@ All notable changes to this project will be documented in this file. See [standa
 * Fix tests broken due to bug in test helper and missing min ([ca103df](https://github.com/motss/app-datepicker/commit/ca103df96762fdede1ce541293d8b59952901b76))
 * Revert change in test helper ([2c38d26](https://github.com/motss/app-datepicker/commit/2c38d2696f53c856f200501b330beda52f137ae4))
 * Revert change in test helper ([b45913e](https://github.com/motss/app-datepicker/commit/b45913e9bf3b7b03fd8e720c28ff6f99495ebdd8))
-
-
-
-# [4.0.0-rc.39](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.38...v4.0.0-rc.39) (2020-01-13)

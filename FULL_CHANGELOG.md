@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.22](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.21...v6.0.0-rc.22) (2022-03-26)
+
+
+### refactor
+
+* minor update ([4287782](https://github.com/motss/app-datepicker/commit/4287782babb7af1a0db37da4984b82e0274c8881))
+* rename toyearLabel, update docs, fix stylings, minor cleanup ([0ee4e3f](https://github.com/motss/app-datepicker/commit/0ee4e3fa663d44734b579bb2b565e7ff673842a5))
+
+
+
 # [6.0.0-rc.21](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.20...v6.0.0-rc.21) (2022-03-26)
 
 
