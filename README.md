@@ -1,5 +1,7 @@
+**NOTE: Deprecated as of March 28, 2022 and 5.x will be in a complete feature freeze. Please migrate to [6.x](https://github.com/motss/app-datepicker/tree/main). Thanks for using this `app-datepicker`.**
+
 <div align="center" style="text-align: center;">
-  <h1 style="border-bottom: none;">app-datepicker</h1>
+  <h1 style="border-bottom: none;">[DEPRECATED] app-datepicker</h1>
 
   <p>Datepicker element built with lit-element and Material Design 2</p>
 </div>
