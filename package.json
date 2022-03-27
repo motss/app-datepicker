@@ -53,10 +53,11 @@
     "build:config": "tsc -p tsconfig.wdio.json",
     "build:prod": "tsc -p tsconfig.prod.json",
     "build:test": "tsc -p tsconfig.test.json",
-    "check": "package-check",
     "clean": "shx rm -rf dist/ src/tests/snapshots/*.png logs/ .*cache *.log",
+    "postinstall": "sh postinstall.sh",
     "lint": "tslint --project tsconfig.json --config tslint.prod.json --format stylish",
     "lint:dev": "tslint --config tslint.json --project tsconfig.json --format stylish",
+    "pre-commit": "package-check && npm run lint && tsc --noEmit",
     "prepublishOnly": "npm run lint && npm run build:prod",
     "serve": "es-dev-server --watch --port 3000 --node-resolve --dedupe",
     "test": "npm run build:config && npm run test:dev",
@@ -65,19 +66,16 @@
     "test:sl": "npm run build:config && env-cmd -f ./.env npm run test:sl:dev",
     "test:sl:clean": "npm run build:clean && npm run test:sl",
     "test:sl:dev": "node ./run-tests.js --config-file ./dist/tests/wdio.sl.config.js",
-    "ts": "tsc",
     "watch": "tsc --watch"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run check && npm run lint && tsc --noEmit"
-    }
+  "simple-git-hooks": {
+    "pre-commit": "npm run pre-commit"
   },
   "dependencies": {
     "@material/mwc-button": "^0.25.3",
-    "lit": "^2.0.2",
+    "lit": "^2.2.1",
     "nodemod": "2.8.4",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@reallyland/tsconfig": "^3.1.0",
