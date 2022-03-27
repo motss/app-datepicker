@@ -1,6 +1,6 @@
 {
   "name": "app-datepicker",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "description": "A custom datepicker element based on Google's Material Design built from scratch with lit-element",
   "keywords": [
     "cal",
