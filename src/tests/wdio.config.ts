@@ -10,21 +10,22 @@ export const config: WdioConfig = {
   exclude: [],
   maxInstances: 36,
   capabilities: [
-    {
-      browserName: 'chrome',
-      'goog:chromeOptions': {
-        args: [
-          'disable-background-timer-throttling',
-          'disable-gpu',
-          'disable-renderer-backgrounding',
-          'headless',
-          'no-sandbox',
-          'window-size=800,600',
-        ],
-        w3c: true,
-      },
-      maxInstances: 10,
-    },
+    // NOTE(motss): Disabling running headless Chrome in CI
+    // {
+    //   browserName: 'chrome',
+    //   'goog:chromeOptions': {
+    //     args: [
+    //       'disable-background-timer-throttling',
+    //       'disable-gpu',
+    //       'disable-renderer-backgrounding',
+    //       'headless',
+    //       'no-sandbox',
+    //       'window-size=800,600',
+    //     ],
+    //     w3c: true,
+    //   },
+    //   maxInstances: 10,
+    // },
     {
       browserName: 'firefox',
       'moz:firefoxOptions': {
