@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.25](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.24...v6.0.0-rc.25) (2022-03-29)
+
+
+### refactor
+
+* use import(file_path) for better dynamic import analysis ([8608d75](https://github.com/motss/app-datepicker/commit/8608d7524a836fecd8425b5dafb0b8956cd9bc74))
+
+
+
 # [6.0.0-rc.24](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.23...v6.0.0-rc.24) (2022-03-26)
 
 

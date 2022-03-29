@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.25](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.24...v6.0.0-rc.25) (2022-03-29)
+
+
+### refactor
+
+* use import(file_path) for better dynamic import analysis ([8608d75](https://github.com/motss/app-datepicker/commit/8608d7524a836fecd8425b5dafb0b8956cd9bc74))
+
+
+
 # [6.0.0-rc.24](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.23...v6.0.0-rc.24) (2022-03-26)
 
 
@@ -917,25 +926,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### test
 
 * Use ES2017 for testing as Edge 18 does not support {...a} ([9775b3b](https://github.com/motss/app-datepicker/commit/9775b3b608e159de6a292157ee3fbcfeabd00d46))
-
-
-
-# [4.0.0-rc.42](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.41...v4.0.0-rc.42) (2020-02-05)
-
-
-### chore
-
-* Update doc, remove unused demo and dependencies, upgrade deps ([67f57c8](https://github.com/motss/app-datepicker/commit/67f57c883c489af059f4af081f4d7a3d38dcff29))
-
-### feat
-
-* Add `inline` property to render datepicker in inline mode ([c81640c](https://github.com/motss/app-datepicker/commit/c81640cd668024472940eac0e9eb660ef1918f2d))
-
-### fix
-
-* Add missing husky for pre-commit checks, fix linting issues ([f7fb478](https://github.com/motss/app-datepicker/commit/f7fb478909b8efbc76a771e33fc39c7c0acfc216))
-
-### test
-
-* Fix test failed on Safari ([d876496](https://github.com/motss/app-datepicker/commit/d87649638fcbe10f2037c671e8364a0543ba1461))
-* Simplify test ([220df30](https://github.com/motss/app-datepicker/commit/220df3062b2ca0d3de45a940175a08f4d0010bed))
