@@ -310,9 +310,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
       const tasks = deps.map(n => globalThis.customElements.whenDefined(n));
       const imports = [
-        '../date-picker/app-date-picker.js',
-        '../date-picker-input-surface/app-date-picker-input-surface.js',
-      ].map(n => import(n));
+        import('../date-picker/app-date-picker.js'),
+        import('../date-picker-input-surface/app-date-picker-input-surface.js'),
+      ];
 
       try {
         await Promise.all(imports);
