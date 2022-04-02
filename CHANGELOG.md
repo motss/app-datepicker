@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.26](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.25...v6.0.0-rc.26) (2022-04-02)
+
+
+### fix
+
+* fix date picker input triggers date picker when clicking reset btn ([3667009](https://github.com/motss/app-datepicker/commit/3667009cb52fdd1912ddbc650819abda0ec20352))
+
+
+
 # [6.0.0-rc.25](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.24...v6.0.0-rc.25) (2022-03-29)
 
 
@@ -902,27 +911,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Enable all tests ([f1b29f0](https://github.com/motss/app-datepicker/commit/f1b29f0676dfadc6badee9d2c762b1940d885873))
 * Fix broken test, update screenshots ([a91072f](https://github.com/motss/app-datepicker/commit/a91072fe9c8a8bc4c5fceef498891bb6e5537f72))
-
-
-
-# [4.0.0-rc.43](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.42...v4.0.0-rc.43) (2020-02-12)
-
-
-### chore
-
-* Update dependencies ([7cf4e77](https://github.com/motss/app-datepicker/commit/7cf4e77b79db3b0db87a2be7e871dc67c96379f6))
-* Upgrade dependencies ([4de7069](https://github.com/motss/app-datepicker/commit/4de70692036c10b74c6438fa50d0d010404eafcb))
-* Upgrade dependencies && update pre-commit hook ([af5f527](https://github.com/motss/app-datepicker/commit/af5f52783ae326ccfdcfa6717ee9c795bbc8964f))
-
-### feat
-
-* Add undefined custom elements for lazy definition ([788b475](https://github.com/motss/app-datepicker/commit/788b475c92d5d31f30a61171a805dd7ff9061dfd))
-* Re-enable improved dragging feature with revised tests ([fd9274e](https://github.com/motss/app-datepicker/commit/fd9274e911447cc30a0e4c8f82459d45583fe970))
-
-### fix
-
-* Minor code refactor to simplify calendar dragging feature ([bb03f0f](https://github.com/motss/app-datepicker/commit/bb03f0fcefc95818db9817446d63ad62e6ea028b))
-
-### test
-
-* Use ES2017 for testing as Edge 18 does not support {...a} ([9775b3b](https://github.com/motss/app-datepicker/commit/9775b3b608e159de6a292157ee3fbcfeabd00d46))

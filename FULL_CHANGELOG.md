@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.26](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.25...v6.0.0-rc.26) (2022-04-02)
+
+
+### fix
+
+* fix date picker input triggers date picker when clicking reset btn ([3667009](https://github.com/motss/app-datepicker/commit/3667009cb52fdd1912ddbc650819abda0ec20352))
+
+
+
 # [6.0.0-rc.25](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.24...v6.0.0-rc.25) (2022-03-29)
 
 
