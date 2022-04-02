@@ -63,7 +63,7 @@ const config = {
       exportConditions: ['default', 'dev', 'development', 'esbuild', 'import'],
       extensions: ['.mjs', '.js', '.ts', '.css', '.graphql'],
     }),
-    esbuildPlugin({ ts: true }),
+    esbuildPlugin({ ts: true, target: 'es2021' }),
     sendKeysPlugin(),
   ],
   testFramework: {

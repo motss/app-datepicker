@@ -103,7 +103,7 @@
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3030 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
-    "test:helpers": "TEST_HELPERS=true npm run test",
+    "test:dev": "COVERAGE=true TEST_HELPERS=true npm t && COVERAGE=true npm t",
     "version": "sh $(npm root)/@reallyland/tools/generate-changelogs.sh && git add *CHANGELOG.md",
     "watch": "npm run clean && tsc --watch",
     "wtr": "node --max-old-space-size=8192 --trace-deprecation $(npm bin)/wtr --config wtr.config.mjs"
@@ -123,7 +123,7 @@
     "@open-wc/testing": "^3.1.2",
     "@reallyland/tools": "^0.0.13",
     "@rollup/plugin-node-resolve": "^13.0.6",
-    "@web/dev-server-esbuild": "^0.2.16",
+    "@web/dev-server-esbuild": "^0.3.0",
     "@web/dev-server-rollup": "^0.3.15",
     "@web/test-runner": "^0.13.27",
     "@web/test-runner-commands": "^0.6.1",

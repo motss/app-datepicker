@@ -52,10 +52,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   #disconnect: () => void = () => undefined;
   #focusElement: HTMLElement | undefined = undefined;
-  #isClearAction = false;
   #lazyLoading = false;
   #picker: AppDatePicker | undefined = undefined;
-  #selectedDate: Date | undefined;
   #valueAsDate: Date | undefined;
   #valueFormatter = this.$toValueFormatter();
 
@@ -154,7 +152,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   public reset(): void {
-    this.#onResetClick();
+    this.#valueAsDate = undefined;
+    this.value = this._valueText = '';
   }
 
   public showPicker(): void {
@@ -333,11 +332,13 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   };
   /* c8 ignore stop */
 
-  #onResetClick = (): void => {
-    this.#isClearAction = true;
-    this.#selectedDate = this.#valueAsDate = undefined;
+  #onResetClick = (ev: MouseEvent): void => {
+    /**
+     * NOTE(motss): To prevent triggering the `focus` event of `TextField` element.
+     */
+    ev.preventDefault();
 
-    this.value = this._valueText = '';
+    this.reset();
   };
 
   #onClosed = ({ detail }: CustomEvent): void => {
@@ -353,25 +354,12 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     } = ev.detail;
 
     /**
-     * NOTE: When the input date is cleared, the date picker's `date` will be updated and `#isClearAction`
-     * is used to prevent `valueAsDate` from updating empty `value`.
-     *
-     * The flow of execution is as follows:
-     *
-     * 1. Clear input value
-     * 2. Set `#isClearAction=true`
-     * 3. `date` updated but `#isClearAction` is true so do nothing and reset `#isClearAction`
-     * 4. At this point, new value can be set via keyboard or mouse
+     * NOTE(motss): When it is triggered by mouse click or the following keys,
+     * update `.value` and close the input surface containing the date picker.
      */
-    if (!this.#isClearAction) {
-      this.#selectedDate = valueAsDate;
-
-      if (!isKeypress || (key === keyEnter || key === keySpace)) {
-        this.value = toDateString(this.#selectedDate);
-        isKeypress && (await this.$inputSurface)?.close();
-      }
-    } else {
-      this.#isClearAction = false;
+    if (!isKeypress || (key === keyEnter || key === keySpace)) {
+      this.#updateValues(valueAsDate);
+      isKeypress && (await this.$inputSurface)?.close();
     }
   };
 
@@ -384,7 +372,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void => {
     this.#focusElement = focusableElement;
     this.#picker = currentTarget as AppDatePicker;
-    this.#selectedDate = valueAsDate;
+    this.#updateValues(valueAsDate);
   };
 
   #onOpened = async ({ detail }: CustomEvent): Promise<void> => {
@@ -395,14 +383,15 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     this.fire({ detail, type: 'opened' });
   };
 
-  #updateValues = (value: string): void => {
+  #updateValues = (value: Date | string): void => {
     if (value) {
       const valueDate = new Date(value);
 
-      this.#selectedDate = this.#valueAsDate = valueDate;
+      this.#valueAsDate = valueDate;
       this._valueText = this.#valueFormatter.format(valueDate);
+      this.value = toDateString(valueDate);
     } else {
-      this.#onResetClick();
+      this.reset();
     }
   };
 }
