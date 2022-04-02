@@ -12,6 +12,7 @@ import { appDatePickerName } from '../../date-picker/constants';
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
 import type { AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
 import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input/constants';
+import type { DatePickerInputProperties } from '../../date-picker-input/typings';
 import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { iconClear } from '../../icons';
@@ -23,7 +24,6 @@ import { appYearGridName } from '../../year-grid/constants';
 import { eventOnce } from '../test-utils/event-once';
 import { messageFormatter } from '../test-utils/message-formatter';
 import { queryDeepActiveElement } from '../test-utils/query-deep-active-element';
-import type { DatePickerInputProperties } from '../../date-picker-input/typings';
 
 describe(appDatePickerInputName, () => {
   const elementSelectors = {
@@ -73,7 +73,6 @@ describe(appDatePickerInputName, () => {
             .label=${label}
             .max=${max}
             .min=${min}
-            .placeholder=${placeholder}
             .value=${testValue}
           ></app-date-picker-input>`
         );
@@ -95,7 +94,7 @@ describe(appDatePickerInputName, () => {
 
         expect(mdcFloatingLabel).text(label);
         expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).equal('label');
-        expect(mdcTextFieldInput?.placeholder).equal(placeholder);
+        expect(mdcTextFieldInput?.placeholder).equal('');
         expect(mdcTextFieldIconTrailing).lightDom.equal(iconClear.strings.toString());
       }
     );
@@ -577,7 +576,7 @@ describe(appDatePickerInputName, () => {
   type CaseRenderAndTriggerNothing = keyof Pick<DatePickerInputProperties, 'disabled' | 'readOnly'>;
   const casesRenderAndTriggerNothing: CaseRenderAndTriggerNothing[] = [
     'disabled',
-    'readOnly'
+    'readOnly',
   ];
   casesRenderAndTriggerNothing.forEach((a) => {
     it(`renders correctly and does not trigger anything event handler when '${a}' is set to true`, async () => {

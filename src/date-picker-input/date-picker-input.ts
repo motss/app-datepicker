@@ -116,12 +116,9 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('locale')) {
-      const newLocale = (
+      this.locale = (
         this.locale || DateTimeFormat().resolvedOptions().locale
       ) as string;
-
-      this.locale = newLocale;
-
       this.#valueFormatter = this.$toValueFormatter();
       this.#updateValues(this.value);
     }
@@ -133,10 +130,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     if (changedProperties.has('disabled') || changedProperties.has('readOnly')) {
       this._disabled = this.disabled || this.readOnly;
     }
-
-    if (changedProperties.has('disabled') || changedProperties.has('outlined')) {
-      this.layout();
-    }
   }
 
   public override async updated(): Promise<void> {
@@ -144,6 +137,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       const picker = await this.$picker;
 
       picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
+    }
+
+    if (this.placeholder || this.label) {
+      /**
+       * NOTE(motss): This is a workaround to force the layout to update with any defined
+       * `placeholder` and/ or `label`.
+       */
+      this.layout();
     }
   }
 

@@ -40,7 +40,7 @@ export function eventOnce<
       node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
 
       resolve(resolvedEvent as ResolvedCustomEvent);
-    }
+    };
 
     node.addEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
 
