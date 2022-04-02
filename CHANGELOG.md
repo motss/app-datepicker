@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.27](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.26...v6.0.0-rc.27) (2022-04-02)
+
+
+### feat
+
+* support disabled/ readonly in DatePickerInput, update tests ([dcc4043](https://github.com/motss/app-datepicker/commit/dcc4043e224b59400d05272467c8198507278e20))
+
+
+
 # [6.0.0-rc.26](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.25...v6.0.0-rc.26) (2022-04-02)
 
 
@@ -893,21 +902,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### fix
 
 * Add --app-datepicker-focused-year-bg-color, fix #170 ([49b4789](https://github.com/motss/app-datepicker/commit/49b4789b39dc475baa000deea251a70ca4c3a48e)), closes [#170](https://github.com/motss/app-datepicker/issues/170)
-
-
-
-# [4.0.0-rc.44](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.43...v4.0.0-rc.44) (2020-02-16)
-
-
-### chore
-
-* Upgrade dependencies ([d6a5e5d](https://github.com/motss/app-datepicker/commit/d6a5e5d5ee19a449f5d7eb045ed495a42ad579e1))
-
-### feat
-
-* Add clearLabel in dialog, minor code refactor, update tests ([e511de5](https://github.com/motss/app-datepicker/commit/e511de5d0dc6a79de80192730ab82c308a7ade2c))
-
-### test
-
-* Enable all tests ([f1b29f0](https://github.com/motss/app-datepicker/commit/f1b29f0676dfadc6badee9d2c762b1940d885873))
-* Fix broken test, update screenshots ([a91072f](https://github.com/motss/app-datepicker/commit/a91072fe9c8a8bc4c5fceef498891bb6e5537f72))

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.27](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.26...v6.0.0-rc.27) (2022-04-02)
+
+
+### feat
+
+* support disabled/ readonly in DatePickerInput, update tests ([dcc4043](https://github.com/motss/app-datepicker/commit/dcc4043e224b59400d05272467c8198507278e20))
+
+
+
 # [6.0.0-rc.26](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.25...v6.0.0-rc.26) (2022-04-02)
 
 
