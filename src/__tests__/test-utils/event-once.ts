@@ -10,7 +10,7 @@ export function eventOnce<
   timeout?: number
 ): Promise<ResolvedCustomEvent | undefined> {
   return new Promise<ResolvedCustomEvent | undefined>((resolve) => {
-    node.addEventListener(eventName as unknown as keyof HTMLElementEventMap, (
+    const handler: (this: HTMLElement, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => unknown = (
       ev
     ) => {
       /**
@@ -37,12 +37,19 @@ export function eventOnce<
         });
       });
 
+      node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
+
       resolve(resolvedEvent as ResolvedCustomEvent);
-    });
+    }
+
+    node.addEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
 
     // Race with event listener
     globalThis.setTimeout(
-      () => resolve(undefined),
+      () => {
+        node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
+        resolve(undefined);
+      },
       timeout ?? promiseTimeout
     );
   });

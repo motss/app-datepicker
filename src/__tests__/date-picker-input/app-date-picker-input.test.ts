@@ -23,6 +23,7 @@ import { appYearGridName } from '../../year-grid/constants';
 import { eventOnce } from '../test-utils/event-once';
 import { messageFormatter } from '../test-utils/message-formatter';
 import { queryDeepActiveElement } from '../test-utils/query-deep-active-element';
+import type { DatePickerInputProperties } from '../../date-picker-input/typings';
 
 describe(appDatePickerInputName, () => {
   const elementSelectors = {
@@ -573,4 +574,87 @@ describe(appDatePickerInputName, () => {
     expect(yearGrid).exist;
   });
 
+  type CaseRenderAndTriggerNothing = keyof Pick<DatePickerInputProperties, 'disabled' | 'readOnly'>;
+  const casesRenderAndTriggerNothing: CaseRenderAndTriggerNothing[] = [
+    'disabled',
+    'readOnly'
+  ];
+  casesRenderAndTriggerNothing.forEach((a) => {
+    it(`renders correctly and does not trigger anything event handler when '${a}' is set to true`, async () => {
+      const el = await fixture<AppDatePickerInput>(
+        html`<app-date-picker-input
+          .label=${label}
+          .max=${max}
+          .min=${min}
+          .placeholder=${placeholder}
+          .startView=${'yearGrid'}
+          .value=${value}
+          .disabled=${a === 'disabled' ? true : false}
+          .readOnly=${a === 'readOnly' ? true : false}
+        ></app-date-picker-input>`
+      );
+
+      await el.updateComplete;
+
+      const initialValue = el.value;
+      const initialValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
+
+      const tasks = [
+        async () => {
+          /**
+           * Call `.showPicker()`
+           */
+          el.showPicker();
+        },
+        async () => {
+          // Trigger key event to open date picker
+          const input = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+
+          input?.click();
+          input?.focus();
+          await sendKeys({ press: 'Enter' });
+        },
+        async () => {
+          // Trigger click event to open date picker
+          el.focus();
+          el.click();
+        },
+        async () => {
+          // Trigger key event to close date picker
+          await sendKeys({ press: keyEscape });
+        },
+        () => {
+          // Click reset icon button to reset value
+          const mdcTextFieldIconTrailing =
+              el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+
+          mdcTextFieldIconTrailing?.focus();
+          mdcTextFieldIconTrailing?.click();
+        },
+        () => {
+          /**
+           * Call `.reset()`
+           */
+          el.reset();
+        },
+      ] as const;
+      for (const task of tasks) {
+        const openedTask = eventOnce<
+          typeof el,
+          'opened',
+          CustomEvent<unknown>>(el, 'opened');
+
+        await task();
+        await openedTask;
+        await el.updateComplete;
+
+        const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+        const updatedValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
+
+        expect(datePickerInputSurface).not.exist;
+        expect(el.value).equal(initialValue);
+        expect(updatedValueText).equal(initialValueText);
+      }
+    });
+  });
 });

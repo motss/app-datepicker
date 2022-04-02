@@ -24,13 +24,13 @@ import { keyEnter, keyEscape, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
-import type { DatePickerMixinProperties } from '../mixins/typings.js';
 import { baseStyling } from '../stylings.js';
-import type { ChangedProperties, CustomEventDetail, DatePickerProperties } from '../typings.js';
+import type { ChangedProperties, CustomEventDetail } from '../typings.js';
 import { appDatePickerInputClearLabel, appDatePickerInputType } from './constants.js';
 import { datePickerInputStyling } from './stylings.js';
+import type { DatePickerInputProperties } from './typings.js';
 
-export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerMixinProperties {
+export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerInputProperties {
   public override iconTrailing = 'clear';
   public override type = appDatePickerInputType;
 
@@ -46,6 +46,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
   @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
   @queryAsync(appDatePickerName) protected $picker!: Promise<AppDatePicker | null>;
+  @state() private _disabled = false;
   @state() private _lazyLoaded = false;
   @state() private _open = false;
   @state() private _valueText = '';
@@ -75,6 +76,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     const input = await this.$input;
     if (input) {
       const onBodyKeyup = async (ev: KeyboardEvent) => {
+        if (this._disabled) return;
+
         if (ev.key === keyEscape) {
           this.closePicker();
         } else if (ev.key === keyTab) {
@@ -87,8 +90,13 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
           if (!isTabInsideInputSurface) this.closePicker();
         }
       };
-      const onClick = () => this._open = true;
+      const onClick = () => {
+        if (this._disabled) return;
+
+        this._open = true;
+      };
       const onKeyup = (ev: KeyboardEvent) => {
+        if (this._disabled) return;
         if ([keySpace, keyEnter].some(n => n === ev.key)) {
           onClick();
         }
@@ -106,7 +114,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     }
   }
 
-  public override willUpdate(changedProperties: ChangedProperties<DatePickerProperties>): void {
+  public override willUpdate(changedProperties: ChangedProperties<DatePickerInputProperties>): void {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('locale')) {
@@ -122,6 +130,10 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
     if (changedProperties.has('value')) {
       this.#updateValues(this.value);
+    }
+
+    if (changedProperties.has('disabled') || changedProperties.has('readOnly')) {
+      this._disabled = this.disabled || this.readOnly;
     }
   }
 
@@ -152,11 +164,15 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   }
 
   public reset(): void {
+    if (this._disabled) return;
+
     this.#valueAsDate = undefined;
     this.value = this._valueText = '';
   }
 
   public showPicker(): void {
+    if (this._disabled) return;
+
     this._open = true;
   }
 
@@ -200,6 +216,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   protected override renderTrailingIcon(): TemplateResult {
     return html`
     <app-icon-button
+      .disabled=${this._disabled}
       @click=${this.#onResetClick}
       aria-label=${this.clearLabel}
       class="mdc-text-field__icon mdc-text-field__icon--trailing"
@@ -333,6 +350,8 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   /* c8 ignore stop */
 
   #onResetClick = (ev: MouseEvent): void => {
+    if (this._disabled) return;
+
     /**
      * NOTE(motss): To prevent triggering the `focus` event of `TextField` element.
      */

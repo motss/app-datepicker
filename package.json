@@ -103,7 +103,9 @@
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3030 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
-    "test:dev": "COVERAGE=true TEST_HELPERS=true npm t && COVERAGE=true npm t",
+    "test:dev": "npm run test:helpers && npm run test:el",
+    "test:el": "COVERAGE=true npm t",
+    "test:helpers": "COVERAGE=true TEST_HELPERS=true npm t",
     "version": "sh $(npm root)/@reallyland/tools/generate-changelogs.sh && git add *CHANGELOG.md",
     "watch": "npm run clean && tsc --watch",
     "wtr": "node --max-old-space-size=8192 --trace-deprecation $(npm bin)/wtr --config wtr.config.mjs"

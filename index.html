@@ -87,15 +87,19 @@
         --shadow: #000000;
 
         /** Custom app CSS Variables */
+        --disabled: rgba(255, 255, 255, .38);
+        --mwc-primary: #6200ee;
         --white: #fff;
-        --a: rgba(255, 255, 255, .55);
-        --e: #6200ee;
+        --white55: rgba(255, 255, 255, .55);
 
         /** Override MDC CSS Variables */
+        --mdc-text-field-disabled-ink-color: var(--disabled);
+        --mdc-text-field-disabled-line-color: var(--disabled);
         --mdc-text-field-ink-color: var(--white);
-        --mdc-text-field-label-ink-color: var(--a);
+        --mdc-text-field-label-ink-color: var(--white55);
+        --mdc-text-field-outlined-disabled-border-color: var(--disabled);
         --mdc-text-field-outlined-hover-border-color: var(--secondary);
-        --mdc-text-field-outlined-idle-border-color: var(--a);
+        --mdc-text-field-outlined-idle-border-color: var(--white55);
         --mdc-theme-on-surface: var(--on-surface);
         --mdc-theme-primary: var(--primary);
         --mdc-theme-surface: var(--surface);
@@ -103,14 +107,14 @@
         /** Override app CSS Variables */
         --app-focus: var(--inverse-primary);
         --app-hover : var(--primary);
-        --app-on-disabled: var(--a);
+        --app-on-disabled: var(--white55);
         --app-on-focus: var(--primary);
         --app-on-hover  : var(--primary);
         --app-on-primary: var(--on-primary);
         --app-on-surface: var(--on-surface);
         --app-on-today: var(--white);
-        --app-on-week-number: var(--a);
-        --app-on-weekday: var(--a);
+        --app-on-week-number: var(--white55);
+        --app-on-weekday: var(--white55);
         --app-primary: var(--primary);
         --app-selected-focus: var(--inverse-primary);
         --app-selected-hover: var(--primary);
@@ -119,6 +123,7 @@
         --app-surface: var(--surface);
         --app-today: var(--white);
         --date-picker-input-icon: var(--white);
+        --date-picker-input-disabled-icon: var(--disabled);
       }
     }
 

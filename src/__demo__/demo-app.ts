@@ -100,12 +100,36 @@ export class DemoApp extends RootElement {
     <app-date-picker-input
       id="datePickerInput1"
       ?outlined=${true}
-      .label=${'DOB'}
+      .label=${'DOB (yearGrid)'}
       .placeholder=${'Select your date of birth'}
       .max=${'2100-12-31'}
       .min=${'1970-01-01'}
       .value=${'2020-02-02'}
       .startView=${'yearGrid'}
+    ></app-date-picker-input>
+
+    <app-date-picker-input
+      id="datePickerInput1"
+      ?outlined=${true}
+      .label=${'Disabled DOB'}
+      .placeholder=${'Select your date of birth'}
+      .max=${'2100-12-31'}
+      .min=${'1970-01-01'}
+      .value=${'2020-02-02'}
+      .startView=${'yearGrid'}
+      .disabled=${true}
+    ></app-date-picker-input>
+
+    <app-date-picker-input
+      id="datePickerInput1"
+      ?outlined=${true}
+      .label=${'Readonly DOB'}
+      .placeholder=${'Select your date of birth'}
+      .max=${'2100-12-31'}
+      .min=${'1970-01-01'}
+      .value=${'2020-02-02'}
+      .startView=${'yearGrid'}
+      .readOnly=${true}
     ></app-date-picker-input>
 
     <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
