@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.28](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.27...v6.0.0-rc.28) (2022-04-02)
+
+
+### chore
+
+* add missing ESLint config ([c8c5c35](https://github.com/motss/app-datepicker/commit/c8c5c35790d16c30aa0f9bada5794bf31f278756))
+
+### fix
+
+* fix calling .layout() for certain properties, use 4px for shape ([6bc4d54](https://github.com/motss/app-datepicker/commit/6bc4d54bacc36ba03e9d0e62010ed62b117e5d54))
+
+
+
 # [6.0.0-rc.27](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.26...v6.0.0-rc.27) (2022-04-02)
 
 
@@ -893,12 +906,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Fix test command for running tests on Sauce Labs ([2f7c649](https://github.com/motss/app-datepicker/commit/2f7c64920bf168b71b782772942cdb2e65b28d85))
 * Fix tests due to layout change, use import type in TS3.8 ([fd4f124](https://github.com/motss/app-datepicker/commit/fd4f12460f45e42c9dbca061b9c78a5189af351b))
-
-
-
-# [4.0.0-rc.45](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.44...v4.0.0-rc.45) (2020-02-16)
-
-
-### fix
-
-* Add --app-datepicker-focused-year-bg-color, fix #170 ([49b4789](https://github.com/motss/app-datepicker/commit/49b4789b39dc475baa000deea251a70ca4c3a48e)), closes [#170](https://github.com/motss/app-datepicker/issues/170)

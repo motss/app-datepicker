@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.28](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.27...v6.0.0-rc.28) (2022-04-02)
+
+
+### chore
+
+* add missing ESLint config ([c8c5c35](https://github.com/motss/app-datepicker/commit/c8c5c35790d16c30aa0f9bada5794bf31f278756))
+
+### fix
+
+* fix calling .layout() for certain properties, use 4px for shape ([6bc4d54](https://github.com/motss/app-datepicker/commit/6bc4d54bacc36ba03e9d0e62010ed62b117e5d54))
+
+
+
 # [6.0.0-rc.27](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.26...v6.0.0-rc.27) (2022-04-02)
 
 
