@@ -1,0 +1,5 @@
+{
+  "extends": [
+    "./node_modules/@reallyland/tools/browser/lit/.eslintrc.json"
+  ]
+}
