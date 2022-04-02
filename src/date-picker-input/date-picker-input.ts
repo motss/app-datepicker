@@ -7,7 +7,6 @@ import { nothing } from 'lit';
 import { html } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { live } from 'lit/directives/live.js';
 
 import { DateTimeFormat } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
@@ -49,7 +48,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
   @state() private _disabled = false;
   @state() private _lazyLoaded = false;
   @state() private _open = false;
-  @state() private _valueText = '';
 
   #disconnect: () => void = () => undefined;
   #focusElement: HTMLElement | undefined = undefined;
@@ -135,6 +133,10 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     if (changedProperties.has('disabled') || changedProperties.has('readOnly')) {
       this._disabled = this.disabled || this.readOnly;
     }
+
+    if (changedProperties.has('disabled') || changedProperties.has('outlined')) {
+      this.layout();
+    }
   }
 
   public override async updated(): Promise<void> {
@@ -167,7 +169,7 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
     if (this._disabled) return;
 
     this.#valueAsDate = undefined;
-    this.value = this._valueText = '';
+    this.value = '';
   }
 
   public showPicker(): void {
@@ -178,38 +180,53 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   protected override renderInput(shouldRenderHelperText: boolean): TemplateResult {
     /**
-     * NOTE: All these code are copied from original implementation.
+     * NOTE(motss): All these code are copied from original implementation with minor modification.
      */
-    const autocapitalizeOrUndef = this.autocapitalize ?
-        this.autocapitalize as (
+    const {
+      autocapitalize,
+      disabled,
+      focused,
+      helperPersistent,
+      inputMode,
+      isUiValid,
+      label,
+      name,
+      placeholder,
+      required,
+      validationMessage,
+    } = this;
+
+    const autocapitalizeOrUndef = autocapitalize ?
+        autocapitalize as (
             'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters') :
         undefined;
-    const showValidationMessage = this.validationMessage && !this.isUiValid;
-    const ariaLabelledbyOrUndef = this.label ? 'label' : undefined;
+    const showValidationMessage = validationMessage && !isUiValid;
+    const ariaLabelledbyOrUndef = label ? 'label' : undefined;
     const ariaControlsOrUndef =
         shouldRenderHelperText ? 'helper-text' : undefined;
     const ariaDescribedbyOrUndef =
-        this.focused || this.helperPersistent || showValidationMessage ?
+        focused || helperPersistent || showValidationMessage ?
         'helper-text' :
         undefined;
+    const valueText = this.#valueAsDate ? this.#valueFormatter.format(this.#valueAsDate) : '';
 
     return html`
       <input
-        ?disabled=${this.disabled}
-        ?readonly=${true}
-        ?required=${this.required}
-        .value=${live(this._valueText)}
-        @blur=${this.onInputBlur}
-        @focus=${this.onInputFocus}
-        aria-controls=${ifDefined(ariaControlsOrUndef)}
-        aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
-        aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
-        autocapitalize=${ifDefined(autocapitalizeOrUndef)}
-        class=mdc-text-field__input
-        inputmode=${ifDefined(this.inputMode)}
-        name=${ifDefined(this.name === '' ? undefined : this.name)}
-        placeholder=${this.placeholder}
-        type=text
+          ?disabled=${disabled}
+          ?required=${required}
+          .value=${valueText}
+          @blur=${this.onInputBlur}
+          @focus=${this.onInputFocus}
+          aria-controls=${ifDefined(ariaControlsOrUndef)}
+          aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
+          aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
+          autocapitalize=${ifDefined(autocapitalizeOrUndef)}
+          class=mdc-text-field__input
+          inputmode=${ifDefined(inputMode)}
+          name=${ifDefined(name || undefined)}
+          placeholder=${ifDefined(placeholder)}
+          readonly
+          type=text
       >`;
   }
 
@@ -407,7 +424,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       const valueDate = new Date(value);
 
       this.#valueAsDate = valueDate;
-      this._valueText = this.#valueFormatter.format(valueDate);
       this.value = toDateString(valueDate);
     } else {
       this.reset();

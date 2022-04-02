@@ -121,7 +121,7 @@ via the read-only `detail` property.
 | `--app-selected-hover` | `#6200ee` | Border color for all hover state when selected. |
 | `--app-selected-on-focus` | `#fff` | Text color for all focus state when selected. |
 | `--app-selected-on-hover` | `#fff` | Text color for all hover state when selected. |
-| `--app-shape` | `8px` | Border radius of the picker. |
+| `--app-shape` | `4px` | Border radius of the picker. |
 | `--app-surface` | `#fff` | Background color of the picker surface. |
 | `--app-today` | `#000` | Border color of today date. |
 

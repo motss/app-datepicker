@@ -4,7 +4,7 @@ import '../date-picker-input/app-date-picker-input.js';
 // import '../date-picker-dialog/app-date-picker-dialog.js';
 // import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { css, html } from 'lit';
-import { customElement, queryAsync } from 'lit/decorators.js';
+import { customElement, queryAsync, state } from 'lit/decorators.js';
 
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
@@ -17,6 +17,8 @@ import type { CustomEventDetail } from '../typings.js';
 
 @customElement('demo-app')
 export class DemoApp extends RootElement {
+  @state() _outlined = false;
+
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
   @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
   @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
@@ -121,16 +123,22 @@ export class DemoApp extends RootElement {
     ></app-date-picker-input>
 
     <app-date-picker-input
-      id="datePickerInput1"
-      ?outlined=${true}
+      ?outlined=${this._outlined}
       .label=${'Readonly DOB'}
-      .placeholder=${'Select your date of birth'}
       .max=${'2100-12-31'}
       .min=${'1970-01-01'}
-      .value=${'2020-02-02'}
-      .startView=${'yearGrid'}
+      .placeholder=${'Select your date of birth'}
       .readOnly=${true}
+      .startView=${'yearGrid'}
+      .value=${'2020-02-02'}
+      id="datePickerInput1"
     ></app-date-picker-input>
+    <input id=outlined1 type=checkbox .checked=${this._outlined} @input=${() => {
+      this._outlined = !this._outlined;
+    }} />
+    <label for=outlined1>
+      <span>Outlined</span>
+    </label>
 
     <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
