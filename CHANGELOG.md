@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.30](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.29...v6.0.0-rc.30) (2022-04-03)
+
+
+### chore
+
+* add my Github Sponsors profile to FUNDING.yml ([d9f62b0](https://github.com/motss/app-datepicker/commit/d9f62b015c96dc61f8965844ad63cab839d278fd))
+* fix linting issues ([4b16473](https://github.com/motss/app-datepicker/commit/4b16473cdf230f176ef63d0a6b008485f05589ab))
+
+### fix
+
+* fix initial render issue, input closes on hidden day ([bf24091](https://github.com/motss/app-datepicker/commit/bf24091672c87a709b21275442b06cbeff9c3b6e))
+
+
+
 # [6.0.0-rc.29](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.28...v6.0.0-rc.29) (2022-04-03)
 
 
@@ -876,17 +890,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Disabled day cannot be focused ([76b34d0](https://github.com/motss/app-datepicker/commit/76b34d056368f208c272dbc880d06b86aaf7e12e))
 * Various bug fixes ([ffd3609](https://github.com/motss/app-datepicker/commit/ffd360997ebf93733e557bfc7a9a04193b3736c5))
-
-
-
-# [4.0.0-rc.47](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.46...v4.0.0-rc.47) (2020-02-25)
-
-
-### chore
-
-* Upgrade dependency ([a7e361c](https://github.com/motss/app-datepicker/commit/a7e361c812c71d9c7ce504942299e71de99f9956))
-
-### refactor
-
-* Drop private class fields ([ee690e7](https://github.com/motss/app-datepicker/commit/ee690e7be4846f8091eed0db000757b53a73a11d))
-* Minor code refactoring ([8ff06ff](https://github.com/motss/app-datepicker/commit/8ff06ff0e9c2cc744270651a013f7e17b7d64d07))

@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.30](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.29...v6.0.0-rc.30) (2022-04-03)
+
+
+### chore
+
+* add my Github Sponsors profile to FUNDING.yml ([d9f62b0](https://github.com/motss/app-datepicker/commit/d9f62b015c96dc61f8965844ad63cab839d278fd))
+* fix linting issues ([4b16473](https://github.com/motss/app-datepicker/commit/4b16473cdf230f176ef63d0a6b008485f05589ab))
+
+### fix
+
+* fix initial render issue, input closes on hidden day ([bf24091](https://github.com/motss/app-datepicker/commit/bf24091672c87a709b21275442b06cbeff9c3b6e))
+
+
+
 # [6.0.0-rc.29](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.28...v6.0.0-rc.29) (2022-04-03)
 
 
