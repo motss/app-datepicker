@@ -123,7 +123,7 @@
   },
   "devDependencies": {
     "@open-wc/testing": "^3.1.2",
-    "@reallyland/tools": "^0.0.13",
+    "@reallyland/tools": "^0.0.14",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@web/dev-server-esbuild": "^0.3.0",
     "@web/dev-server-rollup": "^0.3.15",

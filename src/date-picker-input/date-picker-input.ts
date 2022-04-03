@@ -1,10 +1,8 @@
-import '@material/mwc-textfield';
 import '../icon-button/app-icon-button.js';
 
 import { TextField } from '@material/mwc-textfield';
 import type { TemplateResult } from 'lit';
-import { nothing } from 'lit';
-import { html } from 'lit';
+import { html, nothing    } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 

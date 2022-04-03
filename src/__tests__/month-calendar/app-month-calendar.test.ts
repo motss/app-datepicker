@@ -10,10 +10,7 @@ import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings';
 import type { CalendarInit } from 'nodemod/dist/calendar/typings';
 
 import type { confirmKeySet, navigationKeySetGrid} from '../../constants';
-import { labelShortWeek} from '../../constants';
-import { weekNumberTemplate } from '../../constants';
-import { labelWeek } from '../../constants';
-import { labelSelectedDate, labelToday } from '../../constants';
+import { labelSelectedDate, labelShortWeek, labelToday, labelWeek, weekNumberTemplate} from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
