@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.29](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.28...v6.0.0-rc.29) (2022-04-03)
+
+
+### fix
+
+* fix timing to force .layout(), update tests ([242ff1b](https://github.com/motss/app-datepicker/commit/242ff1b1b0782a5b20a53d0fda714a72b2b86339))
+
+
+
 # [6.0.0-rc.28](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.27...v6.0.0-rc.28) (2022-04-02)
 
 

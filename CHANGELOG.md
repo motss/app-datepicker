@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.29](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.28...v6.0.0-rc.29) (2022-04-03)
+
+
+### fix
+
+* fix timing to force .layout(), update tests ([242ff1b](https://github.com/motss/app-datepicker/commit/242ff1b1b0782a5b20a53d0fda714a72b2b86339))
+
+
+
 # [6.0.0-rc.28](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.27...v6.0.0-rc.28) (2022-04-02)
 
 
@@ -881,28 +890,3 @@ All notable changes to this project will be documented in this file. See [standa
 
 * Drop private class fields ([ee690e7](https://github.com/motss/app-datepicker/commit/ee690e7be4846f8091eed0db000757b53a73a11d))
 * Minor code refactoring ([8ff06ff](https://github.com/motss/app-datepicker/commit/8ff06ff0e9c2cc744270651a013f7e17b7d64d07))
-
-
-
-# [4.0.0-rc.46](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.45...v4.0.0-rc.46) (2020-02-24)
-
-
-### feat
-
-* Support ::part() in dialog, update tests and doc with ::part() ([6f8f5bb](https://github.com/motss/app-datepicker/commit/6f8f5bbd1d1b89f39d841c06de728146b4ce9152))
-* Support ::part() which enables by default in stable FF and Chrome ([b7d4cea](https://github.com/motss/app-datepicker/commit/b7d4cea9cfd3428c5139076f48a4c1b1ca163aa6))
-
-### fix
-
-* Fix calendar day not centered, fix #169, fix #172 ([da297a5](https://github.com/motss/app-datepicker/commit/da297a5ce34cf2c71ce94d8065ca3228e3747bc4)), closes [#169](https://github.com/motss/app-datepicker/issues/169) [#172](https://github.com/motss/app-datepicker/issues/172)
-* Handle mouseleave event when dragging calendar, close #174 ([30de2eb](https://github.com/motss/app-datepicker/commit/30de2eb944f806c5cfd4f2cdbec0150be5fec8a1)), closes [#174](https://github.com/motss/app-datepicker/issues/174)
-
-### refactor
-
-* Refactor animation and NPM scripts ([25c38ba](https://github.com/motss/app-datepicker/commit/25c38ba4c9eaa03e50937cbff709aac621c59a4f))
-* Use Generic in findShadowTarget() instead of using as keyword ([23f6f66](https://github.com/motss/app-datepicker/commit/23f6f669515a84bfd2e8542679702992667a99c7))
-
-### test
-
-* Fix test command for running tests on Sauce Labs ([2f7c649](https://github.com/motss/app-datepicker/commit/2f7c64920bf168b71b782772942cdb2e65b28d85))
-* Fix tests due to layout change, use import type in TS3.8 ([fd4f124](https://github.com/motss/app-datepicker/commit/fd4f12460f45e42c9dbca061b9c78a5189af351b))
