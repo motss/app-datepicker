@@ -17,6 +17,7 @@ import type { CustomEventDetail } from '../typings.js';
 
 @customElement('demo-app')
 export class DemoApp extends RootElement {
+  @state() _editable = false;
   @state() _outlined = false;
 
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
@@ -83,7 +84,7 @@ export class DemoApp extends RootElement {
     ></app-date-picker>
 
     <app-date-picker
-      id="datePicker2"
+      id="datePicker3"
       .min=${'1970-01-01'}
       @date-updated=${this.#dateUpdated}
       showWeekNumber
@@ -100,8 +101,8 @@ export class DemoApp extends RootElement {
     ></app-date-picker-input>
 
     <app-date-picker-input
-      id="datePickerInput1"
-      ?outlined=${true}
+      id="datePickerInputOutlined1"
+      .outlined=${this._outlined}
       .label=${'DOB (yearGrid)'}
       .placeholder=${'Select your date of birth'}
       .max=${'2100-12-31'}
@@ -109,9 +110,29 @@ export class DemoApp extends RootElement {
       .value=${'2020-02-02'}
       .startView=${'yearGrid'}
     ></app-date-picker-input>
+    <input id=outlined1 type=checkbox .checked=${this._outlined} @input=${async () => {
+        this._outlined = !this._outlined;
+
+        const el = this.query<AppDatePickerInput>('#datePickerInputOutlined1');
+
+        if (el) {
+          /**
+           * NOTE(motss): Initial render with defined `outlined` and other properties will render
+           * everything correctly. However, updating any property that causes re-render will
+           * render the floating label incorrectly for unknown reasons. This is the workaround to
+           * always call `.layout()` manually and it cannot be done by the `DatePickerInput`
+           * internally.
+           */
+          await el.updateComplete;
+          await el.layout();
+        }
+      }} />
+    <label for=outlined1>
+      <span>Outlined</span>
+    </label>
 
     <app-date-picker-input
-      id="datePickerInput1"
+      id="datePickerInputDisabled1"
       ?outlined=${true}
       .label=${'Disabled DOB'}
       .placeholder=${'Select your date of birth'}
@@ -123,7 +144,6 @@ export class DemoApp extends RootElement {
     ></app-date-picker-input>
 
     <app-date-picker-input
-      ?outlined=${this._outlined}
       .label=${'Readonly DOB'}
       .max=${'2100-12-31'}
       .min=${'1970-01-01'}
@@ -131,16 +151,12 @@ export class DemoApp extends RootElement {
       .readOnly=${true}
       .startView=${'yearGrid'}
       .value=${'2020-02-02'}
-      id="datePickerInput1"
+      id="datePickerInputReadonly1"
     ></app-date-picker-input>
-    <input id=outlined1 type=checkbox .checked=${this._outlined} @input=${() => {
-      this._outlined = !this._outlined;
-    }} />
-    <label for=outlined1>
-      <span>Outlined</span>
-    </label>
 
-    <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
+    <input type=date />
+
+    <button data-id="datePickerDialog" @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 
     <button data-id="datePickerDialog2" @click=${this.#showDialog}>Open with optional properties</button>

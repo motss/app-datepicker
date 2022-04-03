@@ -108,6 +108,14 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
         input.removeEventListener('click', onClick);
       };
     }
+
+    /**
+     * NOTE(motss): This is a workaround to ensure all inner dependencies of  `TextField`
+     * will be updated accordingly and `.layout()` is called correctly.
+     */
+    /* c8 ignore next */
+    await this.outlineElement?.updateComplete;
+    await this.layout();
   }
 
   public override willUpdate(changedProperties: ChangedProperties<DatePickerInputProperties>): void {
@@ -135,14 +143,6 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
       const picker = await this.$picker;
 
       picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
-    }
-
-    if (this.placeholder || this.label) {
-      /**
-       * NOTE(motss): This is a workaround to force the layout to update with any defined
-       * `placeholder` and/ or `label`.
-       */
-      this.layout();
     }
   }
 

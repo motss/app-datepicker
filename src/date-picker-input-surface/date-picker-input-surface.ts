@@ -25,7 +25,7 @@ export class DatePickerInputSurface extends ElementMixin(MenuSurface) {
       (ev.composedPath() as HTMLElement[])
         .filter(({ nodeType }) => nodeType === Node.ELEMENT_NODE);
     const shouldClose =
-      elements.some(n => n.classList.contains('calendar-day')) ||
+      elements.some(n => n.classList.contains('calendar-day') && !n.hasAttribute('aria-hidden')) ||
       !elements.some(
         n =>
           alwaysOpenElementSet.has(n.localName as InferredFromSet<typeof alwaysOpenElementSet>)
