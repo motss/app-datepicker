@@ -38,6 +38,7 @@
   "module": "./dist/app-datepicker.js",
   "typings": "./dist/app-datepicker.d.ts",
   "files": [
+    "*.sh",
     "dist/*.*js.map",
     "dist/*.*js",
     "dist/*.d.ts.map",
@@ -45,7 +46,8 @@
     "dist/helpers/.*js.map",
     "dist/helpers/*.*js",
     "dist/helpers/*.d.ts.map",
-    "dist/helpers/*.d.ts"
+    "dist/helpers/*.d.ts",
+    "postinstall.mjs"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
