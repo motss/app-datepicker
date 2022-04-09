@@ -84,7 +84,7 @@ The following are the list of tools used that makes it shine:
 - NPM
 
   ```sh
-  $ npm i app-datepicker
+  $ npm i app-datepicker@next
   ```
 
 - Alternatively, it can be downloaded from any of the following awesome CDNs:
