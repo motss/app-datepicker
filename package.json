@@ -125,7 +125,7 @@
     "@reallyland/tools": "^0.0.14",
     "@rollup/plugin-node-resolve": "^13.2.1",
     "@web/dev-server-esbuild": "^0.3.0",
-    "@web/dev-server-rollup": "^0.3.15",
+    "@web/dev-server-rollup": "^0.3.16",
     "@web/test-runner": "^0.13.27",
     "@web/test-runner-commands": "^0.6.1",
     "@web/test-runner-playwright": "^0.8.8",
