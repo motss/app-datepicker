@@ -62,7 +62,7 @@ jobs:
 
       - name: Cleanup package.json
         run: |
-          npm pkg delete devDependencies scripts
+          npm pkg delete devDependencies nano-staged scripts
 
       - name: Publish to npm (Prerelease)
         if: contains(github.ref, '-rc') == true || contains(github.ref, '-') == true

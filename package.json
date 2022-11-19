@@ -23,6 +23,7 @@
     "type": "git",
     "url": "git@github.com:motss/app-datepicker.git"
   },
+  "funding": "https://github.com/motss/lit-ntml?sponsor=1",
   "license": "MIT",
   "author": {
     "name": "Rong Sen Ng (motss)",
@@ -31,19 +32,78 @@
   },
   "type": "module",
   "exports": {
-    ".": "./dist/date-picker/app-date-picker.js",
+    ".": {
+      "types": "./dist/date-picker/app-date-picker.d.ts",
+      "import": "./dist/date-picker/app-date-picker.js",
+      "default": "./dist/date-picker/app-date-picker.js"
+    },
+    "./app-date-picker": {
+      "types": "./dist/date-picker/app-date-picker.d.ts",
+      "import": "./dist/date-picker/app-date-picker.js",
+      "default": "./dist/date-picker/app-date-picker.js"
+    },
+    "./app-date-picker-dialog": {
+      "types": "./dist/date-picker-dialog/app-date-picker-dialog.d.ts",
+      "import": "./dist/date-picker-dialog/app-date-picker-dialog.js",
+      "default": "./dist/date-picker-dialog/app-date-picker-dialog.js"
+    },
+    "./app-date-picker-input": {
+      "types": "./dist/date-picker-input/app-date-picker-input.d.ts",
+      "import": "./dist/date-picker-input/app-date-picker-input.js",
+      "default": "./dist/date-picker-input/app-date-picker-input.js"
+    },
+    "./app-month-calendar": {
+      "types": "./dist/month-calendar/app-month-calendar.d.ts",
+      "import": "./dist/month-calendar/app-month-calendar.js",
+      "default": "./dist/month-calendar/app-month-calendar.js"
+    },
+    "./app-year-grid": {
+      "types": "./dist/year-grid/app-year-grid.d.ts",
+      "import": "./dist/year-grid/app-year-grid.js",
+      "default": "./dist/year-grid/app-year-grid.js"
+    },
+    "./date-picker": {
+      "types": "./dist/date-picker/date-picker.d.ts",
+      "import": "./dist/date-picker/date-picker.js",
+      "default": "./dist/date-picker/date-picker.js"
+    },
+    "./date-picker-dialog": {
+      "types": "./dist/date-picker-dialog/date-picker-dialog.d.ts",
+      "import": "./dist/date-picker-dialog/date-picker-dialog.js",
+      "default": "./dist/date-picker-dialog/date-picker-dialog.js"
+    },
+    "./date-picker-input": {
+      "types": "./dist/date-picker-input/date-picker-input.d.ts",
+      "import": "./dist/date-picker-input/date-picker-input.js",
+      "default": "./dist/date-picker-input/date-picker-input.js"
+    },
+    "./month-calendar": {
+      "types": "./dist/month-calendar/month-calendar.d.ts",
+      "import": "./dist/month-calendar/month-calendar.js",
+      "default": "./dist/month-calendar/month-calendar.js"
+    },
+    "./root-element": {
+      "types": "./dist/root-element/root-element.d.ts",
+      "import": "./dist/root-element/root-element.js",
+      "default": "./dist/root-element/root-element.js"
+    },
+    "./year-grid": {
+      "types": "./dist/year-grid/year-grid.d.ts",
+      "import": "./dist/year-grid/year-grid.js",
+      "default": "./dist/year-grid/year-grid.js"
+    },
     "./date-picker-dialog/*": "./dist/date-picker-dialog/*",
-    "./date-picker-input-surface/*": "./dist/date-picker-input-surface/*",
     "./date-picker-input/*": "./dist/date-picker-input/*",
     "./date-picker/*": "./dist/date-picker/*",
     "./dist/*": "./dist/*",
+    "./helpers/*": "./helpers/*",
     "./month-calendar/*": "./dist/month-calendar/*",
     "./root-element/*": "./dist/root-element/*",
     "./year-grid/*": "./dist/year-grid/*"
   },
   "main": "./dist/date-picker/app-date-picker.js",
   "module": "./dist/date-picker/app-date-picker.js",
-  "typings": "./dist/date-picker/typings.js",
+  "typings": "./dist/date-picker/app-date-picker.d.ts",
   "files": [
     "dist/*.*js.map",
     "dist/*.*js",
@@ -111,27 +171,27 @@
     "wtr": "node --max-old-space-size=8192 --trace-deprecation $(npm bin)/wtr --config wtr.config.mjs"
   },
   "dependencies": {
-    "@material/mwc-base": "^0.26.1",
-    "@material/mwc-button": "^0.26.1",
-    "@material/mwc-dialog": "^0.26.1",
-    "@material/mwc-icon-button": "^0.26.1",
-    "@material/mwc-menu": "^0.26.1",
-    "@material/mwc-textfield": "^0.26.1",
-    "lit": "^2.2.5",
+    "@material/mwc-base": "^0.27.0",
+    "@material/mwc-button": "^0.27.0",
+    "@material/mwc-dialog": "^0.27.0",
+    "@material/mwc-icon-button": "^0.27.0",
+    "@material/mwc-menu": "^0.27.0",
+    "@material/mwc-textfield": "^0.27.0",
+    "lit": "^2.4.1",
     "nodemod": "^3.0.6",
-    "tslib": "^2.4.0"
+    "tslib": "^2.4.1"
   },
   "devDependencies": {
-    "@open-wc/testing": "^3.1.5",
-    "@reallyland/tools": "^0.0.15",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@web/dev-server-esbuild": "^0.3.0",
-    "@web/dev-server-rollup": "^0.3.17",
-    "@web/test-runner": "^0.13.30",
-    "@web/test-runner-commands": "^0.6.2",
-    "@web/test-runner-playwright": "^0.8.9",
+    "@open-wc/testing": "^3.1.7",
+    "@reallyland/tools": "^0.2.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@web/dev-server-esbuild": "^0.3.3",
+    "@web/dev-server-rollup": "^0.3.19",
+    "@web/test-runner": "^0.15.0",
+    "@web/test-runner-commands": "^0.6.5",
+    "@web/test-runner-playwright": "^0.9.0",
     "eslint-plugin-lit": "^1.6.1",
-    "eslint-plugin-lit-a11y": "^2.2.0",
+    "eslint-plugin-lit-a11y": "^2.3.0",
     "hanbi": "^1.0.1"
   },
   "engines": {
@@ -140,5 +200,11 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "nano-staged": {
+    "*.ts": [
+      "npm run lint:build -- -f 1",
+      "git add"
+    ]
   }
 }
