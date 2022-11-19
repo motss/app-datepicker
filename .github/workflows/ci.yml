@@ -7,9 +7,9 @@ on:
     paths-ignore:
       - '**/*.md'
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -25,9 +25,6 @@ env:
 jobs:
   test:
     if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, 'docs:') && !contains(github.event.head_commit.message, 'chore(release)')"
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-      cancel-in-progress: true
     env:
       IS_UBUNTU: ${{ contains(matrix.os, 'ubuntu') }}
     name: ${{ matrix.os }} ${{ matrix.target }}
