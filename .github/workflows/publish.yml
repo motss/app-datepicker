@@ -58,6 +58,14 @@ jobs:
         run: |
           npm ci
 
+      - name: Build
+        run: |
+          npm run prepublishOnly
+
+      - name: Cleanup package.json
+        run: |
+          npm pkg delete scripts
+
       - name: Publish to npm (Prerelease)
         if: contains(github.ref, '-rc') == true || contains(github.ref, '-') == true
         run: |
