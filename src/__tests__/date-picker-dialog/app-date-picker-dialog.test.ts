@@ -102,8 +102,8 @@ describe(appDatePickerDialogName, () => {
     expect(datePickerDialogBase).exist;
     expect(datePicker).exist;
     expect(datePickerDialogBase?.hasAttribute('open')).true;
-    expect(el.valueAsDate).deep.equal(new Date(properties.value));
-    expect(el.valueAsNumber).equal(+new Date(properties.value));
+    expect(el.valueAsDate).deep.equal(new Date(properties.value as string));
+    expect(el.valueAsNumber).equal(+new Date(properties.value as string));
 
     const dialogActionReset = el.query(elementSelectors.dialogActionReset);
     const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
@@ -201,7 +201,7 @@ describe(appDatePickerDialogName, () => {
     expectedDialogValue: string
   ];
   const casesSelectAndConfirmNewDate: CaseSelectsAndConfirmsNewDate[] = [
-    ['but does not confirm a new date', '2020-02-04', 'cancel', false, properties.value],
+    ['but does not confirm a new date', '2020-02-04', 'cancel', false, properties.value as string],
     ['and confirms a new date', '2020-02-04', 'set', false, '2020-02-04'],
     ['a new date but resets it', '2020-02-04', 'reset', true, toDateString(toResolvedDate())],
   ];
