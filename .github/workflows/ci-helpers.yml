@@ -1,16 +1,15 @@
 name: ci-helpers
 
 on:
-  push:
-    branches:
-      - '*'
-    tags-ignore:
-      - '*'
   pull_request:
     branches:
-      - '*'
-    tags-ignore:
-      - '*'
+      - '**'
+    paths-ignore:
+      - '**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -38,11 +37,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        target: [16.x]
+        target: [18.x]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # - name: Setup node@${{ matrix.target }}
       #   uses: actions/setup-node@v2
@@ -66,7 +65,7 @@ jobs:
 
       - name: Cache dependencies
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           # See this glob workaround at https://github.com/actions/toolkit/issues/713.
           path: |
@@ -98,7 +97,7 @@ jobs:
 
       - name: Upload coverage to codecov
         if: env.IS_UBUNTU != 'false' && success()
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
