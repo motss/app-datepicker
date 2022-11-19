@@ -5,7 +5,8 @@
     "inlineSources": false,
     "outDir": "dist",
     "rootDir": "src",
-    "sourceMap": false
+    "sourceMap": false,
+    "useDefineForClassFields": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules"]

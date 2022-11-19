@@ -190,7 +190,8 @@
     "@web/test-runner-playwright": "^0.9.0",
     "eslint-plugin-lit": "^1.6.1",
     "eslint-plugin-lit-a11y": "^2.3.0",
-    "hanbi": "^1.0.1"
+    "hanbi": "^1.0.1",
+    "typescript": "^4.9.3"
   },
   "engines": {
     "node": ">= 16.x",
