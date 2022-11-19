@@ -2,10 +2,8 @@ name: publish
 
 on:
   push:
-    branches-ignore:
-      - '*'
     tags:
-      - '*'
+      - "v**"
 
 defaults:
   run:
@@ -28,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: List versions
         run: |
@@ -44,7 +42,7 @@ jobs:
 
       - name: Cache dependencies
         id: npm-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           # See this glob workaround at https://github.com/actions/toolkit/issues/713.
           path: |
@@ -57,6 +55,14 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+
+      - name: Build
+        run: |
+          npm run prepublishOnly
+
+      - name: Cleanup package.json
+        run: |
+          npm pkg delete devDependencies scripts
 
       - name: Publish to npm (Prerelease)
         if: contains(github.ref, '-rc') == true || contains(github.ref, '-') == true
