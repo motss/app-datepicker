@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.32](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.31...v6.0.0-rc.32) (2022-11-19)
+
+
+### fix
+
+* class fields fix (#216) ([a6aee05](https://github.com/motss/app-datepicker/commit/a6aee05e8f076ba0ffef1f557e59ff1c336d1f3c)), closes [#216](https://github.com/motss/app-datepicker/issues/216)
+
+
+
 # [6.0.0-rc.31](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.30...v6.0.0-rc.31) (2022-11-19)
 
 

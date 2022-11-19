@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.32](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.31...v6.0.0-rc.32) (2022-11-19)
+
+
+### fix
+
+* class fields fix (#216) ([a6aee05](https://github.com/motss/app-datepicker/commit/a6aee05e8f076ba0ffef1f557e59ff1c336d1f3c)), closes [#216](https://github.com/motss/app-datepicker/issues/216)
+
+
+
 # [6.0.0-rc.31](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.30...v6.0.0-rc.31) (2022-11-19)
 
 
@@ -872,16 +881,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### fix
 
 * Fix tabindex does not update accordingly with focused date ([02ff148](https://github.com/motss/app-datepicker/commit/02ff148cf9de17c8df496564729ce9100d8dbc17))
-
-
-
-# [4.0.0-rc.49](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.48...v4.0.0-rc.49) (2020-03-08)
-
-
-### chore
-
-* Upgrade dependencies, reduce maxInstances ([fa091fc](https://github.com/motss/app-datepicker/commit/fa091fca0e1327c6a7fd2ecffc24f798d785f87a))
-
-### feat
-
-* Add `alwaysResetValue` property, update tests and doc, close #176 ([7622e92](https://github.com/motss/app-datepicker/commit/7622e92c5e3cf78acd0f29f31166e2f046351a89)), closes [#176](https://github.com/motss/app-datepicker/issues/176)
