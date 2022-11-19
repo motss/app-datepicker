@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.31](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.30...v6.0.0-rc.31) (2022-11-19)
+
+
+### chore
+
+* update dependencies ([3582b2c](https://github.com/motss/app-datepicker/commit/3582b2c8ae74bb96def798d03738632298f0b471))
+* update dependencies ([df15d4f](https://github.com/motss/app-datepicker/commit/df15d4fc43b7fb7d5069c5f94014b5e399d84d06))
+* update dependencies ([cf32860](https://github.com/motss/app-datepicker/commit/cf3286005f7b4b6f169c277f3f5e6934b954dd6d))
+* update dependencies ([7027e36](https://github.com/motss/app-datepicker/commit/7027e36e6514572f4f841874194a7ed447de933a))
+* update dependencies ([06cf52c](https://github.com/motss/app-datepicker/commit/06cf52c6c5b067462b9267b3a43134e3acff79e2))
+* update dependencies (#215) ([3c3fe1f](https://github.com/motss/app-datepicker/commit/3c3fe1f40706e8d2e6e04b2776feb7bb8fa9f969)), closes [#215](https://github.com/motss/app-datepicker/issues/215)
+
+### docs
+
+* update installation note, update lockfile ([d370cf2](https://github.com/motss/app-datepicker/commit/d370cf21bb7b8e21a15e6b9a5bd3b9995215110a))
+
+### refactor
+
+* add missing .js extension ([847626e](https://github.com/motss/app-datepicker/commit/847626ed7713b196e2da2089aa2be3a3ca14f59c))
+
+
+
 # [6.0.0-rc.30](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.29...v6.0.0-rc.30) (2022-04-03)
 
 
@@ -863,30 +885,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### feat
 
 * Add `alwaysResetValue` property, update tests and doc, close #176 ([7622e92](https://github.com/motss/app-datepicker/commit/7622e92c5e3cf78acd0f29f31166e2f046351a89)), closes [#176](https://github.com/motss/app-datepicker/issues/176)
-
-
-
-# [4.0.0-rc.48](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.47...v4.0.0-rc.48) (2020-03-02)
-
-
-### chore
-
-* Upgrade dependencies ([68fc5d9](https://github.com/motss/app-datepicker/commit/68fc5d93154774e27f5fbb0301ffee78c093d484))
-
-### ci
-
-* Try using circleci/node:12-browsers Docker image ([27b447b](https://github.com/motss/app-datepicker/commit/27b447bb1106ea5d129f45044c23bf22b095d467))
-* Trying the optimal value of maxInstances ([5567540](https://github.com/motss/app-datepicker/commit/5567540cf5ad758599d8663317bb9363a83a86d1))
-* Trying to bump maxInstances ([b62323b](https://github.com/motss/app-datepicker/commit/b62323bd274f5e088e6f3bb60f75cc915b301272))
-* Trying to find the optimal maxInstances ([2ef7911](https://github.com/motss/app-datepicker/commit/2ef79110962642117d6bcfa4966d9847cc9035e7))
-* Trying to fix failed CI, use node@13 and decrease maxInstances ([7445099](https://github.com/motss/app-datepicker/commit/7445099192370a26fb103afc2e7783f5c36f84ee))
-* Trying to increase maxInstances ([d174da4](https://github.com/motss/app-datepicker/commit/d174da4648b0a729c8d4115ed5c293fa7ee1fc9c))
-
-### feat
-
-* Scrollbar thumb customization in year list view, close #173 ([69a32da](https://github.com/motss/app-datepicker/commit/69a32da38d7386ca3461bc08473f4ad766e61b8c)), closes [#173](https://github.com/motss/app-datepicker/issues/173)
-
-### fix
-
-* Disabled day cannot be focused ([76b34d0](https://github.com/motss/app-datepicker/commit/76b34d056368f208c272dbc880d06b86aaf7e12e))
-* Various bug fixes ([ffd3609](https://github.com/motss/app-datepicker/commit/ffd360997ebf93733e557bfc7a9a04193b3736c5))

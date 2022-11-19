@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.31](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.30...v6.0.0-rc.31) (2022-11-19)
+
+
+### chore
+
+* update dependencies ([3582b2c](https://github.com/motss/app-datepicker/commit/3582b2c8ae74bb96def798d03738632298f0b471))
+* update dependencies ([df15d4f](https://github.com/motss/app-datepicker/commit/df15d4fc43b7fb7d5069c5f94014b5e399d84d06))
+* update dependencies ([cf32860](https://github.com/motss/app-datepicker/commit/cf3286005f7b4b6f169c277f3f5e6934b954dd6d))
+* update dependencies ([7027e36](https://github.com/motss/app-datepicker/commit/7027e36e6514572f4f841874194a7ed447de933a))
+* update dependencies ([06cf52c](https://github.com/motss/app-datepicker/commit/06cf52c6c5b067462b9267b3a43134e3acff79e2))
+* update dependencies (#215) ([3c3fe1f](https://github.com/motss/app-datepicker/commit/3c3fe1f40706e8d2e6e04b2776feb7bb8fa9f969)), closes [#215](https://github.com/motss/app-datepicker/issues/215)
+
+### docs
+
+* update installation note, update lockfile ([d370cf2](https://github.com/motss/app-datepicker/commit/d370cf21bb7b8e21a15e6b9a5bd3b9995215110a))
+
+### refactor
+
+* add missing .js extension ([847626e](https://github.com/motss/app-datepicker/commit/847626ed7713b196e2da2089aa2be3a3ca14f59c))
+
+
+
 # [6.0.0-rc.30](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.29...v6.0.0-rc.30) (2022-04-03)
 
 
