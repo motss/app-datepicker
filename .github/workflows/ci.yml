@@ -70,7 +70,7 @@ jobs:
 
       - name: Setup Playwright
         run: |
-          $(npm bin)/playwright install-deps
+          npx playwright install-deps
 
       - name: Lint
         run: |
