@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.33](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.32...v6.0.0-rc.33) (2023-03-25)
+
+
+### chore
+
+* update dependencies ([4842afd](https://github.com/motss/app-datepicker/commit/4842afd44b6cf9f87061c9488f88106826e35379))
+
+
+
 # [6.0.0-rc.32](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.31...v6.0.0-rc.32) (2022-11-19)
 
 
@@ -872,12 +881,3 @@ All notable changes to this project will be documented in this file. See [standa
 ### refactor
 
 * Only focus year selector button when switching between views ([200d0f0](https://github.com/motss/app-datepicker/commit/200d0f06a8823bad61575b19a7b6a898a4307cc0))
-
-
-
-# [4.0.0-rc.50](https://github.com/motss/app-datepicker/compare/v4.0.0-rc.49...v4.0.0-rc.50) (2020-03-09)
-
-
-### fix
-
-* Fix tabindex does not update accordingly with focused date ([02ff148](https://github.com/motss/app-datepicker/commit/02ff148cf9de17c8df496564729ce9100d8dbc17))

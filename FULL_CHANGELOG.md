@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+# [6.0.0-rc.33](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.32...v6.0.0-rc.33) (2023-03-25)
+
+
+### chore
+
+* update dependencies ([4842afd](https://github.com/motss/app-datepicker/commit/4842afd44b6cf9f87061c9488f88106826e35379))
+
+
+
 # [6.0.0-rc.32](https://github.com/motss/app-datepicker/compare/v6.0.0-rc.31...v6.0.0-rc.32) (2022-11-19)
 
 
