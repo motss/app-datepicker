@@ -1,7 +1,7 @@
 import '../../date-picker/app-date-picker';
 
 import type { Button } from '@material/mwc-button';
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, MAX_DATE } from '../../constants';
@@ -15,7 +15,6 @@ import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import type { CustomEventDetail, DatePickerProperties, Formatters, StartView } from '../../typings';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { eventOnce } from '../test-utils/event-once';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(appDatePickerName, () => {
   const elementSelectors = {
@@ -37,309 +36,311 @@ describe(appDatePickerName, () => {
   const formatters: Formatters = toFormatters('en-US');
   const todayDate = toResolvedDate();
 
-  type CaseStartView = [
+  it.only.each<{
     startView: StartView | undefined,
-    expectedVisibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
-    expectedHiddenElements: ('body' | 'calendar' | 'header' | 'yearGrid')[]
-  ];
-  const casesStartView: CaseStartView[] = [
-    [
-      undefined,
-      ['body', 'calendar', 'header'],
-      ['yearGrid'],
-    ],
-    [
-      'calendar',
-      ['body', 'calendar', 'header'],
-      ['yearGrid'],
-    ],
-    [
-      'yearGrid',
-      ['body', 'header', 'yearGrid'],
-      ['calendar'],
-    ],
-  ];
-  casesStartView.forEach((a) => {
-    const [testCalendarView, expectedVisibleElements, expectedHiddenElements] = a;
-    it(
-      messageFormatter('renders (startView=%s)', a),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker .startView=${testCalendarView as never}></app-date-picker>`
-        );
-
-        expectedVisibleElements.forEach((n) => {
-          const element = el.query(elementSelectors[n]);
-
-          expect(element).exist;
-
-          // Verify year dropdown title
-          const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
-
-          expect(yearDropdown)
-            .exist
-            .attr(
-              'title',
-              expectedVisibleElements.includes('calendar') ?
-                labelChooseYear :
-                labelChooseMonth
-            );
-
-          // Verify body class to ensure .start-view--{calendar|yearGrid} is always set
-          if (n === 'body') {
-            expect(element).have.class(`start-view--${testCalendarView || 'calendar'}`);
-          }
-        });
-
-        expectedHiddenElements.forEach((n) => {
-          const element = el.query(elementSelectors[n]);
-
-          expect(element).not.exist;
-        });
-
-        if (testCalendarView === 'yearGrid') {
-          const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
-
-          expect(yearGrid).exist.attr('exportparts', 'year-grid,year,toyear');
-        } else {
-          const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
-
-          expect(calendar).exist.attr(
-            'exportparts',
-            'table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar'
-          );
-        }
-      }
+    $_visibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
+    $_hiddenElements: ('body' | 'calendar' | 'header' | 'yearGrid')[];
+  }>([
+    {
+      startView: undefined,
+      $_visibleElements: ['body', 'calendar', 'header'],
+      $_hiddenElements: ['yearGrid'],
+    },
+    {
+      startView: 'calendar',
+      $_visibleElements: ['body', 'calendar', 'header'],
+      $_hiddenElements: ['yearGrid'],
+    },
+    {
+      startView: 'yearGrid',
+      $_visibleElements: ['body', 'header', 'yearGrid'],
+      $_hiddenElements: ['calendar'],
+    }
+  ])(`renders (startView=$startView)`, async ({
+    startView,
+    $_hiddenElements,
+    $_visibleElements,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker .startView=${startView as never}></app-date-picker>`
     );
+
+    $_visibleElements.forEach((n) => {
+      const element = el.query(elementSelectors[n]);
+
+      // Verify year dropdown title
+      const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+
+      expect(yearDropdown).exist;
+      expect(yearDropdown?.getAttribute('title')).toBe(
+        $_visibleElements.includes('calendar') ?
+          labelChooseYear :
+          labelChooseMonth
+      );
+
+      // Verify body class to ensure .start-view--{calendar|yearGrid} is always set
+      if (n === 'body') {
+        expect(element?.classList.contains(`start-view--${startView || 'calendar'}`)).toBeTruthy();
+      }
+    });
+
+    $_hiddenElements.forEach((n) => {
+      const element = el.query(elementSelectors[n]);
+
+      expect(element).not.exist;
+    });
+
+    if (startView === 'yearGrid') {
+      const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
+
+      expect(yearGrid).exist;
+      expect(yearGrid?.getAttribute('exportparts')).toBe('year-grid,year,toyear');
+    } else {
+      const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
+
+      expect(calendar).exist;
+      expect(calendar?.getAttribute(
+        'exportparts')).toBe(
+          'table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar'
+        );
+    }
   });
 
-  type CaseLocale = [
+  it.only.each<{
     locale: string | undefined,
-    expectedLocale: string,
-    expectedYearMonthLabel: string
-  ];
-  const casesLocale: CaseLocale[] = [
-    [undefined, Intl.DateTimeFormat().resolvedOptions().locale, 'February 2020'],
-    ['zh-TW', 'zh-TW', '2020年2月'],
-  ];
-  casesLocale.forEach((a) => {
-    const [testLocale, expectedLocale, expectedYearMonthLabel] = a;
-    it(
-      messageFormatter('renders (locale=%s)', a),
-      async () => {
-        const testValue = '2020-02-02';
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker .locale=${testLocale as never} min="1970-01-01" value=${testValue}></app-date-picker>`
-        );
-
-        const selectedYearMonth = el.query<HTMLParagraphElement>(
-          elementSelectors.selectedYearMonth
-        );
-
-        expect(el.locale).equal(expectedLocale);
-        expect(el.value).equal(testValue);
-        expect(selectedYearMonth?.textContent).equal(expectedYearMonthLabel);
-      }
+    $_locale: string,
+    $_yearMonthLabel: string;
+  }>([
+    {
+      locale: undefined,
+      $_locale: Intl.DateTimeFormat().resolvedOptions().locale,
+      $_yearMonthLabel: 'February 2020'
+    },
+    {
+      locale: 'zh-TW',
+      $_locale: 'zh-TW',
+      $_yearMonthLabel: '2020年2月',
+    }
+  ])(`renders (locale=$locale)`, async ({
+    $_locale,
+    $_yearMonthLabel,
+    locale,
+  }) => {
+    const testValue = '2020-02-02';
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker .locale=${locale as never} min="1970-01-01" value=${testValue}></app-date-picker>`
     );
+
+    const selectedYearMonth = el.query<HTMLParagraphElement>(
+      elementSelectors.selectedYearMonth
+    );
+
+    expect(el.locale).equal($_locale);
+    expect(el.value).equal(testValue);
+    expect(selectedYearMonth?.textContent).equal($_yearMonthLabel);
   });
 
-  type CaseMonthNavigationButtons = [
+  // casesMonthNavigationButtons.forEach((a) => {
+  //   const [testMax, testMin, testValue, expectedVisibleElements, expectedHiddenElements] = a;
+  //   it(
+  //     messageFormatter(
+  //       'renders month navigation buttons (min=%s, max=%s, value=%s)',
+  //       a
+  //     ),
+  //     async () => {
+
+  //     }
+  //   );
+  // });
+  it.only.each<{
     max: string,
     min: string,
     value: string,
-    expectedVisibleElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
-    expectedHiddenElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[]
-  ];
-  const casesMonthNavigationButtons: CaseMonthNavigationButtons[] = [
-    [
-      '2020-03-03',
-      '2020-01-01',
-      '2020-02-02',
-      ['nextMonthNavigationButton', 'previousMonthNavigationButton'],
-      [],
-    ],
-    [
-      '2020-03-03',
-      '2020-01-01',
-      '2020-01-01',
-      ['nextMonthNavigationButton'],
-      ['previousMonthNavigationButton'],
-    ],
-    [
-      '2020-03-03',
-      '2020-01-01',
-      '2020-03-03',
-      ['previousMonthNavigationButton'],
-      ['nextMonthNavigationButton'],
-    ],
-  ];
-  casesMonthNavigationButtons.forEach((a) => {
-    const [testMax, testMin, testValue, expectedVisibleElements, expectedHiddenElements] = a;
-    it(
-      messageFormatter(
-        'renders month navigation buttons (min=%s, max=%s, value=%s)',
-        a
-      ),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .max=${testMax}
-            .min=${testMin}
-            .value=${testValue}
-          ></app-date-picker>`
-        );
-
-        expectedVisibleElements.forEach((n) => {
-          const element = el.query(elementSelectors[n]);
-
-          expect(element)
-            .exist
-            .attr('title', n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
-        });
-        expectedHiddenElements.forEach((n) => {
-          const element = el.query(elementSelectors[n]);
-
-          expect(element).not.exist;
-        });
-      }
+    $_visibleElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
+    $_hiddenElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[];
+  }>([
+    {
+      max: '2020-03-03',
+      min: '2020-01-01',
+      value: '2020-02-02',
+      $_visibleElements: ['nextMonthNavigationButton', 'previousMonthNavigationButton'],
+      $_hiddenElements: [],
+    },
+    {
+      max: '2020-03-03',
+      min: '2020-01-01',
+      value: '2020-01-01',
+      $_visibleElements: ['nextMonthNavigationButton'],
+      $_hiddenElements: ['previousMonthNavigationButton'],
+    },
+    {
+      max: '2020-03-03',
+      min: '2020-01-01',
+      value: '2020-03-03',
+      $_visibleElements: ['previousMonthNavigationButton'],
+      $_hiddenElements: ['nextMonthNavigationButton'],
+    }
+  ])(`renders month navigation buttons (min=$min, max=$max, value=$value)`, async ({
+    $_hiddenElements,
+    $_visibleElements,
+    max,
+    min,
+    value,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${max}
+        .min=${min}
+        .value=${value}
+      ></app-date-picker>`
     );
+
+    $_visibleElements.forEach((n) => {
+      const element = el.query(elementSelectors[n]);
+
+      expect(element).exist;
+      expect(element?.getAttribute('title')).toBe(n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
+    });
+
+    $_hiddenElements.forEach((n) => {
+      const element = el.query(elementSelectors[n]);
+
+      expect(element).not.exist;
+    });
   });
 
-  type CaseTitle = [
+  it.only.each<{
     properties: Partial<DatePickerProperties>,
-    expected: Partial<DatePickerProperties>
-  ];
-  const casesTitle: CaseTitle[] = [
-    [
-      {
+    $_: Partial<DatePickerProperties>;
+  }>([
+    {
+      properties: {
         chooseMonthLabel: undefined,
         chooseYearLabel: undefined,
         nextMonthLabel: undefined,
         previousMonthLabel: undefined,
       },
-      {
+      $_: {
         chooseMonthLabel: undefined,
         chooseYearLabel: undefined,
         nextMonthLabel: undefined,
         previousMonthLabel: undefined,
-      },
-    ],
-    [
-      {
-        chooseMonthLabel: '',
-        chooseYearLabel: '',
-        nextMonthLabel: '',
-        previousMonthLabel: '',
-      },
-      {
-        chooseMonthLabel: '',
-        chooseYearLabel: '',
-        nextMonthLabel: '',
-        previousMonthLabel: '',
-      },
-    ],
-    [
-      {
-        chooseMonthLabel: '選擇月份',
-        chooseYearLabel: '選擇年份',
-        nextMonthLabel: '下個月份',
-        previousMonthLabel: '上個月份',
-      },
-      {
-        chooseMonthLabel: '選擇月份',
-        chooseYearLabel: '選擇年份',
-        nextMonthLabel: '下個月份',
-        previousMonthLabel: '上個月份',
-      },
-    ],
-  ];
-  casesTitle.forEach((a) => {
-    const [testPartialProperties, expectedProperties] = a;
-
-    it(
-      messageFormatter('renders correct title for buttons (partialProperties=%j)', a),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .chooseMonthLabel=${testPartialProperties.chooseMonthLabel as string}
-            .chooseYearLabel=${testPartialProperties.chooseYearLabel as string}
-            .max=${'2020-12-02'}
-            .min=${'1970-01-01'}
-            .nextMonthLabel=${testPartialProperties.nextMonthLabel as string}
-            .previousMonthLabel=${testPartialProperties.previousMonthLabel as string}
-            .value=${'2020-02-02'}
-          ></app-date-picker>`
-        );
-
-        const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
-        const nextMonthNavigationButton= el.query<Button>(elementSelectors.nextMonthNavigationButton);
-        const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
-
-        expect(yearDropdown).exist;
-        expect(nextMonthNavigationButton).exist;
-        expect(previousMonthNavigationButton).exist;
-
-        if (
-          expectedProperties.chooseYearLabel == null &&
-          expectedProperties.nextMonthLabel == null &&
-          expectedProperties.previousMonthLabel == null
-        ) {
-          expect(yearDropdown).not.attr('title');
-          expect(nextMonthNavigationButton).not.attr('title');
-          expect(previousMonthNavigationButton).not.attr('title');
-        } else {
-          expect(yearDropdown).attr('title', expectedProperties.chooseYearLabel);
-          expect(nextMonthNavigationButton).attr('title', expectedProperties.nextMonthLabel);
-          expect(previousMonthNavigationButton).attr('title', expectedProperties.previousMonthLabel);
-        }
       }
+    },
+    {
+      properties: {
+        chooseMonthLabel: '',
+        chooseYearLabel: '',
+        nextMonthLabel: '',
+        previousMonthLabel: '',
+      },
+      $_: {
+        chooseMonthLabel: '',
+        chooseYearLabel: '',
+        nextMonthLabel: '',
+        previousMonthLabel: '',
+      },
+    },
+    {
+      properties: {
+        chooseMonthLabel: '選擇月份',
+        chooseYearLabel: '選擇年份',
+        nextMonthLabel: '下個月份',
+        previousMonthLabel: '上個月份',
+      },
+      $_: {
+        chooseMonthLabel: '選擇月份',
+        chooseYearLabel: '選擇年份',
+        nextMonthLabel: '下個月份',
+        previousMonthLabel: '上個月份',
+      },
+    }
+  ])(`renders correct title for buttons (partialProperties=$properties)`, async ({
+    properties,
+    $_,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .chooseMonthLabel=${properties.chooseMonthLabel as string}
+        .chooseYearLabel=${properties.chooseYearLabel as string}
+        .max=${'2020-12-02'}
+        .min=${'1970-01-01'}
+        .nextMonthLabel=${properties.nextMonthLabel as string}
+        .previousMonthLabel=${properties.previousMonthLabel as string}
+        .value=${'2020-02-02'}
+      ></app-date-picker>`
     );
+
+    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+    const nextMonthNavigationButton = el.query<Button>(elementSelectors.nextMonthNavigationButton);
+    const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
+
+    expect(yearDropdown).exist;
+    expect(nextMonthNavigationButton).exist;
+    expect(previousMonthNavigationButton).exist;
+
+    if (
+      $_.chooseYearLabel == null &&
+      $_.nextMonthLabel == null &&
+      $_.previousMonthLabel == null
+    ) {
+      expect(yearDropdown).exist;
+      expect(yearDropdown!.hasAttribute('title')).toBeFalsy();
+      expect(nextMonthNavigationButton!.hasAttribute('title')).toBeFalsy();
+      expect(previousMonthNavigationButton!.hasAttribute('title')).toBeFalsy();
+    } else {
+      expect(yearDropdown).exist;
+      expect(yearDropdown!.getAttribute('title')).toBe($_.chooseYearLabel);
+      expect(nextMonthNavigationButton!.getAttribute('title')).toBe($_.nextMonthLabel);
+      expect(previousMonthNavigationButton!.getAttribute('title')).toBe($_.previousMonthLabel);
+    }
   });
 
-  type CaseNavigateToNewMonth = [
+  it.only.each<{
     navigationButtonElementSelector: keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
-    expectedCurrentDate: Date
-  ];
-  const casesNavigateToNewMonth: CaseNavigateToNewMonth[] = [
-    ['previousMonthNavigationButton', new Date('2020-01-01')],
-    ['nextMonthNavigationButton', new Date('2020-03-01')],
-  ];
-  casesNavigateToNewMonth.forEach((a) => {
-    const [testMonthNavigationElementSelector, expectedCurrentDate] = a;
-    it(
-      messageFormatter('navigates to new month by clicking %s', a),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .max=${'2020-03-03'}
-            .min=${'2020-01-01'}
-            .value=${'2020-02-02'}
-          ></app-date-picker>`
-        );
-
-        const element = el.query<Button>(elementSelectors[testMonthNavigationElementSelector]);
-
-        element?.focus();
-        element?.click();
-
-        await elementUpdated(el);
-
-        const selectedYearMonth = el.query<HTMLParagraphElement>(
-          elementSelectors.selectedYearMonth
-        );
-        const oldSelectedDate = el.query<HTMLTableCellElement>(
-          elementSelectors.selectedCalendarDay
-        );
-
-        expect(selectedYearMonth?.textContent).equal(
-          formatters.longMonthYearFormat(expectedCurrentDate)
-        );
-        expect(oldSelectedDate).not.exist;
-      }
+    $_currentDate: Date;
+  }>([
+    {
+      navigationButtonElementSelector: 'previousMonthNavigationButton',
+      $_currentDate: new Date('2020-01-01'),
+    },
+    {
+      navigationButtonElementSelector: 'nextMonthNavigationButton',
+      $_currentDate: new Date('2020-03-01'),
+    },
+  ])(`navigates to new month by clicking $navigationButtonElementSelector`, async ({
+    $_currentDate,
+    navigationButtonElementSelector,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${'2020-03-03'}
+        .min=${'2020-01-01'}
+        .value=${'2020-02-02'}
+      ></app-date-picker>`
     );
+
+    const element = el.query<Button>(elementSelectors[navigationButtonElementSelector]);
+
+    element?.focus();
+    element?.click();
+
+    await elementUpdated(el);
+
+    const selectedYearMonth = el.query<HTMLParagraphElement>(
+      elementSelectors.selectedYearMonth
+    );
+    const oldSelectedDate = el.query<HTMLTableCellElement>(
+      elementSelectors.selectedCalendarDay
+    );
+
+    expect(selectedYearMonth?.textContent).equal(
+      formatters.longMonthYearFormat($_currentDate)
+    );
+    expect(oldSelectedDate).not.exist;
   });
 
-  it('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
+  it.only('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
     const testMin = '2000-01-01';
     const testValue = '2020-02-02';
 
@@ -375,7 +376,7 @@ describe(appDatePickerName, () => {
 
     expect(newSelectedDateDate).exist;
     expect(selectedYear).exist;
-    expect(selectedYear).attr('aria-label', new Date(testValue).getUTCFullYear().toString());
+    expect(selectedYear?.getAttribute('aria-label')).toBe(new Date(testValue).getUTCFullYear().toString());
 
     newSelectedYear?.focus();
     newSelectedYear?.click();
@@ -404,7 +405,7 @@ describe(appDatePickerName, () => {
     selectedYearMonth = el.query<HTMLParagraphElement>(elementSelectors.selectedYearMonth);
     newSelectedDateDate = new Date(new Date(newSelectedDateDate).setUTCMonth(newSelectedDateDate.getUTCMonth() + 1));
 
-    expect(selectedYearMonth).text(formatters.longMonthYearFormat(newSelectedDateDate));
+    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new month in calendar view to update current date
 
     // START: Ensure old selected year remains unchanged
@@ -416,11 +417,11 @@ describe(appDatePickerName, () => {
     selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
 
     expect(selectedYear).exist;
-    expect(selectedYear).attr('aria-label', new Date(testValue).getUTCFullYear().toString());
+    expect(selectedYear?.getAttribute('aria-label')).toBe(new Date(testValue).getUTCFullYear().toString());
     // END: Ensure old selected year remains unchanged
   });
 
-  it('navigates to new year then new date', async () => {
+  it.only('navigates to new year then new date', async () => {
     const testMax = '2020-12-31';
     const testMin = '2000-01-01';
     const testValue = '2020-02-02';
@@ -517,7 +518,7 @@ describe(appDatePickerName, () => {
     // END: Select new date in calendar view
   });
 
-  it('selects new date', async () => {
+  it.only('selects new date', async () => {
     const testValue = '2020-02-02';
     const testValueDate = new Date(testValue);
     const el = await fixture<AppDatePicker>(
@@ -582,7 +583,7 @@ describe(appDatePickerName, () => {
     expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
   });
 
-  it('selects new startView', async () => {
+  it.only('selects new startView', async () => {
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
         .max=${'2020-03-03'}
@@ -614,348 +615,377 @@ describe(appDatePickerName, () => {
     expect(calendar).exist;
   });
 
-  type CaseOptionalValue = [
+  it.only.each<{
     value: MaybeDate | undefined,
     newValue: MaybeDate | undefined,
-    expectedValueDate: Date,
-    expectedNewValueDate: Date
-  ];
-  const casesOptionalValue: CaseOptionalValue[] = [
-    ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
-    [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
-    [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
-  ];
-  casesOptionalValue.forEach((a) => {
-    const [testValue, testNewValue, expectedValueDate, expectedNewValueDate] = a;
-    it(
-      messageFormatter('updates optional value (value=%s, newValue=%s)', a),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .max=${'2100-12-31'}
-            .min=${'1970-01-01'}
-            .value=${testValue as never}
-          ></app-date-picker>`
-        );
-
-        const calendar = el.query<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
-        const selectedDate = calendar?.query<HTMLTableCellElement>(
-          elementSelectors.selectedCalendarDay
-        );
-
-        expect(selectedDate).exist;
-        expect(selectedDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedValueDate)
-        );
-        expect(selectedDate?.fullDate).deep.equal(
-          expectedValueDate
-        );
-
-        el.value = testNewValue as never;
-
-        await elementUpdated(calendar as AppMonthCalendar);
-        await elementUpdated(el);
-
-        const calendar2 = el.query<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
-        const newSelectedDate = calendar2?.query<HTMLTableCellElement>(
-          elementSelectors.selectedCalendarDay
-        );
-
-        expect(newSelectedDate).exist;
-        expect(newSelectedDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedNewValueDate)
-        );
-        expect(newSelectedDate?.fullDate).deep.equal(
-          expectedNewValueDate
-        );
-      });
+    $_valueDate: Date,
+    $_newValueDate: Date;
+  }>([
+    {
+      value: '', newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02'),
+    },
+    {
+      value: '', newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02'),
+    },
+    {
+      value: '2020-02-02', newValue: '', $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: toResolvedDate('2020-02-02'),
+    },
+    {
+      value: null, newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02')
+    },
+    {
+      value: '2020-02-02', newValue: null, $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: toResolvedDate('2020-02-02')
+    },
+    {
+      value: undefined, newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02')
+    },
+    {
+      value: '2020-02-02', newValue: undefined, $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: todayDate
     }
-  );
+  ])(`updates optional value (value=$value, newValue=$newValue)`, async ({
+    $_newValueDate,
+    $_valueDate,
+    newValue,
+    value,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${'2100-12-31'}
+        .min=${'1970-01-01'}
+        .value=${value as never}
+      ></app-date-picker>`
+    );
 
-  type CaseOptionalMin = [
+    const calendar = el.query<AppMonthCalendar>(
+      elementSelectors.calendar
+    );
+    const selectedDate = calendar?.query<HTMLTableCellElement>(
+      elementSelectors.selectedCalendarDay
+    );
+
+    expect(selectedDate).exist;
+    expect(selectedDate?.getAttribute('aria-label')).equal(
+      formatters.fullDateFormat($_valueDate)
+    );
+    expect(selectedDate?.fullDate).deep.equal(
+      $_valueDate
+    );
+
+    el.value = newValue as never;
+
+    await elementUpdated(calendar as AppMonthCalendar);
+    await elementUpdated(el);
+
+    const calendar2 = el.query<AppMonthCalendar>(
+      elementSelectors.calendar
+    );
+    const newSelectedDate = calendar2?.query<HTMLTableCellElement>(
+      elementSelectors.selectedCalendarDay
+    );
+
+    expect(newSelectedDate).exist;
+    expect(newSelectedDate?.getAttribute('aria-label')).equal(
+      formatters.fullDateFormat($_newValueDate)
+    );
+    expect(newSelectedDate?.fullDate).deep.equal(
+      $_newValueDate
+    );
+  });
+
+  it.only.each<{
     min: MaybeDate | undefined,
     newMin: MaybeDate | undefined,
-    expectedMinDate: Date,
-    expectedNewMinDate: Date
-  ];
-  const casesOptionalMin: CaseOptionalMin[] = [
-    ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    [null, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['', '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    [undefined, '2020-02-02', todayDate, toResolvedDate('2020-02-02')],
-    ['', '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
-    [null, '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
-    ['', '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
-    [undefined, '2020-02-01', todayDate, toResolvedDate('2020-02-01')],
-    ['2020-02-02', '', toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
-    ['2020-02-02', null, toResolvedDate('2020-02-02'), toResolvedDate('2020-02-02')],
-    ['2020-02-02', undefined, toResolvedDate('2020-02-02'), todayDate],
-  ];
-  casesOptionalMin.forEach((a) => {
-    const [testMin, testNewMin, expectedMinDate, expectedNewMinDate] = a;
-    it(
-      messageFormatter('updates optional min (min=%s, newMin=%s)', a),
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .max=${'2100-12-31'}
-            .min=${testMin as never}
-            .value=${testMin as never}
-          ></app-date-picker>`
-        );
-
-        const calendar = el.query<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
-
-        const minDate = calendar?.query<HTMLTableCellElement>(
-          `${elementSelectors.calendarDay}[aria-label="${
-            formatters.fullDateFormat(expectedMinDate)
-          }"]`
-        );
-
-        expect(minDate).exist;
-        expect(minDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedMinDate)
-        );
-        expect(minDate?.fullDate).deep.equal(expectedMinDate);
-
-        const expectedOneDayBeforeMinDate = toResolvedDate(
-          new Date(expectedMinDate).setUTCDate(
-            expectedMinDate.getUTCDate() - 1
-          )
-        );
-        const oneDayBeforeMinDate =
-          calendar?.query<HTMLTableCellElement>(
-            `${elementSelectors.calendarDay}[aria-label="${
-              formatters.fullDateFormat(expectedOneDayBeforeMinDate)
-            }"]`
-          );
-
-        expect(oneDayBeforeMinDate).exist;
-        expect(oneDayBeforeMinDate?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedOneDayBeforeMinDate)
-        );
-        expect(oneDayBeforeMinDate?.fullDate).deep.equal(expectedOneDayBeforeMinDate);
-
-        el.min = el.value = testNewMin as never;
-
-        await elementUpdated(calendar as AppMonthCalendar);
-        await elementUpdated(el);
-
-        const calendar2 = el.query<AppMonthCalendar>(
-          elementSelectors.calendar
-        );
-
-        const minDate2 = calendar2?.query<HTMLTableCellElement>(
-          `${elementSelectors.calendarDay}[aria-label="${
-            formatters.fullDateFormat(expectedNewMinDate)
-          }"]`
-        );
-
-        expect(minDate2).exist;
-        expect(minDate2?.getAttribute('aria-label')).equal(
-          formatters.fullDateFormat(expectedNewMinDate)
-        );
-        expect(minDate2?.fullDate).deep.equal(expectedNewMinDate);
-
-        const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
-
-        expect(previousMonthNavigationButton).not.exist;
-
-        // NOTE: Skip checking for one day before min when new min is 01 or first day of the month
-        if (!(testNewMin as string)?.endsWith('01')) {
-          const expectedOneDayBeforeMinDate2 = toResolvedDate(
-            new Date(expectedNewMinDate).setUTCDate(
-              expectedNewMinDate.getUTCDate() - 1
-            )
-          );
-          const oneDayBeforeMinDate2 =
-            calendar?.query<HTMLTableCellElement>(
-              `${elementSelectors.calendarDay}[aria-label="${
-                formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
-              }"]`
-            );
-
-          expect(oneDayBeforeMinDate2).exist;
-          expect(oneDayBeforeMinDate2?.getAttribute('aria-label')).equal(
-            formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
-          );
-          expect(oneDayBeforeMinDate2?.fullDate).deep.equal(expectedOneDayBeforeMinDate2);
-        }
-      });
+    $_minDate: Date,
+    $_newMinDate: Date;
+  }>([
+    {
+      min: '', newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'),
+    },
+    {
+      min: null, newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+    },
+    {
+      min: '', newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+    },
+    {
+      min: undefined, newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+    },
+    {
+      min: '', newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+    },
+    {
+      min: null, newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+    },
+    {
+      min: '', newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+    },
+    {
+      min: undefined, newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+    },
+    {
+      min: '2020-02-02', newMin: '', $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02')
+    },
+    {
+      min: '2020-02-02', newMin: null, $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02')
+    },
+    {
+      min: '2020-02-02', newMin: undefined, $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: todayDate
     }
-  );
+  ])(`updates optional min (min=$min, newMin=$newMin)`, async ({
+    $_minDate,
+    $_newMinDate,
+    min,
+    newMin,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${'2100-12-31'}
+        .min=${min as never}
+        .value=${min as never}
+      ></app-date-picker>`
+    );
+
+    const calendar = el.query<AppMonthCalendar>(
+      elementSelectors.calendar
+    );
+
+    const minDate = calendar?.query<HTMLTableCellElement>(
+      `${elementSelectors.calendarDay}[aria-label="${formatters.fullDateFormat($_minDate)
+      }"]`
+    );
+
+    expect(minDate).exist;
+    expect(minDate?.getAttribute('aria-label')).equal(
+      formatters.fullDateFormat($_minDate)
+    );
+    expect(minDate?.fullDate).deep.equal($_minDate);
+
+    const expectedOneDayBeforeMinDate = toResolvedDate(
+      new Date($_minDate).setUTCDate(
+        $_minDate.getUTCDate() - 1
+      )
+    );
+    const oneDayBeforeMinDate =
+      calendar?.query<HTMLTableCellElement>(
+        `${elementSelectors.calendarDay}[aria-label="${formatters.fullDateFormat(expectedOneDayBeforeMinDate)
+        }"]`
+      );
+
+    expect(oneDayBeforeMinDate).exist;
+    expect(oneDayBeforeMinDate?.getAttribute('aria-label')).equal(
+      formatters.fullDateFormat(expectedOneDayBeforeMinDate)
+    );
+    expect(oneDayBeforeMinDate?.fullDate).deep.equal(expectedOneDayBeforeMinDate);
+
+    el.min = el.value = newMin as never;
+
+    await elementUpdated(calendar as AppMonthCalendar);
+    await elementUpdated(el);
+
+    const calendar2 = el.query<AppMonthCalendar>(
+      elementSelectors.calendar
+    );
+
+    const minDate2 = calendar2?.query<HTMLTableCellElement>(
+      `${elementSelectors.calendarDay}[aria-label="${formatters.fullDateFormat($_newMinDate)
+      }"]`
+    );
+
+    expect(minDate2).exist;
+    expect(minDate2?.getAttribute('aria-label')).equal(
+      formatters.fullDateFormat($_newMinDate)
+    );
+    expect(minDate2?.fullDate).deep.equal($_newMinDate);
+
+    const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
+
+    expect(previousMonthNavigationButton).not.exist;
+
+    // NOTE: Skip checking for one day before min when new min is 01 or first day of the month
+    if (!(newMin as string)?.endsWith('01')) {
+      const expectedOneDayBeforeMinDate2 = toResolvedDate(
+        new Date($_newMinDate).setUTCDate(
+          $_newMinDate.getUTCDate() - 1
+        )
+      );
+      const oneDayBeforeMinDate2 =
+        calendar?.query<HTMLTableCellElement>(
+          `${elementSelectors.calendarDay}[aria-label="${formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
+          }"]`
+        );
+
+      expect(oneDayBeforeMinDate2).exist;
+      expect(oneDayBeforeMinDate2?.getAttribute('aria-label')).equal(
+        formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
+      );
+      expect(oneDayBeforeMinDate2?.fullDate).deep.equal(expectedOneDayBeforeMinDate2);
+    }
+  });
 
   type NullishDateString = string | null | undefined;
-  type CaseOptionalMax = [
-    [testMax: NullishDateString, testValue: NullishDateString, max: string, value: string],
-    [testNewMax: NullishDateString, testNewValue: NullishDateString, newMax: string, newValue: string]
-  ];
-  const casesOptionalMax: CaseOptionalMax[] = [
+  interface I_updatesOptionalMax {
+    max: NullishDateString,
+    value: NullishDateString,
+    $_max: string,
+    $_value: string;
+  }
+  it.only.each<{
+    before: I_updatesOptionalMax,
+    after: I_updatesOptionalMax;
+  }>([
     // max='',value=''
-    [
+    {
       // same max and value subsequently
-      ['', '', '2100-12-31', toDateString(todayDate)],
-      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
-    ],
-    [
+      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20', }
+    },
+    {
       // larger max subsequently
-      ['', '', '2100-12-31', toDateString(todayDate)],
-      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
-    ],
-    [
+      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+    },
+    {
       // smaller max subsequently
-      ['', '', '2100-12-31', toDateString(todayDate)],
-      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
-    ],
+      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' },
+    },
 
     // max=null,value=null
-    [
+    {
       // same max and value subsequently (null)
-      [null, null, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
-    ],
-    [
+      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20' },
+    },
+    {
       // larger max subsequently
-      [null, null, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
-    ],
-    [
+      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+    },
+    {
       // smaller max subsequently
-      [null, null, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
-    ],
+      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' }
+    },
 
     // max=undefined,value=undefined
-    [
+    {
       // same max and value subsequently
-      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-20', '2020-02-20', '2020-02-20', '2020-02-20'],
-    ],
-    [
+      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20' }
+    },
+    {
       // larger max subsequently
-      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-21', '2020-02-20', '2020-02-21', '2020-02-20'],
-    ],
-    [
+      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+    },
+    {
       // smaller max subsequently
-      [undefined, undefined, '2100-12-31', toDateString(todayDate)],
-      ['2020-02-19', '2020-02-20', '2020-02-19', '2020-02-19'],
-    ],
+      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
+      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' },
+    },
 
     // max=2020-02-02,value=2020-02-02
-    [
+    {
       // max='' and value=2100-12-12 subsequently
-      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
-      ['', '2100-12-12', '2020-02-02', '2020-02-02'],
-    ],
-    [
+      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
+      after: { max: '', value: '2100-12-12', $_max: '2020-02-02', $_value: '2020-02-02' }
+    },
+    {
       // max=null and value=2100-12-12 subsequently
-      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
-      [null, '2100-12-12', '2020-02-02', '2020-02-02'],
-    ],
-    [
+      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
+      after: { max: null, value: '2100-12-12', $_max: '2020-02-02', $_value: '2020-02-02' }
+    },
+    {
       // max=undefined and value=2100-12-12 subsequently
-      ['2020-02-02', '2020-02-02', '2020-02-02', '2020-02-02'],
-      [undefined, '2100-12-12', toDateString(MAX_DATE), '2100-12-12'],
-    ],
-  ];
-  casesOptionalMax.forEach((a) => {
-    const [
-      [testMax, testValue],
-      [testNewMax, testNewValue],
-    ] = a;
-    it(
-      `updates optional max (initially: max=${testMax}, value=${testValue}, subsequently: max=${testNewMax}, value=${testNewValue})`,
-      async () => {
-        const el = await fixture<AppDatePicker>(
-          html`<app-date-picker
-            .max=${testMax as never}
-            .min=${'1970-01-01'}
-            .value=${testMax as never}
-          ></app-date-picker>`
-        );
+      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
+      after: { max: undefined, value: '2100-12-12', $_max: toDateString(MAX_DATE), $_value: '2100-12-12' }
+    },
+  ])(`updates optional max (before: $before, after: $after)`, async ({
+    before,
+    after,
+  }) => {
+    const el = await fixture<AppDatePicker>(
+      html`<app-date-picker
+        .max=${before.max as never}
+        .min=${'1970-01-01'}
+        .value=${before.max as never}
+      ></app-date-picker>`
+    );
 
-        const $a = a.map<[number, CaseOptionalMax[0]]>((n, i) => [i, n]);
-        for (const [
-          i,
-          [$testMax, $testValue, $expectedMax, $expectedValue],
-        ] of $a) {
-          const calendar = el.query<AppMonthCalendar>(
-            elementSelectors.calendar
+    const $a = [before, after].map<[number, I_updatesOptionalMax]>((n, i) => [i, n]);
+    for (const [
+      i,
+      {
+        max: $testMax,
+        value: $testValue,
+        $_max: $expectedMax,
+        $_value: $expectedValue,
+      }
+    ] of $a) {
+      const calendar = el.query<AppMonthCalendar>(
+        elementSelectors.calendar
+      );
+
+      if (i) {
+        el.max = $testMax as never;
+        el.value = $testValue;
+
+        calendar && await elementUpdated(calendar);
+        await elementUpdated(el);
+      }
+
+      const selectedDate = calendar?.query<HTMLTableCellElement>(
+        elementSelectors.selectedCalendarDay
+      );
+
+      expect(calendar).exist;
+      expect(selectedDate).exist;
+
+      const expectedValueDate = new Date($expectedValue);
+
+      expect(el.max).equal($expectedMax);
+      expect(selectedDate?.getAttribute('aria-label')).equal(
+        formatters.fullDateFormat(expectedValueDate)
+      );
+      expect(selectedDate?.fullDate).deep.equal(expectedValueDate);
+
+      if (i) {
+        const isMaxDate = $expectedMax === toDateString(MAX_DATE);
+
+        if (isMaxDate) {
+          /**
+           * assert `$expectedMax` is the `MAX_DATE` supported and there will be no next month nav button
+           */
+          const nextMonthNavigationButton = el.query<Button>(
+            elementSelectors.nextMonthNavigationButton
+          );
+          const maxDate = calendar?.query<HTMLTableCellElement>(
+            elementSelectors.calendarDayWithLabel(formatters.fullDateFormat(MAX_DATE))
           );
 
-          if (i) {
-            el.max = $testMax as never;
-            el.value = $testValue;
+          expect(nextMonthNavigationButton).not.exist;
+          expect(maxDate).exist;
 
-            calendar && await elementUpdated(calendar);
-            await elementUpdated(el);
-          }
-
-          const selectedDate = calendar?.query<HTMLTableCellElement>(
-            elementSelectors.selectedCalendarDay
+          expect(maxDate?.getAttribute('aria-selected')).equal('false');
+          expect(maxDate?.getAttribute('aria-disabled')).equal('false');
+        } else {
+          /**
+           * assert `$expectedMax` is the last non-disabled date in the current calendar month
+           */
+          const expectedMaxDateDate = new Date($expectedMax);
+          const nextMaxDateDate = new Date(expectedMaxDateDate).setUTCDate(expectedMaxDateDate.getUTCDate() + 1);
+          const nextMaxDate = calendar?.query<HTMLTableCellElement>(
+            elementSelectors.calendarDayWithLabel(
+              formatters.fullDateFormat(nextMaxDateDate)
+            )
           );
 
-          expect(calendar).exist;
-          expect(selectedDate).exist;
-
-          const expectedValueDate = new Date($expectedValue);
-
-          expect(el.max).equal($expectedMax);
-          expect(selectedDate?.getAttribute('aria-label')).equal(
-            formatters.fullDateFormat(expectedValueDate)
-          );
-          expect(selectedDate?.fullDate).deep.equal(expectedValueDate);
-
-          if (i) {
-            const isMaxDate = $expectedMax === toDateString(MAX_DATE);
-
-            if (isMaxDate) {
-              /**
-               * assert `$expectedMax` is the `MAX_DATE` supported and there will be no next month nav button
-               */
-               const nextMonthNavigationButton = el.query<Button>(
-                elementSelectors.nextMonthNavigationButton
-              );
-              const maxDate = calendar?.query<HTMLTableCellElement>(
-                elementSelectors.calendarDayWithLabel(formatters.fullDateFormat(MAX_DATE))
-              );
-
-              expect(nextMonthNavigationButton).not.exist;
-              expect(maxDate).exist;
-
-              expect(maxDate?.getAttribute('aria-selected')).equal('false');
-              expect(maxDate?.getAttribute('aria-disabled')).equal('false');
-            } else {
-              /**
-               * assert `$expectedMax` is the last non-disabled date in the current calendar month
-               */
-              const expectedMaxDateDate = new Date($expectedMax);
-              const nextMaxDateDate = new Date(expectedMaxDateDate).setUTCDate(expectedMaxDateDate.getUTCDate() + 1);
-              const nextMaxDate = calendar?.query<HTMLTableCellElement>(
-                elementSelectors.calendarDayWithLabel(
-                  formatters.fullDateFormat(nextMaxDateDate)
-                )
-              );
-
-              expect(nextMaxDate).exist;
-              expect(nextMaxDate?.getAttribute('aria-selected')).equal('false');
-              expect(nextMaxDate?.getAttribute('aria-disabled')).equal('true');
-            }
-          }
+          expect(nextMaxDate).exist;
+          expect(nextMaxDate?.getAttribute('aria-selected')).equal('false');
+          expect(nextMaxDate?.getAttribute('aria-disabled')).equal('true');
         }
-
-      });
+      }
     }
-  );
+  });
 
 });

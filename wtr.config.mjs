@@ -5,6 +5,7 @@ import { playwrightLauncher } from '@web/test-runner-playwright';
 const {
   CI = 'false',
   COVERAGE = 'false',
+  MODE = 'dev',
   TEST_HELPERS = 'false',
   WATCH = 'false',
 } = process.env;
@@ -23,6 +24,7 @@ const config = {
       playwrightLauncher({ product: 'webkit' }),
     ])
   ],
+  preserveSymlinks: true,
   browserStartTimeout: 60e3,
   concurrency: 3,
   concurrentBrowsers: 9,
@@ -54,9 +56,9 @@ const config = {
   files: [
     `src/*tests*/${isTestHelpersOnly ? 'helpers' : '!(helpers)'}/*.test.ts`
   ],
-  nodeResolve: true,
+  nodeResolve: { exportConditions: MODE === 'dev' ? ['development'] : [] },
   plugins: [
-    esbuildPlugin({ ts: true, target: 'es2021' }),
+    esbuildPlugin({ ts: true, target: 'esnext' }),
     sendKeysPlugin(),
   ],
   testFramework: {

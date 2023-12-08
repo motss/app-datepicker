@@ -155,7 +155,6 @@
     "build": "npm run clean && tsc",
     "clean": "sh $(npm root)/@reallyland/tools/cleanup.sh",
     "dev": "npm run serve & npm run watch",
-    "postinstall": "FILE=\"$(npm root)/@reallyland/tools/postinstall.sh\"; if [ -f \"$FILE\" ]; then sh \"$FILE\"; fi",
     "lint": "sh $(npm root)/@reallyland/tools/lint-build.sh -c $(npm root)/@reallyland/tools/browser/lit/.eslintrc.json",
     "lint-commit": "sh $(npm root)/@reallyland/tools/lint-commit.sh",
     "lint:build": "sh $(npm root)/@reallyland/tools/lint-build.sh -c $(npm root)/@reallyland/tools/browser/lit/.build.eslintrc.json",
@@ -163,8 +162,10 @@
     "prepublishOnly": "npm run lint:build && npm run build",
     "serve": "npm x -y @web/dev-server@latest -- wds --node-resolve -dw -p 3030 -a index.html",
     "test": "wtr --config wtr.config.mjs --update-snapshots",
+    "test:pw": "vitest --coverage -u",
     "test:dev": "npm run test:helpers && npm run test:el",
     "test:el": "COVERAGE=true npm t",
+    "install:pw": "pnpm playwright install",
     "test:helpers": "COVERAGE=true TEST_HELPERS=true npm t",
     "version": "sh $(npm root)/@reallyland/tools/generate-changelogs.sh && git add *CHANGELOG.md",
     "watch": "npm run clean && tsc --watch",
@@ -177,21 +178,29 @@
     "@material/mwc-icon-button": "^0.27.0",
     "@material/mwc-menu": "^0.27.0",
     "@material/mwc-textfield": "^0.27.0",
-    "lit": "^2.7.0",
+    "@reallyland/tools": "^0.9.7",
+    "lit": "^3.1.0",
     "nodemod": "^3.0.6",
-    "tslib": "^2.5.0"
+    "tslib": "^2.6.2"
   },
   "devDependencies": {
-    "@open-wc/testing": "^3.1.7",
-    "@reallyland/tools": "^0.3.5",
-    "@web/dev-server-esbuild": "^0.3.4",
-    "@web/test-runner": "^0.15.1",
-    "@web/test-runner-commands": "^0.6.5",
-    "@web/test-runner-playwright": "^0.9.0",
-    "eslint-plugin-lit": "^1.8.2",
-    "eslint-plugin-lit-a11y": "^2.4.0",
+    "@open-wc/testing-helpers": "^3.0.0",
+    "@vitest/browser": "^1.0.2",
+    "@vitest/coverage-istanbul": "^1.0.2",
+    "@web/dev-server-esbuild": "^1.0.1",
+    "@web/test-runner": "^0.18.0",
+    "@web/test-runner-commands": "^0.9.0",
+    "@web/test-runner-playwright": "^0.11.0",
+    "eslint-plugin-lit": "^1.10.1",
+    "eslint-plugin-lit-a11y": "^4.1.1",
     "hanbi": "^1.0.1",
-    "typescript": "^4.9.3"
+    "happy-dom": "^12.10.3",
+    "playwright": "^1.40.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.7",
+    "vite-tsconfig-paths": "^4.2.2",
+    "vitest": "^1.0.2",
+    "webdriverio": "^8.24.12"
   },
   "engines": {
     "node": ">= 16.x",
@@ -199,11 +208,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "nano-staged": {
-    "*.ts": [
-      "npm run lint:build -- -f 1",
-      "git add"
-    ]
   }
 }
