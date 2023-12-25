@@ -36,7 +36,7 @@ describe(appDatePickerName, () => {
   const formatters: Formatters = toFormatters('en-US');
   const todayDate = toResolvedDate();
 
-  it.only.each<{
+  it.each<{
     startView: StartView | undefined,
     $_visibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
     $_hiddenElements: ('body' | 'calendar' | 'header' | 'yearGrid')[];
@@ -106,7 +106,7 @@ describe(appDatePickerName, () => {
     }
   });
 
-  it.only.each<{
+  it.each<{
     locale: string | undefined,
     $_locale: string,
     $_yearMonthLabel: string;
@@ -140,19 +140,7 @@ describe(appDatePickerName, () => {
     expect(selectedYearMonth?.textContent).equal($_yearMonthLabel);
   });
 
-  // casesMonthNavigationButtons.forEach((a) => {
-  //   const [testMax, testMin, testValue, expectedVisibleElements, expectedHiddenElements] = a;
-  //   it(
-  //     messageFormatter(
-  //       'renders month navigation buttons (min=%s, max=%s, value=%s)',
-  //       a
-  //     ),
-  //     async () => {
-
-  //     }
-  //   );
-  // });
-  it.only.each<{
+  it.each<{
     max: string,
     min: string,
     value: string,
@@ -209,7 +197,7 @@ describe(appDatePickerName, () => {
     });
   });
 
-  it.only.each<{
+  it.each<{
     properties: Partial<DatePickerProperties>,
     $_: Partial<DatePickerProperties>;
   }>([
@@ -296,7 +284,7 @@ describe(appDatePickerName, () => {
     }
   });
 
-  it.only.each<{
+  it.each<{
     navigationButtonElementSelector: keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
     $_currentDate: Date;
   }>([
@@ -340,7 +328,7 @@ describe(appDatePickerName, () => {
     expect(oldSelectedDate).not.exist;
   });
 
-  it.only('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
+  it('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
     const testMin = '2000-01-01';
     const testValue = '2020-02-02';
 
@@ -421,7 +409,7 @@ describe(appDatePickerName, () => {
     // END: Ensure old selected year remains unchanged
   });
 
-  it.only('navigates to new year then new date', async () => {
+  it('navigates to new year then new date', async () => {
     const testMax = '2020-12-31';
     const testMin = '2000-01-01';
     const testValue = '2020-02-02';
@@ -518,7 +506,7 @@ describe(appDatePickerName, () => {
     // END: Select new date in calendar view
   });
 
-  it.only('selects new date', async () => {
+  it('selects new date', async () => {
     const testValue = '2020-02-02';
     const testValueDate = new Date(testValue);
     const el = await fixture<AppDatePicker>(
@@ -583,7 +571,7 @@ describe(appDatePickerName, () => {
     expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
   });
 
-  it.only('selects new startView', async () => {
+  it('selects new startView', async () => {
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
         .max=${'2020-03-03'}
@@ -615,7 +603,7 @@ describe(appDatePickerName, () => {
     expect(calendar).exist;
   });
 
-  it.only.each<{
+  it.each<{
     value: MaybeDate | undefined,
     newValue: MaybeDate | undefined,
     $_valueDate: Date,
@@ -692,7 +680,7 @@ describe(appDatePickerName, () => {
     );
   });
 
-  it.only.each<{
+  it.each<{
     min: MaybeDate | undefined,
     newMin: MaybeDate | undefined,
     $_minDate: Date,
@@ -823,15 +811,15 @@ describe(appDatePickerName, () => {
   });
 
   type NullishDateString = string | null | undefined;
-  interface I_updatesOptionalMax {
+  interface TestUpdatesOptionalMax {
     max: NullishDateString,
     value: NullishDateString,
     $_max: string,
     $_value: string;
   }
-  it.only.each<{
-    before: I_updatesOptionalMax,
-    after: I_updatesOptionalMax;
+  it.each<{
+    before: TestUpdatesOptionalMax,
+    after: TestUpdatesOptionalMax;
   }>([
     // max='',value=''
     {
@@ -912,7 +900,7 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const $a = [before, after].map<[number, I_updatesOptionalMax]>((n, i) => [i, n]);
+    const $a = [before, after].map<[number, TestUpdatesOptionalMax]>((n, i) => [i, n]);
     for (const [
       i,
       {

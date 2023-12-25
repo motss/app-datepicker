@@ -185,22 +185,21 @@
   },
   "devDependencies": {
     "@open-wc/testing-helpers": "^3.0.0",
-    "@vitest/browser": "^1.0.2",
-    "@vitest/coverage-istanbul": "^1.0.2",
+    "@vitest/browser": "^1.1.0",
+    "@vitest/coverage-istanbul": "^1.1.0",
     "@web/dev-server-esbuild": "^1.0.1",
     "@web/test-runner": "^0.18.0",
     "@web/test-runner-commands": "^0.9.0",
     "@web/test-runner-playwright": "^0.11.0",
-    "eslint-plugin-lit": "^1.10.1",
+    "eslint-plugin-lit": "^1.11.0",
     "eslint-plugin-lit-a11y": "^4.1.1",
-    "hanbi": "^1.0.1",
+    "hanbi": "^1.0.2",
     "happy-dom": "^12.10.3",
     "playwright": "^1.40.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.7",
     "vite-tsconfig-paths": "^4.2.2",
-    "vitest": "^1.0.2",
-    "webdriverio": "^8.24.12"
+    "vitest": "^1.1.0"
   },
   "engines": {
     "node": ">= 16.x",
