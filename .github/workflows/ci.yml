@@ -85,7 +85,8 @@ jobs:
 
       - name: Setup Playwright
         run: |
-          npx playwright install-deps
+          # npx playwright install-deps
+          pnpm exec playwright install
 
       - name: Lint
         run: |
