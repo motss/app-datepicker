@@ -1,5 +1,4 @@
-import type { TemplateResult } from 'lit';
-import { html, nothing } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { property, queryAsync } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
@@ -18,8 +17,15 @@ import { monthCalendarStyling } from './stylings.js';
 import type { MonthCalendarData, MonthCalendarProperties, MonthCalendarRenderCalendarDayInit } from './typings.js';
 
 export class MonthCalendar extends RootElement implements MonthCalendarProperties {
-  @property({ attribute: false }) public data?: MonthCalendarData;
-  @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
+  public static override shadowRootOptions = {
+    ...RootElement.shadowRootOptions,
+    delegatesFocus: true,
+  };
+  public static override styles = [
+    baseStyling,
+    resetShadowRoot,
+    monthCalendarStyling,
+  ];
 
   #selectedDate: Date | undefined = undefined;
   /**
@@ -29,16 +35,105 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
    */
   #shouldFocusSelectedDate = false;
 
-  public static override shadowRootOptions = {
-    ...RootElement.shadowRootOptions,
-    delegatesFocus: true,
+  #updateSelectedDate = (event: KeyboardEvent): void => {
+    const key = event.key as SupportedKey;
+    const type = event.type as 'click' | 'keydown' | 'keyup';
+
+    if (type === 'keydown') {
+      /**
+       * NOTE: `@material/mwc-dialog` captures Enter keyboard event then closes the dialog.
+       * This is not what `month-calendar` expects so here stops all event propagation immediately for
+       * all key events.
+       */
+      event.stopImmediatePropagation();
+
+      const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
+
+      if (
+        !navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>) &&
+        !isConfirmKey
+      ) return;
+
+      // Prevent scrolling with arrow keys or Space key
+      event.preventDefault();
+
+      // Bail out for Enter/ Space key as they should go to keyup handler.
+      if (isConfirmKey) return;
+
+      const {
+        currentDate,
+        date,
+        disabledDatesSet,
+        disabledDaysSet,
+        max,
+        min,
+      } = this.data as MonthCalendarData;
+
+      this.#selectedDate = toNextSelectedDate({
+        currentDate,
+        date,
+        disabledDatesSet,
+        disabledDaysSet,
+        hasAltKey: event.altKey,
+        key,
+        maxTime: +max,
+        minTime: +min,
+      });
+      this.#shouldFocusSelectedDate = true;
+    } else if (
+      type === 'click' ||
+      (
+        type === 'keyup' &&
+        confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
+      )
+    ) {
+      const selectedCalendarDay =
+        toClosestTarget<HTMLTableCellElement>(event, '.calendar-day');
+
+      /** NOTE: Required condition check else these will trigger unwanted re-rendering */
+      if (
+        selectedCalendarDay == null ||
+        [
+          'aria-disabled',
+          'aria-hidden',
+        ].some(
+          attrName =>
+            selectedCalendarDay.getAttribute(attrName) === 'true'
+        )
+      ) {
+        return;
+      }
+
+      this.#selectedDate = selectedCalendarDay.fullDate;
+    }
+
+    const selectedDate = this.#selectedDate;
+
+    if (selectedDate == null) return;
+
+    const isKeypress = Boolean(key);
+    const newSelectedDate = new Date(selectedDate);
+
+    this.fire<CustomEventDetail['date-updated']>({
+      detail: {
+        isKeypress,
+        value: toDateString(newSelectedDate),
+        valueAsDate: newSelectedDate,
+        valueAsNumber: +newSelectedDate,
+        ...(isKeypress && { key }),
+      },
+      type: 'date-updated',
+    });
+
+    /**
+     * Reset `#selectedDate` after click or keyup event
+     */
+    this.#selectedDate = undefined;
   };
 
-  public static override styles = [
-    baseStyling,
-    resetShadowRoot,
-    monthCalendarStyling,
-  ];
+  @property({ attribute: false }) public data?: MonthCalendarData;
+
+  @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
   public constructor() {
     super();
@@ -63,15 +158,32 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     };
   }
 
-  protected override shouldUpdate(): boolean {
-    return this.data != null && this.data.formatters != null;
-  }
-
-  protected override async updated(): Promise<void> {
-    if (this.#shouldFocusSelectedDate) {
-      await focusElement(this.selectedCalendarDay);
-      this.#shouldFocusSelectedDate = false;
-    }
+  protected $renderCalendarDay({
+    ariaDisabled,
+    ariaLabel,
+    ariaSelected,
+    className,
+    day,
+    fullDate,
+    part,
+    tabIndex,
+    title,
+  }: MonthCalendarRenderCalendarDayInit): TemplateResult {
+    return html`
+    <td
+      .fullDate=${fullDate}
+      aria-disabled=${ariaDisabled as 'false' | 'true'}
+      aria-label=${ariaLabel as string}
+      aria-selected=${ariaSelected as 'false' | 'true'}
+      class="calendar-day ${className}"
+      data-day=${day}
+      part=${part}
+      role=gridcell
+      tabindex=${tabIndex}
+      title=${ifDefined(title)}
+    >
+    </td>
+    `;
   }
 
   protected override render(): TemplateResult | typeof nothing {
@@ -199,9 +311,9 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
                   className: isToday ? 'day--today' : '',
                   day: value,
                   fullDate,
+                  part: `calendar-day${isToday ? ' today' : ''}`,
                   tabIndex: shouldTab ? 0 : -1,
                   title,
-                  part: `calendar-day${isToday ? ' today' : ''}`,
                 } as MonthCalendarRenderCalendarDayInit);
               })
             }</tr>`;
@@ -214,129 +326,16 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
     return html`<div class=month-calendar part=calendar>${calendarContent}</div>`;
   }
 
-  protected $renderCalendarDay({
-    ariaDisabled,
-    ariaLabel,
-    ariaSelected,
-    className,
-    day,
-    fullDate,
-    part,
-    tabIndex,
-    title,
-  }: MonthCalendarRenderCalendarDayInit): TemplateResult {
-    return html`
-    <td
-      .fullDate=${fullDate}
-      aria-disabled=${ariaDisabled as 'true' | 'false'}
-      aria-label=${ariaLabel as string}
-      aria-selected=${ariaSelected as 'true' | 'false'}
-      class="calendar-day ${className}"
-      data-day=${day}
-      part=${part}
-      role=gridcell
-      tabindex=${tabIndex}
-      title=${ifDefined(title)}
-    >
-    </td>
-    `;
+  protected override shouldUpdate(): boolean {
+    return this.data != null && this.data.formatters != null;
   }
 
-  #updateSelectedDate = (event: KeyboardEvent): void => {
-    const key = event.key as SupportedKey;
-    const type = event.type as 'click' | 'keydown' | 'keyup';
-
-    if (type === 'keydown') {
-      /**
-       * NOTE: `@material/mwc-dialog` captures Enter keyboard event then closes the dialog.
-       * This is not what `month-calendar` expects so here stops all event propagation immediately for
-       * all key events.
-       */
-      event.stopImmediatePropagation();
-
-      const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
-
-      if (
-        !navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>) &&
-        !isConfirmKey
-      ) return;
-
-      // Prevent scrolling with arrow keys or Space key
-      event.preventDefault();
-
-      // Bail out for Enter/ Space key as they should go to keyup handler.
-      if (isConfirmKey) return;
-
-      const {
-        currentDate,
-        date,
-        disabledDatesSet,
-        disabledDaysSet,
-        max,
-        min,
-      } = this.data as MonthCalendarData;
-
-      this.#selectedDate = toNextSelectedDate({
-        currentDate,
-        date,
-        disabledDatesSet,
-        disabledDaysSet,
-        hasAltKey: event.altKey,
-        key,
-        maxTime: +max,
-        minTime: +min,
-      });
-      this.#shouldFocusSelectedDate = true;
-    } else if (
-      type === 'click' ||
-      (
-        type === 'keyup' &&
-        confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
-      )
-    ) {
-      const selectedCalendarDay =
-        toClosestTarget<HTMLTableCellElement>(event, '.calendar-day');
-
-      /** NOTE: Required condition check else these will trigger unwanted re-rendering */
-      if (
-        selectedCalendarDay == null ||
-        [
-          'aria-disabled',
-          'aria-hidden',
-        ].some(
-          attrName =>
-            selectedCalendarDay.getAttribute(attrName) === 'true'
-        )
-      ) {
-        return;
-      }
-
-      this.#selectedDate = selectedCalendarDay.fullDate;
+  protected override async updated(): Promise<void> {
+    if (this.#shouldFocusSelectedDate) {
+      await focusElement(this.selectedCalendarDay);
+      this.#shouldFocusSelectedDate = false;
     }
-
-    const selectedDate = this.#selectedDate;
-
-    if (selectedDate == null) return;
-
-    const isKeypress = Boolean(key);
-    const newSelectedDate = new Date(selectedDate);
-
-    this.fire<CustomEventDetail['date-updated']>({
-      detail: {
-        isKeypress,
-        value: toDateString(newSelectedDate),
-        valueAsDate: newSelectedDate,
-        valueAsNumber: +newSelectedDate,
-        ...(isKeypress && { key }),
-      },
-      type: 'date-updated',
-    });
-
-    /**
-     * Reset `#selectedDate` after click or keyup event
-     */
-    this.#selectedDate = undefined;
-  };
+  }
 }
 
 declare global {

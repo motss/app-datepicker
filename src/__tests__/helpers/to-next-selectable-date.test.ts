@@ -25,8 +25,8 @@ describe(toNextSelectableDate.name, () => {
     ],
     [
       {
-        minTime: +new Date('2020-02-02'),
         maxTime: +new Date('2020-02-02'),
+        minTime: +new Date('2020-02-02'),
       },
       new Date('2020-02-02'),
     ],
@@ -178,8 +178,8 @@ describe(toNextSelectableDate.name, () => {
           +new Date('2020-04-03'),
         ]),
         key: 'ArrowRight',
-        minTime: +new Date('2020-04-02'),
         maxTime: +new Date('2020-04-03'),
+        minTime: +new Date('2020-04-02'),
       },
       new Date('2020-04-02'),
     ],

@@ -79,8 +79,8 @@ describe(toMultiCalendars.name, () => {
     ],
     [
       {
-        min: new Date('2020-01-01'),
         max: new Date('2020-03-03'),
+        min: new Date('2020-01-01'),
       },
       1,
       [6],

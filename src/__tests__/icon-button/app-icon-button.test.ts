@@ -3,7 +3,7 @@ import '../../icon-button/app-icon-button';
 import { expect, fixture, html } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 
-import type { AppIconButton } from '../../icon-button/app-icon-button';
+import type {AppIconButton } from '../../icon-button/app-icon-button';
 import { appIconButtonName } from '../../icon-button/constants';
 
 describe(appIconButtonName, () => {

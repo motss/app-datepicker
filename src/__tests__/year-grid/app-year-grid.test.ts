@@ -3,12 +3,11 @@ import '../../year-grid/app-year-grid';
 import { expect, fixture, html } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 
-import type { confirmKeySet} from '../../constants';
-import { labelSelectedYear, labelToyear } from '../../constants';
+import { type confirmKeySet, labelSelectedYear, labelToyear } from '../../constants';
 import { toFormatters } from '../../helpers/to-formatters';
 import { toResolvedDate } from '../../helpers/to-resolved-date';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
-import type { AppYearGrid } from '../../year-grid/app-year-grid';
+import type {AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
 import type { YearGridData } from '../../year-grid/typings';
 import { messageFormatter } from '../test-utils/message-formatter';
@@ -242,9 +241,9 @@ describe(appYearGridName, () => {
         const min = new Date(dataMin.setUTCFullYear(todayFullYear - 2));
         const testData: YearGridData = {
           ...data,
+          date: min,
           max: new Date(dataMax.setUTCFullYear(todayFullYear + 1)),
           min,
-          date: min,
           selectedYearLabel: testSelectedYearLabel as string,
           toyearLabel: testTodayYearLabel as string,
         };

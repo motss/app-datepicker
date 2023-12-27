@@ -1,11 +1,11 @@
 import '../../date-picker/app-date-picker';
 
 import type { Button } from '@material/mwc-button';
-import { describe, expect, it } from 'vitest';
 import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
+import { describe, expect, it } from 'vitest';
 
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, MAX_DATE } from '../../constants';
-import type { AppDatePicker } from '../../date-picker/app-date-picker';
+import type {AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
@@ -37,29 +37,29 @@ describe(appDatePickerName, () => {
   const todayDate = toResolvedDate();
 
   it.each<{
-    startView: StartView | undefined,
-    $_visibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
     $_hiddenElements: ('body' | 'calendar' | 'header' | 'yearGrid')[];
+    $_visibleElements: ('body' | 'calendar' | 'header' | 'yearGrid')[],
+    startView: StartView | undefined,
   }>([
     {
+      $_hiddenElements: ['yearGrid'],
+      $_visibleElements: ['body', 'calendar', 'header'],
       startView: undefined,
-      $_visibleElements: ['body', 'calendar', 'header'],
-      $_hiddenElements: ['yearGrid'],
     },
     {
+      $_hiddenElements: ['yearGrid'],
+      $_visibleElements: ['body', 'calendar', 'header'],
       startView: 'calendar',
-      $_visibleElements: ['body', 'calendar', 'header'],
-      $_hiddenElements: ['yearGrid'],
     },
     {
-      startView: 'yearGrid',
-      $_visibleElements: ['body', 'header', 'yearGrid'],
       $_hiddenElements: ['calendar'],
-    }
+      $_visibleElements: ['body', 'header', 'yearGrid'],
+      startView: 'yearGrid',
+    },
   ])(`renders (startView=$startView)`, async ({
-    startView,
     $_hiddenElements,
     $_visibleElements,
+    startView,
   }) => {
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker .startView=${startView as never}></app-date-picker>`
@@ -107,20 +107,20 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
-    locale: string | undefined,
     $_locale: string,
     $_yearMonthLabel: string;
+    locale: string | undefined,
   }>([
     {
-      locale: undefined,
       $_locale: Intl.DateTimeFormat().resolvedOptions().locale,
-      $_yearMonthLabel: 'February 2020'
+      $_yearMonthLabel: 'February 2020',
+      locale: undefined,
     },
     {
-      locale: 'zh-TW',
       $_locale: 'zh-TW',
       $_yearMonthLabel: '2020年2月',
-    }
+      locale: 'zh-TW',
+    },
   ])(`renders (locale=$locale)`, async ({
     $_locale,
     $_yearMonthLabel,
@@ -141,33 +141,33 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
+    $_hiddenElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[];
+    $_visibleElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
     max: string,
     min: string,
     value: string,
-    $_visibleElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[],
-    $_hiddenElements: (keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>)[];
   }>([
     {
+      $_hiddenElements: [],
+      $_visibleElements: ['nextMonthNavigationButton', 'previousMonthNavigationButton'],
       max: '2020-03-03',
       min: '2020-01-01',
       value: '2020-02-02',
-      $_visibleElements: ['nextMonthNavigationButton', 'previousMonthNavigationButton'],
-      $_hiddenElements: [],
     },
     {
+      $_hiddenElements: ['previousMonthNavigationButton'],
+      $_visibleElements: ['nextMonthNavigationButton'],
       max: '2020-03-03',
       min: '2020-01-01',
       value: '2020-01-01',
-      $_visibleElements: ['nextMonthNavigationButton'],
-      $_hiddenElements: ['previousMonthNavigationButton'],
     },
     {
+      $_hiddenElements: ['nextMonthNavigationButton'],
+      $_visibleElements: ['previousMonthNavigationButton'],
       max: '2020-03-03',
       min: '2020-01-01',
       value: '2020-03-03',
-      $_visibleElements: ['previousMonthNavigationButton'],
-      $_hiddenElements: ['nextMonthNavigationButton'],
-    }
+    },
   ])(`renders month navigation buttons (min=$min, max=$max, value=$value)`, async ({
     $_hiddenElements,
     $_visibleElements,
@@ -198,31 +198,31 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
-    properties: Partial<DatePickerProperties>,
     $_: Partial<DatePickerProperties>;
+    properties: Partial<DatePickerProperties>,
   }>([
     {
+      $_: {
+        chooseMonthLabel: undefined,
+        chooseYearLabel: undefined,
+        nextMonthLabel: undefined,
+        previousMonthLabel: undefined,
+      },
       properties: {
         chooseMonthLabel: undefined,
         chooseYearLabel: undefined,
         nextMonthLabel: undefined,
         previousMonthLabel: undefined,
       },
-      $_: {
-        chooseMonthLabel: undefined,
-        chooseYearLabel: undefined,
-        nextMonthLabel: undefined,
-        previousMonthLabel: undefined,
-      }
     },
     {
-      properties: {
+      $_: {
         chooseMonthLabel: '',
         chooseYearLabel: '',
         nextMonthLabel: '',
         previousMonthLabel: '',
       },
-      $_: {
+      properties: {
         chooseMonthLabel: '',
         chooseYearLabel: '',
         nextMonthLabel: '',
@@ -230,22 +230,22 @@ describe(appDatePickerName, () => {
       },
     },
     {
-      properties: {
-        chooseMonthLabel: '選擇月份',
-        chooseYearLabel: '選擇年份',
-        nextMonthLabel: '下個月份',
-        previousMonthLabel: '上個月份',
-      },
       $_: {
         chooseMonthLabel: '選擇月份',
         chooseYearLabel: '選擇年份',
         nextMonthLabel: '下個月份',
         previousMonthLabel: '上個月份',
       },
-    }
+      properties: {
+        chooseMonthLabel: '選擇月份',
+        chooseYearLabel: '選擇年份',
+        nextMonthLabel: '下個月份',
+        previousMonthLabel: '上個月份',
+      },
+    },
   ])(`renders correct title for buttons (partialProperties=$properties)`, async ({
-    properties,
     $_,
+    properties,
   }) => {
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
@@ -285,16 +285,16 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
-    navigationButtonElementSelector: keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
     $_currentDate: Date;
+    navigationButtonElementSelector: keyof Pick<typeof elementSelectors, 'nextMonthNavigationButton' | 'previousMonthNavigationButton'>,
   }>([
     {
-      navigationButtonElementSelector: 'previousMonthNavigationButton',
       $_currentDate: new Date('2020-01-01'),
+      navigationButtonElementSelector: 'previousMonthNavigationButton',
     },
     {
-      navigationButtonElementSelector: 'nextMonthNavigationButton',
       $_currentDate: new Date('2020-03-01'),
+      navigationButtonElementSelector: 'nextMonthNavigationButton',
     },
   ])(`navigates to new month by clicking $navigationButtonElementSelector`, async ({
     $_currentDate,
@@ -600,32 +600,32 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
-    value: MaybeDate | undefined,
-    newValue: MaybeDate | undefined,
-    $_valueDate: Date,
     $_newValueDate: Date;
+    $_valueDate: Date,
+    newValue: MaybeDate | undefined,
+    value: MaybeDate | undefined,
   }>([
     {
-      value: '', newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02'),
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: todayDate, newValue: '2020-02-02', value: '',
     },
     {
-      value: '', newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02'),
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: todayDate, newValue: '2020-02-02', value: '',
     },
     {
-      value: '2020-02-02', newValue: '', $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: toResolvedDate('2020-02-02'),
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: toResolvedDate('2020-02-02'), newValue: '', value: '2020-02-02',
     },
     {
-      value: null, newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02')
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: todayDate, newValue: '2020-02-02', value: null,
     },
     {
-      value: '2020-02-02', newValue: null, $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: toResolvedDate('2020-02-02')
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: toResolvedDate('2020-02-02'), newValue: null, value: '2020-02-02',
     },
     {
-      value: undefined, newValue: '2020-02-02', $_valueDate: todayDate, $_newValueDate: toResolvedDate('2020-02-02')
+      $_newValueDate: toResolvedDate('2020-02-02'), $_valueDate: todayDate, newValue: '2020-02-02', value: undefined,
     },
     {
-      value: '2020-02-02', newValue: undefined, $_valueDate: toResolvedDate('2020-02-02'), $_newValueDate: todayDate
-    }
+      $_newValueDate: todayDate, $_valueDate: toResolvedDate('2020-02-02'), newValue: undefined, value: '2020-02-02',
+    },
   ])(`updates optional value (value=$value, newValue=$newValue)`, async ({
     $_newValueDate,
     $_valueDate,
@@ -677,44 +677,44 @@ describe(appDatePickerName, () => {
   });
 
   it.each<{
-    min: MaybeDate | undefined,
-    newMin: MaybeDate | undefined,
     $_minDate: Date,
     $_newMinDate: Date;
+    min: MaybeDate | undefined,
+    newMin: MaybeDate | undefined,
   }>([
     {
-      min: '', newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'),
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'), min: '', newMin: '2020-02-02',
     },
     {
-      min: null, newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'), min: null, newMin: '2020-02-02',
     },
     {
-      min: '', newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'), min: '', newMin: '2020-02-02',
     },
     {
-      min: undefined, newMin: '2020-02-02', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-02'), min: undefined, newMin: '2020-02-02',
     },
     {
-      min: '', newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01'), min: '', newMin: '2020-02-01',
     },
     {
-      min: null, newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01'), min: null, newMin: '2020-02-01',
     },
     {
-      min: '', newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01'), min: '', newMin: '2020-02-01',
     },
     {
-      min: undefined, newMin: '2020-02-01', $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01')
+      $_minDate: todayDate, $_newMinDate: toResolvedDate('2020-02-01'), min: undefined, newMin: '2020-02-01',
     },
     {
-      min: '2020-02-02', newMin: '', $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02')
+      $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02'), min: '2020-02-02', newMin: '',
     },
     {
-      min: '2020-02-02', newMin: null, $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02')
+      $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: toResolvedDate('2020-02-02'), min: '2020-02-02', newMin: null,
     },
     {
-      min: '2020-02-02', newMin: undefined, $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: todayDate
-    }
+      $_minDate: toResolvedDate('2020-02-02'), $_newMinDate: todayDate, min: '2020-02-02', newMin: undefined,
+    },
   ])(`updates optional min (min=$min, newMin=$newMin)`, async ({
     $_minDate,
     $_newMinDate,
@@ -806,87 +806,87 @@ describe(appDatePickerName, () => {
     }
   });
 
-  type NullishDateString = string | null | undefined;
+  type NullishDateString = null | string | undefined;
   interface TestUpdatesOptionalMax {
-    max: NullishDateString,
-    value: NullishDateString,
     $_max: string,
     $_value: string;
+    max: NullishDateString,
+    value: NullishDateString,
   }
   it.each<{
-    before: TestUpdatesOptionalMax,
     after: TestUpdatesOptionalMax;
+    before: TestUpdatesOptionalMax,
   }>([
     // max='',value=''
     {
+      after: { $_max: '2020-02-20', $_value: '2020-02-20', max: '2020-02-20', value: '2020-02-20' },
       // same max and value subsequently
-      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20', }
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: '', value: '' },
     },
     {
+      after: { $_max: '2020-02-21', $_value: '2020-02-20', max: '2020-02-21', value: '2020-02-20' },
       // larger max subsequently
-      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: '', value: '' },
     },
     {
+      after: { $_max: '2020-02-19', $_value: '2020-02-19', max: '2020-02-19', value: '2020-02-20' },
       // smaller max subsequently
-      before: { max: '', value: '', $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: '', value: '' },
     },
 
     // max=null,value=null
     {
+      after: { $_max: '2020-02-20', $_value: '2020-02-20', max: '2020-02-20', value: '2020-02-20' },
       // same max and value subsequently (null)
-      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: null, value: null },
     },
     {
+      after: { $_max: '2020-02-21', $_value: '2020-02-20', max: '2020-02-21', value: '2020-02-20' },
       // larger max subsequently
-      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: null, value: null },
     },
     {
+      after: { $_max: '2020-02-19', $_value: '2020-02-19', max: '2020-02-19', value: '2020-02-20' },
       // smaller max subsequently
-      before: { max: null, value: null, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' }
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: null, value: null },
     },
 
     // max=undefined,value=undefined
     {
+      after: { $_max: '2020-02-20', $_value: '2020-02-20', max: '2020-02-20', value: '2020-02-20' },
       // same max and value subsequently
-      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-20', value: '2020-02-20', $_max: '2020-02-20', $_value: '2020-02-20' }
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: undefined, value: undefined },
     },
     {
+      after: { $_max: '2020-02-21', $_value: '2020-02-20', max: '2020-02-21', value: '2020-02-20' },
       // larger max subsequently
-      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-21', value: '2020-02-20', $_max: '2020-02-21', $_value: '2020-02-20' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: undefined, value: undefined },
     },
     {
+      after: { $_max: '2020-02-19', $_value: '2020-02-19', max: '2020-02-19', value: '2020-02-20' },
       // smaller max subsequently
-      before: { max: undefined, value: undefined, $_max: '2100-12-31', $_value: toDateString(todayDate) },
-      after: { max: '2020-02-19', value: '2020-02-20', $_max: '2020-02-19', $_value: '2020-02-19' },
+      before: { $_max: '2100-12-31', $_value: toDateString(todayDate), max: undefined, value: undefined },
     },
 
     // max=2020-02-02,value=2020-02-02
     {
+      after: { $_max: '2020-02-02', $_value: '2020-02-02', max: '', value: '2100-12-12' },
       // max='' and value=2100-12-12 subsequently
-      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
-      after: { max: '', value: '2100-12-12', $_max: '2020-02-02', $_value: '2020-02-02' }
+      before: { $_max: '2020-02-02', $_value: '2020-02-02', max: '2020-02-02', value: '2020-02-02' },
     },
     {
+      after: { $_max: '2020-02-02', $_value: '2020-02-02', max: null, value: '2100-12-12' },
       // max=null and value=2100-12-12 subsequently
-      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
-      after: { max: null, value: '2100-12-12', $_max: '2020-02-02', $_value: '2020-02-02' }
+      before: { $_max: '2020-02-02', $_value: '2020-02-02', max: '2020-02-02', value: '2020-02-02' },
     },
     {
+      after: { $_max: toDateString(MAX_DATE), $_value: '2100-12-12', max: undefined, value: '2100-12-12' },
       // max=undefined and value=2100-12-12 subsequently
-      before: { max: '2020-02-02', value: '2020-02-02', $_max: '2020-02-02', $_value: '2020-02-02' },
-      after: { max: undefined, value: '2100-12-12', $_max: toDateString(MAX_DATE), $_value: '2100-12-12' }
+      before: { $_max: '2020-02-02', $_value: '2020-02-02', max: '2020-02-02', value: '2020-02-02' },
     },
   ])(`updates optional max (before: $before, after: $after)`, async ({
-    before,
     after,
+    before,
   }) => {
     const el = await fixture<AppDatePicker>(
       html`<app-date-picker
@@ -900,11 +900,11 @@ describe(appDatePickerName, () => {
     for (const [
       i,
       {
-        max: $testMax,
-        value: $testValue,
         $_max: $expectedMax,
         $_value: $expectedValue,
-      }
+        max: $testMax,
+        value: $testValue,
+      },
     ] of $a) {
       const calendar = el.query<AppMonthCalendar>(
         elementSelectors.calendar

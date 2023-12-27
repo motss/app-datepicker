@@ -12,19 +12,19 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
   SuperClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, DatePickerMixinProperties> => {
   class DatePickerMixinClass extends SuperClass implements DatePickerMixinProperties {
-    @property() public chooseYearLabel: string = labelChooseYear;
     @property() public chooseMonthLabel: string = labelChooseMonth;
-    @property() public disabledDays = '';
+    @property() public chooseYearLabel: string = labelChooseYear;
     @property() public disabledDates = '';
-    @property({ type: Number, reflect: true }) public firstDayOfWeek = 0;
+    @property() public disabledDays = '';
+    @property({ reflect: true, type: Number }) public firstDayOfWeek = 0;
     @property() public locale: string = DateTimeFormat().resolvedOptions().locale;
     @property() public nextMonthLabel: string = labelNextMonth;
     @property() public previousMonthLabel: string = labelPreviousMonth;
     @property() public selectedDateLabel: string = labelSelectedDate;
     @property() public selectedYearLabel: string = labelSelectedYear;
     @property() public shortWeekLabel: string = labelShortWeek;
-    @property({ type: Boolean, reflect: true }) public showWeekNumber = false;
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public startView: StartView = 'calendar';
+    @property({ reflect: true, type: Boolean }) public showWeekNumber = false;
+    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true }) public startView: StartView = 'calendar';
     @property() public todayLabel: string = labelToday;
     @property() public toyearLabel: string = labelToyear;
 
@@ -36,7 +36,7 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
 
     @property() public weekLabel: string = labelWeek;
     @property() public weekNumberTemplate: string = weekNumberTemplate;
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } }) public weekNumberType: WeekNumberType = 'first-4-day-week';
+    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true }) public weekNumberType: WeekNumberType = 'first-4-day-week';
   }
 
   return DatePickerMixinClass as unknown as MixinReturnType<

@@ -3,7 +3,7 @@ import '../../date-picker-input-surface/app-date-picker-input-surface';
 import { expect, fixture, html } from '@open-wc/testing';
 
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
-import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
+import type {AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { promiseTimeout } from '../constants';
 import { eventOnce } from '../test-utils/event-once';

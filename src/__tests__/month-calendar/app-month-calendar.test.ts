@@ -2,18 +2,16 @@ import '../../month-calendar/app-month-calendar';
 
 import { expect, fixture } from '@open-wc/testing';
 import { html } from '@open-wc/testing-helpers';
-import type { SendKeysPayload } from '@web/test-runner-commands';
-import { sendKeys } from '@web/test-runner-commands';
+import {sendKeys, type SendKeysPayload  } from '@web/test-runner-commands';
 import { calendar } from 'nodemod/dist/calendar/calendar.js';
 import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
 import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings';
 import type { CalendarInit } from 'nodemod/dist/calendar/typings';
 
-import type { confirmKeySet, navigationKeySetGrid} from '../../constants';
-import { labelSelectedDate, labelShortWeek, labelToday, labelWeek, weekNumberTemplate} from '../../constants';
+import { type confirmKeySet, labelSelectedDate, labelShortWeek, labelToday, labelWeek, type navigationKeySetGrid, weekNumberTemplate} from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
-import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
+import type {AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
 import type { CustomEventDetail, InferredFromSet } from '../../typings';
@@ -26,11 +24,11 @@ describe(appMonthCalendarName, () => {
   const calendarInit: CalendarInit = {
     date: new Date('2020-02-02'),
     dayFormat: formatters.dayFormat,
-    fullDateFormat: formatters.fullDateFormat,
-    locale,
     disabledDates: [],
     disabledDays: [],
     firstDayOfWeek: 0,
+    fullDateFormat: formatters.fullDateFormat,
+    locale,
     max: new Date('2100-12-31'),
     min: new Date('1970-01-01'),
     showWeekNumber: false,
@@ -38,11 +36,11 @@ describe(appMonthCalendarName, () => {
     weekNumberType: 'first-4-day-week',
   };
   const weekdaysInit: GetWeekdaysInit = {
+    firstDayOfWeek: calendarInit.firstDayOfWeek,
     longWeekdayFormat: formatters.longWeekdayFormat,
     narrowWeekdayFormat: formatters.narrowWeekdayFormat,
-    firstDayOfWeek: calendarInit.firstDayOfWeek,
-    showWeekNumber: calendarInit.showWeekNumber,
     shortWeekLabel: labelShortWeek,
+    showWeekNumber: calendarInit.showWeekNumber,
     weekLabel: labelWeek,
   };
   const calendarResult = calendar(calendarInit);
@@ -182,7 +180,7 @@ describe(appMonthCalendarName, () => {
   type CaseSelectNewDate = [
     eventType: 'click' | 'keydown',
     keyPayloads: (Partial<Record<
-      'down' | 'up' | 'press',
+      'down' | 'press' | 'up',
       InferredFromSet<typeof confirmKeySet> | InferredFromSet<typeof navigationKeySetGrid>
     >>)[],
     selectedDate: Date
@@ -406,7 +404,7 @@ describe(appMonthCalendarName, () => {
   const casesWeekdayTitles: CaseWeekdayTitles[] = [
     [{}, {}, ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
     [{ showWeekNumber: true }, { showWeekNumber: true }, [labelWeek, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
-    [{ showWeekNumber: true }, { showWeekNumber: true, shortWeekLabel: '週', weekLabel: '週目' }, ['週目', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
+    [{ showWeekNumber: true }, { shortWeekLabel: '週', showWeekNumber: true, weekLabel: '週目' }, ['週目', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']],
   ];
   casesWeekdayTitles.forEach((a) => {
     const [

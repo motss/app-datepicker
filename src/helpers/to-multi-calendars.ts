@@ -9,22 +9,22 @@ export function toMultiCalendars(
   options: ToMultiCalendarsInit
 ): MultiCalendars {
   const {
-    dayFormat,
-    fullDateFormat,
-    locale,
-    longWeekdayFormat,
-    narrowWeekdayFormat,
+    count,
     currentDate,
-
+    dayFormat,
     disabledDates,
     disabledDays,
     firstDayOfWeek,
+
+    fullDateFormat,
+    locale,
+    longWeekdayFormat,
     max,
     min,
+    narrowWeekdayFormat,
     showWeekNumber,
     weekLabel,
     weekNumberType,
-    count,
   } = options;
 
   const countValue = count || 0;
@@ -32,9 +32,9 @@ export function toMultiCalendars(
   const minTime = min == null ? Number.MIN_SAFE_INTEGER : +min;
   const maxTime = max == null ? Number.MAX_SAFE_INTEGER : +max;
   const weekdays = getWeekdays({
+    firstDayOfWeek,
     longWeekdayFormat,
     narrowWeekdayFormat,
-    firstDayOfWeek,
     showWeekNumber,
     weekLabel,
   });
@@ -72,11 +72,11 @@ export function toMultiCalendars(
      */
     if (lastDayOfMonthTime < minTime || +firstDayOfMonth > maxTime) {
       return {
-        key,
-
         calendar: [],
+
         disabledDatesSet: new Set(),
         disabledDaysSet: new Set(),
+        key,
       };
     }
 
@@ -123,10 +123,10 @@ export function toMultiCalendars(
 
   return {
     calendars,
-    weekdays,
-
     disabledDatesSet: $disabledDatesSet,
+
     disabledDaysSet: $disabledDaysSet,
     key: getKey(currentDate),
+    weekdays,
   };
 }

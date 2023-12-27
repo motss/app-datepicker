@@ -1,7 +1,6 @@
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
 
-import type { navigationKeyListNext} from '../constants.js';
-import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
+import { type navigationKeyListNext, navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome, keyPageDown, keyPageUp } from '../key-values.js';
 import type { InferredFromSet } from '../typings.js';
 import { toNextSelectableDate } from './to-next-selectable-date.js';

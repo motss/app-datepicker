@@ -1,6 +1,6 @@
 export async function focusElement<T extends HTMLElement | null>(
   asyncSelector: Promise<T>,
-  thenCallback?: (element: NonNullable<T>) => void | Promise<void>
+  thenCallback?: (element: NonNullable<T>) => Promise<void> | void
 ): Promise<T> {
   const resolvedElement = await asyncSelector;
 

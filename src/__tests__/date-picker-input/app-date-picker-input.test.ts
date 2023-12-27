@@ -7,13 +7,13 @@ import { expect, fixture, html } from '@open-wc/testing';
 import { sendKeys } from '@web/test-runner-commands';
 
 import { DateTimeFormat } from '../../constants';
-import type { AppDatePicker } from '../../date-picker/app-date-picker';
+import type {AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
-import type { AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
+import type {AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
 import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input/constants';
 import type { DatePickerInputProperties } from '../../date-picker-input/typings';
-import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
+import type {AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { iconClear } from '../../icons';
 import { keyEnter, keyEscape, keySpace, keyTab } from '../../key-values';
@@ -36,13 +36,13 @@ describe(appDatePickerInputName, () => {
     mdcTextFieldInput: '.mdc-text-field__input',
     monthCalendar: appMonthCalendarName,
     yearDropdown: '.year-dropdown',
-    yearGridButton: '.year-grid-button',
     yearGrid: appYearGridName,
+    yearGridButton: '.year-grid-button',
   } as const;
   const formatter = DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
     day: 'numeric',
+    month: 'short',
+    year: 'numeric',
   });
   const label = 'DOB';
   const max = '2100-12-31';
@@ -51,7 +51,7 @@ describe(appDatePickerInputName, () => {
   const value = '2020-02-02';
 
   type CaseValue = [
-    value: string | undefined | null,
+    value: null | string | undefined,
     expectedValue: string,
     expectedValueAsDate: Date | null,
     expectedValueAsNumber: number
@@ -101,7 +101,7 @@ describe(appDatePickerInputName, () => {
   });
 
   type CaseOptionalLocale = [
-    locale: string | undefined | null,
+    locale: null | string | undefined,
     expectedLocale: string
   ];
   const casesOptionalLocale: CaseOptionalLocale[] = [
@@ -352,7 +352,7 @@ describe(appDatePickerInputName, () => {
 
   type CaseResetValue = [
     _message: string,
-    triggerType: 'reset' | 'click'
+    triggerType: 'click' | 'reset'
   ];
   const casesResetValue: CaseResetValue[] = [
     ['calls .reset()', 'reset'],

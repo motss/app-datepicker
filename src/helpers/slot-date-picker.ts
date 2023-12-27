@@ -1,5 +1,4 @@
-import type { TemplateResult } from 'lit';
-import { html } from 'lit';
+import { html, type TemplateResult } from 'lit';
 
 import { appDatePickerName } from '../date-picker/constants.js';
 import type { SlotDatePickerInit } from './typings.js';

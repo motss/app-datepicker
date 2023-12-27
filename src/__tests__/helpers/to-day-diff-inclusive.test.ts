@@ -5,8 +5,8 @@ import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toDayDiffInclusive.name, () => {
   type CaseToDayDiffInclusive = [
-    min: number | Date,
-    max: number | Date,
+    min: Date | number,
+    max: Date | number,
     expected: number
   ];
   const casesToDayDiffInclusive: CaseToDayDiffInclusive[] = [

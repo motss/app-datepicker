@@ -13,14 +13,14 @@ export const DatePickerMinMaxMixin = <BaseConstructor extends LitConstructor>(
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to MAX_DATE,
      * set `max` undefined.
      */
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
+    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true })
     public max?: string;
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
      * today's date, set `min` undefined.
      */
-    @property({ reflect: true, converter: { toAttribute: nullishAttributeConverter } })
+    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true })
     public min?: string;
   }
 

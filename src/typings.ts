@@ -41,13 +41,13 @@ export interface DatePickerProperties extends
 type DatePickerValues = Required<Pick<DatePicker, 'value' | 'valueAsDate' | 'valueAsNumber'>>;
 
 export interface Formatters extends Pick<DatePicker, 'locale'> {
+  dateFormat: DateTimeFormatter;
   dayFormat: DateTimeFormatter;
   fullDateFormat: DateTimeFormatter;
-  longWeekdayFormat: DateTimeFormatter;
-  narrowWeekdayFormat: DateTimeFormatter;
   longMonthFormat: DateTimeFormatter;
   longMonthYearFormat: DateTimeFormatter;
-  dateFormat: DateTimeFormatter;
+  longWeekdayFormat: DateTimeFormatter;
+  narrowWeekdayFormat: DateTimeFormatter;
   yearFormat: DateTimeFormatter;
 }
 

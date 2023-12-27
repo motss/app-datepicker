@@ -40,62 +40,71 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Setup node@${{ matrix.target }}
-      #   uses: actions/setup-node@v2
-      #   with:
-      #     node-version: ${{ matrix.target }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: latest
 
-      # - name: Install latest npm
-      #   run: |
-      #     npm i -g npm@latest
+      - name: Set node version to ${{ matrix.target }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.target }}
 
       - name: List versions
         run: |
           echo "NODE_VERSION=$(node -v)" >> $GITHUB_ENV
           echo "NPM_CACHE_DIR=$(npm config get cache)" >> $GITHUB_ENV
           echo "NPM_VERSION=$(npm -v)" >> $GITHUB_ENV
+          echo "PNPM_STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+          echo "PNPM_VERSION=$(pnpm -v)" >> $GITHUB_ENV
 
           echo "${{ github.workflow }}-${{ github.ref || github.run_id }}"
           pwd
           ls -la
           which npm
+          # npm x -y -- envinfo@latest
 
       - name: Cache dependencies
-        id: npm-cache
+        id: pnpm-cache
         uses: actions/cache@v3
         with:
           # See this glob workaround at https://github.com/actions/toolkit/issues/713.
           path: |
             ${{ env.NPM_CACHE_DIR }}/*
             !${{ env.NPM_CACHE_DIR }}/_npx
-          key: ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+            ${{ env.PNPM_STORE_PATH }}
+          key: ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-pnpm-${{ env.PNPM_VERSION }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-npm-${{ env.NPM_VERSION }}
+            ${{ matrix.os }}-node-${{ env.NODE_VERSION }}-pnpm-${{ env.PNPM_VERSION }}
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm pkg delete scripts.postinstall
+          pnpm install --frozen-lockfile
+          # sh $(npm root)/@reallyland/tools/list-npx-cache.sh
 
       - name: Lint
         run: |
-          npm run lint:build
+          pnpm lint:build
 
-      - name: Test
-        if: env.IS_UBUNTU == 'false'
-        run: |
-          npm run wtr
+      # FIXME: Enable tests using Playwright + vitest
+      # - name: Test
+      #   if: env.IS_UBUNTU == 'false'
+      #   run: |
+      #     pnpm wtr
 
-      - name: Test with coverage
-        if: env.IS_UBUNTU != 'false'
-        run: |
-          npm run wtr
-        env:
-          COVERAGE: true
+      # - name: Test with coverage
+      #   if: env.IS_UBUNTU != 'false'
+      #   run: |
+      #     pnpm wtr
+      #   env:
+      #     COVERAGE: true
 
-      - name: Upload coverage to codecov
-        if: env.IS_UBUNTU != 'false' && success()
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov.info
-          flags: unit_tests_helpers
+      # - name: Upload coverage to codecov
+      #   if: env.IS_UBUNTU != 'false' && success()
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     file: ./coverage/lcov.info
+      #     flags: unit_tests_helpers

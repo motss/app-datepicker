@@ -2,13 +2,13 @@ import '../../date-picker/app-date-picker';
 import '../../date-picker-dialog/app-date-picker-dialog';
 
 import type { Button } from '@material/mwc-button';
-import { describe, it, expect } from 'vitest';
 import { fixture, html } from '@open-wc/testing-helpers';
+import { describe, expect, it } from 'vitest';
 
 import { DateTimeFormat } from '../../constants';
-import type { AppDatePicker } from '../../date-picker/app-date-picker';
+import type {AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
-import type { AppDatePickerDialog } from '../../date-picker-dialog/app-date-picker-dialog';
+import type {AppDatePickerDialog } from '../../date-picker-dialog/app-date-picker-dialog';
 import type { AppDatePickerDialogBase } from '../../date-picker-dialog/app-date-picker-dialog-base';
 import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../../date-picker-dialog/constants';
 import type { DialogClosedEventDetail, DialogClosingEventDetailAction } from '../../date-picker-dialog/typings';
@@ -35,9 +35,9 @@ describe(appDatePickerDialogName, () => {
     yearGrid: appYearGridName,
   } as const;
   const formatter = DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
     day: 'numeric',
+    month: 'short',
+    year: 'numeric',
   });
   const properties: DeepNonNullableAndRequired<OmitKey<DatePickerProperties, 'fire' | 'query' | 'queryAll' | 'root'>> = {
     chooseMonthLabel: '選擇月份',
@@ -197,33 +197,33 @@ describe(appDatePickerDialogName, () => {
   });
 
   it.each<{
-    _message: string;
-    value: string;
-    dialogAction: DialogClosingEventDetailAction;
     $_dialogOpen: boolean;
     $_dialogValue: string;
+    _message: string;
+    dialogAction: DialogClosingEventDetailAction;
+    value: string;
   }>([
     {
+      $_dialogOpen: false,
+      $_dialogValue: properties.value as string,
       _message: 'but does not confirm a new date',
-      value: '2020-02-04',
       dialogAction: 'cancel',
-      $_dialogOpen: false,
-      $_dialogValue: properties.value as string
+      value: '2020-02-04',
     },
     {
+      $_dialogOpen: false,
+      $_dialogValue: '2020-02-04',
       _message: 'and confirms a new date',
-      value: '2020-02-04',
       dialogAction: 'set',
-      $_dialogOpen: false,
-      $_dialogValue: '2020-02-04'
+      value: '2020-02-04',
     },
     {
-      _message: 'a new date but resets it',
-      value: '2020-02-04',
-      dialogAction: 'reset',
       $_dialogOpen: true,
       $_dialogValue: toDateString(toResolvedDate()),
-    }
+      _message: 'a new date but resets it',
+      dialogAction: 'reset',
+      value: '2020-02-04',
+    },
   ])(`selects $_message (value=$newValue, dialogAction=$dialogAction)`, async ({
     $_dialogOpen,
     $_dialogValue,
