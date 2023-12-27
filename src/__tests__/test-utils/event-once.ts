@@ -45,7 +45,7 @@ export function eventOnce<
     node.addEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
 
     // Race with event listener
-    globalThis.setTimeout(
+    window.setTimeout(
       () => {
         node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
         resolve(undefined);

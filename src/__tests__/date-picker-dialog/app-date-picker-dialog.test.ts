@@ -2,7 +2,8 @@ import '../../date-picker/app-date-picker';
 import '../../date-picker-dialog/app-date-picker-dialog';
 
 import type { Button } from '@material/mwc-button';
-import { expect, fixture, html } from '@open-wc/testing';
+import { describe, it, expect } from 'vitest';
+import { fixture, html } from '@open-wc/testing-helpers';
 
 import { DateTimeFormat } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
@@ -21,7 +22,6 @@ import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
 import { promiseTimeout } from '../constants';
 import { eventOnce } from '../test-utils/event-once';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(appDatePickerDialogName, () => {
   const elementSelectors = {
@@ -85,7 +85,7 @@ describe(appDatePickerDialogName, () => {
 
       await element.updateComplete;
 
-      globalThis.setTimeout(() => resolve(element), promiseTimeout);
+      window.setTimeout(() => resolve(element), promiseTimeout);
     });
 
     const datePickerDialogBase =
@@ -102,16 +102,19 @@ describe(appDatePickerDialogName, () => {
     expect(datePickerDialogBase).exist;
     expect(datePicker).exist;
     expect(datePickerDialogBase?.hasAttribute('open')).true;
-    expect(el.valueAsDate).deep.equal(new Date(properties.value as string));
-    expect(el.valueAsNumber).equal(+new Date(properties.value as string));
+    expect(el.valueAsDate).toEqual(new Date(properties.value as string));
+    expect(el.valueAsNumber).toEqual(+new Date(properties.value as string));
 
     const dialogActionReset = el.query(elementSelectors.dialogActionReset);
     const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
     const dialogActionSet = el.query(elementSelectors.dialogActionSet);
 
-    expect(dialogActionReset).exist.text(resetLabel);
-    expect(dialogActionCancel).exist.text(dismissLabel);
-    expect(dialogActionSet).exist.text(confirmLabel);
+    expect(dialogActionReset).exist;
+    expect(dialogActionCancel).exist;
+    expect(dialogActionSet).exist;
+    expect(dialogActionReset?.textContent).toBe(resetLabel);
+    expect(dialogActionCancel?.textContent).toBe(dismissLabel);
+    expect(dialogActionSet?.textContent).toBe(confirmLabel);
   });
 
   it('always reopens with the correct startView', async () => {
@@ -193,149 +196,156 @@ describe(appDatePickerDialogName, () => {
     expect(datePickerDialogBase?.hasAttribute('open')).true;
   });
 
-  type CaseSelectsAndConfirmsNewDate = [
-    _message: string,
-    newValue: string,
-    dialogAction: DialogClosingEventDetailAction,
-    expectedDialogOpen: boolean,
-    expectedDialogValue: string
-  ];
-  const casesSelectAndConfirmNewDate: CaseSelectsAndConfirmsNewDate[] = [
-    ['but does not confirm a new date', '2020-02-04', 'cancel', false, properties.value as string],
-    ['and confirms a new date', '2020-02-04', 'set', false, '2020-02-04'],
-    ['a new date but resets it', '2020-02-04', 'reset', true, toDateString(toResolvedDate())],
-  ];
-
-  casesSelectAndConfirmNewDate.forEach((a) => {
-    const [
-      ,
-      testNewValue,
-      testDialogAction,
-      expectedDatePickerDialogHasAttributeOpen,
-      expectedDatePickerDialogValue,
-    ] = a;
-
-    it(
-      messageFormatter(`selects %s`, a),
-      async () => {
-        const el = await fixture<AppDatePickerDialog>(
-          html`<app-date-picker-dialog
-            .max=${properties.max}
-            .min=${properties.min}
-            .value=${properties.value}
-          ></app-date-picker-dialog>`
-        );
-
-        const openedTask = eventOnce<
-          typeof el,
-          'opened',
-          CustomEvent
-        >(el, 'opened');
-
-        let datePickerDialogBase =
-          el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
-        let datePicker =
-          datePickerDialogBase?.query<AppDatePicker>(elementSelectors.datePicker);
-        let monthCalendar =
-          datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
-
-        el.show();
-        const opened = await openedTask;
-        await monthCalendar?.updateComplete;
-        await datePicker?.updateComplete;
-        await datePickerDialogBase?.updateComplete;
-        await el.updateComplete;
-
-        datePickerDialogBase =
-          el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
-        datePicker =
-          datePickerDialogBase?.querySelector<AppDatePicker>(elementSelectors.datePicker);
-        monthCalendar =
-          datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
-        const dialogActionReset =
-          datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionReset);
-        const dialogActionCancel =
-          datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionCancel);
-        const dialogActionSet =
-          datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionSet);
-
-        expect(opened).not.undefined;
-        expect(monthCalendar).exist;
-        expect(datePicker).exist;
-        expect(datePickerDialogBase).exist;
-        expect(dialogActionReset).exist;
-        expect(dialogActionCancel).exist;
-        expect(dialogActionSet).exist;
-        expect(datePickerDialogBase?.hasAttribute('open')).true;
-        expect(el.value).equal(properties.value);
-
-        const newValueDate = new Date(testNewValue);
-        const newSelectedDate =
-          monthCalendar?.query(elementSelectors.calendarDay(formatter.format(newValueDate)));
-
-        const dateUpdatedTask = eventOnce<
-          AppDatePicker,
-          'date-updated',
-          CustomEvent<CustomEventDetail['date-updated']>
-        >(datePicker as AppDatePicker, 'date-updated');
-
-        expect(newSelectedDate).exist;
-
-        newSelectedDate?.click();
-        await dateUpdatedTask;
-        await monthCalendar?.updateComplete;
-        await datePicker?.updateComplete;
-        await datePickerDialogBase?.updateComplete;
-        await el.updateComplete;
-
-        expect(el.value).equal(properties.value);
-        expect(datePicker?.value).equal(testNewValue);
-        expect(datePicker?.valueAsDate).deep.equal(newValueDate);
-        expect(datePicker?.valueAsNumber).equal(+newValueDate);
-
-        const closedTask = eventOnce<
-          typeof el,
-          'closed',
-          CustomEvent<DialogClosedEventDetail>
-        >(el, 'closed');
-
-        switch (testDialogAction) {
-          case 'cancel': {
-            dialogActionCancel?.click();
-            break;
-          }
-          case 'reset': {
-            dialogActionReset?.click();
-            break;
-          }
-          case 'set': {
-            dialogActionSet?.click();
-            break;
-          }
-          default:
-        }
-
-        const closed = await closedTask;
-        await monthCalendar?.updateComplete;
-        await datePicker?.updateComplete;
-        await datePickerDialogBase?.updateComplete;
-        await el.updateComplete;
-
-        if (testDialogAction === 'reset') {
-          expect(closed).undefined;
-        } else {
-          expect(closed).not.undefined;
-        }
-
-        expect(
-          datePickerDialogBase?.hasAttribute('open')
-        ).equal(expectedDatePickerDialogHasAttributeOpen);
-
-        expect(el.value).equal(expectedDatePickerDialogValue);
-        expect(el.valueAsDate).deep.equal(new Date(expectedDatePickerDialogValue));
-        expect(el.valueAsNumber).equal(+new Date(expectedDatePickerDialogValue));
-      }
+  it.each<{
+    _message: string;
+    value: string;
+    dialogAction: DialogClosingEventDetailAction;
+    $_dialogOpen: boolean;
+    $_dialogValue: string;
+  }>([
+    {
+      _message: 'but does not confirm a new date',
+      value: '2020-02-04',
+      dialogAction: 'cancel',
+      $_dialogOpen: false,
+      $_dialogValue: properties.value as string
+    },
+    {
+      _message: 'and confirms a new date',
+      value: '2020-02-04',
+      dialogAction: 'set',
+      $_dialogOpen: false,
+      $_dialogValue: '2020-02-04'
+    },
+    {
+      _message: 'a new date but resets it',
+      value: '2020-02-04',
+      dialogAction: 'reset',
+      $_dialogOpen: true,
+      $_dialogValue: toDateString(toResolvedDate()),
+    }
+  ])(`selects $_message (value=$newValue, dialogAction=$dialogAction)`, async ({
+    $_dialogOpen,
+    $_dialogValue,
+    dialogAction,
+    value,
+  }) => {
+    const el = await fixture<AppDatePickerDialog>(
+      html`<app-date-picker-dialog
+        .max=${properties.max}
+        .min=${properties.min}
+        .value=${properties.value}
+      ></app-date-picker-dialog>`
     );
+
+    const openedTask = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent
+    >(el, 'opened');
+
+    let datePickerDialogBase =
+      el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
+    let datePicker =
+      datePickerDialogBase?.query<AppDatePicker>(elementSelectors.datePicker);
+    let monthCalendar =
+      datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+
+    el.show();
+    const opened = await openedTask;
+    await monthCalendar?.updateComplete;
+    await datePicker?.updateComplete;
+    await datePickerDialogBase?.updateComplete;
+    await el.updateComplete;
+
+    datePickerDialogBase =
+      el.query<AppDatePickerDialogBase>(elementSelectors.datePickerDialogBase);
+    datePicker =
+      datePickerDialogBase?.querySelector<AppDatePicker>(elementSelectors.datePicker);
+    monthCalendar =
+      datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+    const dialogActionReset =
+      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionReset);
+    const dialogActionCancel =
+      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionCancel);
+    const dialogActionSet =
+      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionSet);
+
+    expect(opened).not.undefined;
+    expect(monthCalendar).exist;
+    expect(datePicker).exist;
+    expect(datePickerDialogBase).exist;
+    expect(dialogActionReset).exist;
+    expect(dialogActionCancel).exist;
+    expect(dialogActionSet).exist;
+    expect(datePickerDialogBase?.hasAttribute('open')).true;
+    expect(el.value).toBe(properties.value);
+
+    const newValueDate = new Date(value);
+    const newSelectedDate =
+      monthCalendar?.query(elementSelectors.calendarDay(formatter.format(newValueDate)));
+
+    const dateUpdatedTask = eventOnce<
+      AppDatePicker,
+      'date-updated',
+      CustomEvent<CustomEventDetail['date-updated']>
+    >(datePicker as AppDatePicker, 'date-updated');
+
+    expect(newSelectedDate).exist;
+
+    newSelectedDate?.click();
+    await dateUpdatedTask;
+    await monthCalendar?.updateComplete;
+    await datePicker?.updateComplete;
+    await datePickerDialogBase?.updateComplete;
+    await el.updateComplete;
+
+    expect(el.value).toBe(properties.value);
+    expect(datePicker?.value).toBe(value);
+    expect(datePicker?.valueAsDate).toEqual(newValueDate);
+    expect(datePicker?.valueAsNumber).toBe(+newValueDate);
+
+    const closedTask = eventOnce<
+      typeof el,
+      'closed',
+      CustomEvent<DialogClosedEventDetail>
+    >(el, 'closed');
+
+    switch (dialogAction) {
+      case 'cancel': {
+        dialogActionCancel?.click();
+        break;
+      }
+      case 'reset': {
+        dialogActionReset?.click();
+        break;
+      }
+      case 'set': {
+        dialogActionSet?.click();
+        break;
+      }
+      default:
+    }
+
+    const closed = await closedTask;
+    await monthCalendar?.updateComplete;
+    await datePicker?.updateComplete;
+    await datePickerDialogBase?.updateComplete;
+    await el.updateComplete;
+
+    if (dialogAction === 'reset') {
+      expect(closed).undefined;
+    } else {
+      expect(closed).not.undefined;
+    }
+
+    expect(
+      datePickerDialogBase?.hasAttribute('open')
+    ).equal($_dialogOpen);
+
+    expect(el.value).toBe($_dialogValue);
+    expect(el.valueAsDate).toEqual(new Date($_dialogValue));
+    expect(el.valueAsNumber).toBe(+new Date($_dialogValue));
   });
 
 });

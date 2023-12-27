@@ -135,9 +135,9 @@ describe(appDatePickerName, () => {
       elementSelectors.selectedYearMonth
     );
 
-    expect(el.locale).equal($_locale);
-    expect(el.value).equal(testValue);
-    expect(selectedYearMonth?.textContent).equal($_yearMonthLabel);
+    expect(el.locale).toBe($_locale);
+    expect(el.value).toBe(testValue);
+    expect(selectedYearMonth?.textContent).toBe($_yearMonthLabel);
   });
 
   it.each<{
@@ -322,9 +322,7 @@ describe(appDatePickerName, () => {
       elementSelectors.selectedCalendarDay
     );
 
-    expect(selectedYearMonth?.textContent).equal(
-      formatters.longMonthYearFormat($_currentDate)
-    );
+    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat($_currentDate));
     expect(oldSelectedDate).not.exist;
   });
 
@@ -377,9 +375,7 @@ describe(appDatePickerName, () => {
 
     expect(calendar).exist;
     expect(oldSelectedDate).not.exist;
-    expect(selectedYearMonth?.textContent).equal(
-      formatters.longMonthYearFormat(newSelectedDateDate)
-    );
+    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new year in year grid view
 
     // START: Select new month in calendar view to update current date
@@ -466,10 +462,10 @@ describe(appDatePickerName, () => {
       );
 
     expect(newSelectedCalendarDay).exist;
-    expect(newSelectedCalendarDay?.getAttribute('aria-label')).equal(
+    expect(newSelectedCalendarDay?.getAttribute('aria-label')).toBe(
       newSelectedDateLabel
     );
-    expect(newSelectedCalendarDay?.fullDate).deep.equal(newSelectedDate);
+    expect(newSelectedCalendarDay?.fullDate).toEqual(newSelectedDate);
 
     const dateUpdatedEventTask =
       eventOnce<
@@ -497,12 +493,12 @@ describe(appDatePickerName, () => {
     };
 
     expect(selectedCalendarDay).exist;
-    expect(selectedCalendarDay?.getAttribute('aria-label')).equal(
+    expect(selectedCalendarDay?.getAttribute('aria-label')).toBe(
       newSelectedDateLabel
     );
-    expect(selectedCalendarDay?.fullDate).deep.equal(newSelectedDate);
+    expect(selectedCalendarDay?.fullDate).toEqual(newSelectedDate);
 
-    expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
+    expect(dateUpdatedEvent?.detail).toEqual(expectedDateUpdatedEvent);
     // END: Select new date in calendar view
   });
 
@@ -517,8 +513,8 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    expect(el.valueAsDate).deep.equal(testValueDate);
-    expect(el.valueAsNumber).equal(+testValueDate);
+    expect(el.valueAsDate).toEqual(testValueDate);
+    expect(el.valueAsNumber).toBe(+testValueDate);
 
     const newSelectedDate = new Date(
       new Date(testValue).setUTCDate(15)
@@ -560,15 +556,15 @@ describe(appDatePickerName, () => {
       valueAsNumber: +newSelectedDate,
     };
 
-    expect(el.valueAsDate).deep.equal(newSelectedDate);
-    expect(el.valueAsNumber).equal(+newSelectedDate);
+    expect(el.valueAsDate).toEqual(newSelectedDate);
+    expect(el.valueAsNumber).toBe(+newSelectedDate);
 
     expect(selectedDate).exist;
-    expect(selectedDate?.getAttribute('aria-label')).equal(
+    expect(selectedDate?.getAttribute('aria-label')).toBe(
       newSelectedDateLabel
     );
-    expect(selectedDate?.fullDate).deep.equal(newSelectedDate);
-    expect(dateUpdatedEvent?.detail).deep.equal(expectedDateUpdatedEvent);
+    expect(selectedDate?.fullDate).toEqual(newSelectedDate);
+    expect(dateUpdatedEvent?.detail).toEqual(expectedDateUpdatedEvent);
   });
 
   it('selects new startView', async () => {
@@ -652,10 +648,10 @@ describe(appDatePickerName, () => {
     );
 
     expect(selectedDate).exist;
-    expect(selectedDate?.getAttribute('aria-label')).equal(
+    expect(selectedDate?.getAttribute('aria-label')).toBe(
       formatters.fullDateFormat($_valueDate)
     );
-    expect(selectedDate?.fullDate).deep.equal(
+    expect(selectedDate?.fullDate).toEqual(
       $_valueDate
     );
 
@@ -672,10 +668,10 @@ describe(appDatePickerName, () => {
     );
 
     expect(newSelectedDate).exist;
-    expect(newSelectedDate?.getAttribute('aria-label')).equal(
+    expect(newSelectedDate?.getAttribute('aria-label')).toBe(
       formatters.fullDateFormat($_newValueDate)
     );
-    expect(newSelectedDate?.fullDate).deep.equal(
+    expect(newSelectedDate?.fullDate).toEqual(
       $_newValueDate
     );
   });
@@ -743,10 +739,10 @@ describe(appDatePickerName, () => {
     );
 
     expect(minDate).exist;
-    expect(minDate?.getAttribute('aria-label')).equal(
+    expect(minDate?.getAttribute('aria-label')).toBe(
       formatters.fullDateFormat($_minDate)
     );
-    expect(minDate?.fullDate).deep.equal($_minDate);
+    expect(minDate?.fullDate).toEqual($_minDate);
 
     const expectedOneDayBeforeMinDate = toResolvedDate(
       new Date($_minDate).setUTCDate(
@@ -760,10 +756,10 @@ describe(appDatePickerName, () => {
       );
 
     expect(oneDayBeforeMinDate).exist;
-    expect(oneDayBeforeMinDate?.getAttribute('aria-label')).equal(
+    expect(oneDayBeforeMinDate?.getAttribute('aria-label')).toBe(
       formatters.fullDateFormat(expectedOneDayBeforeMinDate)
     );
-    expect(oneDayBeforeMinDate?.fullDate).deep.equal(expectedOneDayBeforeMinDate);
+    expect(oneDayBeforeMinDate?.fullDate).toEqual(expectedOneDayBeforeMinDate);
 
     el.min = el.value = newMin as never;
 
@@ -780,10 +776,10 @@ describe(appDatePickerName, () => {
     );
 
     expect(minDate2).exist;
-    expect(minDate2?.getAttribute('aria-label')).equal(
+    expect(minDate2?.getAttribute('aria-label')).toBe(
       formatters.fullDateFormat($_newMinDate)
     );
-    expect(minDate2?.fullDate).deep.equal($_newMinDate);
+    expect(minDate2?.fullDate).toEqual($_newMinDate);
 
     const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
 
@@ -803,10 +799,10 @@ describe(appDatePickerName, () => {
         );
 
       expect(oneDayBeforeMinDate2).exist;
-      expect(oneDayBeforeMinDate2?.getAttribute('aria-label')).equal(
+      expect(oneDayBeforeMinDate2?.getAttribute('aria-label')).toBe(
         formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
       );
-      expect(oneDayBeforeMinDate2?.fullDate).deep.equal(expectedOneDayBeforeMinDate2);
+      expect(oneDayBeforeMinDate2?.fullDate).toEqual(expectedOneDayBeforeMinDate2);
     }
   });
 
@@ -931,11 +927,11 @@ describe(appDatePickerName, () => {
 
       const expectedValueDate = new Date($expectedValue);
 
-      expect(el.max).equal($expectedMax);
-      expect(selectedDate?.getAttribute('aria-label')).equal(
+      expect(el.max).toBe($expectedMax);
+      expect(selectedDate?.getAttribute('aria-label')).toBe(
         formatters.fullDateFormat(expectedValueDate)
       );
-      expect(selectedDate?.fullDate).deep.equal(expectedValueDate);
+      expect(selectedDate?.fullDate).toEqual(expectedValueDate);
 
       if (i) {
         const isMaxDate = $expectedMax === toDateString(MAX_DATE);
@@ -954,8 +950,8 @@ describe(appDatePickerName, () => {
           expect(nextMonthNavigationButton).not.exist;
           expect(maxDate).exist;
 
-          expect(maxDate?.getAttribute('aria-selected')).equal('false');
-          expect(maxDate?.getAttribute('aria-disabled')).equal('false');
+          expect(maxDate?.getAttribute('aria-selected')).toBe('false');
+          expect(maxDate?.getAttribute('aria-disabled')).toBe('false');
         } else {
           /**
            * assert `$expectedMax` is the last non-disabled date in the current calendar month
@@ -969,8 +965,8 @@ describe(appDatePickerName, () => {
           );
 
           expect(nextMaxDate).exist;
-          expect(nextMaxDate?.getAttribute('aria-selected')).equal('false');
-          expect(nextMaxDate?.getAttribute('aria-disabled')).equal('true');
+          expect(nextMaxDate?.getAttribute('aria-selected')).toBe('false');
+          expect(nextMaxDate?.getAttribute('aria-disabled')).toBe('true');
         }
       }
     }

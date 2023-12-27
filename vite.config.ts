@@ -29,7 +29,10 @@ export default defineConfig({
         }
       ),
     },
-    include: ['**/*test*/date-picker/**.test.ts'],
+    include: [
+      '**/*test*/date-picker/**.test.ts',
+      '**/*test*/date-picker-dialog/**.test.ts',
+    ],
     clearMocks: true,
     coverage: {
       thresholds: {
