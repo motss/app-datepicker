@@ -5,7 +5,7 @@ import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 import { describe, expect, it } from 'vitest';
 
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, MAX_DATE } from '../../constants';
-import type {AppDatePicker } from '../../date-picker/app-date-picker';
+import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
@@ -71,38 +71,38 @@ describe(appDatePickerName, () => {
       // Verify year dropdown title
       const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
 
-      expect(yearDropdown).exist;
-      expect(yearDropdown?.getAttribute('title')).toBe(
-        $_visibleElements.includes('calendar') ?
+      expect(yearDropdown).toBeInTheDocument();
+      expect(yearDropdown).toHaveAttribute('title',
+      $_visibleElements.includes('calendar') ?
           labelChooseYear :
           labelChooseMonth
       );
 
       // Verify body class to ensure .start-view--{calendar|yearGrid} is always set
       if (n === 'body') {
-        expect(element?.classList.contains(`start-view--${startView || 'calendar'}`)).toBeTruthy();
+        expect(element).toHaveClass(`start-view--${startView || 'calendar'}`);
       }
     });
 
     $_hiddenElements.forEach((n) => {
       const element = el.query(elementSelectors[n]);
 
-      expect(element).not.exist;
+      expect(element).not.toBeInTheDocument();
     });
 
     if (startView === 'yearGrid') {
       const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
-      expect(yearGrid).exist;
-      expect(yearGrid?.getAttribute('exportparts')).toBe('year-grid,year,toyear');
+      expect(yearGrid).toBeInTheDocument();
+      expect(yearGrid).toHaveAttribute('exportparts', 'year-grid,year,toyear');
     } else {
       const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
 
-      expect(calendar).exist;
-      expect(calendar?.getAttribute(
-        'exportparts')).toBe(
-          'table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar'
-        );
+      expect(calendar).toBeInTheDocument();
+      expect(calendar).toHaveAttribute(
+        'exportparts',
+        'table,caption,weekdays,weekday,weekday-value,week-number,calendar-day,today,calendar'
+      );
     }
   });
 
@@ -137,7 +137,7 @@ describe(appDatePickerName, () => {
 
     expect(el.locale).toBe($_locale);
     expect(el.value).toBe(testValue);
-    expect(selectedYearMonth?.textContent).toBe($_yearMonthLabel);
+    expect(selectedYearMonth).toHaveTextContent($_yearMonthLabel);
   });
 
   it.each<{
@@ -186,14 +186,14 @@ describe(appDatePickerName, () => {
     $_visibleElements.forEach((n) => {
       const element = el.query(elementSelectors[n]);
 
-      expect(element).exist;
-      expect(element?.getAttribute('title')).toBe(n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
+      expect(element).toBeInTheDocument();
+      expect(element).toHaveAttribute('title', n === 'nextMonthNavigationButton' ? labelNextMonth : labelPreviousMonth);
     });
 
     $_hiddenElements.forEach((n) => {
       const element = el.query(elementSelectors[n]);
 
-      expect(element).not.exist;
+      expect(element).not.toBeInTheDocument();
     });
   });
 
@@ -263,24 +263,24 @@ describe(appDatePickerName, () => {
     const nextMonthNavigationButton = el.query<Button>(elementSelectors.nextMonthNavigationButton);
     const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
 
-    expect(yearDropdown).exist;
-    expect(nextMonthNavigationButton).exist;
-    expect(previousMonthNavigationButton).exist;
+    expect(yearDropdown).toBeInTheDocument();
+    expect(nextMonthNavigationButton).toBeInTheDocument();
+    expect(previousMonthNavigationButton).toBeInTheDocument();
 
     if (
       $_.chooseYearLabel == null &&
       $_.nextMonthLabel == null &&
       $_.previousMonthLabel == null
     ) {
-      expect(yearDropdown).exist;
+      expect(yearDropdown).toBeInTheDocument();
       expect(yearDropdown!.hasAttribute('title')).toBeFalsy();
       expect(nextMonthNavigationButton!.hasAttribute('title')).toBeFalsy();
       expect(previousMonthNavigationButton!.hasAttribute('title')).toBeFalsy();
     } else {
-      expect(yearDropdown).exist;
-      expect(yearDropdown!.getAttribute('title')).toBe($_.chooseYearLabel);
-      expect(nextMonthNavigationButton!.getAttribute('title')).toBe($_.nextMonthLabel);
-      expect(previousMonthNavigationButton!.getAttribute('title')).toBe($_.previousMonthLabel);
+      expect(yearDropdown).toBeInTheDocument();
+      expect(yearDropdown).toHaveAttribute('title', $_.chooseYearLabel);
+      expect(nextMonthNavigationButton).toHaveAttribute('title', $_.nextMonthLabel);
+      expect(previousMonthNavigationButton).toHaveAttribute('title', $_.previousMonthLabel);
     }
   });
 
@@ -322,8 +322,8 @@ describe(appDatePickerName, () => {
       elementSelectors.selectedCalendarDay
     );
 
-    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat($_currentDate));
-    expect(oldSelectedDate).not.exist;
+    expect(selectedYearMonth).toHaveTextContent(formatters.longMonthYearFormat($_currentDate));
+    expect(oldSelectedDate).not.toBeInTheDocument();
   });
 
   it('navigates to new year then new month to update current date and ensures selected date remains unchanged', async () => {
@@ -348,7 +348,7 @@ describe(appDatePickerName, () => {
 
     const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
-    expect(yearGrid).exist;
+    expect(yearGrid).toBeInTheDocument();
     // END: Go to year grid view
 
     // START: Select new year in year grid view
@@ -360,9 +360,9 @@ describe(appDatePickerName, () => {
     );
     let selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
 
-    expect(newSelectedDateDate).exist;
-    expect(selectedYear).exist;
-    expect(selectedYear?.getAttribute('aria-label')).toBe(new Date(testValue).getUTCFullYear().toString());
+    expect(newSelectedYear).toBeInTheDocument();
+    expect(selectedYear).toBeInTheDocument();
+    expect(selectedYear).toHaveAttribute('aria-label', new Date(testValue).getUTCFullYear().toString());
 
     newSelectedYear?.focus();
     newSelectedYear?.click();
@@ -373,9 +373,9 @@ describe(appDatePickerName, () => {
     const oldSelectedDate = el.query<HTMLTableCellElement>(elementSelectors.selectedCalendarDay);
     let selectedYearMonth = el.query<HTMLParagraphElement>(elementSelectors.selectedYearMonth);
 
-    expect(calendar).exist;
-    expect(oldSelectedDate).not.exist;
-    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat(newSelectedDateDate));
+    expect(calendar).toBeInTheDocument();
+    expect(oldSelectedDate).not.toBeInTheDocument();
+    expect(selectedYearMonth).toHaveTextContent(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new year in year grid view
 
     // START: Select new month in calendar view to update current date
@@ -389,7 +389,7 @@ describe(appDatePickerName, () => {
     selectedYearMonth = el.query<HTMLParagraphElement>(elementSelectors.selectedYearMonth);
     newSelectedDateDate = new Date(new Date(newSelectedDateDate).setUTCMonth(newSelectedDateDate.getUTCMonth() + 1));
 
-    expect(selectedYearMonth?.textContent).toBe(formatters.longMonthYearFormat(newSelectedDateDate));
+    expect(selectedYearMonth).toHaveTextContent(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new month in calendar view to update current date
 
     // START: Ensure old selected year remains unchanged
@@ -400,8 +400,10 @@ describe(appDatePickerName, () => {
 
     selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
 
+    // FIXME: `yearGrid` and `selectedYear` no longer exist in the document.
+    // expect(selectedYear).toBeInTheDocument();
     expect(selectedYear).exist;
-    expect(selectedYear?.getAttribute('aria-label')).toBe(new Date(testValue).getUTCFullYear().toString());
+    expect(selectedYear).toHaveAttribute('aria-label', new Date(testValue).getUTCFullYear().toString());
     // END: Ensure old selected year remains unchanged
   });
 
@@ -461,10 +463,8 @@ describe(appDatePickerName, () => {
         `${elementSelectors.calendarDay}[aria-label="${newSelectedDateLabel}"]`
       );
 
-    expect(newSelectedCalendarDay).exist;
-    expect(newSelectedCalendarDay?.getAttribute('aria-label')).toBe(
-      newSelectedDateLabel
-    );
+    expect(newSelectedCalendarDay).toBeInTheDocument();
+    expect(newSelectedCalendarDay).toHaveAttribute('aria-label', newSelectedDateLabel);
     expect(newSelectedCalendarDay?.fullDate).toEqual(newSelectedDate);
 
     const dateUpdatedEventTask =
@@ -492,10 +492,8 @@ describe(appDatePickerName, () => {
       valueAsNumber: +newSelectedDate,
     };
 
-    expect(selectedCalendarDay).exist;
-    expect(selectedCalendarDay?.getAttribute('aria-label')).toBe(
-      newSelectedDateLabel
-    );
+    expect(selectedCalendarDay).toBeInTheDocument();
+    expect(selectedCalendarDay).toHaveAttribute('aria-label', newSelectedDateLabel);
     expect(selectedCalendarDay?.fullDate).toEqual(newSelectedDate);
 
     expect(dateUpdatedEvent?.detail).toEqual(expectedDateUpdatedEvent);
@@ -529,7 +527,7 @@ describe(appDatePickerName, () => {
         `${elementSelectors.calendarDay}[aria-label="${newSelectedDateLabel}"]`
       );
 
-    expect(newSelectedCalendarDay).exist;
+    expect(newSelectedCalendarDay).toBeInTheDocument();
 
     const dateUpdatedEventTask =
       eventOnce<
@@ -559,10 +557,8 @@ describe(appDatePickerName, () => {
     expect(el.valueAsDate).toEqual(newSelectedDate);
     expect(el.valueAsNumber).toBe(+newSelectedDate);
 
-    expect(selectedDate).exist;
-    expect(selectedDate?.getAttribute('aria-label')).toBe(
-      newSelectedDateLabel
-    );
+    expect(selectedDate).toBeInTheDocument();
+    expect(selectedDate).toHaveAttribute('aria-label', newSelectedDateLabel);
     expect(selectedDate?.fullDate).toEqual(newSelectedDate);
     expect(dateUpdatedEvent?.detail).toEqual(expectedDateUpdatedEvent);
   });
@@ -585,7 +581,7 @@ describe(appDatePickerName, () => {
 
     let yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
-    expect(yearGrid).exist;
+    expect(yearGrid).toBeInTheDocument();
 
     yearDropdown?.focus();
     yearDropdown?.click();
@@ -595,8 +591,8 @@ describe(appDatePickerName, () => {
     const calendar = el.query<AppMonthCalendar>(elementSelectors.calendar);
     yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
-    expect(yearGrid).not.exist;
-    expect(calendar).exist;
+    expect(yearGrid).not.toBeInTheDocument();
+    expect(calendar).toBeInTheDocument();
   });
 
   it.each<{
@@ -647,10 +643,8 @@ describe(appDatePickerName, () => {
       elementSelectors.selectedCalendarDay
     );
 
-    expect(selectedDate).exist;
-    expect(selectedDate?.getAttribute('aria-label')).toBe(
-      formatters.fullDateFormat($_valueDate)
-    );
+    expect(selectedDate).toBeInTheDocument();
+    expect(selectedDate).toHaveAttribute('aria-label', formatters.fullDateFormat($_valueDate));
     expect(selectedDate?.fullDate).toEqual(
       $_valueDate
     );
@@ -667,10 +661,8 @@ describe(appDatePickerName, () => {
       elementSelectors.selectedCalendarDay
     );
 
-    expect(newSelectedDate).exist;
-    expect(newSelectedDate?.getAttribute('aria-label')).toBe(
-      formatters.fullDateFormat($_newValueDate)
-    );
+    expect(newSelectedDate).toBeInTheDocument();
+    expect(newSelectedDate).toHaveAttribute('aria-label', formatters.fullDateFormat($_newValueDate));
     expect(newSelectedDate?.fullDate).toEqual(
       $_newValueDate
     );
@@ -738,10 +730,8 @@ describe(appDatePickerName, () => {
       }"]`
     );
 
-    expect(minDate).exist;
-    expect(minDate?.getAttribute('aria-label')).toBe(
-      formatters.fullDateFormat($_minDate)
-    );
+    expect(minDate).toBeInTheDocument();
+    expect(minDate).toHaveAttribute('aria-label', formatters.fullDateFormat($_minDate));
     expect(minDate?.fullDate).toEqual($_minDate);
 
     const expectedOneDayBeforeMinDate = toResolvedDate(
@@ -755,10 +745,8 @@ describe(appDatePickerName, () => {
         }"]`
       );
 
-    expect(oneDayBeforeMinDate).exist;
-    expect(oneDayBeforeMinDate?.getAttribute('aria-label')).toBe(
-      formatters.fullDateFormat(expectedOneDayBeforeMinDate)
-    );
+    expect(oneDayBeforeMinDate).toBeInTheDocument();
+    expect(oneDayBeforeMinDate).toHaveAttribute('aria-label', formatters.fullDateFormat(expectedOneDayBeforeMinDate));
     expect(oneDayBeforeMinDate?.fullDate).toEqual(expectedOneDayBeforeMinDate);
 
     el.min = el.value = newMin as never;
@@ -775,15 +763,13 @@ describe(appDatePickerName, () => {
       }"]`
     );
 
-    expect(minDate2).exist;
-    expect(minDate2?.getAttribute('aria-label')).toBe(
-      formatters.fullDateFormat($_newMinDate)
-    );
+    expect(minDate2).toBeInTheDocument();
+    expect(minDate2).toHaveAttribute('aria-label', formatters.fullDateFormat($_newMinDate));
     expect(minDate2?.fullDate).toEqual($_newMinDate);
 
     const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
 
-    expect(previousMonthNavigationButton).not.exist;
+    expect(previousMonthNavigationButton).not.toBeInTheDocument();
 
     // NOTE: Skip checking for one day before min when new min is 01 or first day of the month
     if (!(newMin as string)?.endsWith('01')) {
@@ -798,10 +784,8 @@ describe(appDatePickerName, () => {
           }"]`
         );
 
-      expect(oneDayBeforeMinDate2).exist;
-      expect(oneDayBeforeMinDate2?.getAttribute('aria-label')).toBe(
-        formatters.fullDateFormat(expectedOneDayBeforeMinDate2)
-      );
+      expect(oneDayBeforeMinDate2).toBeInTheDocument();
+      expect(oneDayBeforeMinDate2).toHaveAttribute('aria-label', formatters.fullDateFormat(expectedOneDayBeforeMinDate2));
       expect(oneDayBeforeMinDate2?.fullDate).toEqual(expectedOneDayBeforeMinDate2);
     }
   });
@@ -922,15 +906,13 @@ describe(appDatePickerName, () => {
         elementSelectors.selectedCalendarDay
       );
 
-      expect(calendar).exist;
-      expect(selectedDate).exist;
+      expect(calendar).toBeInTheDocument();
+      expect(selectedDate).toBeInTheDocument();
 
       const expectedValueDate = new Date($expectedValue);
 
       expect(el.max).toBe($expectedMax);
-      expect(selectedDate?.getAttribute('aria-label')).toBe(
-        formatters.fullDateFormat(expectedValueDate)
-      );
+      expect(selectedDate).toHaveAttribute('aria-label', formatters.fullDateFormat(expectedValueDate));
       expect(selectedDate?.fullDate).toEqual(expectedValueDate);
 
       if (i) {
@@ -947,11 +929,11 @@ describe(appDatePickerName, () => {
             elementSelectors.calendarDayWithLabel(formatters.fullDateFormat(MAX_DATE))
           );
 
-          expect(nextMonthNavigationButton).not.exist;
-          expect(maxDate).exist;
+          expect(nextMonthNavigationButton).not.toBeInTheDocument();
+          expect(maxDate).toBeInTheDocument();
 
-          expect(maxDate?.getAttribute('aria-selected')).toBe('false');
-          expect(maxDate?.getAttribute('aria-disabled')).toBe('false');
+          expect(maxDate).toHaveAttribute('aria-selected', 'false');
+          expect(maxDate).toHaveAttribute('aria-disabled', 'false');
         } else {
           /**
            * assert `$expectedMax` is the last non-disabled date in the current calendar month
@@ -964,9 +946,9 @@ describe(appDatePickerName, () => {
             )
           );
 
-          expect(nextMaxDate).exist;
-          expect(nextMaxDate?.getAttribute('aria-selected')).toBe('false');
-          expect(nextMaxDate?.getAttribute('aria-disabled')).toBe('true');
+          expect(nextMaxDate).toBeInTheDocument();
+          expect(nextMaxDate).toHaveAttribute('aria-selected', 'false');
+          expect(nextMaxDate).toHaveAttribute('aria-disabled', 'true');
         }
       }
     }

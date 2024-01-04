@@ -184,7 +184,9 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
+    "@open-wc/testing": "^4.0.0",
     "@open-wc/testing-helpers": "^3.0.0",
+    "@testing-library/jest-dom": "^6.2.0",
     "@vitest/browser": "^1.1.0",
     "@vitest/coverage-istanbul": "^1.1.0",
     "@web/dev-server-esbuild": "^1.0.1",

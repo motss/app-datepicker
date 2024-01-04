@@ -45,6 +45,7 @@ export default defineConfig({
     },
     environment: 'happy-dom',
     globals: true,
+    setupFiles: ['./src/setup-test.ts'],
     watch: !isCI,
   },
 });
