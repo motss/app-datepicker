@@ -339,14 +339,14 @@ describe(appDatePickerName, () => {
     );
 
     // START: Go to year grid view
-    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+    let yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
 
     yearDropdown?.focus();
     yearDropdown?.click();
 
     await elementUpdated(el);
 
-    const yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
+    let yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
 
     expect(yearGrid).toBeInTheDocument();
     // END: Go to year grid view
@@ -392,17 +392,18 @@ describe(appDatePickerName, () => {
     expect(selectedYearMonth).toHaveTextContent(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new month in calendar view to update current date
 
+    yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+
     // START: Ensure old selected year remains unchanged
     yearDropdown?.focus();
     yearDropdown?.click();
 
     await elementUpdated(el);
 
+    yearGrid = el.query<AppYearGrid>(elementSelectors.yearGrid);
     selectedYear = yearGrid?.query<HTMLButtonElement>(elementSelectors.selectedYear);
-
-    // FIXME: `yearGrid` and `selectedYear` no longer exist in the document.
-    // expect(selectedYear).toBeInTheDocument();
-    expect(selectedYear).exist;
+    
+    expect(selectedYear).toBeInTheDocument();
     expect(selectedYear).toHaveAttribute('aria-label', new Date(testValue).getUTCFullYear().toString());
     // END: Ensure old selected year remains unchanged
   });
