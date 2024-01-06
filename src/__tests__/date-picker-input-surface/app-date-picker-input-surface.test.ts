@@ -1,6 +1,7 @@
 import '../../date-picker-input-surface/app-date-picker-input-surface';
 
-import { expect, fixture, html } from '@open-wc/testing';
+import { fixture, html } from '@open-wc/testing-helpers';
+import { describe, expect, it } from 'vitest';
 
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
 import type {AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
@@ -21,12 +22,12 @@ describe(appDatePickerInputSurfaceName, () => {
         </app-date-picker-input-surface>`
       );
 
-      globalThis.setTimeout(() => resolve(element), promiseTimeout);
+      window.setTimeout(() => resolve(element), promiseTimeout);
     });
 
     const mdcMenuSurface = el.query(elementSelectors.mdcMenuSurface);
 
-    expect(mdcMenuSurface).exist;
+    expect(mdcMenuSurface).toBeInTheDocument();
   });
 
   it('closes when clicking outside of surface', async () => {
@@ -37,12 +38,12 @@ describe(appDatePickerInputSurfaceName, () => {
         </app-date-picker-input-surface>`
       );
 
-      globalThis.setTimeout(() => resolve(element), promiseTimeout);
+      window.setTimeout(() => resolve(element), promiseTimeout);
     });
 
     const mdcMenuSurface = el.query(elementSelectors.mdcMenuSurface);
 
-    expect(mdcMenuSurface).exist;
+    expect(mdcMenuSurface).toBeInTheDocument();
 
     const closedTask = eventOnce<
       typeof el,
@@ -55,7 +56,8 @@ describe(appDatePickerInputSurfaceName, () => {
     const closed = await closedTask;
 
     expect(closed?.detail).not.undefined;
+    // fixme: use @material/web
     expect(el.open).false;
-    expect(mdcMenuSurface).exist;
+    expect(mdcMenuSurface).toBeInTheDocument();
   });
 });

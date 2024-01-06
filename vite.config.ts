@@ -1,6 +1,4 @@
-/// <reference types="vitest" />
-
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 const { CI } = process.env;
@@ -11,11 +9,6 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(),
   ],
-  preview: {
-    headers: {
-      'Cache-Control': 'public, max-age=600',
-    },
-  },
   test: {
     browser: {
       provider: 'playwright',
@@ -32,6 +25,9 @@ export default defineConfig({
     include: [
       '**/*test*/date-picker/**.test.ts',
       '**/*test*/date-picker-dialog/**.test.ts',
+      '**/*test*/date-picker-input-surface/**.test.ts',
+      '**/*test*/helpers/clamp-value.test.ts',
+      // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
     coverage: {
