@@ -33,6 +33,7 @@ export default defineConfig({
       '**/*test*/helpers/nullish-attribute-converter.test.ts',
       '**/*test*/helpers/to-closest-target.test.ts',
       '**/*test*/helpers/to-date-string.test.ts',
+      '**/*test*/helpers/to-day-diff-inclusive.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
