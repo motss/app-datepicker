@@ -29,6 +29,8 @@ export default defineConfig({
       '**/*test*/helpers/clamp-value.test.ts',
       '**/*test*/helpers/date-validator.test.ts',
       '**/*test*/helpers/focus-element.test.ts',
+      '**/*test*/helpers/is-in-current-month.test.ts',
+      '**/*test*/helpers/nullish-attribute-converter.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
