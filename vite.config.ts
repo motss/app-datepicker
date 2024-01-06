@@ -31,6 +31,8 @@ export default defineConfig({
       '**/*test*/helpers/focus-element.test.ts',
       '**/*test*/helpers/is-in-current-month.test.ts',
       '**/*test*/helpers/nullish-attribute-converter.test.ts',
+      '**/*test*/helpers/to-closest-target.test.ts',
+      '**/*test*/helpers/to-date-string.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
