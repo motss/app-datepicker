@@ -1,9 +1,8 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { toFormatters } from '../../helpers/to-formatters';
 import { toMultiCalendars } from '../../helpers/to-multi-calendars';
 import type { ToMultiCalendarsInit } from '../../helpers/typings';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toMultiCalendars.name, () => {
   const locale = 'en-US';
@@ -22,141 +21,120 @@ describe(toMultiCalendars.name, () => {
     narrowWeekdayFormat,
   };
 
-  type CaseOptionalCount = [
-    partialInit: Partial<ToMultiCalendarsInit>,
-    expected: number
-  ];
-  const casesOptionalCount: CaseOptionalCount[] = [
-    [
-      {},
-      1,
-    ],
-    [
-      {
-        count: 2,
-      },
-      3,
-    ],
-  ];
+  it.each<{
+    $_value: number;
+    partialInit: Partial<ToMultiCalendarsInit>;
+  }>([
+    {
+      $_value: 1,
+      partialInit: {},
+    },
+    {
+      $_value: 3,
+      partialInit: { count: 2 },
+    },
+  ])('returns calendar with optional count ($partiaInit)', ({
+    $_value,
+    partialInit,
+  }) => {
+    const result = toMultiCalendars({
+      ...defaultInit,
+      ...partialInit,
+    });
 
-  casesOptionalCount.forEach((a) => {
-    const [testPartialInit, expected] = a;
-
-    it(
-      messageFormatter('returns calendar with optional count (%j)', a),
-      () => {
-        const result = toMultiCalendars({
-          ...defaultInit,
-          ...testPartialInit,
-        });
-
-        expect(result.calendars).have.length(expected);
-        expect(result.disabledDatesSet.size).equal(0);
-        expect(result.disabledDaysSet.size).equal(0);
-      }
-    );
+    expect(result.calendars).toHaveLength($_value);
+    expect(result.disabledDatesSet.size).toBe(0);
+    expect(result.disabledDaysSet.size).toBe(0);
   });
 
-  type CaseOptionalMinMax = [
-    partialInit: Partial<ToMultiCalendarsInit>,
-    expectedCalendars: number,
-    expectedMonthRows: number[]
-  ];
-  const casesOptionalMinMax: CaseOptionalMinMax[] = [
-    [
-      {
+  it.each<{
+    $_calendarLen: number;
+    $_monthRowLen: number[];
+    partialInit: Partial<ToMultiCalendarsInit>;
+  }>([
+    {
+      $_calendarLen: 1,
+      $_monthRowLen: [6],
+      partialInit: {
         min: new Date('2020-01-01'),
       },
-      1,
-      [6],
-    ],
-    [
-      {
+    },
+    {
+      $_calendarLen: 1,
+      $_monthRowLen: [6],
+      partialInit: {
         max: new Date('2020-03-03'),
       },
-      1,
-      [6],
-    ],
-    [
-      {
+    },
+    {
+      $_calendarLen: 1,
+      $_monthRowLen: [6],
+      partialInit: {
         max: new Date('2020-03-03'),
         min: new Date('2020-01-01'),
       },
-      1,
-      [6],
-    ],
-    [
-      {
+    },
+    {
+      $_calendarLen: 1,
+      $_monthRowLen:[0],
+      partialInit: {
         min: new Date('2020-03-03'),
       },
-      1,
-      [0],
-    ],
-    [
-      {
+    },
+    {
+      $_calendarLen: 1,
+      $_monthRowLen: [0],
+      partialInit: {
         max: new Date('2020-01-01'),
       },
-      1,
-      [0],
-    ],
-  ];
-  casesOptionalMinMax.forEach((a) => {
-    const [testPartialInit, expectedCalendars, expectedMonthRows] = a;
+    },
+  ])('returns calendar with optional min, max ($partialInit)', ({
+    $_calendarLen,
+    $_monthRowLen,
+    partialInit,
+  }) => {
+    const result = toMultiCalendars({
+      ...defaultInit,
+      ...partialInit,
+    });
 
-    it(
-      messageFormatter('returns calendar with optional min, max (%j)', a),
-      () => {
-        const result = toMultiCalendars({
-          ...defaultInit,
-          ...testPartialInit,
-        });
-
-        expect(result.calendars).have.length(expectedCalendars);
-        expect(
-          result.calendars.map(n => n.calendar.length)
-        ).deep.equal(expectedMonthRows);
-        expect(result.disabledDatesSet.size).equal(0);
-        expect(result.disabledDaysSet.size).equal(0);
-      }
-    );
+    expect(result.calendars).toHaveLength($_calendarLen);
+    expect(result.calendars.map(n => n.calendar.length)).toEqual($_monthRowLen);
+    expect(result.disabledDatesSet.size).toBe(0);
+    expect(result.disabledDaysSet.size).toBe(0);
   });
 
-  type CaseOptionalDisabledDatesDays = [
-    partialInit: Partial<ToMultiCalendarsInit>,
-    expectedDisabledDates: number,
-    expectedDisabledDays: number
-  ];
-  const casesOptionalDisabledDatesDays: CaseOptionalDisabledDatesDays[] = [
-    [
-      {
+  it.each<{
+    $_disabledDates: number;
+    $_disabledDays: number;
+    partialInit: Partial<ToMultiCalendarsInit>;
+  }>([
+    {
+      $_disabledDates: 2,
+      $_disabledDays: 0,
+      partialInit: {
         disabledDates: [new Date('2020-02-01'), new Date('2020-02-10')],
       },
-      2,
-      0,
-    ],
-    [
-      {
+    },
+    {
+      $_disabledDates: 8,
+      $_disabledDays: 2,
+      partialInit: {
         disabledDays: [0, 2],
       },
-      8,
-      2,
-    ],
-  ];
-  casesOptionalDisabledDatesDays.forEach((a) => {
-    const [testPartialInit, expectedDisabledDates, expectedDisabledDays] = a;
+    },
+  ])('returns calendar with optional disabled dates, days (partialInit=$partialInit)', ({
+    $_disabledDates,
+    $_disabledDays,
+    partialInit,
+  }) => {
+    const result = toMultiCalendars({
+      ...defaultInit,
+      ...partialInit,
+    });
 
-    it(
-      messageFormatter('returns calendar with optional disabled dates, days (partialInit=%j)', a),
-      () => {
-        const result = toMultiCalendars({
-          ...defaultInit,
-          ...testPartialInit,
-        });
-
-        expect(result.disabledDatesSet.size).equal(expectedDisabledDates);
-        expect(result.disabledDaysSet.size).equal(expectedDisabledDays);
-      }
-    );
+    expect(result.disabledDatesSet.size).toEqual($_disabledDates);
+    expect(result.disabledDaysSet.size).toEqual($_disabledDays);
   });
 
 });
