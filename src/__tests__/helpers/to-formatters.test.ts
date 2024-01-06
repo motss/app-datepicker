@@ -1,14 +1,14 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { toFormatters } from '../../helpers/to-formatters';
 import type { Formatters } from '../../typings';
 
 describe(toFormatters.name, () => {
   it('returns formatters', () => {
-    const testLocale = 'en-US';
-    const result = toFormatters(testLocale);
+    const locale = 'en-US';
+    const result = toFormatters(locale);
 
-    expect(result).haveOwnProperty('locale', testLocale);
+    expect(result).toHaveProperty('locale', locale);
 
     const props: (keyof Omit<Formatters, 'locale'>)[] = [
       'dateFormat',
@@ -23,7 +23,7 @@ describe(toFormatters.name, () => {
 
     props.forEach(
       n =>
-        expect(result).haveOwnProperty(n)
+        expect(result).toHaveProperty(n)
     );
   });
 

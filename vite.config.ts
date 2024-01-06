@@ -34,6 +34,7 @@ export default defineConfig({
       '**/*test*/helpers/to-closest-target.test.ts',
       '**/*test*/helpers/to-date-string.test.ts',
       '**/*test*/helpers/to-day-diff-inclusive.test.ts',
+      '**/*test*/helpers/to-formatters.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
