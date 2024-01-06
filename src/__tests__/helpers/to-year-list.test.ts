@@ -1,31 +1,41 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { toYearList } from '../../helpers/to-year-list';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toYearList.name, () => {
-  type CaseYearList = [
-    min: Date,
-    max: Date,
-    expected: number[]
-  ];
-  const casesYearList: CaseYearList[] = [
-    [new Date('2020-02-02'), new Date('2020-02-01'), []],
-    [new Date('2020-02-02'), new Date('2020-02-02'), [2020]],
-    [new Date('2020-02-02'), new Date('2020-02-03'), [2020]],
-    [new Date('2019-02-02'), new Date('2020-02-02'), [2019, 2020]],
-  ];
-  casesYearList.forEach((a) => {
-    const [testMin, testMax, expected] = a;
+  it.each<{
+    $_value: number[];
+    max: Date;
+    min: Date;
+  }>([
+    {
+      $_value: [],
+      max: new Date('2020-02-01'),
+      min: new Date('2020-02-02'),
+    },
+    {
+      $_value: [2020],
+      max: new Date('2020-02-02'),
+      min: new Date('2020-02-02'),
+    },
+    {
+      $_value: [2020],
+      max: new Date('2020-02-03'),
+      min: new Date('2020-02-02'),
+    },
+    {
+      $_value: [2019, 2020],
+      max: new Date('2020-02-02'),
+      min: new Date('2019-02-02'),
+    },
+  ])('returns year list (min=$min, max=$max)', ({
+    $_value,
+    max,
+    min,
+  }) => {
+    const result = toYearList(min, max);
 
-    it(
-      messageFormatter('returns year list (min=%s, max=%s)', a),
-      () => {
-        const result = toYearList(testMin, testMax);
-
-        expect(result).deep.equal(expected);
-      }
-    );
+    expect(result).toEqual($_value);
   });
 
 });
