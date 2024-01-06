@@ -99,9 +99,9 @@ describe(appDatePickerDialogName, () => {
       expect(datePicker?.[key as keyof DatePickerProperties]).equal(value, `${key} not matched`);
     }
 
-    expect(datePickerDialogBase).exist;
-    expect(datePicker).exist;
-    expect(datePickerDialogBase?.hasAttribute('open')).true;
+    expect(datePickerDialogBase).toBeInTheDocument();
+    expect(datePicker).toBeInTheDocument();
+    expect(datePickerDialogBase).toHaveAttribute('open', '');
     expect(el.valueAsDate).toEqual(new Date(properties.value as string));
     expect(el.valueAsNumber).toEqual(+new Date(properties.value as string));
 
@@ -109,12 +109,12 @@ describe(appDatePickerDialogName, () => {
     const dialogActionCancel = el.query(elementSelectors.dialogActionCancel);
     const dialogActionSet = el.query(elementSelectors.dialogActionSet);
 
-    expect(dialogActionReset).exist;
-    expect(dialogActionCancel).exist;
-    expect(dialogActionSet).exist;
-    expect(dialogActionReset?.textContent).toBe(resetLabel);
-    expect(dialogActionCancel?.textContent).toBe(dismissLabel);
-    expect(dialogActionSet?.textContent).toBe(confirmLabel);
+    expect(dialogActionReset).toBeInTheDocument();
+    expect(dialogActionCancel).toBeInTheDocument();
+    expect(dialogActionSet).toBeInTheDocument();
+    expect(dialogActionReset).toHaveTextContent(resetLabel);
+    expect(dialogActionCancel).toHaveTextContent(dismissLabel);
+    expect(dialogActionSet).toHaveTextContent(confirmLabel);
   });
 
   it('always reopens with the correct startView', async () => {
@@ -135,9 +135,9 @@ describe(appDatePickerDialogName, () => {
     let datePicker = datePickerDialogBase?.query<AppDatePicker>(elementSelectors.datePicker);
 
     // initially no date picker is rendered
-    expect(datePickerDialogBase).exist;
-    expect(datePicker).not.exist;
-    expect(datePickerDialogBase?.hasAttribute('open')).false;
+    expect(datePickerDialogBase).toBeInTheDocument();
+    expect(datePicker).not.toBeInTheDocument();
+    expect(datePickerDialogBase).not.toHaveAttribute('open');
 
     el.show();
     let opened = await openedTask;
@@ -150,9 +150,9 @@ describe(appDatePickerDialogName, () => {
 
     // ensure dialog opens with date picker rendered in year grid view
     expect(opened).not.undefined;
-    expect(datePicker).exist;
-    expect(datePickerDialogBase?.hasAttribute('open')).true;
-    expect(yearGrid).exist;
+    expect(datePicker).toBeInTheDocument();
+    expect(datePickerDialogBase).toHaveAttribute('open', '');
+    expect(yearGrid).toBeInTheDocument();
 
     const closedTask = eventOnce<
       typeof el,
@@ -169,8 +169,8 @@ describe(appDatePickerDialogName, () => {
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
     expect(closed).not.undefined;
-    expect(datePicker).not.exist;
-    expect(datePickerDialogBase?.hasAttribute('open')).false;
+    expect(datePicker).not.toBeInTheDocument();
+    expect(datePickerDialogBase).not.toHaveAttribute('open');
 
     openedTask = eventOnce<
       typeof el,
@@ -189,11 +189,11 @@ describe(appDatePickerDialogName, () => {
     yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
 
     expect(opened).not.undefined;
-    expect(datePicker).exist;
-    expect(monthCalendar).not.exist;
-    expect(yearGrid).exist;
+    expect(datePicker).toBeInTheDocument();
+    expect(monthCalendar).not.toBeInTheDocument();
+    expect(yearGrid).toBeInTheDocument();
 
-    expect(datePickerDialogBase?.hasAttribute('open')).true;
+    expect(datePickerDialogBase).toHaveAttribute('open', '');
   });
 
   it.each<{
@@ -272,13 +272,13 @@ describe(appDatePickerDialogName, () => {
       datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionSet);
 
     expect(opened).not.undefined;
-    expect(monthCalendar).exist;
-    expect(datePicker).exist;
-    expect(datePickerDialogBase).exist;
-    expect(dialogActionReset).exist;
-    expect(dialogActionCancel).exist;
-    expect(dialogActionSet).exist;
-    expect(datePickerDialogBase?.hasAttribute('open')).true;
+    expect(monthCalendar).toBeInTheDocument();
+    expect(datePicker).toBeInTheDocument();
+    expect(datePickerDialogBase).toBeInTheDocument();
+    expect(dialogActionReset).toBeInTheDocument();
+    expect(dialogActionCancel).toBeInTheDocument();
+    expect(dialogActionSet).toBeInTheDocument();
+    expect(datePickerDialogBase).toHaveAttribute('open', '');
     expect(el.value).toBe(properties.value);
 
     const newValueDate = new Date(value);
@@ -291,7 +291,7 @@ describe(appDatePickerDialogName, () => {
       CustomEvent<CustomEventDetail['date-updated']>
     >(datePicker as AppDatePicker, 'date-updated');
 
-    expect(newSelectedDate).exist;
+    expect(newSelectedDate).toBeInTheDocument();
 
     newSelectedDate?.click();
     await dateUpdatedTask;
@@ -339,9 +339,11 @@ describe(appDatePickerDialogName, () => {
       expect(closed).not.undefined;
     }
 
-    expect(
-      datePickerDialogBase?.hasAttribute('open')
-    ).equal($_dialogOpen);
+    if ($_dialogOpen) {
+      expect(datePickerDialogBase).toHaveAttribute('open');
+    } else {
+      expect(datePickerDialogBase).not.toHaveAttribute('open');
+    }
 
     expect(el.value).toBe($_dialogValue);
     expect(el.valueAsDate).toEqual(new Date($_dialogValue));
