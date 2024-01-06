@@ -41,6 +41,6 @@ describe(clampValue.name, () => {
   }) => {
     const result = clampValue(min, max, value);
 
-    expect(result).equal($_value);
+    expect(result).toBe($_value);
   });
 });

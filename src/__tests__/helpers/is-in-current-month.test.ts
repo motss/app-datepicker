@@ -1,37 +1,31 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { isInCurrentMonth } from '../../helpers/is-in-current-month';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(isInCurrentMonth.name, () => {
-  type CaseIsInCurrentMonth = [
-    target: Date,
-    source: Date,
-    expected: boolean
-  ];
-  const casesIsInCurrentMonth: CaseIsInCurrentMonth[] = [
-    [
-      new Date('2020-02-02'),
-      new Date('2020-02-12'),
-      true,
-    ],
-    [
-      new Date('2020-02-02'),
-      new Date('2020-03-12'),
-      false,
-    ],
-  ];
-  casesIsInCurrentMonth.forEach(a => {
-    const [testTarget, testSource, expected] = a;
+  it.each<{
+    $_value: boolean;
+    source: Date;
+    target: Date;
+  }>([
+    {
+      $_value: true,
+      source: new Date('2020-02-12'),
+      target: new Date('2020-02-02'),
+    },
+    {
+      $_value: false,
+      source: new Date('2020-03-12'),
+      target: new Date('2020-02-02'),
+    },
+  ])('returns if $target is current month of $source', ({
+    $_value,
+    source,
+    target,
+  }) => {
+    const result = isInCurrentMonth(target, source);
 
-    it(
-      messageFormatter('returns if %s is current month of %s', a),
-      () => {
-        const result = isInCurrentMonth(testTarget, testSource);
-
-        expect(result).equal(expected);
-      }
-    );
+    expect(result).toBe($_value);
   });
 
 });

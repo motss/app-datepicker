@@ -92,7 +92,7 @@ describe(dateValidator.name, () => {
   }) => {
     const result = dateValidator(value, defaultDate);
   
-    expect(result).deep.equal($_value);
+    expect(result).toEqual($_value);
   });
 
 });
