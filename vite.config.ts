@@ -27,6 +27,7 @@ export default defineConfig({
       '**/*test*/date-picker-dialog/**.test.ts',
       '**/*test*/date-picker-input-surface/**.test.ts',
       '**/*test*/helpers/clamp-value.test.ts',
+      '**/*test*/helpers/date-validator.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
