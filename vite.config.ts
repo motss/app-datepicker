@@ -41,6 +41,7 @@ export default defineConfig({
       '**/*test*/helpers/to-resolved-date.test.ts',
       '**/*test*/helpers/to-year-list.test.ts',
       '**/*test*/helpers/warn-undefined-element.test.ts',
+      '**/*test*/icon-button/**.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
