@@ -236,7 +236,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
         @click=${this.#updateSelectedDate}
         @keydown=${this.#updateSelectedDate}
         @keyup=${this.#updateSelectedDate}
-        aria-labelledby=${calendarCaptionId}
+        aria-labelledby=${ifDefined(showCaption && secondMonthSecondCalendarDayFullDate ? calendarCaptionId : undefined)}
         class=calendar-table
         part=table
         role=grid
