@@ -1,8 +1,7 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date';
 import type { ToNextSelectedDateInit } from '../../helpers/typings';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toNextSelectedDate.name, () => {
   const defaultInit: ToNextSelectedDateInit = {
@@ -16,113 +15,107 @@ describe(toNextSelectedDate.name, () => {
     minTime: +new Date('2020-03-03'),
   };
 
-  type CaseNextSelectedDate = [
-    partialInit: Partial<ToNextSelectedDateInit>,
-    expected: Date
-  ];
-  const casesNextSelectedDate: CaseNextSelectedDate[] = [
+  it.each<{
+    $_value: Date;
+    partialInit: Partial<ToNextSelectedDateInit>;
+  }>([
     // all supported keys
-    [
-      { key: ' ' },
-      defaultInit.date,
-    ],
-    [
-      { key: 'ArrowDown' },
-      new Date('2020-02-09'),
-    ],
-    [
-      { key: 'ArrowLeft' },
-      new Date('2020-02-01'),
-    ],
-    [
-      { key: 'ArrowRight' },
-      new Date('2020-02-03'),
-    ],
-    [
-      { key: 'ArrowUp' },
-      new Date('2020-01-26'),
-    ],
-    [
-      { key: 'End' },
-      new Date('2020-02-29'),
-    ],
-    [
-      { key: 'Enter' },
-      defaultInit.date,
-    ],
-    [
-      { key: 'Home' },
-      new Date('2020-02-01'),
-    ],
-    [
-      { key: 'PageDown' },
-      new Date('2020-03-02'),
-    ],
-    [
-      { key: 'PageUp' },
-      new Date('2020-01-02'),
-    ],
-    [
-      { hasAltKey: true, key: 'PageDown' },
-      new Date('2021-02-02'),
-    ],
-    [
-      { hasAltKey: true, key: 'PageUp' },
-      new Date('2019-02-02'),
-    ],
-    [
-      { key: 'PageUp' },
-      new Date('2020-01-02'),
-    ],
-    [
-      { key: 'Tab' },
-      defaultInit.date,
-    ],
+    {
+      $_value: defaultInit.date,
+      partialInit: { key: ' ' },
+    },
+    {
+      $_value: new Date('2020-02-09'),
+      partialInit: { key: 'ArrowDown' },
+    },
+    {
+      $_value: new Date('2020-02-01'),
+      partialInit: { key: 'ArrowLeft' },
+    },
+    {
+      $_value: new Date('2020-02-03'),
+      partialInit: { key: 'ArrowRight' },
+    },
+    {
+      $_value: new Date('2020-01-26'),
+      partialInit: { key: 'ArrowUp' },
+    },
+    {
+      $_value: new Date('2020-02-29'),
+      partialInit: { key: 'End' },
+    },
+    {
+      $_value: defaultInit.date,
+      partialInit: { key: 'Enter' },
+    },
+    {
+      $_value: new Date('2020-02-01'),
+      partialInit: { key: 'Home' },
+    },
+    {
+      $_value: new Date('2020-03-02'),
+      partialInit: { key: 'PageDown' },
+    },
+    {
+      $_value: new Date('2020-01-02'),
+      partialInit: { key: 'PageUp' },
+    },
+    {
+      $_value: new Date('2021-02-02'),
+      partialInit: { hasAltKey: true, key: 'PageDown' },
+    },
+    {
+      $_value: new Date('2019-02-02'),
+      partialInit: { hasAltKey: true, key: 'PageUp' },
+    },
+    {
+      $_value: new Date('2020-01-02'),
+      partialInit: { key: 'PageUp' },
+    },
+    {
+      $_value: defaultInit.date,
+      partialInit: { key: 'Tab' },
+    },
 
     // not in current month
-    [
-      { currentDate: new Date('2020-03-03') },
-      new Date('2020-03-01'),
-    ],
+    {
+      $_value: new Date('2020-03-01'),
+      partialInit: { currentDate: new Date('2020-03-03') },
+    },
 
     // maxTime + next navigation key
-    [
-      { key: 'ArrowRight', maxTime: +new Date('2020-02-02') },
-      new Date('2020-02-02'),
-    ],
+    {
+      $_value: new Date('2020-02-02'),
+      partialInit: { key: 'ArrowRight', maxTime: +new Date('2020-02-02') },
+    },
 
     // minTime + previous navigation key
-    [
-      { key: 'ArrowLeft', minTime: +new Date('2020-02-02') },
-      new Date('2020-02-02'),
-    ],
+    {
+      $_value: new Date('2020-02-02'),
+      partialInit: { key: 'ArrowLeft', minTime: +new Date('2020-02-02') },
+    },
 
     // in leap year, 2020-01-31 to next month to 2020-02-29 from 2020-02-31
-    [
-      { currentDate: new Date('2020-01-01'), date: new Date('2020-01-31'), key: 'PageDown' },
-      new Date('2020-02-29'),
-    ],
+    {
+      $_value: new Date('2020-02-29'),
+      partialInit: { currentDate: new Date('2020-01-01'), date: new Date('2020-01-31'), key: 'PageDown' },
+    },
 
     // in leap year, 2020-02-29 to next year to 2021-02-28 from 2021-02-29
-    [
-      { currentDate: new Date('2020-02-01'), date: new Date('2020-02-29'), hasAltKey: true, key: 'PageDown' },
-      new Date('2021-02-28'),
-    ],
-  ];
-  casesNextSelectedDate.forEach((a) => {
-    const [testPartialInit, expected] = a;
+    {
+      $_value: new Date('2021-02-28'),
+      partialInit: { currentDate: new Date('2020-02-01'), date: new Date('2020-02-29'), hasAltKey: true, key: 'PageDown' },
+    },
+  ])('returns next selected date (partialInit=$partialInit)', ({
+    $_value,
+    partialInit,
+  }) => {
+    const result = toNextSelectedDate({
+      ...defaultInit,
+      ...partialInit,
+    });
 
-    it(
-      messageFormatter('returns next selected date (partialInit=%j)', a),
-      () => {
-        const result = toNextSelectedDate({
-          ...defaultInit,
-          ...testPartialInit,
-        });
-
-        expect(result).deep.equal(expected);
-      }
-    );
+    expect(result).toEqual($_value);
   });
 
 });

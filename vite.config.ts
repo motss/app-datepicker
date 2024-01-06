@@ -37,6 +37,7 @@ export default defineConfig({
       '**/*test*/helpers/to-formatters.test.ts',
       '**/*test*/helpers/to-multi-calendars.test.ts',
       '**/*test*/helpers/to-next-selectable-date.test.ts',
+      '**/*test*/helpers/to-next-selected-date.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
