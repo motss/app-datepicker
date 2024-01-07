@@ -3,7 +3,7 @@ import '../../year-grid-button/app-year-grid-button';
 import { fixture, html } from '@open-wc/testing-helpers';
 import { describe, expect, it } from 'vitest';
 
-import type {AppYearGridButton } from '../../year-grid-button/app-year-grid-button';
+import type { AppYearGridButton } from '../../year-grid-button/app-year-grid-button';
 import { appYearGridButtonName } from '../../year-grid-button/constants';
 
 describe(appYearGridButtonName, () => {

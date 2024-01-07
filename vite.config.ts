@@ -53,7 +53,7 @@ export default defineConfig({
         "100": false,
         autoUpdate: true,
       },
-      exclude: ['**/*{benchmarks,mocks,tests}*/**'],
+      exclude: ['**/*{benchmarks,demo,mocks,tests}*/**', '**/swipe-tracker/**'],
       provider: 'istanbul',
       reporter: ['lcov', 'text'],
     },
