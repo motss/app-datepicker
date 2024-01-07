@@ -36,7 +36,7 @@
     - [my-app.js](#my-appjs)
     - [index.html](#indexhtml)
 - [Browser compatibility](#browser-compatibility)
-- [Q&A](#qa)
+- [Q\&A](#qa)
 - [API references](#api-references)
 - [Demo](#demo)
 - [Older versions](#older-versions)
@@ -67,7 +67,7 @@ The following are the list of tools used that makes it shine:
     - [my-app.js](#my-appjs)
     - [index.html](#indexhtml)
 - [Browser compatibility](#browser-compatibility)
-- [Q&A](#qa)
+- [Q\&A](#qa)
 - [API references](#api-references)
 - [Demo](#demo)
 - [Older versions](#older-versions)
@@ -75,9 +75,9 @@ The following are the list of tools used that makes it shine:
 
 ## Pre-requisite
 
-- [ES2019] _(The element is compiled with features targeting ES2019, so it might not work properly without transpilation on older browsers.)_
-- [lit] >= 2.2.0
-- [OPTIONAL] [TypeScript] >= 4.5.5 _(TypeScript users only)_
+- [ES2021] _(The element is compiled with features targeting ES2021, so it might not work properly without transpilation on older browsers.)_
+- [lit] >= 3.1.0
+- [TypeScript] >= 5.3.3 _(Note: TypeScript users only)_
 
 ## Installation
 
@@ -242,7 +242,7 @@ Not tested on the following browsers but it should work with all the polyfills n
 [AppDatePickerInput]: /docs/app-date-picker-input.md
 [Array.prototype.find]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 [awesome-lit-html]: https://github.com/web-padawan/awesome-lit-html#individual-components
-[ES2019]: https://kangax.github.io/compat-table/es2016plus/#test-Object.fromEntries
+[ES2021]: https://compat-table.github.io/compat-table/es2016plus
 [esm-sh-url]: https://esm.sh/app-datepicker@next?target=es2019
 [Intl.DateTimeFormat]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
 [jsdelivr-url]: https://www.jsdelivr.com/package/npm/app-datepicker?version=next&amp;utm_source=github.com&amp;utm_medium=referral&amp;utm_content=motss/app-datepicker
