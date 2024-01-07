@@ -44,6 +44,7 @@ export default defineConfig({
       '**/*test*/icon-button/**.test.ts',
       '**/*test*/month-calendar/**.test.ts',
       '**/*test*/year-grid/**.test.ts',
+      '**/*test*/year-grid-button/**.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
