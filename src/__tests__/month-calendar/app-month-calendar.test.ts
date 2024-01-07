@@ -1,18 +1,16 @@
 import '../../month-calendar/app-month-calendar';
 
-import { fixture, html } from '@open-wc/testing-helpers';
-import { customElement, state } from 'lit/decorators.js';
-import { unsafeStatic } from 'lit/static-html.js';
-import { calendar } from 'nodemod/dist/calendar/calendar.js';
-import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
-import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings.d.ts';
-import type { CalendarInit } from 'nodemod/dist/calendar/typings.d.ts';
+import { defineCE, fixture, html, unsafeStatic } from '@open-wc/testing-helpers';
+import { state } from 'lit/decorators.js';
+import { calendar, getWeekdays } from 'nodemod';
+import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings.js';
+import type { CalendarInit } from 'nodemod/dist/calendar/typings.js';
 import { describe, expect, it } from 'vitest';
 
-import { type confirmKeySet, labelSelectedDate, labelShortWeek, labelToday, labelWeek, type navigationKeySetGrid, weekNumberTemplate} from '../../constants';
+import { type confirmKeySet, labelSelectedDate, labelShortWeek, labelToday, labelWeek, type navigationKeySetGrid, weekNumberTemplate } from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
-import {AppMonthCalendar } from '../../month-calendar/app-month-calendar';
+import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
 import { RootElement } from '../../root-element/root-element';
@@ -36,7 +34,7 @@ describe(appMonthCalendarName, () => {
     weekNumberTemplate,
     weekNumberType: 'first-4-day-week',
   };
-  const weekdaysInit: GetWeekdaysInit = {
+  const weekdaysInit = {
     firstDayOfWeek: calendarInit.firstDayOfWeek,
     longWeekdayFormat: formatters.longWeekdayFormat,
     narrowWeekdayFormat: formatters.narrowWeekdayFormat,
@@ -211,17 +209,14 @@ describe(appMonthCalendarName, () => {
     keyTriggerList,
     selectedDate,
   }) => {
-    const testCustomElementName = `test-${window.crypto.randomUUID()}`;
-
-    @customElement(testCustomElementName)
     class Test extends RootElement {
       #updateData = async ({
         detail: {
           isKeypress,
+          key,
           value,
           valueAsDate,
           valueAsNumber,
-          key,
         },
       }: CustomEvent<CustomEventDetail['date-updated']['detail']>) => {
         this.newValue = value ?? '';
@@ -231,17 +226,17 @@ describe(appMonthCalendarName, () => {
         this.fire({
           detail: {
             isKeypress,
+            key,
             value,
             valueAsDate,
             valueAsNumber,
-            key,
           },
           type: 'done',
         });
       };
 
       @state() private newValue: string = '';
-
+  
       override render() {
         const monthCalendarData: MonthCalendarData = {
           ...data,
@@ -249,7 +244,7 @@ describe(appMonthCalendarName, () => {
             this.newValue ? { date: new Date(this.newValue) } : {}
           ),
         };
-
+  
         return html`
         <app-month-calendar
           .data=${monthCalendarData}
@@ -260,23 +255,22 @@ describe(appMonthCalendarName, () => {
     }
 
     const renderWithWrapper = async (): Promise<{
-      root: Test;
       el: AppMonthCalendar;
+      root: Test;
     }> => {
-      const root = await fixture<Test>(
-        html`<${unsafeStatic(testCustomElementName)}></${unsafeStatic(testCustomElementName)}>`
-      );
+      const tag = defineCE(Test);
+      // eslint-disable-next-line lit/binding-positions, lit/no-invalid-html
+      const root = await fixture<Test>(html`<${unsafeStatic(tag)}></${unsafeStatic(tag)}>`);
       
       return {
-        root,
         el: root.query<AppMonthCalendar>('app-month-calendar') as AppMonthCalendar,
+        root,
       };
     };
-
-    const { root, el } = await renderWithWrapper();
+    const { el, root } = await renderWithWrapper();
 
     const dateUpdatedEventTask = new Promise((resolve) => {
-      root.addEventListener('done', (ev: any) => {
+      root.addEventListener('done', (ev) => {
         resolve((ev as CustomEvent<CustomEventDetail['date-updated']['detail']>).detail);
       }, { once: true });
     });

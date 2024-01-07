@@ -1,8 +1,7 @@
 import '../../year-grid/app-year-grid';
 
-import { fixture, html } from '@open-wc/testing-helpers';
-import { customElement, state } from 'lit/decorators.js';
-import { unsafeStatic } from 'lit/static-html.js';
+import { defineCE, fixture, html, unsafeStatic } from '@open-wc/testing-helpers';
+import { state } from 'lit/decorators.js';
 import { describe, expect, it } from 'vitest';
 
 import { type confirmKeySet, labelSelectedYear, labelToyear } from '../../constants';
@@ -103,9 +102,6 @@ describe(appYearGridName, () => {
     key,
     newSelectedYear,
   }) => {
-    const testCustomElementName = `test-${window.crypto.randomUUID()}`;
-    
-    @customElement(testCustomElementName)
     class Test extends RootElement {
       #updateData = async ({
         detail: {
@@ -130,10 +126,11 @@ describe(appYearGridName, () => {
           ...(this.newYear ? { date: new Date(`${this.newYear}-01-01`) } : {}),
         };
 
-        console.debug('done', this.newYear);
-
         return html`
-          <app-year-grid .data=${newData} @year-updated=${this.#updateData}></app-year-grid>
+        <app-year-grid
+          .data=${newData}
+          @year-updated=${this.#updateData}
+        ></app-year-grid>
         `;
       }
     }
@@ -142,17 +139,15 @@ describe(appYearGridName, () => {
       el: AppYearGrid;
       root: Test;
     }> => {
-      const root = await fixture<Test>(
-        // eslint-disable-next-line lit/binding-positions, lit/no-invalid-html
-        html`<${unsafeStatic(testCustomElementName)}></${unsafeStatic(testCustomElementName)}>`
-      );
+      const tag = defineCE(Test);
+      // eslint-disable-next-line lit/binding-positions, lit/no-invalid-html
+      const root = await fixture<Test>(html`<${unsafeStatic(tag)}></${unsafeStatic(tag)}>`);
 
       return {
         el: root.query('app-year-grid') as AppYearGrid,
         root,
       };
     };
-
     const { el, root } = await renderWithWrapper();
 
     const yearUpdatedEventTask = new Promise((resolve) => {
