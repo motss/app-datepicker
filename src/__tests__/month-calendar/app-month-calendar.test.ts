@@ -2,7 +2,7 @@ import '../../month-calendar/app-month-calendar';
 
 import { defineCE, fixture, html, unsafeStatic } from '@open-wc/testing-helpers';
 import { state } from 'lit/decorators.js';
-import { calendar, getWeekdays } from 'nodemod';
+import { calendar, getWeekdays } from 'nodemod/calendar';
 import type { GetWeekdaysInit } from 'nodemod/dist/calendar/helpers/typings.js';
 import type { CalendarInit } from 'nodemod/dist/calendar/typings.js';
 import { describe, expect, it } from 'vitest';
