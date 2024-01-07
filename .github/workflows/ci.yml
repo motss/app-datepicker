@@ -16,11 +16,13 @@ defaults:
     shell: bash
 
 env:
-  COVERAGE: false
+  FORCE_COLOR: 3
   IS_UBUNTU: false
   NODE_VERSION: v0.0.0
   NPM_CACHE_DIR: ~/.npm
   NPM_VERSION: 0.0.0
+  PNPM_STORE_PATH: .pnpm-store
+  PNPM_VERSION: 0.0.0
 
 jobs:
   test:
@@ -85,7 +87,6 @@ jobs:
 
       - name: Setup Playwright
         run: |
-          # npx playwright install-deps
           pnpm exec playwright install
 
       - name: Lint
