@@ -43,6 +43,7 @@ export default defineConfig({
       '**/*test*/helpers/warn-undefined-element.test.ts',
       '**/*test*/icon-button/**.test.ts',
       '**/*test*/month-calendar/**.test.ts',
+      '**/*test*/year-grid/**.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
