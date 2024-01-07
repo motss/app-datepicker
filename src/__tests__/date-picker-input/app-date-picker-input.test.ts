@@ -1,19 +1,20 @@
-import '../../date-picker/app-date-picker';
-import '../../date-picker-input-surface/app-date-picker-input-surface';
-import '../../date-picker-input/app-date-picker-input';
+import '../../date-picker-input-surface/app-date-picker-input-surface.js';
+import '../../date-picker-input/app-date-picker-input.js';
+import '../../date-picker/app-date-picker.js';
 
+import { stripExpressionComments } from '@lit-labs/testing';
 import type { Button } from '@material/mwc-button';
-import { expect, fixture, html } from '@open-wc/testing';
-import { sendKeys } from '@web/test-runner-commands';
+import { fixture, html } from '@open-wc/testing-helpers';
+import { describe, expect, it } from 'vitest';
 
 import { DateTimeFormat } from '../../constants';
-import type {AppDatePicker } from '../../date-picker/app-date-picker';
+import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
-import type {AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
+import type { AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
 import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input/constants';
 import type { DatePickerInputProperties } from '../../date-picker-input/typings';
-import type {AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
+import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { iconClear } from '../../icons';
 import { keyEnter, keyEscape, keySpace, keyTab } from '../../key-values';
@@ -22,7 +23,6 @@ import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { AppYearGrid } from '../../year-grid/app-year-grid';
 import { appYearGridName } from '../../year-grid/constants';
 import { eventOnce } from '../test-utils/event-once';
-import { messageFormatter } from '../test-utils/message-formatter';
 import { queryDeepActiveElement } from '../test-utils/query-deep-active-element';
 
 describe(appDatePickerInputName, () => {
@@ -50,85 +50,95 @@ describe(appDatePickerInputName, () => {
   const placeholder = 'Select your date of birth';
   const value = '2020-02-02';
 
-  type CaseValue = [
-    value: null | string | undefined,
-    expectedValue: string,
-    expectedValueAsDate: Date | null,
-    expectedValueAsNumber: number
-  ];
-  const casesValue: CaseValue[] = [
-    ['', '', null, NaN],
-    [undefined, '', null, NaN],
-    [null, '', null, NaN],
-    [value, value, new Date(value), +new Date(value)],
-  ];
-  casesValue.forEach((a) => {
-    const [testValue, expectedValue, expectedValueAsDate, expectedValueAsNumber] = a;
-
-    it(
-      messageFormatter('renders (value=%s)', a),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .max=${max}
-            .min=${min}
-            .value=${testValue}
-          ></app-date-picker-input>`
-        );
-
-        const mdcTextField = el.query(elementSelectors.mdcTextField);
-        const mdcFloatingLabel = el.query(elementSelectors.mdcFloatingLabel);
-        const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-        const mdcTextFieldIconTrailing = el.query(elementSelectors.mdcTextFieldIconTrailing);
-
-        expect(mdcTextField).exist;
-        expect(mdcFloatingLabel).exist;
-        expect(mdcTextFieldInput).exist;
-        expect(mdcTextFieldIconTrailing).exist;
-
-        expect(el.type).equal(appDatePickerInputType);
-        expect(el.value).equal(expectedValue);
-        expect(el.valueAsDate).deep.equal(expectedValueAsDate);
-        expect(el.valueAsNumber).deep.equal(expectedValueAsNumber);
-
-        expect(mdcFloatingLabel).text(label);
-        expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).equal('label');
-        expect(mdcTextFieldInput?.placeholder).equal('');
-        expect(mdcTextFieldIconTrailing).lightDom.equal(iconClear.strings.toString());
-      }
+  it.each<{
+    $_value: string;
+    $_valueAsDate: Date | null;
+    $_valueAsNumber: number;
+    value: null | string | undefined;
+  }>([
+    {
+      $_value: '',
+      $_valueAsDate: null,
+      $_valueAsNumber: NaN,
+      value: '',
+    },
+    {
+      $_value: '',
+      $_valueAsDate: null,
+      $_valueAsNumber: NaN,
+      value: undefined,
+    },
+    {
+      $_value: '',
+      $_valueAsDate: null,
+      $_valueAsNumber: NaN,
+      value: null,
+    },
+    {
+      $_value: value,
+      $_valueAsDate: new Date(value),
+      $_valueAsNumber: new Date(value).getTime(),
+      value: value,
+    },
+  ])('renders (value=%s)', async ({
+    $_value,
+    $_valueAsDate,
+    $_valueAsNumber,
+    value,
+  }) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .value=${value}
+      ></app-date-picker-input>`
     );
+
+    const mdcTextField = el.query(elementSelectors.mdcTextField);
+    const mdcFloatingLabel = el.query(elementSelectors.mdcFloatingLabel);
+    const mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+    const mdcTextFieldIconTrailing = el.query(elementSelectors.mdcTextFieldIconTrailing);
+
+    expect(mdcTextField).toBeInTheDocument();
+    expect(mdcFloatingLabel).toBeInTheDocument();
+    expect(mdcTextFieldInput).toBeInTheDocument();
+    expect(mdcTextFieldIconTrailing).toBeInTheDocument();
+
+    expect(el.type).toBe(appDatePickerInputType);
+    expect(el.value).toBe($_value);
+    expect(el.valueAsDate).toEqual($_valueAsDate);
+    expect(el.valueAsNumber).toBe($_valueAsNumber);
+
+    expect(mdcFloatingLabel).toHaveTextContent(label);
+    expect(mdcTextFieldInput).toHaveAttribute('aria-labelledby', 'label');
+    expect(mdcTextFieldInput?.placeholder).toBe('');
+    expect(stripExpressionComments(mdcTextFieldIconTrailing?.innerHTML ?? '').trim()).toBe(iconClear.strings.toString());
   });
 
-  type CaseOptionalLocale = [
-    locale: null | string | undefined,
-    expectedLocale: string
-  ];
-  const casesOptionalLocale: CaseOptionalLocale[] = [
-    ['zh-TW', 'zh-TW'],
-    [null, 'en-US'],
-    [undefined, 'en-US'],
-  ];
-  casesOptionalLocale.forEach(a => {
-    const [testLocale, expectedLocale] = a;
-
-    it(
-      messageFormatter('renders with optional locale (%s)', testLocale),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .locale=${testLocale as unknown as string}
-            .max=${max}
-            .min=${min}
-            .placeholder=${placeholder}
-            .value=${value}
-          ></app-date-picker-input>`
-        );
-
-        expect(el.locale).equal(expectedLocale);
-      }
+  it.each<{
+    $_locale: string;
+    locale: null | string | undefined;
+  }>([
+    { $_locale: 'zh-TW', locale: 'zh-TW' },
+    { $_locale: 'en-US', locale: null },
+    { $_locale: 'en-US', locale: undefined },
+  ])('renders with optional locale ($locale)', async ({
+    $_locale,
+    locale,
+  }) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .locale=${locale as unknown as string}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .value=${value}
+      ></app-date-picker-input>`
     );
+
+    expect(el.locale).toBe($_locale);
   });
 
   it('renders with optional properties', async () => {
@@ -164,9 +174,9 @@ describe(appDatePickerInputName, () => {
     // FIXME: FF94 returns undefined whereas FF96 will return the correct value.
     // expect(mdcTextFieldInput?.autocapitalize).equal(testAutocapitalize);
 
-    expect(mdcTextFieldInput).exist;
-    expect(mdcTextFieldInput?.getAttribute('autocapitalize')).equal(testAutocapitalize);
-    expect(mdcTextFieldInput?.getAttribute('aria-labelledby')).null;
+    expect(mdcTextFieldInput).toBeInTheDocument();
+    expect(mdcTextFieldInput).toHaveAttribute('autocapitalize', testAutocapitalize);
+    expect(mdcTextFieldInput).not.toHaveAttribute('aria-labelledby');
     expect(mdcTextFieldInput?.name).equal(testName);
   });
 
@@ -202,13 +212,14 @@ describe(appDatePickerInputName, () => {
     await datePickerInputSurface?.updateComplete;
 
     const activeElement = queryDeepActiveElement();
+    const $_activeElement = yearDropdown?.shadowRoot?.querySelector('button') as HTMLButtonElement;
 
-    expect(datePickerInputSurface).exist;
-    expect(datePicker).exist;
+    expect(datePickerInputSurface).toBeInTheDocument();
+    expect(datePicker).toBeInTheDocument();
 
     expect(opened?.detail).null;
     expect(datePickerInputSurface?.open).true;
-    expect(yearDropdown).shadowDom.equal(activeElement?.outerHTML);
+    expect( activeElement?.isEqualNode($_activeElement)).true;
 
     el.closePicker();
     await el.updateComplete;
@@ -216,251 +227,223 @@ describe(appDatePickerInputName, () => {
     datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
     datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
-    expect(datePickerInputSurface).exist;
-    expect(datePicker).not.exist;
+    expect(datePickerInputSurface).toBeInTheDocument();
+    expect(datePicker).not.toBeInTheDocument();
   });
 
-  type CaseCloseDatePickerByTriggerType = [
+  it.skip.each<{
     _message: string,
-    triggerType: 'click' | 'escape' | 'tab'
-  ];
-  const casesCloseDatePickerByTriggerType: CaseCloseDatePickerByTriggerType[] = [
-    ['clicking outside of date picker input', 'click'],
-    ['pressing Escape key', 'escape'],
-    ['tabbing outside of date picker input', 'tab'],
-  ];
-  casesCloseDatePickerByTriggerType.forEach((a) => {
-    const [, testTriggerType] = a;
+    triggerType: 'click' | 'escape' | 'tab';
+  }>([
+    { _message: 'clicking outside of date picker input', triggerType: 'click' },
+    { _message: 'pressing Escape key', triggerType: 'escape' },
+    { _message: 'tabbing outside of date picker input', triggerType: 'tab' },
+  ])('closes date picker by $_message', async ({
+    triggerType,
+  }) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .value=${value}
+      ></app-date-picker-input>`
+    );
 
-    it(
-      messageFormatter('closes date picker by %s', a),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .max=${max}
-            .min=${min}
-            .placeholder=${placeholder}
-            .value=${value}
-          ></app-date-picker-input>`
-        );
+    const openedTask = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent<unknown>>(el, 'opened');
 
-        const openedTask = eventOnce<
-          typeof el,
-          'opened',
-          CustomEvent<unknown>>(el, 'opened');
+    el.showPicker();
+    const opened = await openedTask;
+    await el.updateComplete;
 
-        el.showPicker();
-        const opened = await openedTask;
-        await el.updateComplete;
+    expect(opened).not.undefined;
 
-        expect(opened).not.undefined;
+    let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+    let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
 
-        let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-        let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+    expect(datePickerInputSurface).toBeInTheDocument();
+    expect(datePicker).toBeInTheDocument();
+    expect(datePickerInputSurface?.open).true;
 
-        expect(datePickerInputSurface).exist;
-        expect(datePicker).exist;
-        expect(datePickerInputSurface?.open).true;
+    const closedTask = eventOnce<
+      typeof el,
+      'closed',
+      CustomEvent<DialogClosedEventDetail>>(el, 'closed');
 
-        const closedTask = eventOnce<
-          typeof el,
-          'closed',
-          CustomEvent<DialogClosedEventDetail>>(el, 'closed');
+    switch (triggerType) {
+      case 'click': {
+        document.body.click();
+        break;
+      }
+      case 'escape': {
+        // fixme: use native browser keypress when vitest supports it
+        document.body.dispatchEvent(new KeyboardEvent('keypress', { key: keyEscape }));
+        break;
+      }
+      case 'tab': {
+        const yearDropdown = datePicker?.query(elementSelectors.yearDropdown);
 
-        switch (testTriggerType) {
-          case 'click': {
-            document.body.click();
-            break;
-          }
-          case 'escape': {
-            await sendKeys({ press: keyEscape });
-            break;
-          }
-          case 'tab': {
-            const yearDropdown = datePicker?.query(elementSelectors.yearDropdown);
+        expect(yearDropdown).toBeInTheDocument();
 
-            expect(yearDropdown).exist;
+        yearDropdown?.focus();
 
-            yearDropdown?.focus();
-
-            for (const _ of Array(4)) {
-              await sendKeys({ press: keyTab });
-            }
-
-            break;
-          }
-          default:
+        for (const _ of Array(4)) {
+          // fixme: use native browser keypress when vitest supports it
+          document.body.dispatchEvent(new KeyboardEvent('keypress', { key: keyTab }));
         }
 
-        const closed = await closedTask;
-        await el.updateComplete;
-
-        expect(closed).not.undefined;
-
-        datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-        datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-
-        expect(datePickerInputSurface).exist;
-        expect(datePicker).not.exist;
+        break;
       }
-    );
+      default:
+    }
+
+    const closed = await closedTask;
+    await el.updateComplete;
+
+    expect(closed).not.undefined;
+
+    datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+    datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
+    expect(datePickerInputSurface).toBeInTheDocument();
+    expect(datePicker).not.toBeInTheDocument();
   });
 
-  type CaseOpenDatePickerWithKeyboard = typeof keyEnter | typeof keySpace;
-  const casesOpenDatePickerWithKeyboard: CaseOpenDatePickerWithKeyboard[] = [
+  it.skip.each<typeof keyEnter | typeof keySpace>([
     keyEnter,
     keySpace,
-  ];
-  casesOpenDatePickerWithKeyboard.forEach((a) => {
-    const testKey = a;
-
-    it(
-      messageFormatter('opens date picker with keyboard (key=%s)', testKey),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .max=${max}
-            .min=${min}
-            .placeholder=${placeholder}
-            .value=${value}
-          ></app-date-picker-input>`
-        );
-
-        const openedTask = eventOnce<
-          typeof el,
-          'opened',
-          CustomEvent<unknown>>(el, 'opened');
-
-        el.focus();
-        await sendKeys({ press: testKey });
-
-        const opened = await openedTask;
-        await el.updateComplete;
-
-        expect(opened).not.undefined;
-
-        const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-        const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-
-        expect(datePickerInputSurface).exist;
-        expect(datePicker).exist;
-      }
+  ])('opens date picker with keyboard (key=%s)', async (key) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .value=${value}
+      ></app-date-picker-input>`
     );
+
+    const openedTask = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent<unknown>>(el, 'opened');
+
+    el.focus();
+    // fixme: use native browser keypress when vitest supports it
+    document.body.dispatchEvent(new KeyboardEvent('keypress', { key }));
+
+    const opened = await openedTask;
+    await el.updateComplete;
+
+    expect(opened).not.undefined;
+
+    const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+    const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+
+    expect(datePickerInputSurface).toBeInTheDocument();
+    expect(datePicker).toBeInTheDocument();
   });
 
-  type CaseResetValue = [
-    _message: string,
-    triggerType: 'click' | 'reset'
-  ];
-  const casesResetValue: CaseResetValue[] = [
-    ['calls .reset()', 'reset'],
-    ['clicks clear icon button', 'click'],
-  ];
-  casesResetValue.forEach((a) => {
-    const [_, testTriggerType] = a;
-
-    it(
-      messageFormatter('%s to reset value', a),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .max=${max}
-            .min=${min}
-            .placeholder=${placeholder}
-            .value=${value}
-          ></app-date-picker-input>`
-        );
-
-        let mdcTextFieldInput =
-          el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-        const mdcTextFieldIconTrailing =
-          el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
-
-        expect(mdcTextFieldInput).exist;
-        expect(mdcTextFieldIconTrailing).exist;
-
-        const expectedValue = formatter.format(new Date(value));
-
-        expect(mdcTextFieldInput).value(expectedValue);
-
-        if (testTriggerType === 'click') {
-          mdcTextFieldIconTrailing?.click();
-        } else {
-          el.reset();
-        }
-
-        await el.updateComplete;
-
-        mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-
-        expect(mdcTextFieldInput).value('');
-        expect(el.value).equal('');
-        expect(el.valueAsDate).equal(null);
-        expect(el.valueAsNumber).deep.equal(NaN);
-      }
+  it.each<{
+    _message: string;
+    triggerType: 'click' | 'reset';
+  }>([
+    { _message: 'calls .reset()', triggerType: 'reset' },
+  { _message: 'clicks clear icon button', triggerType: 'click' },
+  ])('$_message to reset value', async ({
+    triggerType,
+  }) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .value=${value}
+      ></app-date-picker-input>`
     );
+
+    let mdcTextFieldInput =
+      el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+    const mdcTextFieldIconTrailing =
+      el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+
+    expect(mdcTextFieldInput).toBeInTheDocument();
+    expect(mdcTextFieldIconTrailing).toBeInTheDocument();
+
+    const expectedValue = formatter.format(new Date(value));
+
+    expect(mdcTextFieldInput).toHaveValue(expectedValue);
+
+    if (triggerType === 'click') {
+      mdcTextFieldIconTrailing?.click();
+    } else {
+      el.reset();
+    }
+
+    await el.updateComplete;
+
+    mdcTextFieldInput = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+
+    expect(mdcTextFieldInput).toHaveValue('');
+    expect(el.value).toBe('');
+    expect(el.valueAsDate).toBe(null);
+    expect(el.valueAsNumber).toBe(NaN);
   });
 
-  type CaseSelectNewDateWithKeyboard = typeof keyEnter | typeof keySpace;
-  const casesSelectNewDateWithKeyboard: CaseSelectNewDateWithKeyboard[] = [
+  it.each<typeof keyEnter | typeof keySpace>([
     keyEnter,
     keySpace,
-  ];
-  casesSelectNewDateWithKeyboard.forEach((a) => {
-    const testKey = a;
-
-    it(
-      messageFormatter('selects new date with keyboard (key=%s)', testKey),
-      async () => {
-        const el = await fixture<AppDatePickerInput>(
-          html`<app-date-picker-input
-            .label=${label}
-            .max=${max}
-            .min=${min}
-            .placeholder=${placeholder}
-            .value=${value}
-          ></app-date-picker-input>`
-        );
-
-        const openedTask = eventOnce<
-          typeof el,
-          'opened',
-          CustomEvent<unknown>>(el, 'opened');
-
-        el.showPicker();
-        const opened = await openedTask;
-        await el.updateComplete;
-
-        expect(opened).not.undefined;
-
-        const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-        const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
-
-        const valueDate = new Date(value);
-        const newSelectedDateDate = new Date(valueDate.setUTCDate(valueDate.getUTCDate() + 1));
-        const newSelectedDateLabel = formatter.format(newSelectedDateDate);
-        const newSelectedDate = monthCalendar?.query<HTMLTableCellElement>(elementSelectors.calendarDay(newSelectedDateLabel));
-
-        expect(newSelectedDate).exist;
-
-        const closedTask = eventOnce<
-          typeof el,
-          'closed',
-          CustomEvent<DialogClosedEventDetail>>(el, 'closed');
-
-        newSelectedDate?.focus();
-        await sendKeys({ press: testKey });
-
-        await closedTask;
-        await el.updateComplete;
-
-        // FIXME: Webkit returns undefined even `closed` event is fired
-        // expect(closed).not.undefined;
-      }
+  ])('selects new date with keyboard (key=%s)', async (key) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .value=${value}
+      ></app-date-picker-input>`
     );
+
+    const openedTask = eventOnce<
+      typeof el,
+      'opened',
+      CustomEvent<unknown>>(el, 'opened');
+
+    el.showPicker();
+    const opened = await openedTask;
+    await el.updateComplete;
+
+    expect(opened).not.undefined;
+
+    const datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
+    const monthCalendar = datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
+
+    const valueDate = new Date(value);
+    const newSelectedDateDate = new Date(valueDate.setUTCDate(valueDate.getUTCDate() + 1));
+    const newSelectedDateLabel = formatter.format(newSelectedDateDate);
+    const newSelectedDate = monthCalendar?.query<HTMLTableCellElement>(elementSelectors.calendarDay(newSelectedDateLabel));
+
+    expect(newSelectedDate).toBeInTheDocument();
+
+    const closedTask = eventOnce<
+      typeof el,
+      'closed',
+      CustomEvent<DialogClosedEventDetail>>(el, 'closed');
+
+    newSelectedDate?.focus();
+    // fixme: use native browser keypress when vitest supports it
+    document.body.dispatchEvent(new KeyboardEvent('keypress', { key }));
+
+    await closedTask;
+    await el.updateComplete;
+
+    // FIXME: Webkit returns undefined even `closed` event is fired
+    // expect(closed).not.undefined;
   });
 
   it('selects new date with mouse click', async () => {
@@ -493,7 +476,7 @@ describe(appDatePickerInputName, () => {
     const newSelectedDateLabel = formatter.format(newSelectedDateDate);
     const newSelectedDate = monthCalendar?.query<HTMLTableCellElement>(elementSelectors.calendarDay(newSelectedDateLabel));
 
-    expect(newSelectedDate).exist;
+    expect(newSelectedDate).toBeInTheDocument();
 
     const closedTask = eventOnce<
       typeof el,
@@ -537,7 +520,7 @@ describe(appDatePickerInputName, () => {
     let yearGrid = datePicker?.query<AppYearGrid>(elementSelectors.yearGrid);
 
     // ensure year grid view when it first opens
-    expect(yearGrid).exist;
+    expect(yearGrid).toBeInTheDocument();
 
     const closedTask = eventOnce<
       typeof el,
@@ -569,91 +552,94 @@ describe(appDatePickerInputName, () => {
     /**
      * NOTE: Year view should render when it reopens because `.startView=${'yearGrid'}` is set
      */
-    expect(monthCalendar).not.exist;
-    expect(yearGrid).exist;
+    expect(monthCalendar).not.toBeInTheDocument();
+    expect(yearGrid).toBeInTheDocument();
   });
 
-  type CaseRenderAndTriggerNothing = keyof Pick<DatePickerInputProperties, 'disabled' | 'readOnly'>;
-  const casesRenderAndTriggerNothing: CaseRenderAndTriggerNothing[] = [
+  it.skip.each<keyof Pick<DatePickerInputProperties, 'disabled' | 'readOnly'>>([
     'disabled',
     'readOnly',
-  ];
-  casesRenderAndTriggerNothing.forEach((a) => {
-    it(`renders correctly and does not trigger anything event handler when '${a}' is set to true`, async () => {
-      const el = await fixture<AppDatePickerInput>(
-        html`<app-date-picker-input
-          .label=${label}
-          .max=${max}
-          .min=${min}
-          .placeholder=${placeholder}
-          .startView=${'yearGrid'}
-          .value=${value}
-          .disabled=${a === 'disabled' ? true : false}
-          .readOnly=${a === 'readOnly' ? true : false}
-        ></app-date-picker-input>`
-      );
+  ])(`renders correctly and does not trigger anything event handler when '%s' is set to true`, async (key) => {
+    const el = await fixture<AppDatePickerInput>(
+      html`<app-date-picker-input
+        .label=${label}
+        .max=${max}
+        .min=${min}
+        .placeholder=${placeholder}
+        .startView=${'yearGrid'}
+        .value=${value}
+        .disabled=${key === 'disabled' ? true : false}
+        .readOnly=${key === 'readOnly' ? true : false}
+      ></app-date-picker-input>`
+    );
 
+    await el.updateComplete;
+
+    const initialValue = el.value;
+    const initialValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
+
+    const tasks = [
+      async () => {
+        /**
+         * Call `.showPicker()`
+         */
+        el.showPicker();
+      },
+      async () => {
+        // Trigger key event to open date picker
+        const input = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
+
+        input?.click();
+        input?.focus();
+        /* 
+         * fixme: use native browser keypress when vitest supports it
+         */
+        document.body.dispatchEvent(new KeyboardEvent('keypress', { key: keyEnter }));
+      },
+      async () => {
+        // Trigger click event to open date picker
+        el.focus();
+        el.click();
+      },
+      async () => {
+        /**
+         * note: Trigger key event to close date picker
+         * 
+         * fixme: use native browser keypress when vitest supports it
+         */
+        document.body.dispatchEvent(new KeyboardEvent('keypress', { key: keyEscape }));
+      },
+      () => {
+        // Click reset icon button to reset value
+        const mdcTextFieldIconTrailing =
+            el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+
+        mdcTextFieldIconTrailing?.focus();
+        mdcTextFieldIconTrailing?.click();
+      },
+      () => {
+        /**
+         * Call `.reset()`
+         */
+        el.reset();
+      },
+    ] as const;
+    for (const task of tasks) {
+      const openedTask = eventOnce<
+        typeof el,
+        'opened',
+        CustomEvent<unknown>>(el, 'opened');
+
+      await task();
+      await openedTask;
       await el.updateComplete;
 
-      const initialValue = el.value;
-      const initialValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
+      const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
+      const updatedValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
 
-      const tasks = [
-        async () => {
-          /**
-           * Call `.showPicker()`
-           */
-          el.showPicker();
-        },
-        async () => {
-          // Trigger key event to open date picker
-          const input = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
-
-          input?.click();
-          input?.focus();
-          await sendKeys({ press: 'Enter' });
-        },
-        async () => {
-          // Trigger click event to open date picker
-          el.focus();
-          el.click();
-        },
-        async () => {
-          // Trigger key event to close date picker
-          await sendKeys({ press: keyEscape });
-        },
-        () => {
-          // Click reset icon button to reset value
-          const mdcTextFieldIconTrailing =
-              el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
-
-          mdcTextFieldIconTrailing?.focus();
-          mdcTextFieldIconTrailing?.click();
-        },
-        () => {
-          /**
-           * Call `.reset()`
-           */
-          el.reset();
-        },
-      ] as const;
-      for (const task of tasks) {
-        const openedTask = eventOnce<
-          typeof el,
-          'opened',
-          CustomEvent<unknown>>(el, 'opened');
-
-        await task();
-        await openedTask;
-        await el.updateComplete;
-
-        const datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
-        const updatedValueText = el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput)?.value;
-
-        expect(datePickerInputSurface).not.exist;
-        expect(el.value).equal(initialValue);
-        expect(updatedValueText).equal(initialValueText);
-      }
-    });
+      expect(datePickerInputSurface).not.toBeInTheDocument();
+      expect(el.value).toBe(initialValue);
+      expect(updatedValueText).toBe(initialValueText);
+    }
   });
 });

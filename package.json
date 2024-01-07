@@ -184,6 +184,7 @@
     "tslib": "^2.6.2"
   },
   "devDependencies": {
+    "@lit-labs/testing": "^0.2.3",
     "@open-wc/testing": "^4.0.0",
     "@open-wc/testing-helpers": "^3.0.0",
     "@testing-library/jest-dom": "^6.2.0",

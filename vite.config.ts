@@ -25,6 +25,7 @@ export default defineConfig({
     include: [
       '**/*test*/date-picker/**.test.ts',
       '**/*test*/date-picker-dialog/**.test.ts',
+      '**/*test*/date-picker-input/**.test.ts',
       '**/*test*/date-picker-input-surface/**.test.ts',
       '**/*test*/helpers/clamp-value.test.ts',
       '**/*test*/helpers/date-validator.test.ts',
@@ -45,7 +46,6 @@ export default defineConfig({
       '**/*test*/month-calendar/**.test.ts',
       '**/*test*/year-grid/**.test.ts',
       '**/*test*/year-grid-button/**.test.ts',
-      // '**/*test*/date-picker-input/**.test.ts',
     ],
     clearMocks: true,
     coverage: {
