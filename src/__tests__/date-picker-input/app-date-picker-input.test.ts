@@ -1,6 +1,6 @@
-import '../../date-picker-input-surface/app-date-picker-input-surface.js';
-import '../../date-picker-input/app-date-picker-input.js';
-import '../../date-picker/app-date-picker.js';
+import '../../date-picker-input-surface/app-date-picker-input-surface';
+import '../../date-picker-input/app-date-picker-input';
+import '../../date-picker/app-date-picker';
 
 import { stripExpressionComments } from '@lit-labs/testing';
 import type { Button } from '@material/mwc-button';
