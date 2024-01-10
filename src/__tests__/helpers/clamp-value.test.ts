@@ -1,31 +1,46 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { clampValue } from '../../helpers/clamp-value';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(clampValue.name, () => {
-  type CaseClampValue = [
-    min: number,
-    max: number,
-    value: number,
-    expected: number
-  ];
-  const casesClampValue: CaseClampValue[] = [
-    [100, 300, 100, 100],
-    [100, 300, 200, 200],
-    [100, 300, 301, 300],
-    [100, 300, 99, 100],
-  ];
-  casesClampValue.forEach((a) => {
-    const [testMin, testMax, testValue, expected] = a;
+  it.each<{
+    $_value: number;
+    max: number;
+    min: number;
+    value: number;
+  }>([
+    {
+      $_value: 100,
+      max: 300,
+      min: 100,
+      value: 100,
+    },
+    {
+      $_value: 200,
+      max: 300,
+      min: 100,
+      value: 200,
+    },
+    {
+      $_value: 300,
+      max: 300,
+      min: 100,
+      value: 301,
+    },
+    {
+      $_value: 100,
+      max: 300,
+      min: 100,
+      value: 99,
+    },
+  ])('clamps value (min=$min, max=$max, value=$value)', ({
+    $_value,
+    max,
+    min,
+    value,
+  }) => {
+    const result = clampValue(min, max, value);
 
-    it(
-      messageFormatter('clamps value (min=%s, max=%s, value=%s', a),
-      () => {
-        const result = clampValue(testMin, testMax, testValue);
-
-        expect(result).equal(expected);
-      }
-    );
+    expect(result).toBe($_value);
   });
 });

@@ -1,6 +1,7 @@
 import '../../year-grid-button/app-year-grid-button';
 
-import { expect, fixture, html } from '@open-wc/testing';
+import { fixture, html } from '@open-wc/testing-helpers';
+import { describe, expect, it } from 'vitest';
 
 import type { AppYearGridButton } from '../../year-grid-button/app-year-grid-button';
 import { appYearGridButtonName } from '../../year-grid-button/constants';
@@ -11,7 +12,7 @@ describe(appYearGridButtonName, () => {
       html`<app-year-grid-button label="test"></app-year-grid-button>`
     );
 
-    expect(el.query(`button[aria-label="test"]`)).exist;
+    expect(el.query(`button[aria-label="test"]`)).toBeInTheDocument();
   });
 
 });

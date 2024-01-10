@@ -17,13 +17,6 @@ import type { CustomEventDetail } from '../typings.js';
 
 @customElement('demo-app')
 export class DemoApp extends RootElement {
-  @state() _editable = false;
-  @state() _outlined = false;
-
-  @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
-  @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
-  @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
-
   public static override styles = [
     css`
     :host {
@@ -55,14 +48,50 @@ export class DemoApp extends RootElement {
     }
     `,
   ];
+  #dateUpdated = ({
+    currentTarget,
+    detail,
+  }: CustomEvent<CustomEventDetail['date-updated']['detail']>): void => {
+    const { id } = currentTarget as AppDatePicker;
 
-  protected override firstUpdated(_changedProperties: Map<string | number | symbol, unknown>): void {
+    console.debug({
+      detail,
+      id,
+    });
+  };
+
+  #showDialog = async (ev: MouseEvent) => {
+    const { dataset } = ev.currentTarget as HTMLButtonElement;
+    const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
+    const task = globalThis.customElements.whenDefined(appDatePickerDialogName);
+
+    await import('../date-picker-dialog/app-date-picker-dialog.js');
+    await task;
+
+    dialog?.show();
+
+    console.debug(`Dialog #${dataset.id}`, {
+      value: dialog?.value,
+      valueAsDate: dialog?.valueAsDate,
+      valueAsNumber: new Date(dialog?.valueAsNumber as number),
+    });
+  };
+  @state() _editable = false;
+  @state() _outlined = false;
+
+  @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
+
+  @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
+
+  @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
+
+  protected override firstUpdated(_changedProperties: Map<number | string | symbol, unknown>): void {
       Object.defineProperty(globalThis, '__demoApp', {
         value: {
           datePicker1: this.query('#datePicker1'),
           datePicker2: this.query('#datePicker2'),
-          datePickerInput1: this.query('#datePickerInput1'),
           datePickerDialog1: this.query('#datePickerDialog1'),
+          datePickerInput1: this.query('#datePickerInput1'),
         },
       });
   }
@@ -168,33 +197,4 @@ export class DemoApp extends RootElement {
     ></app-date-picker-dialog>
     `;
   }
-
-  #showDialog = async (ev: MouseEvent) => {
-    const { dataset } = ev.currentTarget as HTMLButtonElement;
-    const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
-    const task = globalThis.customElements.whenDefined(appDatePickerDialogName);
-
-    await import('../date-picker-dialog/app-date-picker-dialog.js');
-    await task;
-
-    dialog?.show();
-
-    console.debug(`Dialog #${dataset.id}`, {
-      value: dialog?.value,
-      valueAsDate: dialog?.valueAsDate,
-      valueAsNumber: new Date(dialog?.valueAsNumber as number),
-    });
-  };
-
-  #dateUpdated = ({
-    detail,
-    currentTarget,
-  }: CustomEvent<CustomEventDetail['date-updated']['detail']>): void => {
-    const { id } = currentTarget as AppDatePicker;
-
-    console.debug({
-      id,
-      detail,
-    });
-  };
 }

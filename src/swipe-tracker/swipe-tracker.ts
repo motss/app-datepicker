@@ -46,8 +46,8 @@ function addPassiveEventListener<T extends Extract<keyof HTMLElementEventMap, Su
 export class SwipeTracker {
   #element: HTMLElement;
   #move: PointerHandler;
-  #up: PointerHandler;
   #startPointer: ResolvedPointer | null = null;
+  #up: PointerHandler;
 
   public disconnect: () => void;
 

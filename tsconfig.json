@@ -3,11 +3,20 @@
   "compilerOptions": {
     "declarationDir": "dist",
     "inlineSources": false,
+    "moduleDetection": "auto",
+    "moduleResolution": "Bundler",
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": false,
-    "useDefineForClassFields": false
+    "types": [
+      "vite/client"
+    ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

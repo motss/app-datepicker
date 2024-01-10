@@ -5,34 +5,34 @@ import type { Formatters } from '../typings.js';
 
 export function toFormatters(locale: string): Formatters {
   const dateFmt = DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
     timeZone: 'UTC',
     weekday: 'short',
-    month: 'short',
-    day: 'numeric',
   });
-  const dayFmt = DateTimeFormat(locale, { timeZone: 'UTC', day: 'numeric' });
+  const dayFmt = DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' });
   const fullDateFmt = DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
     timeZone: 'UTC',
     year: 'numeric',
-    month: 'short',
-    day: 'numeric',
   });
   const longMonthYearFmt = DateTimeFormat(locale, {
+    month: 'long',
     timeZone: 'UTC',
     year: 'numeric',
-    month: 'long',
   });
   const longWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'long' });
-  const longMonthFmt = DateTimeFormat(locale, { timeZone: 'UTC', month: 'long' });
+  const longMonthFmt = DateTimeFormat(locale, { month: 'long', timeZone: 'UTC' });
   const narrowWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'narrow' });
   const yearFmt = DateTimeFormat(locale, { timeZone: 'UTC', year: 'numeric' });
 
   return {
-    locale,
-
     dateFormat: getFormatter(dateFmt),
+
     dayFormat: getFormatter(dayFmt),
     fullDateFormat: getFormatter(fullDateFmt),
+    locale,
     longMonthFormat: getFormatter(longMonthFmt),
     longMonthYearFormat: getFormatter(longMonthYearFmt),
     longWeekdayFormat: getFormatter(longWeekdayFmt),

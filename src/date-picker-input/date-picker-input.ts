@@ -1,8 +1,7 @@
 import '../icon-button/app-icon-button.js';
 
 import { TextField } from '@material/mwc-textfield';
-import type { TemplateResult } from 'lit';
-import { html, nothing    } from 'lit';
+import { html, nothing, type TemplateResult     } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
@@ -28,219 +27,129 @@ import { datePickerInputStyling } from './stylings.js';
 import type { DatePickerInputProperties } from './typings.js';
 
 export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinMaxMixin(TextField))) implements DatePickerInputProperties {
-  public override iconTrailing = 'clear';
-  public override type = appDatePickerInputType;
-
-  public get valueAsDate(): Date | null {
-    return this.#valueAsDate || null;
-  }
-
-  public get valueAsNumber(): number {
-    return Number(this.#valueAsDate || NaN);
-  }
-
-  @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
-  @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
-  @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
-  @queryAsync(appDatePickerName) protected $picker!: Promise<AppDatePicker | null>;
-  @state() private _disabled = false;
-  @state() private _lazyLoaded = false;
-  @state() private _open = false;
-
-  #disconnect: () => void = () => undefined;
-  #focusElement: HTMLElement | undefined = undefined;
-  #lazyLoading = false;
-  #picker: AppDatePicker | undefined = undefined;
-  #valueAsDate: Date | undefined;
-  #valueFormatter = this.$toValueFormatter();
-
   public static override styles = [
     ...TextField.styles,
     baseStyling,
     datePickerInputStyling,
   ];
+  #disconnect: () => void = () => undefined;
 
-  public override disconnectedCallback(): void {
-    super.disconnectedCallback();
+  #focusElement: HTMLElement | undefined = undefined;
 
-    this.#disconnect();
-  }
+  /* c8 ignore start */
+  #lazyLoad = async (): Promise<void> => {
+    if (this._lazyLoaded || this.#lazyLoading) return;
 
-  public override async firstUpdated(): Promise<void> {
-    super.firstUpdated();
+    const deps = [
+      appDatePickerName,
+      appDatePickerInputSurfaceName,
+    ] as const;
 
-    const input = await this.$input;
-    if (input) {
-      const onBodyKeyup = async (ev: KeyboardEvent) => {
-        if (this._disabled) return;
+    if (deps.some(n => globalThis.customElements.get(n) == null)) {
+      this.#lazyLoading = true;
 
-        if (ev.key === keyEscape) {
-          this.closePicker();
-        } else if (ev.key === keyTab) {
-          const inputSurface = await this.$inputSurface;
-          const isTabInsideInputSurface = (ev.composedPath() as HTMLElement[]).find(
-            n => n.nodeType === Node.ELEMENT_NODE &&
-            n.isEqualNode(inputSurface)
-          );
+      const tasks = deps.map(n => globalThis.customElements.whenDefined(n));
+      const imports = [
+        import('../date-picker/app-date-picker.js'),
+        import('../date-picker-input-surface/app-date-picker-input-surface.js'),
+      ];
 
-          if (!isTabInsideInputSurface) this.closePicker();
-        }
-      };
-      const onClick = () => {
-        if (this._disabled) return;
-
-        this._open = true;
-      };
-      const onKeyup = (ev: KeyboardEvent) => {
-        if (this._disabled) return;
-        if ([keySpace, keyEnter].some(n => n === ev.key)) {
-          onClick();
-        }
-      };
-
-      document.body.addEventListener('keyup', onBodyKeyup);
-      input.addEventListener('keyup', onKeyup);
-      input.addEventListener('click', onClick);
-
-      this.#disconnect = () => {
-        document.body.removeEventListener('keyup', onBodyKeyup);
-        input.removeEventListener('keyup', onKeyup);
-        input.removeEventListener('click', onClick);
-      };
+      try {
+        await Promise.all(imports);
+        await Promise.all(tasks);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     /**
-     * NOTE(motss): This is a workaround to ensure all inner dependencies of  `TextField`
-     * will be updated accordingly and `.layout()` is called correctly.
+     * NOTE(motss): `#lazyLoad()` is called within `render()` so this needs to wait for next update
+     * to re-trigger update when it updates `_lazyLoaded`.
      */
-    /* c8 ignore next */
-    await this.outlineElement?.updateComplete;
-    await this.layout();
-  }
+    await this.updateComplete;
 
-  public override willUpdate(changedProperties: ChangedProperties<DatePickerInputProperties>): void {
-    super.willUpdate(changedProperties);
+    this.#lazyLoading = false;
+    this._lazyLoaded = true;
+  };
 
-    if (changedProperties.has('locale')) {
-      this.locale = (
-        this.locale || DateTimeFormat().resolvedOptions().locale
-      ) as string;
-      this.#valueFormatter = this.$toValueFormatter();
-      this.#updateValues(this.value);
-    }
-
-    if (changedProperties.has('value')) {
-      this.#updateValues(this.value);
-    }
-
-    if (changedProperties.has('disabled') || changedProperties.has('readOnly')) {
-      this._disabled = this.disabled || this.readOnly;
-    }
-  }
-
-  public override async updated(): Promise<void> {
-    if (this._open && this._lazyLoaded) {
-      const picker = await this.$picker;
-
-      picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
-    }
-  }
-
-  public override render(): TemplateResult {
-    const {
-      _lazyLoaded,
-      _open,
-    } = this;
-
-    if (!_lazyLoaded && _open) this.#lazyLoad();
-
-    return html`
-    ${super.render()}
-    ${_lazyLoaded ? this.$renderContent() : nothing}
-    `;
-  }
-
-  public closePicker(): void {
+  #lazyLoading = false;
+  #onClosed = ({ detail }: CustomEvent): void => {
     this._open = false;
-  }
-
-  public reset(): void {
-    if (this._disabled) return;
-
-    this.#valueAsDate = undefined;
-    this.value = '';
-  }
-
-  public showPicker(): void {
-    if (this._disabled) return;
-
-    this._open = true;
-  }
-
-  protected override renderInput(shouldRenderHelperText: boolean): TemplateResult {
-    /**
-     * NOTE(motss): All these code are copied from original implementation with minor modification.
-     */
+    this.fire({ detail, type: 'closed' });
+  };
+  #onDatePickerDateUpdated = async (ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> => {
     const {
-      autocapitalize,
-      disabled,
-      focused,
-      helperPersistent,
-      inputMode,
-      isUiValid,
-      label,
-      name,
-      placeholder,
-      required,
-      validationMessage,
-    } = this;
+      isKeypress,
+      key,
+      valueAsDate,
+    } = ev.detail;
 
-    const autocapitalizeOrUndef = autocapitalize ?
-        autocapitalize as (
-            'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters') :
-        undefined;
-    const showValidationMessage = validationMessage && !isUiValid;
-    const ariaLabelledbyOrUndef = label ? 'label' : undefined;
-    const ariaControlsOrUndef =
-        shouldRenderHelperText ? 'helper-text' : undefined;
-    const ariaDescribedbyOrUndef =
-        focused || helperPersistent || showValidationMessage ?
-        'helper-text' :
-        undefined;
-    const valueText = this.#valueAsDate ? this.#valueFormatter.format(this.#valueAsDate) : '';
+    /**
+     * NOTE(motss): When it is triggered by mouse click or the following keys,
+     * update `.value` and close the input surface containing the date picker.
+     */
+    if (!isKeypress || (key === keyEnter || key === keySpace)) {
+      this.#updateValues(valueAsDate);
+      isKeypress && (await this.$inputSurface)?.close();
+    }
+  };
+  #onDatePickerFirstUpdated = ({
+    currentTarget,
+    detail: {
+      focusableElements: [focusableElement],
+      valueAsDate,
+    },
+  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void => {
+    this.#focusElement = focusableElement;
+    this.#picker = currentTarget as AppDatePicker;
+    this.#updateValues(valueAsDate);
+  };
+  #onOpened = async ({ detail }: CustomEvent): Promise<void> => {
+    await this.#picker?.updateComplete;
+    await this.updateComplete;
 
-    return html`
-      <input
-          ?disabled=${disabled}
-          ?required=${required}
-          .value=${valueText}
-          @blur=${this.onInputBlur}
-          @focus=${this.onInputFocus}
-          aria-controls=${ifDefined(ariaControlsOrUndef)}
-          aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
-          aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
-          autocapitalize=${ifDefined(autocapitalizeOrUndef)}
-          class=mdc-text-field__input
-          inputmode=${ifDefined(inputMode)}
-          name=${ifDefined(name || undefined)}
-          placeholder=${ifDefined(placeholder)}
-          readonly
-          type=text
-      >`;
-  }
+    this.#focusElement?.focus();
+    this.fire({ detail, type: 'opened' });
+  };
+  #onResetClick = (ev: MouseEvent): void => {
+    if (this._disabled) return;
 
-  protected override renderTrailingIcon(): TemplateResult {
-    return html`
-    <app-icon-button
-      .disabled=${this._disabled}
-      @click=${this.#onResetClick}
-      aria-label=${this.clearLabel}
-      class="mdc-text-field__icon mdc-text-field__icon--trailing"
-    >
-      ${iconClear}
-    </app-icon-button>
-    `;
-  }
+    /**
+     * NOTE(motss): To prevent triggering the `focus` event of `TextField` element.
+     */
+    ev.preventDefault();
+
+    this.reset();
+  };
+  #picker: AppDatePicker | undefined = undefined;
+
+  #updateValues = (value: Date | string): void => {
+    if (value) {
+      const valueDate = new Date(value);
+
+      this.#valueAsDate = valueDate;
+      this.value = toDateString(valueDate);
+    } else {
+      this.reset();
+    }
+  };
+  #valueAsDate: Date | undefined;
+  #valueFormatter = this.$toValueFormatter();
+  @state() private _disabled = false;
+  @state() private _lazyLoaded = false;
+  @state() private _open = false;
+
+  @queryAsync('.mdc-text-field__input') protected $input!: Promise<HTMLInputElement | null>;
+
+  @queryAsync(appDatePickerInputSurfaceName) protected $inputSurface!: Promise<AppDatePickerInputSurface | null>;
+
+  @queryAsync(appDatePickerName) protected $picker!: Promise<AppDatePicker | null>;
+
+  @property({ type: String }) public clearLabel = appDatePickerInputClearLabel;
+
+  public override iconTrailing = 'clear';
+
+  public override type = appDatePickerInputType;
 
   protected $renderContent(): TemplateResult {
     warnUndefinedElement(appDatePickerInputSurfaceName);
@@ -315,10 +224,138 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
 
   protected $toValueFormatter(): Intl.DateTimeFormat {
     return DateTimeFormat(this.locale, {
-      year: 'numeric',
-      month: 'short',
       day: 'numeric',
+      month: 'short',
+      year: 'numeric',
     });
+  }
+
+  public closePicker(): void {
+    this._open = false;
+  }
+
+  public override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.#disconnect();
+  }
+
+  public override async firstUpdated(): Promise<void> {
+    super.firstUpdated();
+
+    const input = await this.$input;
+    if (input) {
+      const onBodyKeyup = async (ev: KeyboardEvent) => {
+        if (this._disabled) return;
+
+        if (ev.key === keyEscape) {
+          this.closePicker();
+        } else if (ev.key === keyTab) {
+          const inputSurface = await this.$inputSurface;
+          const isTabInsideInputSurface = (ev.composedPath() as HTMLElement[]).find(
+            n => n.nodeType === Node.ELEMENT_NODE &&
+            n.isEqualNode(inputSurface)
+          );
+
+          if (!isTabInsideInputSurface) this.closePicker();
+        }
+      };
+      const onClick = () => {
+        if (this._disabled) return;
+
+        this._open = true;
+      };
+      const onKeyup = (ev: KeyboardEvent) => {
+        if (this._disabled) return;
+        if ([keySpace, keyEnter].some(n => n === ev.key)) {
+          onClick();
+        }
+      };
+
+      document.body.addEventListener('keyup', onBodyKeyup);
+      input.addEventListener('keyup', onKeyup);
+      input.addEventListener('click', onClick);
+
+      this.#disconnect = () => {
+        document.body.removeEventListener('keyup', onBodyKeyup);
+        input.removeEventListener('keyup', onKeyup);
+        input.removeEventListener('click', onClick);
+      };
+    }
+
+    /**
+     * NOTE(motss): This is a workaround to ensure all inner dependencies of  `TextField`
+     * will be updated accordingly and `.layout()` is called correctly.
+     */
+    /* c8 ignore next */
+    await this.outlineElement?.updateComplete;
+    await this.layout();
+  }
+
+  public override render(): TemplateResult {
+    const {
+      _lazyLoaded,
+      _open,
+    } = this;
+
+    if (!_lazyLoaded && _open) this.#lazyLoad();
+
+    return html`
+    ${super.render()}
+    ${_lazyLoaded ? this.$renderContent() : nothing}
+    `;
+  }
+
+  protected override renderInput(shouldRenderHelperText: boolean): TemplateResult {
+    /**
+     * NOTE(motss): All these code are copied from original implementation with minor modification.
+     */
+    const {
+      autocapitalize,
+      disabled,
+      focused,
+      helperPersistent,
+      inputMode,
+      isUiValid,
+      label,
+      name,
+      placeholder,
+      required,
+      validationMessage,
+    } = this;
+
+    const autocapitalizeOrUndef = autocapitalize ?
+        autocapitalize as (
+            'characters' | 'none' | 'off' | 'on' | 'sentences' | 'words') :
+        undefined;
+    const showValidationMessage = validationMessage && !isUiValid;
+    const ariaLabelledbyOrUndef = label ? 'label' : undefined;
+    const ariaControlsOrUndef =
+        shouldRenderHelperText ? 'helper-text' : undefined;
+    const ariaDescribedbyOrUndef =
+        focused || helperPersistent || showValidationMessage ?
+        'helper-text' :
+        undefined;
+    const valueText = this.#valueAsDate ? this.#valueFormatter.format(this.#valueAsDate) : '';
+
+    return html`
+      <input
+          ?disabled=${disabled}
+          ?required=${required}
+          .value=${valueText}
+          @blur=${this.onInputBlur}
+          @focus=${this.onInputFocus}
+          aria-controls=${ifDefined(ariaControlsOrUndef)}
+          aria-describedby=${ifDefined(ariaDescribedbyOrUndef)}
+          aria-labelledby=${ifDefined(ariaLabelledbyOrUndef)}
+          autocapitalize=${ifDefined(autocapitalizeOrUndef)}
+          class=mdc-text-field__input
+          inputmode=${ifDefined(inputMode)}
+          name=${ifDefined(name || undefined)}
+          placeholder=${ifDefined(placeholder)}
+          readonly
+          type=text
+      >`;
   }
 
   /**
@@ -328,104 +365,66 @@ export class DatePickerInput extends ElementMixin(DatePickerMixin(DatePickerMinM
    *
    * Therefore, defer testing the lazy loading until there is a way to test it in `wtr`.
    */
-  /* c8 ignore start */
-  #lazyLoad = async (): Promise<void> => {
-    if (this._lazyLoaded || this.#lazyLoading) return;
-
-    const deps = [
-      appDatePickerName,
-      appDatePickerInputSurfaceName,
-    ] as const;
-
-    if (deps.some(n => globalThis.customElements.get(n) == null)) {
-      this.#lazyLoading = true;
-
-      const tasks = deps.map(n => globalThis.customElements.whenDefined(n));
-      const imports = [
-        import('../date-picker/app-date-picker.js'),
-        import('../date-picker-input-surface/app-date-picker-input-surface.js'),
-      ];
-
-      try {
-        await Promise.all(imports);
-        await Promise.all(tasks);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    /**
-     * NOTE(motss): `#lazyLoad()` is called within `render()` so this needs to wait for next update
-     * to re-trigger update when it updates `_lazyLoaded`.
-     */
-    await this.updateComplete;
-
-    this.#lazyLoading = false;
-    this._lazyLoaded = true;
-  };
+  protected override renderTrailingIcon(): TemplateResult {
+    return html`
+    <app-icon-button
+      .disabled=${this._disabled}
+      @click=${this.#onResetClick}
+      aria-label=${this.clearLabel}
+      class="mdc-text-field__icon mdc-text-field__icon--trailing"
+    >
+      ${iconClear}
+    </app-icon-button>
+    `;
+  }
   /* c8 ignore stop */
 
-  #onResetClick = (ev: MouseEvent): void => {
+  public reset(): void {
     if (this._disabled) return;
 
-    /**
-     * NOTE(motss): To prevent triggering the `focus` event of `TextField` element.
-     */
-    ev.preventDefault();
+    this.#valueAsDate = undefined;
+    this.value = '';
+  }
 
-    this.reset();
-  };
+  public showPicker(): void {
+    if (this._disabled) return;
 
-  #onClosed = ({ detail }: CustomEvent): void => {
-    this._open = false;
-    this.fire({ detail, type: 'closed' });
-  };
+    this._open = true;
+  }
 
-  #onDatePickerDateUpdated = async (ev: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> => {
-    const {
-      isKeypress,
-      key,
-      valueAsDate,
-    } = ev.detail;
+  public override async updated(): Promise<void> {
+    if (this._open && this._lazyLoaded) {
+      const picker = await this.$picker;
 
-    /**
-     * NOTE(motss): When it is triggered by mouse click or the following keys,
-     * update `.value` and close the input surface containing the date picker.
-     */
-    if (!isKeypress || (key === keyEnter || key === keySpace)) {
-      this.#updateValues(valueAsDate);
-      isKeypress && (await this.$inputSurface)?.close();
+      picker?.queryAll?.<AppIconButton>(appIconButtonName).forEach(n => n.layout());
     }
-  };
+  }
 
-  #onDatePickerFirstUpdated = ({
-    currentTarget,
-    detail: {
-      focusableElements: [focusableElement],
-      valueAsDate,
-    },
-  }: CustomEvent<CustomEventDetail['first-updated']['detail']>): void => {
-    this.#focusElement = focusableElement;
-    this.#picker = currentTarget as AppDatePicker;
-    this.#updateValues(valueAsDate);
-  };
+  public override willUpdate(changedProperties: ChangedProperties<DatePickerInputProperties>): void {
+    super.willUpdate(changedProperties);
 
-  #onOpened = async ({ detail }: CustomEvent): Promise<void> => {
-    await this.#picker?.updateComplete;
-    await this.updateComplete;
-
-    this.#focusElement?.focus();
-    this.fire({ detail, type: 'opened' });
-  };
-
-  #updateValues = (value: Date | string): void => {
-    if (value) {
-      const valueDate = new Date(value);
-
-      this.#valueAsDate = valueDate;
-      this.value = toDateString(valueDate);
-    } else {
-      this.reset();
+    if (changedProperties.has('locale')) {
+      this.locale = (
+        this.locale || DateTimeFormat().resolvedOptions().locale
+      ) as string;
+      this.#valueFormatter = this.$toValueFormatter();
+      this.#updateValues(this.value);
     }
-  };
+
+    if (changedProperties.has('value')) {
+      this.#updateValues(this.value);
+    }
+
+    if (changedProperties.has('disabled') || changedProperties.has('readOnly')) {
+      this._disabled = this.disabled || this.readOnly;
+    }
+  }
+
+  public get valueAsDate(): Date | null {
+    return this.#valueAsDate || null;
+  }
+
+  public get valueAsNumber(): number {
+    return Number(this.#valueAsDate || NaN);
+  }
 }

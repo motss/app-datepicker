@@ -1,54 +1,43 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { splitString } from '../../helpers/split-string';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(splitString.name, () => {
   const str = 'hello, world, everyone';
   const expected = str.split(/,\s*/);
 
-  type CaseSplitString = [
-    source: string,
-    expected: string[]
-  ];
-  const casesSplitString: CaseSplitString[] = [
-    ['', []],
-    [str, expected],
-  ];
-  casesSplitString.forEach((a) => {
-    it(
-      messageFormatter('splits string (%s)', a),
-      () => {
-        const [testSource, expected] = a;
-        const result = splitString(testSource);
+  it.each<{
+    $_value: string[];
+    source: string;
+  }>([
+    {
+      $_value: [],
+      source: '',
+    },
+    {
+      $_value: expected,
+      source: str,
+    },
+  ])('splits string ($source)', ({
+    $_value,
+    source,
+  }) => {
+    const result = splitString(source);
 
-        expect(result).deep.equal(expected);
-      }
-    );
+    expect(result).toEqual($_value);
   });
 
-  type CaseSplitStringWithOptionalCallbackAndSeparator = [
-    separator?: RegExp
-  ];
-  const casesSplitStringWithOptionalCallback: CaseSplitStringWithOptionalCallbackAndSeparator[] = [
+  it.each<[separator?: RegExp]>([
     [],
     [/,\s/],
-  ];
-  casesSplitStringWithOptionalCallback.forEach((a) => {
-    it(
-      messageFormatter('splits string with optional callback and optional separator (%s)', a),
-      () => {
-        const [testSeparator] = a;
+  ])('splits string with optional callback and optional separator (%s)', (separator) => {
+      const result = splitString<[string]>(
+        str,
+        (n) => [n],
+        separator
+      );
 
-        const result = splitString<[string]>(
-          str,
-          (n) => [n],
-          testSeparator
-        );
-
-        expect(result).deep.equal(expected.map(n => [n]));
-      }
-    );
+      expect(result).toEqual(expected.map(n => [n]));
   });
 
 });

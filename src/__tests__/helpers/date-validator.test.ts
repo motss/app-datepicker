@@ -1,102 +1,98 @@
-import { expect } from '@open-wc/testing';
 import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { describe, expect, it } from 'vitest';
 
 import { dateValidator } from '../../helpers/date-validator';
 import type { DateValidatorResult, MaybeDate } from '../../helpers/typings';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(dateValidator.name, () => {
   const date1 = new Date(1);
   const date1Utc = toUTCDate(date1.getUTCFullYear(), date1.getUTCMonth(), date1.getUTCDate());
 
-  type CaseValidateDate = [
-    value: MaybeDate,
-    defaultDate: Date,
-    expected: DateValidatorResult
-  ];
-  const casesValidateDate: CaseValidateDate[] = [
-    [
-      null,
-      new Date('2020-02-02'),
-      {
+  it.each<{
+    $_value: DateValidatorResult;
+    defaultDate: Date;
+    value: MaybeDate;
+  }>([
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: false,
       },
-    ],
-    [
-      '2020-02-02',
-      new Date('2020-02-02'),
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: null,
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: true,
       },
-    ],
-    [
-      '0',
-      new Date('2020-02-02'),
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: '2020-02-02',
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: false,
       },
-    ],
-    [
-      '1',
-      date1Utc,
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: '0',
+    },
+    {
+      $_value: {
         date: date1Utc,
         isValid: true,
       },
-    ],
-    [
-      0,
-      new Date('2020-02-02'),
-      {
+      defaultDate: date1Utc,
+      value: '1',
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: false,
       },
-    ],
-    [
-      1,
-      date1Utc,
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: 0,
+    },
+    {
+      $_value: {
         date: date1Utc,
         isValid: true,
       },
-    ],
-    [
-      +new Date('2020-02-02'),
-      new Date('2020-02-02'),
-      {
+      defaultDate: date1Utc,
+      value: 1,
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: true,
       },
-    ],
-    [
-      new Date('2020-02-02'),
-      new Date('2020-02-02'),
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: new Date('2020-02-02').getTime(),
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: true,
       },
-    ],
-    [
-      new Date('2020-02-02').toJSON(),
-      new Date('2020-02-02'),
-      {
+      defaultDate: new Date('2020-02-02'),
+      value: new Date('2020-02-02'),
+    },
+    {
+      $_value: {
         date: new Date('2020-02-02'),
         isValid: true,
       },
-    ],
-  ];
-  casesValidateDate.forEach((a) => {
-    const [testValue, testDefaultDate, expected] = a;
-    it(
-      messageFormatter('validates date (value=%s, defaultDate=%s)', a),
-      () => {
-        const result = dateValidator(testValue, testDefaultDate);
-
-        expect(result).deep.equal(expected);
-      });
+      defaultDate: new Date('2020-02-02'),
+      value: new Date('2020-02-02').toJSON(),
+    },
+  ])('validates date (value=$value, defaultDate=$defaultDate)', ({
+    $_value,
+    defaultDate,
+    value,
+  }) => {
+    const result = dateValidator(value, defaultDate);
+  
+    expect(result).toEqual($_value);
   });
 
 });

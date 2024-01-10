@@ -1,30 +1,35 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { nullishAttributeConverter } from '../../helpers/nullish-attribute-converter';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(nullishAttributeConverter.name, () => {
-  type CaseNullishAttributeConverter = [
-    value: unknown,
-    expected: string | undefined
-  ];
-  const casesNullishAttributeConverter: CaseNullishAttributeConverter[] = [
-    [null, undefined],
-    [undefined, undefined],
-    ['', undefined],
-    ['test', 'test'],
-  ];
-  casesNullishAttributeConverter.forEach((a) => {
-    it(
-      messageFormatter('returns normalized attribute value (value=%s)', a),
-      () => {
-        const [testValue, expected] = a;
+  it.each<{
+    $_value: string | undefined;
+    value: unknown;
+  }>([
+    {
+      $_value: undefined,
+      value: null,
+    },
+    {
+      $_value: undefined,
+      value: undefined,
+    },
+    {
+      $_value: undefined,
+      value: '',
+    },
+    {
+      $_value: 'test',
+      value: 'test',
+    },
+  ])('returns normalized attribute value (value=$value)', ({
+    $_value,
+    value,
+  }) => {
+    const result = nullishAttributeConverter(value);
 
-        const result = nullishAttributeConverter(testValue);
-
-        expect(result).equal(expected);
-      }
-    );
+    expect(result).toBe($_value);
   });
 
 });

@@ -1,8 +1,7 @@
-import { expect } from '@open-wc/testing';
+import { describe, expect, it } from 'vitest';
 
 import { toNextSelectedYear } from '../../year-grid/to-next-selected-year';
 import type { ToNextSelectableYearInit } from '../../year-grid/typings';
-import { messageFormatter } from '../test-utils/message-formatter';
 
 describe(toNextSelectedYear.name, () => {
   const defaultInit: ToNextSelectableYearInit = {
@@ -18,85 +17,79 @@ describe(toNextSelectedYear.name, () => {
     year: 2022,
   };
 
-  type CaseNextSelectedYear = [
-    partialInit: Partial<ToNextSelectableYearInit>,
-    expected: number
-  ];
-  const casesNextSelectedYear: CaseNextSelectedYear[] = [
+  it.each<{
+    $_value: number;
+    partialInit: Partial<ToNextSelectableYearInit>;
+  }>([
     // cap at min or max
-    [
-      {},
-      defaultInit.min.getUTCFullYear(),
-    ],
-    [
-      { key: 'ArrowDown' },
-      defaultInit.max.getUTCFullYear(),
-    ],
-    [
-      { key: 'ArrowLeft' },
-      defaultInit.min.getUTCFullYear(),
-    ],
-    [
-      { key: 'ArrowRight' },
-      defaultInit.max.getUTCFullYear(),
-    ],
-    [
-      { key: 'End' },
-      defaultInit.max.getUTCFullYear(),
-    ],
-    [
-      { key: 'Home' },
-      defaultInit.min.getUTCFullYear(),
-    ],
-    [
-      { key: ' ' },
-      defaultInit.year,
-    ],
+  {
+    $_value: defaultInit.min.getUTCFullYear(),
+    partialInit: {},
+  },
+  {
+    $_value: defaultInit.max.getUTCFullYear(),
+    partialInit: { key: 'ArrowDown' },
+  },
+  {
+    $_value: defaultInit.min.getUTCFullYear(),
+    partialInit: { key: 'ArrowLeft' },
+  },
+  {
+    $_value: defaultInit.max.getUTCFullYear(),
+    partialInit: { key: 'ArrowRight' },
+  },
+  {
+    $_value: defaultInit.max.getUTCFullYear(),
+    partialInit: { key: 'End' },
+  },
+  {
+    $_value: defaultInit.min.getUTCFullYear(),
+    partialInit: { key: 'Home' },
+  },
+  {
+    $_value: defaultInit.year,
+    partialInit: { key: ' ' },
+  },
 
-    // within min and max
-    [
-      { ...defaultInitWithGrid },
-      defaultInitWithGrid.year - 4,
-    ],
-    [
-      { ...defaultInitWithGrid, key: 'ArrowDown' },
-      defaultInitWithGrid.year + 4,
-    ],
-    [
-      { ...defaultInitWithGrid, key: 'ArrowLeft' },
-      defaultInitWithGrid.year - 1,
-    ],
-    [
-      { ...defaultInitWithGrid, key: 'ArrowRight' },
-      defaultInitWithGrid.year + 1,
-    ],
-    [
-      { ...defaultInitWithGrid, key: 'End' },
-      defaultInitWithGrid.max.getUTCFullYear(),
-    ],
-    [
-      { ...defaultInitWithGrid, key: 'Home' },
-      defaultInitWithGrid.min.getUTCFullYear(),
-    ],
-    [
-      { ...defaultInitWithGrid, key: ' ' },
-      defaultInitWithGrid.year,
-    ],
-  ];
-  casesNextSelectedYear.forEach(a => {
-    const [testPartialInit, expected] = a;
+  // within min and max
+  {
+    $_value: defaultInitWithGrid.year - 4,
+    partialInit: { ...defaultInitWithGrid },
+  },
+  {
+    $_value: defaultInitWithGrid.year + 4,
+    partialInit: { ...defaultInitWithGrid, key: 'ArrowDown' },
+  },
+  {
+    $_value: defaultInitWithGrid.year - 1,
+    partialInit: { ...defaultInitWithGrid, key: 'ArrowLeft' },
+  },
+  {
+    $_value: defaultInitWithGrid.year + 1,
+    partialInit: { ...defaultInitWithGrid, key: 'ArrowRight' },
+  },
+  {
+    $_value: defaultInitWithGrid.max.getUTCFullYear(),
+    partialInit: { ...defaultInitWithGrid, key: 'End' },
+  },
+  {
+    $_value: defaultInitWithGrid.min.getUTCFullYear(),
+    partialInit: { ...defaultInitWithGrid, key: 'Home' },
+  },
+  {
+    $_value: defaultInitWithGrid.year,
+    partialInit: { ...defaultInitWithGrid, key: ' ' },
+  },
+  ])('returns next selected year (init=$partialInit)', ({
+    $_value,
+    partialInit,
+  }) => {
+    const result = toNextSelectedYear({
+      ...defaultInit,
+      ...partialInit,
+    });
 
-    it(
-      messageFormatter('returns next selected year (init=%j)', a),
-      () => {
-        const result = toNextSelectedYear({
-          ...defaultInit,
-          ...testPartialInit,
-        });
-
-        expect(result).equal(expected);
-      }
-    );
+    expect(result).toBe($_value);
   });
 
 });

@@ -5,25 +5,25 @@ export interface FirstTouch {
 
 export type PointerHandler = (ev: PointerType) => void;
 
-export type PointerType = MouseEvent | TouchEvent | PointerEvent | TouchInit;
+export type PointerType = MouseEvent | PointerEvent | TouchEvent | TouchInit;
 
 export interface ResolvedPointer {
+  id: PointerEvent['pageY']  ;
   x: PointerEvent['pageX'];
   y: PointerEvent['pageY'];
-  id: PointerEvent['pageY'] | Touch['identifier'];
 }
 
 export type SupportedEventKey =
   | 'mousedown'
+  | 'mouseleave'
   | 'mousemove'
   | 'mouseup'
-  | 'mouseleave'
-  | 'touchstart'
+  | 'touchend'
   | 'touchmove'
-  | 'touchend';
+  | 'touchstart';
 
 export interface TrackerHandlers {
   down(startPointer: ResolvedPointer, ev: PointerType): void;
-  move(startPointer: ResolvedPointer, oldPointer: null | ResolvedPointer, ev: PointerType): void;
-  up(startPointer: ResolvedPointer, oldPointer: null | ResolvedPointer, ev: PointerType): void;
+  move(startPointer: ResolvedPointer, oldPointer: ResolvedPointer | null, ev: PointerType): void;
+  up(startPointer: ResolvedPointer, oldPointer: ResolvedPointer | null, ev: PointerType): void;
 }

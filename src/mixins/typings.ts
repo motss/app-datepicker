@@ -24,7 +24,7 @@ export interface DatePickerMixinProperties {
   startView: StartView;
   todayLabel: string;
   toyearLabel: string;
-  value?: string | null;
+  value?: null | string;
   weekLabel: string;
   weekNumberTemplate: string;
   weekNumberType: WeekNumberType;
