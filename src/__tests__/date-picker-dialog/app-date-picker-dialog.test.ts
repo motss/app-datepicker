@@ -1,7 +1,7 @@
 import '../../date-picker/app-date-picker';
 import '../../date-picker-dialog/app-date-picker-dialog';
 
-import type { Button } from '@material/mwc-button';
+import type { MdOutlinedButton } from '@material/web/button/outlined-button.js';
 import { fixture, html } from '@open-wc/testing-helpers';
 import { describe, expect, it } from 'vitest';
 
@@ -265,11 +265,11 @@ describe(appDatePickerDialogName, () => {
     monthCalendar =
       datePicker?.query<AppMonthCalendar>(elementSelectors.monthCalendar);
     const dialogActionReset =
-      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionReset);
+      datePickerDialogBase?.querySelector<MdOutlinedButton>(elementSelectors.dialogActionReset);
     const dialogActionCancel =
-      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionCancel);
+      datePickerDialogBase?.querySelector<MdOutlinedButton>(elementSelectors.dialogActionCancel);
     const dialogActionSet =
-      datePickerDialogBase?.querySelector<Button>(elementSelectors.dialogActionSet);
+      datePickerDialogBase?.querySelector<MdOutlinedButton>(elementSelectors.dialogActionSet);
 
     expect(opened).not.undefined;
     expect(monthCalendar).toBeInTheDocument();

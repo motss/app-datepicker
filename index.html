@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,45 +8,61 @@
 
   <link rel=preconnect href="https://fonts.googleapis.com">
   <link rel=preconnect href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel=preload as=style>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel=stylesheet media=print onload="this.media='all'">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+    rel=preload as=style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+    rel=stylesheet media=print onload="this.media='all'">
 
   <script type=module crossorigin=anonymous>
-    import './dist/__demo__/demo-app.js';
+    import './src/__demo__/demo-app.ts';
   </script>
 </head>
+
 <body>
   <style>
     :root {
       /** MDC CSS Variables */
-      --primary: #6750A4;
-      --on-primary: #FFFFFF;
-      --primary-container: #EADDFF;
-      --on-primary-container: #21005D;
-      --secondary: #625B71;
-      --on-secondary: #FFFFFF;
-      --secondary-container: #E8DEF8;
-      --on-secondary-container: #1D192B;
-      --tertiary: #7D5260;
-      --on-tertiary: #FFFFFF;
-      --tertiary-container: #FFD8E4;
-      --on-tertiary-container: #31111D;
-      --error: #B3261E;
-      --error-container: #F9DEDC;
-      --on-error: #FFFFFF;
-      --on-error-container: #410E0B;
-      --background: #FFFBFE;
-      --on-background: #1C1B1F;
-      --surface: #FFFBFE;
-      --on-surface: #1C1B1F;
-      --surface-variant: #E7E0EC;
-      --on-surface-variant: #49454F;
-      --outline: #79747E;
-      --inverse-on-surface: #F4EFF4;
-      --inverse-surface: #313033;
-      --inverse-primary: #D0BCFF;
-      --shadow: #000000;
+      --md-sys-color-background: #fdf8fd;
+      --md-sys-color-on-background: #1c1b1f;
+      --md-sys-color-surface: #fdf8fd;
+      --md-sys-color-surface-dim: #ded8de;
+      --md-sys-color-surface-bright: #fdf8fd;
+      --md-sys-color-surface-container-lowest: #ffffff;
+      --md-sys-color-surface-container-low: #f8f2f8;
+      --md-sys-color-surface-container: #f2ecf2;
+      --md-sys-color-surface-container-high: #ece6ec;
+      --md-sys-color-surface-container-highest: #e6e1e7;
+      --md-sys-color-on-surface: #1c1b1f;
+      --md-sys-color-surface-variant: #e7e0ec;
+      --md-sys-color-on-surface-variant: #49454f;
+      --md-sys-color-inverse-surface: #323034;
+      --md-sys-color-inverse-on-surface: #f5eff5;
+      --md-sys-color-outline: #7a7580;
+      --md-sys-color-outline-variant: #cac4d0;
+      --md-sys-color-shadow: #000000;
+      --md-sys-color-scrim: #000000;
+      --md-sys-color-surface-tint: #665590;
+      --md-sys-color-primary: #665590;
+      --md-sys-color-on-primary: #ffffff;
+      --md-sys-color-primary-container: #d7c5ff;
+      --md-sys-color-on-primary-container: #41316a;
+      --md-sys-color-inverse-primary: #d0bcff;
+      --md-sys-color-secondary: #625a74;
+      --md-sys-color-on-secondary: #ffffff;
+      --md-sys-color-secondary-container: #eadffd;
+      --md-sys-color-on-secondary-container: #4c455d;
+      --md-sys-color-tertiary: #874a6d;
+      --md-sys-color-on-tertiary: #ffffff;
+      --md-sys-color-tertiary-container: #ffb9dd;
+      --md-sys-color-on-tertiary-container: #5e2748;
+      --md-sys-color-error: #ba1a1a;
+      --md-sys-color-on-error: #ffffff;
+      --md-sys-color-error-container: #ffdad6;
+      --md-sys-color-on-error-container: #410002;
     }
+
     @media (prefers-color-scheme: dark) {
       :root {
         /* --date-picker-dialog-scrim: rgba(0, 0, 0, .75); */
@@ -58,75 +75,85 @@
         --date-picker-input-label-ink: var(--a); */
 
         /** MDC CSS Variables */
-        --primary: #D0BCFF;
-        --on-primary: #381E72;
-        --primary-container: #4F378B;
-        --on-primary-container: #EADDFF;
-        --secondary: #CCC2DC;
-        --on-secondary: #332D41;
-        --secondary-container: #4A4458;
-        --on-secondary-container: #E8DEF8;
-        --tertiary: #EFB8C8;
-        --on-tertiary: #492532;
-        --tertiary-container: #633B48;
-        --on-tertiary-container: #FFD8E4;
-        --error: #F2B8B5;
-        --error-container: #8C1D18;
-        --on-error: #601410;
-        --on-error-container: #F9DEDC;
-        --background: #1C1B1F;
-        --on-background: #E6E1E5;
-        --surface: #1C1B1F;
-        --on-surface: #E6E1E5;
-        --surface-variant: #49454F;
-        --on-surface-variant: #CAC4D0;
-        --outline: #938F99;
-        --inverse-on-surface: #1C1B1F;
-        --inverse-surface: #E6E1E5;
-        --inverse-primary: #6750A4;
-        --shadow: #000000;
+        --md-sys-color-background: #141317;
+        --md-sys-color-on-background: #e6e1e7;
+        --md-sys-color-surface: #141317;
+        --md-sys-color-surface-dim: #141317;
+        --md-sys-color-surface-bright: #3b383d;
+        --md-sys-color-surface-container-lowest: #0f0e11;
+        --md-sys-color-surface-container-low: #1c1b1f;
+        --md-sys-color-surface-container: #211f23;
+        --md-sys-color-surface-container-high: #2b292d;
+        --md-sys-color-surface-container-highest: #363438;
+        --md-sys-color-on-surface: #e6e1e7;
+        --md-sys-color-surface-variant: #49454f;
+        --md-sys-color-on-surface-variant: #cac4d0;
+        --md-sys-color-inverse-surface: #e6e1e7;
+        --md-sys-color-inverse-on-surface: #323034;
+        --md-sys-color-outline: #948f9a;
+        --md-sys-color-outline-variant: #49454f;
+        --md-sys-color-shadow: #000000;
+        --md-sys-color-scrim: #000000;
+        --md-sys-color-surface-tint: #d0bcff;
+        --md-sys-color-primary: #f1e7ff;
+        --md-sys-color-on-primary: #37265e;
+        --md-sys-color-primary-container: #cbb7fa;
+        --md-sys-color-on-primary-container: #392860;
+        --md-sys-color-inverse-primary: #665590;
+        --md-sys-color-secondary: #ccc2df;
+        --md-sys-color-on-secondary: #332d44;
+        --md-sys-color-secondary-container: #433c53;
+        --md-sys-color-on-secondary-container: #dacfed;
+        --md-sys-color-tertiary: #ffe6f0;
+        --md-sys-color-on-tertiary: #521d3e;
+        --md-sys-color-tertiary-container: #f7acd4;
+        --md-sys-color-on-tertiary-container: #552041;
+        --md-sys-color-error: #ffb4ab;
+        --md-sys-color-on-error: #690005;
+        --md-sys-color-error-container: #93000a;
+        --md-sys-color-on-error-container: #ffdad6;
 
         /** Custom app CSS Variables */
         --disabled: rgba(255, 255, 255, .38);
-        --mwc-primary: #6200ee;
+        /* --mwc-primary: #6200ee; */
         --white: #fff;
         --white55: rgba(255, 255, 255, .55);
 
         /** Override MDC CSS Variables */
-        --mdc-ripple-color: var(--primary);
+        /* --mdc-ripple-color: var(--md-sys-color-primary);
         --mdc-text-field-disabled-fill-color: var(--disabled);
         --mdc-text-field-disabled-ink-color: var(--disabled);
         --mdc-text-field-disabled-line-color: var(--disabled);
         --mdc-text-field-disabled-line-color: var(--disabled);
-        --mdc-text-field-fill-color: var(--surface);
+        --mdc-text-field-fill-color: var(--md-sys-color-surface);
         --mdc-text-field-hover-line-color: var(--disabled);
         --mdc-text-field-idle-line-color: var(--disabled);
         --mdc-text-field-ink-color: var(--white);
         --mdc-text-field-label-ink-color: var(--white55);
         --mdc-text-field-outlined-disabled-border-color: var(--disabled);
-        --mdc-text-field-outlined-hover-border-color: var(--secondary);
+        --mdc-text-field-outlined-hover-border-color: var(--md-sys-color-secondary);
         --mdc-text-field-outlined-idle-border-color: var(--white55);
-        --mdc-theme-on-surface: var(--on-surface);
-        --mdc-theme-primary: var(--primary);
-        --mdc-theme-surface: var(--surface);
+        --mdc-theme-on-surface: var(--md-sys-color-on-surface);
+        --mdc-theme-primary: var(--md-sys-color-primary);
+        --mdc-theme-surface: var(--md-sys-color-surface); */
 
         /** Override app CSS Variables */
-        --app-focus: var(--inverse-primary);
-        --app-hover : var(--primary);
+        --app-focus: var(--md-sys-color-inverse-primary);
+        --app-hover: var(--md-sys-color-primary);
         --app-on-disabled: var(--white55);
-        --app-on-focus: var(--primary);
-        --app-on-hover  : var(--primary);
-        --app-on-primary: var(--on-primary);
-        --app-on-surface: var(--on-surface);
+        --app-on-focus: var(--md-sys-color-primary);
+        --app-on-hover: var(--md-sys-color-primary);
+        --app-on-primary: var(--md-sys-color-on-primary);
+        --app-on-surface: var(--md-sys-color-on-surface);
         --app-on-today: var(--white);
         --app-on-week-number: var(--white55);
         --app-on-weekday: var(--white55);
-        --app-primary: var(--primary);
-        --app-selected-focus: var(--inverse-primary);
-        --app-selected-hover: var(--primary);
-        --app-selected-on-focus: var(--on-primary);
-        --app-selected-on-hover: var(--on-primary);
-        --app-surface: var(--surface);
+        --app-primary: var(--md-sys-color-primary);
+        --app-selected-focus: var(--md-sys-color-inverse-primary);
+        --app-selected-hover: var(--md-sys-color-primary);
+        --app-selected-on-focus: var(--md-sys-color-on-primary);
+        --app-selected-on-hover: var(--md-sys-color-on-primary);
+        --app-surface: var(--md-sys-color-surface);
         --app-today: var(--white);
         --date-picker-input-icon: var(--white);
         --date-picker-input-disabled-icon: var(--disabled);
@@ -138,7 +165,9 @@
       font-family: 'Open Sans', sans-serif;
       min-height: 100vh;
     }
+
     @supports (scrollbar-width: thin) {
+
       html,
       body {
         scrollbar-width: thin;
@@ -146,8 +175,8 @@
     }
 
     body {
-      background-color: var(--background);
-      color: var(--on-background);
+      background-color: var(--md-sys-color-background);
+      color: var(--md-sys-color-on-background);
     }
 
     /**
@@ -157,24 +186,30 @@
       width: 8px;
       background: none;
     }
+
     ::-webkit-scrollbar-thumb {
       width: inherit;
       background-color: #cdcdcd;
       border-radius: 4px;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background-color: rgba(0, 0, 0, .35);
     }
+
     ::-webkit-scrollbar-thumb:active {
       background-color: rgba(0, 0, 0, .55);
     }
+
     @media (prefers-color-scheme: dark) {
       ::-webkit-scrollbar-thumb {
         background-color: #686868;
       }
+
       ::-webkit-scrollbar-thumb:hover {
         background-color: #494949;
       }
+
       ::-webkit-scrollbar-thumb:active {
         background-color: #5a5a5a;
       }
@@ -183,4 +218,5 @@
 
   <demo-app></demo-app>
 </body>
+
 </html>

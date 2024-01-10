@@ -41,7 +41,7 @@ export class MonthCalendar extends RootElement implements MonthCalendarPropertie
 
     if (type === 'keydown') {
       /**
-       * NOTE: `@material/mwc-dialog` captures Enter keyboard event then closes the dialog.
+       * NOTE: `@material/base/dialog captures Enter keyboard event then closes the dialog.
        * This is not what `month-calendar` expects so here stops all event propagation immediately for
        * all key events.
        */

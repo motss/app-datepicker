@@ -16,7 +16,7 @@ export interface MultiCalendars extends Omit<Calendar, 'calendar'> {
   weekdays: CalendarWeekday[];
 }
 
-export interface SlotDatePickerInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties> {
+export interface SlotDatePickerInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties>, Partial<Pick<HTMLElement, 'slot'>> {
   onDatePickerDateUpdated(event: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> | void;
   onDatePickerFirstUpdated(event: CustomEvent<CustomEventDetail['first-updated']['detail']>): Promise<void> | void;
 }

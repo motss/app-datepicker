@@ -1,7 +1,7 @@
 import { MenuSurface } from '@material/mwc-menu/mwc-menu-surface.js';
 
 import { appDatePickerName } from '../date-picker/constants.js';
-import { appDatePickerInputName } from '../date-picker-input/constants.js';
+import { appDatePickerInputName } from '../date-picker-input-2/constants.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import type { InferredFromSet } from '../typings.js';

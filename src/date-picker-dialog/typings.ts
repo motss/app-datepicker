@@ -1,4 +1,4 @@
-import type { Dialog } from '@material/mwc-dialog';
+import type { MdDialog } from '@material/web/dialog/dialog.js';
 
 import type { ChangedProperties, DatePickerProperties } from '../typings';
 
@@ -20,4 +20,4 @@ export interface DialogClosingEventDetail {
 
 export type DialogClosingEventDetailAction = 'cancel' | 'reset' | 'set';
 
-type DialogProperties = Pick<Dialog, 'open'>;
+type DialogProperties = Pick<MdDialog, 'open'>;

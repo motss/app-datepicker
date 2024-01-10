@@ -1,7 +1,7 @@
-import '@material/mwc-button';
-import '@material/mwc-dialog';
+import '@material/web/button/outlined-button.js';
 import '../date-picker/app-date-picker.js';
 import './app-date-picker-dialog-base.js';
+import '@material/web/dialog/dialog.js';
 
 import { html, nothing, type TemplateResult  } from 'lit';
 import { property, queryAsync, state } from 'lit/decorators.js';
@@ -27,14 +27,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
 
   #isResetAction = false;
 
-  #onClosed = async (ev: CustomEvent<DialogClosedEventDetail>): Promise<void> => {
-    const datePicker = await this._datePicker;
-
-    this.hide();
-    datePicker && (datePicker.startView = 'calendar');
-    this.fire({ detail: ev.detail, type: 'closed' });
-  };
-  #onClosing = ({
+  #onClose = ({
     detail,
   }: CustomEvent<DialogClosingEventDetail>): void => {
     if (detail.action === 'set') {
@@ -45,13 +38,20 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       this.value = toDateString(selectedDate);
     }
 
-    this.fire({ detail, type: 'closing' });
+    this.fire({ detail, type: 'close' });
+  };
+  #onClosed = async (ev: CustomEvent<DialogClosedEventDetail>): Promise<void> => {
+    const datePicker = await this._datePicker;
+
+    this.hide();
+    datePicker && (datePicker.startView = 'calendar');
+    this.fire({ detail: ev.detail, type: 'closed' });
+  };
+  #onOpen = ({ detail }: CustomEvent): void => {
+    this.fire({ detail, type: 'open' });
   };
   #onOpened = ({ detail }: CustomEvent): void => {
     this.fire({ detail, type: 'opened' });
-  };
-  #onOpening = ({ detail }: CustomEvent): void => {
-    this.fire({ detail, type: 'opening' });
   };
   #onResetClick = () => {
     this.#isResetAction = true;
@@ -145,6 +145,7 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
       selectedYearLabel,
       shortWeekLabel,
       showWeekNumber,
+      slot: 'content',
       startView,
       todayLabel,
       toyearLabel,
@@ -169,34 +170,37 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     } = this;
 
     return html`
-    <app-date-picker-dialog-base
+    <md-dialog
       ?open=${open}
       @closed=${this.#onClosed}
-      @closing=${this.#onClosing}
+      @close=${this.#onClose}
       @date-updated=${this.$onDatePickerDateUpdated}
       @first-updated=${this.$onDatePickerFirstUpdated}
       @opened=${this.#onOpened}
-      @opening=${this.#onOpening}
+      @open=${this.#onOpen}
     >
-      ${_rendered ? html`
       ${this.open ? this.$renderSlot() : nothing}
 
-      <div class=secondary-actions slot=secondaryAction>
-        <mwc-button
+      <div slot=actions>
+        <md-outlined-button
           @click=${this.#onResetClick}
           data-dialog-action=reset
-        >${resetLabel}</mwc-button>
-        <mwc-button
+        >
+          <span class=label>${resetLabel}</span>
+        </md-outlined-button>
+        <md-outlined-button
           dialogAction=cancel
-        >${dismissLabel}</mwc-button>
-      </div>
+        >
+          <span class=label>${dismissLabel}</span>
+        </md-outlined-button>
 
-      <mwc-button
-        dialogAction=set
-        slot=primaryAction
-      >${confirmLabel}</mwc-button>
-      ` : nothing}
-    </app-date-picker-dialog-base>
+        <md-outlined-button
+          dialogAction=set
+        >
+          <span class=label>${confirmLabel}</span>
+        </md-outlined-button>
+      </div>
+    </md-dialog>
     `;
   }
 
@@ -213,13 +217,13 @@ export class DatePickerDialog extends DatePickerMixin(DatePickerMinMaxMixin(Root
     }
   }
 
-  protected override willUpdate(changedProperties: DatePickerDialogChangedProperties): void {
-      super.willUpdate(changedProperties);
+  // protected override willUpdate(changedProperties: DatePickerDialogChangedProperties): void {
+  //     super.willUpdate(changedProperties);
 
-      if (!this._rendered && this.open) {
-        this._rendered = true;
-      }
-  }
+  //     if (!this._rendered && this.open) {
+  //       this._rendered = true;
+  //     }
+  // }
 
   public get valueAsDate(): Date {
     return this.#valueAsDate;

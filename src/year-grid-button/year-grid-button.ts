@@ -1,12 +1,11 @@
-import { ButtonBase } from '@material/mwc-button/mwc-button-base.js';
-import { styles } from '@material/mwc-button/styles.css.js';
+import { MdOutlinedButton } from '@material/web/button/outlined-button.js';
 
 import { ElementMixin } from '../mixins/element-mixin.js';
 import { yearGridButtonStyling } from './stylings.js';
 
-export class YearGridButton extends ElementMixin(ButtonBase) {
+export class YearGridButton extends ElementMixin(MdOutlinedButton) {
   static override styles = [
-    styles,
+    ...MdOutlinedButton.styles,
     yearGridButtonStyling,
   ];
 }

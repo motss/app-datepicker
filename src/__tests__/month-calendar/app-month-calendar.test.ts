@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest';
 import { type confirmKeySet, labelSelectedDate, labelShortWeek, labelToday, labelWeek, type navigationKeySetGrid, weekNumberTemplate } from '../../constants';
 import { toDateString } from '../../helpers/to-date-string';
 import { toFormatters } from '../../helpers/to-formatters';
+import { keyTab } from '../../key-values';
 import type { AppMonthCalendar } from '../../month-calendar/app-month-calendar';
 import { appMonthCalendarName } from '../../month-calendar/constants';
 import type { MonthCalendarData } from '../../month-calendar/typings';
@@ -336,8 +337,8 @@ describe(appMonthCalendarName, () => {
     // await sendKeys({ down: 'Tab' } as SendKeysPayload);
     // await sendKeys({ up: 'Tab' } as SendKeysPayload);
     // fixme: use native browser keypress when vitest supports it
-    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab' }));
-    document.body.dispatchEvent(new KeyboardEvent('keyup', { key: 'Tab' }));
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: keyTab }));
+    document.body.dispatchEvent(new KeyboardEvent('keyup', { key: keyTab }));
 
     activeElement = queryDeepActiveElement();
 

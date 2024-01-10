@@ -1,8 +1,10 @@
 import '../date-picker/app-date-picker.js';
-import '../date-picker-input/app-date-picker-input.js';
+// import '../date-picker-input-2/app-date-picker-input.js';
+import '../date-picker-input/date-picker-input.js';
+import '../date-picker-dialog/app-date-picker-dialog.js';
+import '../date-picker-input-surface/app-date-picker-input-surface.js';
+import '@material/web/dialog/dialog.js';
 
-// import '../date-picker-dialog/app-date-picker-dialog.js';
-// import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
 
@@ -10,8 +12,8 @@ import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
 import type { AppDatePickerDialogBase } from '../date-picker-dialog/app-date-picker-dialog-base.js';
 import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../date-picker-dialog/constants.js';
-import type { AppDatePickerInput } from '../date-picker-input/app-date-picker-input.js';
-import { appDatePickerInputName } from '../date-picker-input/constants.js';
+import type { AppDatePickerInput } from '../date-picker-input-2/app-date-picker-input.js';
+import { appDatePickerInputName } from '../date-picker-input-2/constants.js';
 import { RootElement } from '../root-element/root-element.js';
 import type { CustomEventDetail } from '../typings.js';
 
@@ -70,6 +72,7 @@ export class DemoApp extends RootElement {
 
     dialog?.show();
 
+    console.debug(dialog);
     console.debug(`Dialog #${dataset.id}`, {
       value: dialog?.value,
       valueAsDate: dialog?.valueAsDate,
@@ -86,18 +89,22 @@ export class DemoApp extends RootElement {
   @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
 
   protected override firstUpdated(_changedProperties: Map<number | string | symbol, unknown>): void {
-      Object.defineProperty(globalThis, '__demoApp', {
-        value: {
-          datePicker1: this.query('#datePicker1'),
-          datePicker2: this.query('#datePicker2'),
-          datePickerDialog1: this.query('#datePickerDialog1'),
-          datePickerInput1: this.query('#datePickerInput1'),
-        },
-      });
+    Object.defineProperty(globalThis, '__demoApp', {
+      value: {
+        datePicker1: this.query('#datePicker1'),
+        datePicker2: this.query('#datePicker2'),
+        datePickerDialog1: this.query('#datePickerDialog1'),
+        datePickerInput1: this.query('#datePickerInput1'),
+      },
+    });
   }
 
   protected override render() {
     return html`
+    <date-picker-input>
+      <p>loading...</p>
+    </date-picker-input>
+
     <app-date-picker
       id="datePicker1"
       min="1970-01-01"
@@ -185,16 +192,26 @@ export class DemoApp extends RootElement {
 
     <input type=date />
 
-    <button data-id="datePickerDialog" @click=${this.#showDialog}>Open</button>
+    <button data-id="datePickerDialog1" @click=${this.#showDialog}>Open</button>
     <app-date-picker-dialog id="datePickerDialog1"></app-date-picker-dialog>
 
     <button data-id="datePickerDialog2" @click=${this.#showDialog}>Open with optional properties</button>
-    <app-date-picker-dialog
+    <!-- <app-date-picker-dialog
       .max=${'2022-12-31'}
       .min=${'2020-01-01'}
       .value=${'2020-02-02'}
       id="datePickerDialog2"
-    ></app-date-picker-dialog>
+    ></app-date-picker-dialog> -->
+    <md-dialog id="datePickerDialog2" style="width:256px;margin:auto;">
+      <!-- todo: add WebAnim to animate slotted content -->
+      <form method=dialog slot=content id="formId2">
+        <app-date-picker style="padding:0;background-color:rgba(0,0,0,0);border: none;"></app-date-picker>
+      </form>
+      <div slot=actions>
+        <button form=formId2 value=cancel>cancel</button>
+        <button form=formId2 value=set>set</button>
+      </div>
+    </md-dialog>
     `;
   }
 }

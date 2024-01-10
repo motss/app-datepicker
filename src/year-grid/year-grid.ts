@@ -25,7 +25,7 @@ export class YearGrid extends RootElement implements YearGridProperties {
   #updateYear = (event: KeyboardEvent): void => {
     if (event.type === 'keydown') {
       /**
-       * NOTE: `@material/mwc-dialog` captures Enter keyboard event then closes the dialog.
+       * NOTE: `@material/base/dialog` captures Enter keyboard event then closes the dialog.
        * This is not what `year-grid` expects so here stops all event propagation immediately for
        * all key events.
        */

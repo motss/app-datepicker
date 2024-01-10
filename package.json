@@ -154,7 +154,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "sh $(npm root)/@reallyland/tools/cleanup.sh",
-    "dev": "npm run serve & npm run watch",
+    "dev": "vite",
     "lint": "sh $(npm root)/@reallyland/tools/lint-build.sh -c ./.eslintrc.json",
     "lint-commit": "sh $(npm root)/@reallyland/tools/lint-commit.sh",
     "lint:build": "sh $(npm root)/@reallyland/tools/lint-build.sh -c ./.build.eslintrc.json",
@@ -173,12 +173,9 @@
   },
   "dependencies": {
     "@material/mwc-base": "^0.27.0",
-    "@material/mwc-button": "^0.27.0",
-    "@material/mwc-dialog": "^0.27.0",
-    "@material/mwc-icon-button": "^0.27.0",
     "@material/mwc-menu": "^0.27.0",
     "@material/mwc-textfield": "^0.27.0",
-    "@reallyland/tools": "^0.9.7",
+    "@material/web": "^1.1.1",
     "lit": "^3.1.0",
     "nodemod": "^3.0.6",
     "tslib": "^2.6.2"
@@ -186,6 +183,7 @@
   "devDependencies": {
     "@lit-labs/testing": "^0.2.3",
     "@open-wc/testing-helpers": "^3.0.0",
+    "@reallyland/tools": "^0.9.7",
     "@testing-library/jest-dom": "^6.2.0",
     "@vitest/browser": "^1.1.3",
     "@vitest/coverage-istanbul": "^1.1.3",
@@ -194,6 +192,7 @@
     "happy-dom": "^12.10.3",
     "playwright": "^1.40.1",
     "typescript": "^5.3.3",
+    "vite": "^5.0.11",
     "vite-tsconfig-paths": "^4.2.3",
     "vitest": "^1.1.3"
   },

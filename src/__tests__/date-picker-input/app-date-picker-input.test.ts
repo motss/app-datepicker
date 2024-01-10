@@ -1,9 +1,15 @@
+<<<<<<< Updated upstream
 import '../../date-picker-input-surface/app-date-picker-input-surface';
 import '../../date-picker-input/app-date-picker-input';
 import '../../date-picker/app-date-picker';
+=======
+import '../../date-picker-input-surface/app-date-picker-input-surface.js';
+import '../../date-picker-input-2/app-date-picker-input.js';
+import '../../date-picker/app-date-picker.js';
+>>>>>>> Stashed changes
 
 import { stripExpressionComments } from '@lit-labs/testing';
-import type { Button } from '@material/mwc-button';
+import type { MdOutlinedButton } from '@material/web/button/outlined-button.js';
 import { fixture, html } from '@open-wc/testing-helpers';
 import { describe, expect, it } from 'vitest';
 
@@ -11,9 +17,9 @@ import { DateTimeFormat } from '../../constants';
 import type { AppDatePicker } from '../../date-picker/app-date-picker';
 import { appDatePickerName } from '../../date-picker/constants';
 import type { DialogClosedEventDetail } from '../../date-picker-dialog/typings';
-import type { AppDatePickerInput } from '../../date-picker-input/app-date-picker-input';
-import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input/constants';
-import type { DatePickerInputProperties } from '../../date-picker-input/typings';
+import type { AppDatePickerInput } from '../../date-picker-input-2/app-date-picker-input.js';
+import { appDatePickerInputName, appDatePickerInputType } from '../../date-picker-input-2/constants.js';
+import type { DatePickerInputProperties } from '../../date-picker-input-2/typings.js';
 import type { AppDatePickerInputSurface } from '../../date-picker-input-surface/app-date-picker-input-surface';
 import { appDatePickerInputSurfaceName } from '../../date-picker-input-surface/constants';
 import { iconClear } from '../../icons';
@@ -202,7 +208,7 @@ describe(appDatePickerInputName, () => {
 
     let datePickerInputSurface = el.query<AppDatePickerInputSurface>(elementSelectors.datePickerInputSurface);
     let datePicker = el.query<AppDatePicker>(elementSelectors.datePicker);
-    const yearDropdown = datePicker?.query<Button>(elementSelectors.yearDropdown);
+    const yearDropdown = datePicker?.query<MdOutlinedButton>(elementSelectors.yearDropdown);
 
     /**
      * NOTE: Webkit requires more time to await `datePicker` and `datePickerInputSurface` to complete
@@ -219,7 +225,7 @@ describe(appDatePickerInputName, () => {
 
     expect(opened?.detail).null;
     expect(datePickerInputSurface?.open).true;
-    expect( activeElement?.isEqualNode($_activeElement)).true;
+    expect(activeElement?.isEqualNode($_activeElement)).true;
 
     el.closePicker();
     await el.updateComplete;
@@ -353,7 +359,7 @@ describe(appDatePickerInputName, () => {
     triggerType: 'click' | 'reset';
   }>([
     { _message: 'calls .reset()', triggerType: 'reset' },
-  { _message: 'clicks clear icon button', triggerType: 'click' },
+    { _message: 'clicks clear icon button', triggerType: 'click' },
   ])('$_message to reset value', async ({
     triggerType,
   }) => {
@@ -370,7 +376,7 @@ describe(appDatePickerInputName, () => {
     let mdcTextFieldInput =
       el.query<HTMLInputElement>(elementSelectors.mdcTextFieldInput);
     const mdcTextFieldIconTrailing =
-      el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+      el.query<MdOutlinedButton>(elementSelectors.mdcTextFieldIconTrailing);
 
     expect(mdcTextFieldInput).toBeInTheDocument();
     expect(mdcTextFieldIconTrailing).toBeInTheDocument();
@@ -612,7 +618,7 @@ describe(appDatePickerInputName, () => {
       () => {
         // Click reset icon button to reset value
         const mdcTextFieldIconTrailing =
-            el.query<Button>(elementSelectors.mdcTextFieldIconTrailing);
+          el.query<MdOutlinedButton>(elementSelectors.mdcTextFieldIconTrailing);
 
         mdcTextFieldIconTrailing?.focus();
         mdcTextFieldIconTrailing?.click();

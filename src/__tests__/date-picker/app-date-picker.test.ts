@@ -1,6 +1,6 @@
 import '../../date-picker/app-date-picker';
 
-import type { Button } from '@material/mwc-button';
+import type { MdOutlinedButton } from '@material/web/button/outlined-button.js';
 import { elementUpdated, fixture, html } from '@open-wc/testing-helpers';
 import { describe, expect, it } from 'vitest';
 
@@ -69,7 +69,7 @@ describe(appDatePickerName, () => {
       const element = el.query(elementSelectors[n]);
 
       // Verify year dropdown title
-      const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+      const yearDropdown = el.query<MdOutlinedButton>(elementSelectors.yearDropdown);
 
       expect(yearDropdown).toBeInTheDocument();
       expect(yearDropdown).toHaveAttribute('title',
@@ -259,9 +259,9 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
-    const nextMonthNavigationButton = el.query<Button>(elementSelectors.nextMonthNavigationButton);
-    const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
+    const yearDropdown = el.query<MdOutlinedButton>(elementSelectors.yearDropdown);
+    const nextMonthNavigationButton = el.query<MdOutlinedButton>(elementSelectors.nextMonthNavigationButton);
+    const previousMonthNavigationButton = el.query<MdOutlinedButton>(elementSelectors.previousMonthNavigationButton);
 
     expect(yearDropdown).toBeInTheDocument();
     expect(nextMonthNavigationButton).toBeInTheDocument();
@@ -308,7 +308,7 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const element = el.query<Button>(elementSelectors[navigationButtonElementSelector]);
+    const element = el.query<MdOutlinedButton>(elementSelectors[navigationButtonElementSelector]);
 
     element?.focus();
     element?.click();
@@ -339,7 +339,7 @@ describe(appDatePickerName, () => {
     );
 
     // START: Go to year grid view
-    let yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+    let yearDropdown = el.query<MdOutlinedButton>(elementSelectors.yearDropdown);
 
     yearDropdown?.focus();
     yearDropdown?.click();
@@ -379,7 +379,7 @@ describe(appDatePickerName, () => {
     // END: Select new year in year grid view
 
     // START: Select new month in calendar view to update current date
-    const nextMonthNavigationButton = el.query<Button>(elementSelectors.nextMonthNavigationButton);
+    const nextMonthNavigationButton = el.query<MdOutlinedButton>(elementSelectors.nextMonthNavigationButton);
 
     nextMonthNavigationButton?.focus();
     nextMonthNavigationButton?.click();
@@ -392,7 +392,7 @@ describe(appDatePickerName, () => {
     expect(selectedYearMonth).toHaveTextContent(formatters.longMonthYearFormat(newSelectedDateDate));
     // END: Select new month in calendar view to update current date
 
-    yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+    yearDropdown = el.query<MdOutlinedButton>(elementSelectors.yearDropdown);
 
     // START: Ensure old selected year remains unchanged
     yearDropdown?.focus();
@@ -422,7 +422,7 @@ describe(appDatePickerName, () => {
     );
 
     // START: Go to year grid view
-    const yearDropdown = el.query<Button>(
+    const yearDropdown = el.query<MdOutlinedButton>(
       elementSelectors.yearDropdown
     );
 
@@ -573,7 +573,7 @@ describe(appDatePickerName, () => {
       ></app-date-picker>`
     );
 
-    const yearDropdown = el.query<Button>(elementSelectors.yearDropdown);
+    const yearDropdown = el.query<MdOutlinedButton>(elementSelectors.yearDropdown);
 
     yearDropdown?.focus();
     yearDropdown?.click();
@@ -768,7 +768,7 @@ describe(appDatePickerName, () => {
     expect(minDate2).toHaveAttribute('aria-label', formatters.fullDateFormat($_newMinDate));
     expect(minDate2?.fullDate).toEqual($_newMinDate);
 
-    const previousMonthNavigationButton = el.query<Button>(elementSelectors.previousMonthNavigationButton);
+    const previousMonthNavigationButton = el.query<MdOutlinedButton>(elementSelectors.previousMonthNavigationButton);
 
     expect(previousMonthNavigationButton).not.toBeInTheDocument();
 
@@ -923,7 +923,7 @@ describe(appDatePickerName, () => {
           /**
            * assert `$expectedMax` is the `MAX_DATE` supported and there will be no next month nav button
            */
-          const nextMonthNavigationButton = el.query<Button>(
+          const nextMonthNavigationButton = el.query<MdOutlinedButton>(
             elementSelectors.nextMonthNavigationButton
           );
           const maxDate = calendar?.query<HTMLTableCellElement>(

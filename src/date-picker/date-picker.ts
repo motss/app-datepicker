@@ -1,6 +1,7 @@
 import '../icon-button/app-icon-button.js';
 import '../month-calendar/app-month-calendar.js';
 import '../year-grid/app-year-grid.js';
+import '@material/web/iconbutton/icon-button.js';
 
 import { html, nothing, type TemplateResult } from 'lit';
 import { queryAsync, state } from 'lit/decorators.js';
@@ -169,12 +170,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
     return shouldSkipRender ?
       html`<div data-navigation=${navigationType}></div>` :
       html`
-      <app-icon-button
-        .ariaLabel=${label}
+      <md-icon-button
+        aria-label=${label}
         @click=${this.#navigateMonth}
         data-navigation=${navigationType}
         title=${ifDefined(label)}
-      >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</app-icon-button>
+      >${isPreviousNavigationType ? iconChevronLeft : iconChevronRight}</md-icon-button>
       `;
   };
 
@@ -298,12 +299,12 @@ export class DatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElemen
       <div class=month-and-year-selector>
         <p class=selected-year-month>${selectedYearMonth}</p>
 
-        <app-icon-button
-          .ariaLabel=${label}
+        <md-icon-button
+          aria-label=${label}
           @click=${this.#updateStartView}
           class=year-dropdown
           title=${ifDefined(label)}
-        >${iconArrowDropdown}</app-icon-button>
+        >${iconArrowDropdown}</md-icon-button>
       </div>
 
       ${

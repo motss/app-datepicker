@@ -13,12 +13,12 @@ export const datePickerDialogBaseStyling = css`
 /* --mdc-dialog-z-index: 7 */
 
 :host {
-  --mdc-dialog-min-width: 256px;
+  width: 100%;
 }
 
 .mdc-dialog .mdc-dialog__surface,
 .mdc-dialog .mdc-dialog__content {
-  --mdc-shape-medium: var(--_shape);
+  --md-dialog-container-shape: var(--_shape);
 
   border-radius: var(--_shape);
   overflow: initial;
@@ -31,11 +31,6 @@ export const datePickerDialogBaseStyling = css`
   padding: 0;
 }
 
-app-date-picker {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
 .mdc-dialog .mdc-dialog__actions {
   border-radius: var(--_shape);
   border-top-left-radius: 0;
@@ -44,7 +39,18 @@ app-date-picker {
 `;
 
 export const datePickerDialogStyling = css`
-.secondary-actions {
+app-date-picker {
+  width: 100%;
+  max-width: 100%;
+  background-color: rgba(0 0 0 / 0);
+  padding-inline: 8px;
+}
+
+.label {
+  text-transform: capitalize
+}
+
+/* .secondary-actions {
   display: flex;
   justify-content: flex-end;
 
@@ -52,5 +58,5 @@ export const datePickerDialogStyling = css`
 }
 .secondary-actions mwc-button + mwc-button {
   margin: 0 0 0 8px;
-}
+} */
 `;

@@ -1,4 +1,5 @@
 import { html, type TemplateResult } from 'lit';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 import { appDatePickerName } from '../date-picker/constants.js';
 import type { SlotDatePickerInit } from './typings.js';
@@ -21,6 +22,7 @@ export function slotDatePicker({
   selectedYearLabel,
   shortWeekLabel,
   showWeekNumber,
+  slot,
   startView,
   todayLabel,
   toyearLabel,
@@ -55,5 +57,6 @@ export function slotDatePicker({
     .weekNumberType=${weekNumberType}
     @date-updated=${onDatePickerDateUpdated}
     @first-updated=${onDatePickerFirstUpdated}
+    slot=${ifDefined(slot)}
   ></app-date-picker>`;
 }
