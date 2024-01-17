@@ -13,7 +13,7 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
 import type { CustomEventDetail } from '../typings.js';
-import { calendar_tableStyle } from './styles.js';
+import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
 import type { CalendarProperties } from './types.js';
 
 export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements CalendarProperties {
@@ -27,29 +27,10 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     resetTableStyle,
     visuallyHiddenStyle,
     calendar_tableStyle,
+    calendar_calendarDayStyle,
   ];
 
   #renderCalendar = (): TemplateResult => {
-    // const {
-    //   calendar,
-    //   currentDate,
-    //   date,
-    //   disabledDatesSet,
-    //   disabledDaysSet,
-    //   formatters: { longMonthYearFormat },
-    //   max,
-    //   min,
-    //   selectedDateLabel,
-    //   showWeekNumber = false,
-    //   todayDate,
-    //   todayLabel,
-    //   weekdays,
-    // } = this.data as Required<CalendarData>;
-
-    // const [, [, secondWeekSecondDay]] = calendar;
-    // const secondMonthSecondCalendarDayFullDate = secondWeekSecondDay.fullDate as Date;
-    // const captionText = longMonthYearFormat(secondMonthSecondCalendarDayFullDate);
-
     /**
      * NOTE(motss): Tabbable date is the date to be tabbed when switching between months.
      * When there is a selected date in the current month, tab to focus on selected date.

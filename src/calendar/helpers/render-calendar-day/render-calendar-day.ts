@@ -42,8 +42,8 @@ export function renderCalendarDay({
   }
 
   return html`<td
-    class=calendarDay
-    part=calendar-day
+    class=calendarDay--none
+    part="calendar-day-none"
     aria-disabled=true
     aria-hidden=true
     aria-selected=false

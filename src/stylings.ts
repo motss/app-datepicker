@@ -87,8 +87,14 @@ td {
   position: relative;
   margin: 0;
   padding: 0;
+  background: inherit;
+  color: inherit;
+  border: none;
   border-collapse: collapse;
   border-spacing: 0;
+  box-shadow: none;
+  font: inherit;
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0);
 }
 `;
 

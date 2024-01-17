@@ -1,4 +1,4 @@
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 
 import { type navigationKeyListNext, navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome, keyPageDown, keyPageUp } from '../key-values.js';
@@ -119,7 +119,7 @@ export function toNextSelectedDate({
    * - `2020-02-29` -> next year -> `2021-02-29` (invalid) -> fallback to `2021-02-28`
    */
   if (key === keyPageDown || key === keyPageUp) {
-    const totalDaysOfMonth = toUTCDate(fy, m + 1, 0).getUTCDate();
+    const totalDaysOfMonth = fromPartsToUtcDate(fy, m + 1, 0).getUTCDate();
     if (d > totalDaysOfMonth) {
       d = totalDaysOfMonth;
     }
@@ -127,7 +127,7 @@ export function toNextSelectedDate({
 
   /** Get next selectable focused date */
   const nextSelectableDate = toNextSelectableDate({
-    date: toUTCDate(fy, m, d),
+    date: fromPartsToUtcDate(fy, m, d),
     disabledDatesSet,
     disabledDaysSet,
     key,

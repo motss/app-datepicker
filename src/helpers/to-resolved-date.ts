@@ -1,3 +1,5 @@
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
+
 import type { MaybeDate } from './typings.js';
 
 export function toResolvedDate(date?: MaybeDate): Date {
@@ -65,5 +67,5 @@ export function toResolvedDate(date?: MaybeDate): Date {
    * expected but that is acceptable since we're relying on browser to tell us the local datetime
    * and we just use those values and treated them as if they were datetime to UTC.
    */
-  return new Date(Date.UTC(fy, m, d));
+  return fromPartsToUtcDate(fy, m, d);
 }

@@ -6,6 +6,14 @@ export const bodyMenuStyle = css`
   grid-template-areas: 'menuButton . prevIconButton nextIconButton';
   grid-template-columns: minmax(1px, auto) 1fr repeat(2, minmax(1px, auto));
   grid-template-rows: 40px;
+
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-size: var(--md-sys-typescale-body-large-size);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
 }
 
 .menuButton {

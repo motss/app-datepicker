@@ -1,4 +1,4 @@
-import { getFormatter } from 'nodemod/dist/calendar/helpers/get-formatter.js';
+import { getFormatter } from '@ipohjs/calendar/get-formatter';
 
 import { DateTimeFormat } from '../constants.js';
 import type { Formatters } from '../typings.js';

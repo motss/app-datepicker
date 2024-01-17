@@ -7,7 +7,11 @@ import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/rende
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
 import { renderNoop } from '../constants.js';
+import { isSameMonth } from '../helpers/is-same-month.js';
+import { splitString } from '../helpers/split-string.js';
+import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { keyHome } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
@@ -50,8 +54,42 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
   };
 
   #selectedDate: Date;
+
   #tabbableDate: Date;
   #todayDate: Date = toResolvedDate();
+
+  #updateTabbableDate = () => {
+    const {
+      disabledDates,
+      disabledDays,
+      max,
+      min,
+    } = this;
+    const isWithinSameMonth = isSameMonth(this.#selectedDate, this.#focusedDate);
+
+    /**
+     * NOTE: This reset tabindex of a tab-able calendar day to
+     * the first day of month when navigating away from the current month
+     * where the focused/ selected date is no longer in the new current month.
+     */
+    const disabledDateList = splitString(disabledDates, toResolvedDate);
+    const disabledDayList = splitString(disabledDays, Number);
+    const maxDateTime = toResolvedDate(max);
+    const minDateTime = toResolvedDate(min);
+
+    this.#tabbableDate = isWithinSameMonth
+      ? this.#selectedDate
+      : toNextSelectedDate({
+          currentDate: this.#focusedDate,
+          date: this.#selectedDate,
+          disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
+          disabledDaysSet: new Set(disabledDayList),
+          hasAltKey: false,
+          key: keyHome,
+          maxTime: maxDateTime.getTime(),
+          minTime: minDateTime.getTime(),
+        });
+  };
 
   constructor() {
     super();
@@ -129,8 +167,13 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     `;
   }
 
-  protected override updated(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<object>): void {
+  protected override updated(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
     console.debug(_changedProperties);
+  }
+
+  protected override willUpdate(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
+    console.debug('will:update', _changedProperties);
+    this.#updateTabbableDate();
   }
 }
 

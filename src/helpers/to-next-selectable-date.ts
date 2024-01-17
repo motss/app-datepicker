@@ -1,4 +1,4 @@
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 
 import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
 import type { InferredFromSet } from '../typings.js';
@@ -40,7 +40,7 @@ export function toNextSelectableDate({
     if (isBeforeMinTime || (!iaAfterMaxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeySetDayNext>))) d += 1;
     if (iaAfterMaxTime || (!isBeforeMinTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>))) d -= 1;
 
-    newSelectableDate = toUTCDate(fy, m, d);
+    newSelectableDate = fromPartsToUtcDate(fy, m, d);
     newSelectableDateTime = +newSelectableDate;
 
     if (!isBeforeMinTime) {

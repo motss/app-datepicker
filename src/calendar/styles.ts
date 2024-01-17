@@ -1,18 +1,9 @@
 import { css } from 'lit';
 
 export const calendar_tableStyle = css`
-table {
+.calendar {
   width: 100%;
-  background-color: var(--ip-background-container);
-  color: var(--ip-on-background-container);
-}
-
-th,
-td {
-  /* width: var(--app-calendar-cell-width, calc(100% / var(--_cols, 7))); */
-  width: 40px;
-  margin-top: 100%;
-
+  background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   font-family: var(--md-sys-typescale-body-large-font);
   line-height: var(--md-sys-typescale-body-large-line-height);
@@ -21,16 +12,18 @@ td {
   letter-spacing: var(--md-sys-typescale-body-large-tracking);
 }
 
-th::after,
-td:after {
+.calendar :is(td, th) {
+  width: max(40px, calc(100% / var(--_cols, 8)));
+}
+
+.calendar :is(td, th):after {
   content: '';
-  position: relative;
   display: grid;
+  position: relative;
   padding-top: 100%;
 }
 
-th.weekday > p,
-td.calendarDay[aria-label][title] > p {
+:is(td, th) > abbr {
   display: grid;
   place-content: center;
   place-items: center;
@@ -39,7 +32,13 @@ td.calendarDay[aria-label][title] > p {
   inset: 0;
   margin: 0;
   padding: 8px;
+  cursor: default;
+  text-decoration: none;
+  z-index: 1;
 }
+`;
+
+export const calendar_calendarDayStyle = css`
 `;
 
 // :host {
