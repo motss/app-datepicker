@@ -1,5 +1,3 @@
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
-
 import type { MaybeDate } from './typings.js';
 
 export function toResolvedDate(date?: MaybeDate): Date {
@@ -67,5 +65,5 @@ export function toResolvedDate(date?: MaybeDate): Date {
    * expected but that is acceptable since we're relying on browser to tell us the local datetime
    * and we just use those values and treated them as if they were datetime to UTC.
    */
-  return toUTCDate(fy, m, d);
+  return new Date(Date.UTC(fy, m, d));
 }

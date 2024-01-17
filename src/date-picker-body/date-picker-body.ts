@@ -1,10 +1,12 @@
-import { html } from 'lit';
+import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
+import { html, type PropertyValueMap } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { calendar } from 'nodemod/dist/calendar/calendar.js';
-import { getWeekdays } from 'nodemod/dist/calendar/helpers/get-weekdays.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
-import { splitString } from '../helpers/split-string.js';
-import { toFormatters } from '../helpers/to-formatters.js';
+import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
+import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
+import type { CalendarProperties } from '../calendar/types.js';
+import { renderNoop } from '../constants.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
@@ -14,11 +16,52 @@ import { datePickerBodyName } from './constants.js';
 
 @customElement(datePickerBodyName)
 export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements DatePickerProperties {
-  #onMenuButtonClick = () => {};
+  #focusedDate: Date;
 
-  #onNextIconButtonClick = () => {};
+  #onMenuButtonClick = () => {
+    this.startView = this.startView === 'calendar' ? 'yearGrid' : 'calendar';
+  };
 
-  #onPrevIconButtonClick = () => {};
+  #onNextIconButtonClick = () => {
+    this.#focusedDate = toUTCDate(this.#focusedDate, { month: 1 });
+    this.requestUpdate();
+  };
+
+  #onPrevIconButtonClick = () => {
+    this.#focusedDate = toUTCDate(this.#focusedDate, { month: -1 });
+    this.requestUpdate();
+  };
+
+  #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
+    ci,
+    data,
+    ri,
+  }) => {
+    return renderCalendarDay({
+      data,
+      selectedDate: this.#selectedDate,
+      tabbableDate: this.#tabbableDate,
+      todayDate: this.#todayDate,
+    });
+  };
+
+  #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ ri, weekday }) => {
+    return renderWeekDay(weekday);
+  };
+
+  #selectedDate: Date;
+  #tabbableDate: Date;
+  #todayDate: Date = toResolvedDate();
+
+  constructor() {
+    super();
+
+    const { value } = this;
+
+    this.#focusedDate = toResolvedDate(value);
+    this.#selectedDate = toResolvedDate(value);
+    this.#tabbableDate = toResolvedDate(value);
+  }
 
   protected override render() {
     const {
@@ -32,84 +75,62 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       min,
       nextMonthLabel,
       previousMonthLabel,
-      selectDataLabel,
-      selectedDateLabel,
-      selectedYearLabel,
       shortWeekLabel,
       showWeekNumber,
-      todayLabel,
-      toyearLabel,
+      startView,
       value,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
     } = this;
 
-    // fixme: consiume these
-    ({
-      chooseMonthLabel,
-      chooseYearLabel,
-      nextMonthLabel,
-      previousMonthLabel,
-      selectDataLabel,
-      selectedYearLabel,
-      toyearLabel,
-    });
-
-    const date = value ? new Date(value) : toResolvedDate();
-    const formatters = toFormatters(locale);
-    const { dayFormat, fullDateFormat, longMonthYearFormat, longWeekdayFormat, narrowWeekdayFormat } = formatters;
-    const {
-      calendar: calendarData,
-    } = calendar({
-      date,
-      dayFormat,
-      disabledDates: splitString(disabledDates, toResolvedDate),
-      disabledDays: splitString(disabledDays, Number),
-      firstDayOfWeek: 0,
-      fullDateFormat,
-      locale,
-      max: max ? new Date(max) : undefined,
-      min: min ? new Date(min) : undefined,
-      showWeekNumber,
-      weekNumberTemplate,
-      weekNumberType,
-    });
+    const date = toResolvedDate(value);
+    const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
+      month: 'long',
+      timeZone: 'UTC',
+      year: 'numeric',
+    }).format;
+    const menuLabel = startView === 'calendar' ? chooseMonthLabel : chooseYearLabel;
 
     return html`
     <div class=body>
       <date-picker-body-menu
+        .menuLabel=${menuLabel}
         .menuText=${longMonthYearFormat(date)}
+        .nextIconButtonLabel=${nextMonthLabel}
         .onMenuButtonClick=${this.#onMenuButtonClick}
         .onNextIconButtonClick=${this.#onNextIconButtonClick}
         .onPrevIconButtonClick=${this.#onPrevIconButtonClick}
+        .prevIconButtonLabel=${previousMonthLabel}
       ></date-picker-body-menu>
       <app-calendar
-        .data=${{
-          calendar: calendarData,
-          currentDate: toResolvedDate(),
-          date: toResolvedDate(),
-          disabledDatesSet: new Set(),
-          disabledDaysSet: new Set(),
-          formatters,
-          max: toResolvedDate(),
-          min: toResolvedDate(),
-          selectedDateLabel,
-          showWeekNumber,
-          todayDate: toResolvedDate(),
-          todayLabel,
-          weekdays: getWeekdays({
-            firstDayOfWeek,
-            longWeekdayFormat,
-            narrowWeekdayFormat,
-            shortWeekLabel,
-            showWeekNumber,
-            weekLabel,
-          }),
-        }}
+        disabledDates=${disabledDates}
+        disabledDays=${disabledDays}
+        firstDayOfWeek=${firstDayOfWeek}
+        locale=${locale}
+        max=${ifDefined(max)}
+        min=${ifDefined(min)}
+        onClick=${renderNoop}
+        onKeydown=${renderNoop}
+        onKeyup=${renderNoop}
+        .renderCalendarDay=${this.#renderCalendarDay}
+        .renderFooter=${renderNoop}
+        .renderWeekDay=${this.#renderWeekDay}
+        .renderWeekLabel=${renderNoop}
+        .renderWeekNumber=${renderNoop}
+        shortWeekLabel=${shortWeekLabel}
+        ?showweeknumber=${showWeekNumber}
+        value=${this.#focusedDate.toJSON()}
+        weekLabel=${weekLabel}
+        weekNumberTemplate=${weekNumberTemplate}
+        weekNumberType=${weekNumberType}
       ></app-calendar>
     </div>
     `;
+  }
+
+  protected override updated(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<object>): void {
+    console.debug(_changedProperties);
   }
 }
 

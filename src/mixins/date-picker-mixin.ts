@@ -1,5 +1,5 @@
+import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
 import { property } from 'lit/decorators.js';
-import type { WeekNumberType } from 'nodemod/dist/calendar/typings.js';
 
 import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelSelectedYear, labelShortWeek, labelToday, labelToyear, labelWeek, weekNumberTemplate } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';

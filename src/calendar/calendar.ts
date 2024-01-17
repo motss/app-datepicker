@@ -13,10 +13,6 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
 import type { CustomEventDetail } from '../typings.js';
-import { renderCalendarDay } from './helpers/render-calendar-day/render-calendar-day.js';
-import { renderWeekDay } from './helpers/render-week-day/render-week-day.js';
-import { renderWeekLabel } from './helpers/render-week-label/render-week-label.js';
-import { renderWeekNumber } from './helpers/render-week-number/render-week-number.js';
 import { calendar_tableStyle } from './styles.js';
 import type { CalendarProperties } from './types.js';
 
@@ -176,7 +172,11 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       onClick,
       onKeydown,
       onKeyup,
+      renderCalendarDay,
       renderFooter,
+      renderWeekDay,
+      renderWeekLabel,
+      renderWeekNumber,
       shortWeekLabel,
       showWeekNumber,
       value,
@@ -248,10 +248,10 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       <!-- Wk | S M T W T F S -->
       <thead>
         <tr>
-          ${weekNumber ? renderWeekLabel({ label: weekLabel, value: shortWeekLabel }) : nothing}
+          ${weekNumber ? (renderWeekLabel ?? renderNoop)({ label: weekLabel, value: shortWeekLabel }) : nothing}
           ${
-            weekdays.map((weekday) => {
-              return renderWeekDay(weekday);
+            weekdays.map((weekday, ri) => {
+              return (renderWeekDay ?? renderNoop)({ ri, weekday });
             })
           }
         </tr>
@@ -265,17 +265,14 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
             return html`
             <tr>
               ${
-                row.columns.map((col, ci) => {
+                row.columns.map((data, ci) => {
                   const isWeekNumber = ci === 0 && showWeekNumber;
 
-                  if (isWeekNumber) {
-                    return renderWeekNumber({ label: col.label, value: col.value });
-                  }
-
-                  return renderCalendarDay({
-                    data: col,
-                    selected: false, // fixme: customize this
-                  });
+                  return (
+                    (
+                      isWeekNumber ? renderWeekNumber : renderCalendarDay
+                    ) ?? renderNoop
+                  )({ ci, data, ri });
                 })
               }
             </tr>
@@ -284,7 +281,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
         }
       </tbody>
 
-      <tfoot>${renderFooter()}</tfoot>
+      <tfoot>${(renderFooter ?? renderNoop)()}</tfoot>
     </table>
     `;
   };
@@ -316,11 +313,11 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   @state() onDateUpdate: (detail: CustomEventDetail['date-updated']['detail']) => void = noop;
   @state() onKeydown: (ev: KeyboardEvent) => void = noop;
   @state() onKeyup: (ev: KeyboardEvent) => void = noop;
-  @state() renderCalendarDay = renderNoop;
-  @state() renderFooter = renderNoop;
-  @state() renderWeekLabel = renderNoop;
-  @state() renderWeekNumber = renderNoop;
-  @state() renderWeekday = renderNoop;
+  @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
+  @state() renderFooter: CalendarProperties['renderFooter'];
+  @state() renderWeekDay: CalendarProperties['renderWeekDay'];
+  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
+  @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
 
   // #updateSelectedDate = (event: KeyboardEvent): void => {
   //   const key = event.key as SupportedKey;

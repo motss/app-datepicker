@@ -1,5 +1,6 @@
-import type { Calendar, CalendarInit, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
+import type { CalendarInit } from '@ipohjs/calendar/dist/typings.js';
 
+import type { Calendar } from '../calendar/calendar.js';
 import type { ElementMixinProperties } from '../mixins/typings.js';
 import type { CustomEventDetail, DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
 import type { OmitKey } from '../utility-typings.js';

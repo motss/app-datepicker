@@ -1,19 +1,27 @@
-import '../date-picker/app-date-picker.js';
+// import '../date-picker/app-date-picker.js';
 // import '../date-picker-input-2/app-date-picker-input.js';
-import '../date-picker-input/date-picker-input.js';
-import '../date-picker-dialog/app-date-picker-dialog.js';
+// import '../date-picker-input/date-picker-input.js';
+// import '../date-picker-dialog/app-date-picker-dialog.js';
 import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '@material/web/dialog/dialog.js';
+import '../date-picker-header/date-picker-header.js';
+import '../date-picker-body/date-picker-body.js';
+import '../date-picker-body-menu/date-picker-body-menu.js';
+import '../date-picker-footer/date-picker-footer.js';
+import '../calendar/app-calendar.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
 
+import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelSelectedYear, labelShortWeek, labelToday, labelToyear, labelWeek, weekNumberTemplate } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
 import type { AppDatePickerDialogBase } from '../date-picker-dialog/app-date-picker-dialog-base.js';
 import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../date-picker-dialog/constants.js';
 import type { AppDatePickerInput } from '../date-picker-input-2/app-date-picker-input.js';
 import { appDatePickerInputName } from '../date-picker-input-2/constants.js';
+import { toFormatters } from '../helpers/to-formatters.js';
+import { iconEdit } from '../icons.js';
 import { RootElement } from '../root-element/root-element.js';
 import type { CustomEventDetail } from '../typings.js';
 
@@ -50,6 +58,7 @@ export class DemoApp extends RootElement {
     }
     `,
   ];
+
   #dateUpdated = ({
     currentTarget,
     detail,
@@ -61,7 +70,6 @@ export class DemoApp extends RootElement {
       id,
     });
   };
-
   #showDialog = async (ev: MouseEvent) => {
     const { dataset } = ev.currentTarget as HTMLButtonElement;
     const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
@@ -79,14 +87,16 @@ export class DemoApp extends RootElement {
       valueAsNumber: new Date(dialog?.valueAsNumber as number),
     });
   };
+
   @state() _editable = false;
   @state() _outlined = false;
-
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
 
   @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
 
   @queryAsync(appDatePickerInputName) input!: Promise<AppDatePickerInput>;
+
+  locale: string = 'en-US';
 
   protected override firstUpdated(_changedProperties: Map<number | string | symbol, unknown>): void {
     Object.defineProperty(globalThis, '__demoApp', {
@@ -100,7 +110,81 @@ export class DemoApp extends RootElement {
   }
 
   protected override render() {
+    const date = new Date();
+    const formatters = toFormatters(this.locale);
+    const { longMonthYearFormat } = formatters;
+    // const showWeekNumber = false;
+    // const dayFormat = new Intl.DateTimeFormat(this.locale, { day: 'numeric' });
+    // const fullDateFormat = new Intl.DateTimeFormat(this.locale, {
+    //   day: 'numeric',
+    //   month: 'short',
+    //   weekday: 'short',
+    //   year: 'numeric',
+    // });
+    // const {
+    //   datesGrid,
+    // } = calendar({
+    //   date,
+    //   dayFormat,
+    //   disabledDates: splitString('', toResolvedDate),
+    //   disabledDays: splitString('', Number),
+    //   firstDayOfWeek: 0,
+    //   fullDateFormat,
+    //   locale: this.locale,
+    //   max: undefined,
+    //   min: undefined,
+    //   showWeekNumber,
+    //   weekNumberTemplate: 'Week %s',
+    //   weekNumberType: undefined,
+    // });
+
     return html`
+    <div style="width:328px;">
+      <date-picker-header
+        .headline=${new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', weekday: 'short' }).format(new Date())}
+        .iconButton=${iconEdit}
+        .onHeadlineClick=${(ev: MouseEvent) => console.debug('headline:click', ev)}
+        .onIconButtonClick=${(ev: MouseEvent) => console.debug('iconButton:click', ev)}
+      ></date-picker-header>
+      <date-picker-body-menu
+        .menuText=${longMonthYearFormat(date)}
+        .onMenuButtonClick=${(ev: MouseEvent) => console.debug('menubutton:click', ev)}
+        .onNextIconButtonClick=${(ev: MouseEvent) => console.debug('nexticonbutton:click', ev)}
+        .onPrevIconButtonClick=${(ev: MouseEvent) => console.debug('previconbutton:click', ev)}
+      ></date-picker-body-menu>
+      <date-picker-footer
+        .confirmText=${'OK'}
+        .denyText=${'Cancel'}
+        .onConfirmClick=${(ev: MouseEvent) => console.debug('confirm:click', ev)}
+        .onDenyClick=${(ev: MouseEvent) => console.debug('deny:click', ev)}
+      ></date-picker-footer>
+
+      <date-picker-body
+        .chooseMonthLabel=${labelChooseMonth}
+        .chooseYearLabel=${labelChooseYear}
+        .disabledDates=${''}
+        .disabledDays=${''}
+        .firstDayOfWeek=${0}
+        .locale=${'en-US'}
+        .max=${''}
+        .min=${''}
+        .nextMonthLabel=${labelNextMonth}
+        .previousMonthLabel=${labelPreviousMonth}
+        .selectDateLabel=${labelSelectDate}
+        .selectedDateLabel=${labelSelectedDate}
+        .selectedYearLabel=${labelSelectedYear}
+        .shortWeekLabel=${labelShortWeek}
+        .showWeekNumber=${true}
+        .startView=${'calendar'}
+        .todayLabel=${labelToday}
+        .toyearLabel=${labelToyear}
+        .value=${'2020-02-02'}
+        .weekLabel=${labelWeek}
+        .weekNumberTemplate=${weekNumberTemplate}
+        .weekNumberType=${'first-4-day-week'}
+      ></date-picker-body>
+    </div>
+
     <date-picker-input>
       <p>loading...</p>
     </date-picker-input>

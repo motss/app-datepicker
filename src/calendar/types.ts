@@ -1,5 +1,4 @@
-// import type { Calendar, CalendarWeekday } from 'nodemod/dist/calendar/typings.js';
-
+import type { CalendarWeekday, DatesGridColumn } from '@ipohjs/calendar/dist/typings.js';
 import type { nothing, TemplateResult } from 'lit';
 
 import type { DatePickerProperties } from '../typings';
@@ -50,25 +49,25 @@ export interface CalendarProperties extends
   onClick?(ev: MouseEvent): void;
   onKeydown?(ev: KeyboardEvent): void;
   onKeyup?(ev: KeyboardEvent): void;
-  renderCalendarDay(init: RenderFnInit): TemplateResult | typeof nothing;
-  renderFooter(): TemplateResult | typeof nothing;
-  renderWeekLabel(init: RenderFnInit): TemplateResult | typeof nothing;
-  renderWeekNumber(init: RenderFnInit): TemplateResult | typeof nothing;
-  renderWeekday(init: RenderFnInit): TemplateResult | typeof nothing;
+  renderCalendarDay?(init: RenderCalendarDayInit): TemplateResult | typeof nothing;
+  renderFooter?(): TemplateResult | typeof nothing;
+  renderWeekDay?(init: RenderWeekDayInit): TemplateResult | typeof nothing;
+  renderWeekLabel?(init: RenderWeekLabelInit): TemplateResult | typeof nothing;
+  renderWeekNumber?(init: RenderWeekNumberInit): TemplateResult | typeof nothing;
 }
 
-export interface CalendarProperties_RenderCellInit extends RenderFnInit {}
+export interface RenderCalendarDayInit extends GridIndices {
+  data: DatesGridColumn;
+}
 
-export interface RenderCalendarDayInit extends RenderFnInit {}
-export interface RenderWeekLabelInit extends RenderFnInit {}
-export interface RenderWeekNumberInit extends RenderFnInit {}
-export interface RenderWeekdayInit extends RenderFnInit {}
+export interface RenderWeekDayInit extends Pick<GridIndices, 'ri'> {
+  weekday: CalendarWeekday;
+}
 
-interface RenderFnInit {
-  ci: number;
-  label: string;
-  ri: number;
-  value: string;
+export interface RenderWeekLabelInit extends LabelValue {}
+
+export interface RenderWeekNumberInit extends GridIndices {
+  data: DatesGridColumn;
 }
 
 export interface LabelValue {
