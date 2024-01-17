@@ -76,6 +76,22 @@ export const resetShadowRoot = css`
 }
 `;
 
+export const resetTableStyle = css`
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+`;
+
 export const resetSvgIcon = css`
 svg {
   display: block;
@@ -83,6 +99,20 @@ svg {
   min-height: var(--svg-icon-min-height, 24px);
   fill: var(--svg-icon-fill, currentColor);
   pointer-events: none;
+}
+`;
+
+export const visuallyHiddenStyle = css`
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  user-select: none;
+  width: 1px;
 }
 `;
 

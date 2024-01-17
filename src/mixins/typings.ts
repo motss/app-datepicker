@@ -17,6 +17,7 @@ export interface DatePickerMixinProperties {
   locale: string;
   nextMonthLabel: string;
   previousMonthLabel: string;
+  selectDateLabel: string;
   selectedDateLabel: string;
   selectedYearLabel: string;
   shortWeekLabel: string;

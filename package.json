@@ -172,12 +172,12 @@
     "wtr": "node --max-old-space-size=8192 --trace-deprecation ./node_modules/.bin/wtr --config wtr.config.mjs"
   },
   "dependencies": {
+    "@ipohjs/calendar": "0.1.0-rc.7",
     "@material/mwc-base": "^0.27.0",
     "@material/mwc-menu": "^0.27.0",
     "@material/mwc-textfield": "^0.27.0",
     "@material/web": "^1.1.1",
     "lit": "^3.1.0",
-    "nodemod": "^3.0.6",
     "tslib": "^2.6.2"
   },
   "devDependencies": {

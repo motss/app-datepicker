@@ -1,3 +1,5 @@
+import { nothing } from 'lit';
+
 import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace } from './key-values.js';
 
@@ -7,6 +9,7 @@ export const labelChooseMonth = 'Choose month' as const;
 export const labelChooseYear = 'Choose year' as const;
 export const labelNextMonth = 'Next month' as const;
 export const labelPreviousMonth = 'Previous month' as const;
+export const labelSelectDate = 'Select date' as const;
 export const labelSelectedDate = 'Selected date' as const;
 export const labelSelectedYear = 'Selected year' as const;
 export const labelShortWeek = 'Wk' as const;
@@ -21,3 +24,5 @@ export const navigationKeySetDayPrevious = new Set([...navigationKeyListPrevious
 export const navigationKeySetGrid = new Set([...navigationKeySetDayNext, ...navigationKeySetDayPrevious]);
 export const startViews = ['calendar', 'yearGrid'] as const;
 export const weekNumberTemplate = 'Week %s' as const;
+export const noop = () => { /** no-op */ };
+export const renderNoop: () => typeof nothing = () => nothing;
