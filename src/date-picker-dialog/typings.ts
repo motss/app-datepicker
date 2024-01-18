@@ -1,6 +1,6 @@
 import type { Dialog } from '@material/mwc-dialog';
 
-import type { ChangedProperties, DatePickerProperties } from '../typings';
+import type { ChangedProperties, DatePickerProperties } from '../typings.js';
 
 export type DatePickerDialogChangedProperties = ChangedProperties<DatePickerDialogProperties>;
 
