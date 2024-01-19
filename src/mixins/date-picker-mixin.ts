@@ -1,7 +1,7 @@
 import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
 import { property } from 'lit/decorators.js';
 
-import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelSelectedYear, labelShortWeek, labelToday, labelToyear, labelWeek, weekNumberTemplate } from '../constants.js';
+import { DateTimeFormat, labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -22,12 +22,12 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public previousMonthLabel: string = labelPreviousMonth;
     @property() public selectDateLabel: string = labelSelectDate;
     @property() public selectedDateLabel: string = labelSelectedDate;
-    @property() public selectedYearLabel: string = labelSelectedYear;
+    @property() public selectedYearTemplate: string = selectedYearTemplate;
     @property() public shortWeekLabel: string = labelShortWeek;
     @property({ reflect: true, type: Boolean }) public showWeekNumber = false;
     @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true }) public startView: StartView = 'calendar';
     @property() public todayLabel: string = labelToday;
-    @property() public toyearLabel: string = labelToyear;
+    @property() public toyearTemplate: string = toyearTemplate;
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to

@@ -1,1 +1,1 @@
-export const appYearGridName = 'app-year-grid' as const;
+export const yearGridName = 'year-grid' as const;

@@ -1,22 +1,22 @@
-import { clampValue } from '../helpers/clamp-value.js';
-import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../key-values.js';
-import type { ToNextSelectableYearInit } from './typings.js';
+import { clampValue } from '../../../helpers/clamp-value.js';
+import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../../../key-values.js';
+import type { ToNextYearInit } from './types.js';
 
-export function toNextSelectedYear({
+export function toNextYear({
   key,
   max,
   min,
   year,
-}: ToNextSelectableYearInit): number {
+}: ToNextYearInit): number {
   let newYear = year;
 
   switch (key) {
     case keyArrowUp: {
-      newYear = year - 4;
+      newYear = year - 3;
       break;
     }
     case keyArrowDown: {
-      newYear = year + 4;
+      newYear = year + 3;
       break;
     }
     case keyArrowLeft: {

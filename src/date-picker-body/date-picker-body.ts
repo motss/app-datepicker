@@ -1,6 +1,8 @@
 import '../calendar/app-calendar.js';
 import '../date-picker-body-menu/date-picker-body-menu.js';
+import '../year-grid/year-grid.js';
 
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import { html, type PropertyValueMap } from 'lit';
 import { customElement } from 'lit/decorators.js';
@@ -20,6 +22,7 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
 import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
+import type { YearGridProperties } from '../year-grid/types.js';
 import { datePickerBodyName } from './constants.js';
 
 @customElement(datePickerBodyName)
@@ -84,6 +87,13 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     this.requestUpdate();
   };
 
+  #onYearUpdate: NonNullable<YearGridProperties['onYearUpdate']> = (year) => {
+    const focusedDate = toResolvedDate(this.#focusedDate);
+
+    this.#focusedDate = fromPartsToUtcDate(year, focusedDate.getUTCMonth(), focusedDate.getUTCDate());
+    this.startView = 'calendar';
+  };
+
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
     ci,
     data,
@@ -102,8 +112,8 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
   };
 
   #selectedDate: Date;
-
   #tabbableDate: Date;
+
   #todayDate: Date = toResolvedDate();
 
   #updateTabbableDate = () => {
@@ -161,9 +171,11 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       min,
       nextMonthLabel,
       previousMonthLabel,
+      selectedYearTemplate,
       shortWeekLabel,
       showWeekNumber,
       startView,
+      toyearTemplate,
       value,
       weekLabel,
       weekNumberTemplate,
@@ -171,6 +183,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     } = this;
 
     const date = toResolvedDate(value);
+    const focusedDateValue = this.#focusedDate.toJSON();
     const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
       month: 'long',
       timeZone: 'UTC',
@@ -189,27 +202,42 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
         .onPrevIconButtonClick=${this.#onPrevIconButtonClick}
         .prevIconButtonLabel=${previousMonthLabel}
       ></date-picker-body-menu>
-      <app-calendar
-        disabledDates=${disabledDates}
-        disabledDays=${disabledDays}
-        firstDayOfWeek=${firstDayOfWeek}
-        locale=${locale}
-        max=${ifDefined(max)}
-        min=${ifDefined(min)}
-        .onDateUpdateByClick=${this.#onDateUpdateByClick}
-        .onDateUpdateByKey=${this.#onDateUpdateByKey}
-        .renderCalendarDay=${this.#renderCalendarDay}
-        .renderFooter=${renderNoop}
-        .renderWeekDay=${this.#renderWeekDay}
-        .renderWeekLabel=${renderNoop}
-        .renderWeekNumber=${renderNoop}
-        shortWeekLabel=${shortWeekLabel}
-        ?showWeekNumber=${showWeekNumber}
-        value=${this.#focusedDate.toJSON()}
-        weekLabel=${weekLabel}
-        weekNumberTemplate=${weekNumberTemplate}
-        weekNumberType=${weekNumberType}
-      ></app-calendar>
+
+      ${
+        this.startView === 'calendar' ? html`
+        <app-calendar
+          disabledDates=${disabledDates}
+          disabledDays=${disabledDays}
+          firstDayOfWeek=${firstDayOfWeek}
+          locale=${locale}
+          max=${ifDefined(max)}
+          min=${ifDefined(min)}
+          .onDateUpdateByClick=${this.#onDateUpdateByClick}
+          .onDateUpdateByKey=${this.#onDateUpdateByKey}
+          .renderCalendarDay=${this.#renderCalendarDay}
+          .renderFooter=${renderNoop}
+          .renderWeekDay=${this.#renderWeekDay}
+          .renderWeekLabel=${renderNoop}
+          .renderWeekNumber=${renderNoop}
+          shortWeekLabel=${shortWeekLabel}
+          ?showWeekNumber=${showWeekNumber}
+          value=${focusedDateValue}
+          weekLabel=${weekLabel}
+          weekNumberTemplate=${weekNumberTemplate}
+          weekNumberType=${weekNumberType}
+        ></app-calendar>
+        ` : html`
+        <year-grid
+          locale=${locale}
+          max=${ifDefined(max)}
+          min=${ifDefined(min)}
+          selectedYearTemplate=${selectedYearTemplate}
+          toyearTemplate=${toyearTemplate}
+          value=${focusedDateValue}
+          .onYearUpdate=${this.#onYearUpdate}
+        ></year-grid>
+        `
+      }
     </div>
     `;
   }

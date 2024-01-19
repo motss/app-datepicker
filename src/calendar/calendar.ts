@@ -5,14 +5,14 @@ import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { renderNoop } from '../constants.js';
+import { confirmKeySet, navigationKeySetGrid, renderNoop } from '../constants.js';
 import { splitString } from '../helpers/split-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
-import { keyEnter, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
+import type { InferredFromSet } from '../typings.js';
 import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
 import type { CalendarProperties } from './types.js';
 
@@ -71,7 +71,16 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   #narrowWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #onKeyDown = (ev: KeyboardEvent) => {
-    if ([keySpace, keyEnter, keyTab].every((k) => ev.key !== k)) {
+    const { key } = ev;
+
+    const isNavigationKey = navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>);
+    const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
+
+    if (isNavigationKey || isConfirmKey) {
+      /**
+       * note: this prevents keyboard event propagates upwards and
+       * causes a scrollable page to be scrolled downwards via the Space key.
+       */
       ev.preventDefault();
     }
   };

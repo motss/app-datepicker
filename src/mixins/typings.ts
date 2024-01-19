@@ -19,12 +19,12 @@ export interface DatePickerMixinProperties {
   previousMonthLabel: string;
   selectDateLabel: string;
   selectedDateLabel: string;
-  selectedYearLabel: string;
+  selectedYearTemplate: string;
   shortWeekLabel: string;
   showWeekNumber: boolean;
   startView: StartView;
   todayLabel: string;
-  toyearLabel: string;
+  toyearTemplate: string;
   value?: null | string;
   weekLabel: string;
   weekNumberTemplate: string;
