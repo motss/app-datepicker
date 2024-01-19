@@ -48,6 +48,5 @@ export function renderCalendarDay({
     aria-hidden=true
     aria-selected=false
     role=gridcell
-    tabindex=-1
   ></td>`;
 }

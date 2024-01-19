@@ -1,3 +1,6 @@
+import '../calendar/app-calendar.js';
+import '../date-picker-body-menu/date-picker-body-menu.js';
+
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import { html, type PropertyValueMap } from 'lit';
 import { customElement } from 'lit/decorators.js';
@@ -6,7 +9,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
-import { renderNoop } from '../constants.js';
+import { navigationKeySetGrid, renderNoop } from '../constants.js';
 import { isSameMonth } from '../helpers/is-same-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
@@ -15,12 +18,57 @@ import { keyHome } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
-import type { DatePickerProperties } from '../typings.js';
+import { resetShadowRoot } from '../stylings.js';
+import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
 import { datePickerBodyName } from './constants.js';
 
 @customElement(datePickerBodyName)
 export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements DatePickerProperties {
+  static override styles = [
+    resetShadowRoot,
+  ];
+
   #focusedDate: Date;
+
+  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (ev) => {
+    const path = ev.composedPath() as HTMLElement[];
+    const node = path.find(n => {
+      return (
+        n.nodeType === Node.ELEMENT_NODE &&
+        n.localName === 'td' &&
+        !n.classList.contains('calendarDay--none')
+      );
+    }) as HTMLTableCellElement;
+
+    if (node) {
+      this.#selectedDate = new Date(node.fullDate as Date);
+      this.requestUpdate();
+    }
+  };
+
+  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, { disabledDatesSet, disabledDaysSet }) => {
+    if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
+      const nextDate = toNextSelectedDate({
+        currentDate: this.#focusedDate,
+        date: this.#selectedDate,
+        disabledDatesSet,
+        disabledDaysSet,
+        hasAltKey: ev.altKey,
+        key: ev.key as SupportedKey,
+        maxTime: toResolvedDate(this.max).getTime(),
+        minTime: toResolvedDate(this.min).getTime(),
+      });
+      const nextDateTime = nextDate.getTime();
+
+      if (
+        nextDateTime !== this.#focusedDate.getTime() ||
+        nextDateTime !== this.#selectedDate.getTime()
+      ) {
+        this.#focusedDate = this.#selectedDate = nextDate;
+        this.requestUpdate();
+      }
+    }
+  };
 
   #onMenuButtonClick = () => {
     this.startView = this.startView === 'calendar' ? 'yearGrid' : 'calendar';
@@ -148,16 +196,15 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
         locale=${locale}
         max=${ifDefined(max)}
         min=${ifDefined(min)}
-        onClick=${renderNoop}
-        onKeydown=${renderNoop}
-        onKeyup=${renderNoop}
+        .onDateUpdateByClick=${this.#onDateUpdateByClick}
+        .onDateUpdateByKey=${this.#onDateUpdateByKey}
         .renderCalendarDay=${this.#renderCalendarDay}
         .renderFooter=${renderNoop}
         .renderWeekDay=${this.#renderWeekDay}
         .renderWeekLabel=${renderNoop}
         .renderWeekNumber=${renderNoop}
         shortWeekLabel=${shortWeekLabel}
-        ?showweeknumber=${showWeekNumber}
+        ?showWeekNumber=${showWeekNumber}
         value=${this.#focusedDate.toJSON()}
         weekLabel=${weekLabel}
         weekNumberTemplate=${weekNumberTemplate}
@@ -167,12 +214,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     `;
   }
 
-  protected override updated(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
-    console.debug(_changedProperties);
-  }
-
   protected override willUpdate(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
-    console.debug('will:update', _changedProperties);
     this.#updateTabbableDate();
   }
 }

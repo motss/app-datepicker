@@ -22,6 +22,12 @@ export const bodyMenuStyle = css`
   grid-area: menuButton;
 }
 
+.prevIconButton,
+.nextIconButton {
+  /** note: bump z-index to fix focus ring from overlapping with other elements */
+  z-index: 1;
+}
+
 .prevIconButton {
   grid-area: prevIconButton;
 }

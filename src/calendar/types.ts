@@ -1,4 +1,4 @@
-import type { CalendarWeekday, DatesGridColumn } from '@ipohjs/calendar/dist/typings.js';
+import type { CalendarGrid, CalendarWeekday, DatesGridColumn } from '@ipohjs/calendar/dist/typings.js';
 import type { nothing, TemplateResult } from 'lit';
 
 import type { DatePickerProperties } from '../typings';
@@ -46,9 +46,8 @@ export interface CalendarProperties extends
     | 'weekNumberType'
   >
 {
-  onClick?(ev: MouseEvent): void;
-  onKeydown?(ev: KeyboardEvent): void;
-  onKeyup?(ev: KeyboardEvent): void;
+  onDateUpdateByClick?(ev: MouseEvent, calendarGrid: CalendarGrid): void;
+  onDateUpdateByKey?(ev: KeyboardEvent, calendarGrid: CalendarGrid): void;
   renderCalendarDay?(init: RenderCalendarDayInit): TemplateResult | typeof nothing;
   renderFooter?(): TemplateResult | typeof nothing;
   renderWeekDay?(init: RenderWeekDayInit): TemplateResult | typeof nothing;

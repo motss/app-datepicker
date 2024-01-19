@@ -2,19 +2,21 @@ import { calendar } from '@ipohjs/calendar';
 import type { CalendarWeekday } from '@ipohjs/calendar/dist/typings.js';
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
-import { html, nothing, type TemplateResult } from 'lit';
+import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { noop, renderNoop } from '../constants.js';
+import { renderNoop } from '../constants.js';
 import { splitString } from '../helpers/split-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import { keyEnter, keySpace, keyTab } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
-import type { CustomEventDetail } from '../typings.js';
 import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
 import type { CalendarProperties } from './types.js';
+
+const defaultDateTimeFormat = new Intl.DateTimeFormat('en');
 
 export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements CalendarProperties {
   public static override shadowRootOptions = {
@@ -29,6 +31,50 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     calendar_tableStyle,
     calendar_calendarDayStyle,
   ];
+
+  #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
+
+  #focusSelectedDate = (changedProperties: PropertyValueMap<this>) => {
+    if (changedProperties.has('value')) {
+      this.root
+        .querySelector<HTMLTableCellElement>('[tabindex="0"]')
+        ?.focus();
+    }
+  };
+
+  #fullDateFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
+
+  #installFormatters = (changedProperties: PropertyValueMap<this>) => {
+    if (changedProperties.has('locale')) {
+      const { locale } = this;
+
+      if (changedProperties.get('locale') !== locale) {
+        this.#dayFormat = new Intl.DateTimeFormat(locale, { day: 'numeric' });
+        this.#fullDateFormat = new Intl.DateTimeFormat(locale, {
+          day: 'numeric',
+          month: 'short',
+          weekday: 'short',
+          year: 'numeric',
+        });
+        this.#longWeekdayFormat = new Intl.DateTimeFormat(locale, {
+          weekday: 'long',
+        });
+        this.#narrowWeekdayFormat = new Intl.DateTimeFormat(locale, {
+          weekday: 'narrow',
+        });
+      }
+    }
+  };
+
+  #longWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
+
+  #narrowWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
+
+  #onKeyDown = (ev: KeyboardEvent) => {
+    if ([keySpace, keyEnter, keyTab].every((k) => ev.key !== k)) {
+      ev.preventDefault();
+    }
+  };
 
   #renderCalendar = (): TemplateResult => {
     /**
@@ -150,9 +196,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       locale,
       max,
       min,
-      onClick,
-      onKeydown,
-      onKeyup,
+      onDateUpdateByClick,
+      onDateUpdateByKey,
       renderCalendarDay,
       renderFooter,
       renderWeekDay,
@@ -166,28 +211,15 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       weekNumberType,
     } = this;
 
-    const dayFormat = new Intl.DateTimeFormat(locale, { day: 'numeric' });
-    const fullDateFormat = new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short',
-      weekday: 'short',
-      year: 'numeric',
-    });
-    const longWeekdayFormat = new Intl.DateTimeFormat(locale, {
-      weekday: 'long',
-    });
-    const narrowWeekdayFormat = new Intl.DateTimeFormat(locale, {
-      weekday: 'narrow',
-    });
     const date = toResolvedDate(value);
 
     const calendarGrid = calendar({
       date,
-      dayFormat,
+      dayFormat: this.#dayFormat,
       disabledDates: splitString(disabledDates, toResolvedDate),
       disabledDays: splitString(disabledDays, Number),
       firstDayOfWeek,
-      fullDateFormat,
+      fullDateFormat: this.#fullDateFormat,
       locale,
       max: max ? toResolvedDate(max) : fromPartsToUtcDate(2100, 11, 31),
       min: min ? toResolvedDate(min) : fromPartsToUtcDate(1900, 0, 1),
@@ -198,8 +230,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     const { datesGrid } = calendarGrid;
     const maybeWeekdaysWithWeekLabel = getWeekdays({
       firstDayOfWeek,
-      longWeekdayFormat,
-      narrowWeekdayFormat,
+      longWeekdayFormat: this.#longWeekdayFormat,
+      narrowWeekdayFormat: this.#narrowWeekdayFormat,
       shortWeekLabel,
       showWeekNumber,
       weekLabel,
@@ -211,15 +243,17 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       ...maybeWeekdaysWithWeekLabel,
     ];
 
-    const caption = fullDateFormat.format(date);
+    const caption = this.#fullDateFormat.format(date);
+    const onClick = (ev: MouseEvent) => onDateUpdateByClick?.(ev, calendarGrid);
+    const onKeyUp = (ev: KeyboardEvent) => onDateUpdateByKey?.(ev, calendarGrid);
 
     return html`
     <table
       class=calendar
       part=calendar
       @click=${onClick}
-      @keydown=${onKeydown}
-      @keyup=${onKeyup}
+      @keydown=${this.#onKeyDown}
+      @keyup=${onKeyUp}
       tabindex=-1
       role=grid
     >
@@ -266,39 +300,11 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     </table>
     `;
   };
-
-  // #selectedDate: Date | undefined = undefined;
-  /**
-   * NOTE(motss): This is required to avoid selected date being focused on each update.
-   * Selected date should ONLY be focused during navigation with keyboard, e.g.
-   * initial render, switching between views, etc.
-   */
-  // #shouldFocusSelectedDate = false;
-  // @property({ attribute: false }) public data: CalendarData = {
-  //   calendar: [],
-  //   currentDate: toResolvedDate(),
-  //   date: toResolvedDate(),
-  //   disabledDatesSet: new Set(),
-  //   disabledDaysSet: new Set(),
-  //   formatters: undefined,
-  //   max: toResolvedDate(),
-  //   min: toResolvedDate(),
-  //   selectedDateLabel: labelSelectedDate,
-  //   showWeekNumber: false,
-  //   todayDate: toResolvedDate(),
-  //   todayLabel: labelToday,
-  //   weekdays: [],
-  // };
-
-  @state() onClick: (ev: MouseEvent) => void = noop;
-  @state() onDateUpdate: (detail: CustomEventDetail['date-updated']['detail']) => void = noop;
-  @state() onKeydown: (ev: KeyboardEvent) => void = noop;
-  @state() onKeyup: (ev: KeyboardEvent) => void = noop;
+  @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
+  @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
   @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
   @state() renderFooter: CalendarProperties['renderFooter'];
   @state() renderWeekDay: CalendarProperties['renderWeekDay'];
-  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
-  @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
 
   // #updateSelectedDate = (event: KeyboardEvent): void => {
   //   const key = event.key as SupportedKey;
@@ -395,16 +401,20 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
 
   // @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
+  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
+
+  @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
+
   protected override render(): TemplateResult | typeof nothing {
     return this.#renderCalendar();
   }
 
-  protected override async updated(): Promise<void> {
-    // fixme: focus element when `date` changes
-    // if (this.#shouldFocusSelectedDate) {
-    //   await focusElement(this.selectedCalendarDay);
-    //   this.#shouldFocusSelectedDate = false;
-    // }
+  protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
+    this.#focusSelectedDate(changedProperties);
+  }
+
+  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    this.#installFormatters(changedProperties);
   }
 }
 
