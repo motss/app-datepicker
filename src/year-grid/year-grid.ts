@@ -10,7 +10,7 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetButton, resetShadowRoot } from '../stylings.js';
 import type { InferredFromSet } from '../typings.js';
-import { yearGridName } from './constants.js';
+import { defaultYearGridButtonYearTemplate, yearGridMaxColumn, yearGridName } from './constants.js';
 import { renderYearGridButton } from './helpers/render-year-grid-button/render-year-grid-button.js';
 import { toNextYear } from './helpers/to-next-year/to-next-year.js';
 import { yearGrid_yearGridButtonStyle, yearGridStyle } from './styles.js';
@@ -138,7 +138,7 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
             selectedYearTemplate :
             toyear
               ? toyearTemplate
-              : '%s';
+              : defaultYearGridButtonYearTemplate;
         const label = templateReplacer(template, [yearLabel]);
 
         return renderYearGridButton({
@@ -159,7 +159,7 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
      * instead of just the year grid container. So what is doing here is to calculate the position of
      * the selected year and updates the `.scrollTop`.
      */
-    this.scrollTop = Math.floor((this.#focusingYear - this.#minDateTime.getUTCFullYear()) / 4) * 32;
+    this.scrollTop = Math.floor((this.#focusingYear - this.#minDateTime.getUTCFullYear()) / yearGridMaxColumn) * 48;
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {

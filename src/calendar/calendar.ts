@@ -11,7 +11,7 @@ import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
-import { resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
+import { baseStyling, resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
 import type { InferredFromSet } from '../typings.js';
 import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
 import type { CalendarProperties } from './types.js';
@@ -27,6 +27,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   public static override styles = [
     resetShadowRoot,
     resetTableStyle,
+    baseStyling,
     visuallyHiddenStyle,
     calendar_tableStyle,
     calendar_calendarDayStyle,
@@ -269,10 +270,14 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       <!-- february 2020 -->
       <caption class="sr-only">${caption}</caption>
 
+      <colgroup>${weekNumber.value ? html`<col />` : nothing}
+        ${weekdays.map(() => html`<col />`)}
+      </colgroup>
+
       <!-- Wk | S M T W T F S -->
       <thead>
         <tr>
-          ${weekNumber ? (renderWeekLabel ?? renderNoop)({ label: weekLabel, value: shortWeekLabel }) : nothing}
+          ${weekNumber.value ? (renderWeekLabel ?? renderNoop)({ label: weekLabel, value: shortWeekLabel }) : nothing}
           ${
             weekdays.map((weekday, ri) => {
               return (renderWeekDay ?? renderNoop)({ ri, weekday });

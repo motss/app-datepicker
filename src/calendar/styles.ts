@@ -1,8 +1,7 @@
 import { css } from 'lit';
 
 export const calendar_tableStyle = css`
-.calendar {
-  width: 100%;
+:host {
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
   font-family: var(--md-sys-typescale-body-large-font);
@@ -12,8 +11,8 @@ export const calendar_tableStyle = css`
   letter-spacing: var(--md-sys-typescale-body-large-tracking);
 }
 
-.calendar :is(td, th) {
-  width: max(40px, calc(100% / var(--_cols, 8)));
+.calendar col {
+  width: var(--_day-size);
 }
 
 .calendar :is(td, th):after {
@@ -23,7 +22,7 @@ export const calendar_tableStyle = css`
   padding-top: 100%;
 }
 
-:is(td, th) > abbr {
+.calendar :is(td, th) > abbr {
   display: grid;
   place-content: center;
   place-items: center;

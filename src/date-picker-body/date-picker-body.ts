@@ -20,15 +20,18 @@ import { keyHome } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
-import { resetShadowRoot } from '../stylings.js';
+import { baseStyling, resetShadowRoot } from '../stylings.js';
 import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
 import type { YearGridProperties } from '../year-grid/types.js';
 import { datePickerBodyName } from './constants.js';
+import { datePickerBodyStyle } from './styles.js';
 
 @customElement(datePickerBodyName)
 export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements DatePickerProperties {
   static override styles = [
     resetShadowRoot,
+    baseStyling,
+    datePickerBodyStyle,
   ];
 
   #focusedDate: Date;
@@ -73,16 +76,16 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     }
   };
 
-  #onMenuButtonClick = () => {
+  #onMenuClick = () => {
     this.startView = this.startView === 'calendar' ? 'yearGrid' : 'calendar';
   };
 
-  #onNextIconButtonClick = () => {
+  #onNextClick = () => {
     this.#focusedDate = toUTCDate(this.#focusedDate, { month: 1 });
     this.requestUpdate();
   };
 
-  #onPrevIconButtonClick = () => {
+  #onPrevClick = () => {
     this.#focusedDate = toUTCDate(this.#focusedDate, { month: -1 });
     this.requestUpdate();
   };
@@ -176,14 +179,13 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       showWeekNumber,
       startView,
       toyearTemplate,
-      value,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
     } = this;
+    const fd = this.#focusedDate;
 
-    const date = toResolvedDate(value);
-    const focusedDateValue = this.#focusedDate.toJSON();
+    const focusedDateValue = fd.toJSON();
     const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
       month: 'long',
       timeZone: 'UTC',
@@ -192,20 +194,22 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     const menuLabel = startView === 'calendar' ? chooseMonthLabel : chooseYearLabel;
 
     return html`
-    <div class=body>
+    <div class=datePickerBody>
       <date-picker-body-menu
+        class=menu
         .menuLabel=${menuLabel}
-        .menuText=${longMonthYearFormat(date)}
+        .menuText=${longMonthYearFormat(fd)}
         .nextIconButtonLabel=${nextMonthLabel}
-        .onMenuButtonClick=${this.#onMenuButtonClick}
-        .onNextIconButtonClick=${this.#onNextIconButtonClick}
-        .onPrevIconButtonClick=${this.#onPrevIconButtonClick}
+        .onMenuClick=${this.#onMenuClick}
+        .onNextClick=${this.#onNextClick}
+        .onPrevClick=${this.#onPrevClick}
         .prevIconButtonLabel=${previousMonthLabel}
       ></date-picker-body-menu>
 
       ${
         this.startView === 'calendar' ? html`
         <app-calendar
+          class=body
           disabledDates=${disabledDates}
           disabledDays=${disabledDays}
           firstDayOfWeek=${firstDayOfWeek}
@@ -228,6 +232,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
         ></app-calendar>
         ` : html`
         <year-grid
+          class=body
           locale=${locale}
           max=${ifDefined(max)}
           min=${ifDefined(min)}

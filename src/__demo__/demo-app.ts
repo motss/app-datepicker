@@ -140,7 +140,7 @@ export class DemoApp extends RootElement {
     // });
 
     return html`
-    <div style="width:328px;">
+    <div style="width:calc(48px * 7 + 12px * 2);">
       <date-picker-header
         .headline=${new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', weekday: 'short' }).format(new Date())}
         .iconButton=${iconEdit}
@@ -160,6 +160,8 @@ export class DemoApp extends RootElement {
         .onDenyClick=${(ev: MouseEvent) => console.debug('deny:click', ev)}
       ></date-picker-footer>
 
+      <hr />
+
       <date-picker-body
         .chooseMonthLabel=${labelChooseMonth}
         .chooseYearLabel=${labelChooseYear}
@@ -175,7 +177,7 @@ export class DemoApp extends RootElement {
         .selectedDateLabel=${labelSelectedDate}
         .selectedYearTemplate=${selectedYearTemplate}
         .shortWeekLabel=${labelShortWeek}
-        .showWeekNumber=${true}
+        .showWeekNumber=${false}
         .startView=${'calendar'}
         .todayLabel=${labelToday}
         .toyearTemplate=${toyearTemplate}
@@ -184,6 +186,8 @@ export class DemoApp extends RootElement {
         .weekNumberTemplate=${weekNumberTemplate}
         .weekNumberType=${'first-4-day-week'}
       ></date-picker-body>
+
+      <hr />
 
       <div style="max-height:300px;overflow:auto;">
         <year-grid

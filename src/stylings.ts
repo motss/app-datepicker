@@ -4,7 +4,7 @@ export const absoluteHidden = css`[hidden] { display: none !important; }`;
 
 export const baseStyling = css`
 :host {
-  --_focus: var(--app-focus, #000);
+  /* --_focus: var(--app-focus, #000);
   --_hover: var(--app-hover, #6200ee);
   --_on-disabled: var(--app-on-disabled, rgba(0, 0, 0, .38));
   --_on-focus: var(--app-on-focus, #000);
@@ -21,7 +21,15 @@ export const baseStyling = css`
   --_selected-on-hover: var(--app-selected-on-hover, #fff);
   --_shape: var(--app-shape, 4px);
   --_surface: var(--app-surface, #fff);
-  --_today: var(--app-today, #000);
+  --_today: var(--app-today, #000); */
+
+  --_day-size: 48px;
+  --_padding: 0px;
+
+  display: block;
+  width: calc(var(--_day-size) * var(--_cols, 7) + var(--_side, var(--_padding)) * 2);
+  padding-inline: var(--_padding);
+  background-color: var(--md-sys-color-surface-container-high);
 }
 `;
 

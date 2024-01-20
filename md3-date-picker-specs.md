@@ -2,10 +2,16 @@
 
 ## Design specs
 
-```js
-   width: 328px
-   height: 512px
+MD3 official specs does not provide accurate measuresments for all the dimensions of the components used. This specs is crafted so that it follows the actual measurements determined from the MD3 specs in a more realistic way.
 
+### Container dimension
+
+| Attribute   | MD3 | Actual |
+| ----------- | --- | ------ |
+| Width (px)  | 328 | 360    |
+| Height (px) | 512 | 572    |
+
+```js
    | 24 |                         | 8 | 48 | 12 |
     --------------------------------------------
 16 |                                            |
