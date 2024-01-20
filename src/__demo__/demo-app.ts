@@ -9,11 +9,12 @@ import '../date-picker-body/date-picker-body.js';
 import '../date-picker-body-menu/date-picker-body-menu.js';
 import '../date-picker-footer/date-picker-footer.js';
 import '../calendar/app-calendar.js';
+import '../year-grid/year-grid.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
 
-import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelSelectedYear, labelShortWeek, labelToday, labelToyear, labelWeek, weekNumberTemplate } from '../constants.js';
+import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
 import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
 import type { AppDatePickerDialogBase } from '../date-picker-dialog/app-date-picker-dialog-base.js';
@@ -172,17 +173,26 @@ export class DemoApp extends RootElement {
         .previousMonthLabel=${labelPreviousMonth}
         .selectDateLabel=${labelSelectDate}
         .selectedDateLabel=${labelSelectedDate}
-        .selectedYearLabel=${labelSelectedYear}
+        .selectedYearTemplate=${selectedYearTemplate}
         .shortWeekLabel=${labelShortWeek}
         .showWeekNumber=${true}
         .startView=${'calendar'}
         .todayLabel=${labelToday}
-        .toyearLabel=${labelToyear}
+        .toyearTemplate=${toyearTemplate}
         .value=${'2020-02-02'}
         .weekLabel=${labelWeek}
         .weekNumberTemplate=${weekNumberTemplate}
         .weekNumberType=${'first-4-day-week'}
       ></date-picker-body>
+
+      <div style="max-height:300px;overflow:auto;">
+        <year-grid
+          locale=${'en-US'}
+          max=${''}
+          min=${''}
+          value=${new Date().toISOString()}
+        ></year-grid>
+      </div>
     </div>
 
     <date-picker-input>

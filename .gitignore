@@ -7,7 +7,6 @@
 .firebase/
 .nyc_output
 .tmp/
-.vscode
 *.env
 *.idea
 *.local
