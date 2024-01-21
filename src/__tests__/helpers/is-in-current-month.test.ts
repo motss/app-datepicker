@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { isInCurrentMonth } from '../../helpers/is-in-current-month';
+import { isSameMonth } from '../../helpers/is-same-month';
 
-describe(isInCurrentMonth.name, () => {
+describe(isSameMonth.name, () => {
   it.each<{
     $_value: boolean;
     source: Date;
@@ -23,7 +23,7 @@ describe(isInCurrentMonth.name, () => {
     source,
     target,
   }) => {
-    const result = isInCurrentMonth(target, source);
+    const result = isSameMonth(target, source);
 
     expect(result).toBe($_value);
   });

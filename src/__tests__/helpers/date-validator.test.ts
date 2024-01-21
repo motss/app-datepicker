@@ -1,4 +1,4 @@
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import { describe, expect, it } from 'vitest';
 
 import { dateValidator } from '../../helpers/date-validator';
@@ -91,7 +91,7 @@ describe(dateValidator.name, () => {
     value,
   }) => {
     const result = dateValidator(value, defaultDate);
-  
+
     expect(result).toEqual($_value);
   });
 

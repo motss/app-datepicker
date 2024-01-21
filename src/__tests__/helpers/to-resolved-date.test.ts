@@ -1,4 +1,4 @@
-import { toUTCDate } from 'nodemod/dist/calendar/helpers/to-utc-date.js';
+import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import { describe, expect, it } from 'vitest';
 
 import { toResolvedDate } from '../../helpers/to-resolved-date';
