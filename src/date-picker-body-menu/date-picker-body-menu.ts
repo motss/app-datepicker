@@ -1,4 +1,4 @@
-import { type CSSResultGroup, html, type TemplateResult } from 'lit';
+import { type CSSResultGroup, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
@@ -30,8 +30,9 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
   @state() onMenuClick?: DatePickerBodyMenuProperties['onMenuClick'];
   @state() onNextClick?: DatePickerBodyMenuProperties['onNextClick'];
   @state() onPrevClick?: DatePickerBodyMenuProperties['onPrevClick'];
-
   @property() prevIconButtonLabel: string = '';
+  @property({ type: Boolean }) showNextButton: boolean = true;
+  @property({ type: Boolean }) showPrevButton: boolean = true;
 
   protected override render(): TemplateResult {
     const {
@@ -51,8 +52,8 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
         <div class=icon style="--_state:${iconState}deg;" slot=icon>${iconArrowDropdown}</div>
       </md-text-button>
 
-      <md-icon-button class=prevIconButton @click=${onPrevClick} aria-label=${prevIconButtonLabel} title=${prevIconButtonLabel}>${iconChevronLeft}</md-icon-button>
-      <md-icon-button class=nextIconButton @click=${onNextClick} aria-label=${nextIconButtonLabel} title=${nextIconButtonLabel}>${iconChevronRight}</md-icon-button>
+      ${this.showNextButton ? html`<md-icon-button class=prevIconButton @click=${onPrevClick} aria-label=${prevIconButtonLabel} title=${prevIconButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
+      ${this.showPrevButton ? html`<md-icon-button class=nextIconButton @click=${onNextClick} aria-label=${nextIconButtonLabel} title=${nextIconButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
     </div>
     `;
   }

@@ -36,10 +36,11 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #focusSelectedDate = (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('value')) {
+    if (changedProperties.has('value') && this.#shouldFocusDate) {
       this.root
         .querySelector<HTMLTableCellElement>('[tabindex="0"]')
         ?.focus();
+      this.#shouldFocusDate = false;
     }
   };
 
@@ -83,6 +84,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
        * causes a scrollable page to be scrolled downwards via the Space key.
        */
       ev.preventDefault();
+      this.#shouldFocusDate = true;
     }
   };
 
@@ -314,6 +316,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     </table>
     `;
   };
+
+  #shouldFocusDate: boolean = false;
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
   @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];

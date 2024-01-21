@@ -4,14 +4,17 @@ import '../year-grid/year-grid.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
+import type { MdTextButton } from '@material/web/button/text-button.js';
 import { html, type PropertyValueMap } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
 import { navigationKeySetGrid, renderNoop } from '../constants.js';
+import type { DatePickerBodyMenu } from '../date-picker-body-menu/date-picker-body-menu.js';
 import { isSameMonth } from '../helpers/is-same-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
@@ -116,8 +119,18 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
 
   #selectedDate: Date;
   #tabbableDate: Date;
-
   #todayDate: Date = toResolvedDate();
+
+  #updateFocusOnViewChange = (changedProperties: PropertyValueMap<this>) => {
+    if (changedProperties.has('startView')) {
+      const { startView } = this;
+
+      if (changedProperties.get('startView') !== startView) {
+        const menuButton = this.bodyMenuRef.value?.root.querySelector('.menuButton') as MdTextButton | null;
+        menuButton?.focus();
+      }
+    }
+  };
 
   #updateTabbableDate = () => {
     const {
@@ -151,6 +164,8 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
           minTime: minDateTime.getTime(),
         });
   };
+
+  bodyMenuRef: Ref<DatePickerBodyMenu> = createRef();
 
   constructor() {
     super();
@@ -191,19 +206,27 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       timeZone: 'UTC',
       year: 'numeric',
     }).format;
-    const menuLabel = startView === 'calendar' ? chooseMonthLabel : chooseYearLabel;
+    const isCalendarView = startView === 'calendar';
+    const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
+
+    // fixme: show and hide buttons when calendar reaches min or max
+    const showNextButton = isCalendarView;
+    const showPrevButton = isCalendarView;
 
     return html`
     <div class=datePickerBody>
       <date-picker-body-menu
+        ${ref(this.bodyMenuRef)}
         class=menu
-        .menuLabel=${menuLabel}
-        .menuText=${longMonthYearFormat(fd)}
-        .nextIconButtonLabel=${nextMonthLabel}
+        menuLabel=${menuLabel}
+        menuText=${longMonthYearFormat(fd)}
+        nextIconButtonLabel=${nextMonthLabel}
         .onMenuClick=${this.#onMenuClick}
         .onNextClick=${this.#onNextClick}
         .onPrevClick=${this.#onPrevClick}
         .prevIconButtonLabel=${previousMonthLabel}
+        ?showNextButton=${showNextButton}
+        ?showPrevButton=${showPrevButton}
       ></date-picker-body-menu>
 
       ${
@@ -245,6 +268,10 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       }
     </div>
     `;
+  }
+
+  protected override updated(changedProperties: PropertyValueMap<this>): void {
+    this.#updateFocusOnViewChange(changedProperties);
   }
 
   protected override willUpdate(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
