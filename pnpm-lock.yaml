@@ -4,6 +4,10 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+neverBuiltDependencies:
+  - lit-ntml
+  - nodemod
+
 dependencies:
   '@material/mwc-base':
     specifier: ^0.27.0
@@ -3898,7 +3902,6 @@ packages:
   /lit-ntml@3.0.6:
     resolution: {integrity: sha512-PTxjoB1rgwGkfd8lN8agw7MeCojG2voJRBl2G/HBWH6mwsFobqUs+8NSymwPuFCFaAOuxlIVn42aahi3NhD0yg==}
     engines: {node: '>= 16.x', npm: '>= 8.x'}
-    requiresBuild: true
     dependencies:
       parse5: 6.0.1
       tslib: 2.6.2
@@ -4148,7 +4151,6 @@ packages:
   /nodemod@3.0.6:
     resolution: {integrity: sha512-XsW1ydsY8Dh7IyBIVsF8QFVNlBOUHMEJ8BNLzj8G9O27/g3KqfvfGZ8LFP3cOFcksZQ7skQdNVsgx+A7E56wMg==}
     engines: {node: '>= 16.x', npm: '>= 8.x'}
-    requiresBuild: true
     dependencies:
       lit-ntml: 3.0.6
       lodash-es: 4.17.21
