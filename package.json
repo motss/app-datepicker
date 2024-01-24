@@ -203,5 +203,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "pnpm": {
+    "neverBuiltDependencies": ["lit-ntml", "nodemod"]
   }
 }
