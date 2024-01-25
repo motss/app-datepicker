@@ -7,17 +7,17 @@ import { customElement, state } from 'lit/decorators.js';
 import { noop } from '../constants.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
-import { datePickerHeaderName, defaultSupportingText } from './constants.js';
-import { datePickerHeader_headerStyle, datePickerHeader_headlineStyle, datePickerHeader_iconButtonStyle, datePickerHeader_supportingTextStyle } from './styles.js';
+import { modalDatePickerHeaderName, defaultSupportingText } from './constants.js';
+import { modalDatePickerHeader_headerStyle, modalDatePickerHeader_headlineStyle, modalDatePickerHeader_iconButtonStyle, modalDatePickerHeader_supportingTextStyle } from './styles.js';
 
-@customElement(datePickerHeaderName)
-export class DatePickerHeader extends RootElement {
+@customElement(modalDatePickerHeaderName)
+export class ModalDatePickerHeader extends RootElement {
   static override styles = [
     resetShadowRoot,
-    datePickerHeader_headerStyle,
-    datePickerHeader_headlineStyle,
-    datePickerHeader_iconButtonStyle,
-    datePickerHeader_supportingTextStyle,
+    modalDatePickerHeader_headerStyle,
+    modalDatePickerHeader_headlineStyle,
+    modalDatePickerHeader_iconButtonStyle,
+    modalDatePickerHeader_supportingTextStyle,
   ];
 
   @state() headline: string = '';
@@ -44,6 +44,6 @@ export class DatePickerHeader extends RootElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [datePickerHeaderName]: DatePickerHeader;
+    [modalDatePickerHeaderName]: ModalDatePickerHeader;
   }
 }

@@ -1,12 +1,12 @@
 import { css } from 'lit';
 
-export const datePickerHeader_headerStyle = css`
+export const modalDatePickerHeader_headerStyle = css`
 .header {
   display: grid;
   grid-template-areas: 'supportingText .' 'headline iconButton';
   grid-template-columns: minmax(1px, 1fr) 48px;
   gap: 0 8px;
-  
+
   width: 100%;
   height: 120px;
   padding: 16px 12px 12px 24px;
@@ -27,7 +27,7 @@ p {
 }
 `;
 
-export const datePickerHeader_supportingTextStyle = css`
+export const modalDatePickerHeader_supportingTextStyle = css`
 .supportingText {
   grid-area: supportingText;
 
@@ -40,7 +40,7 @@ export const datePickerHeader_supportingTextStyle = css`
 }
 `;
 
-export const datePickerHeader_headlineStyle = css`
+export const modalDatePickerHeader_headlineStyle = css`
 .headline {
   grid-area: headline;
 
@@ -55,7 +55,7 @@ export const datePickerHeader_headlineStyle = css`
 }
 `;
 
-export const datePickerHeader_iconButtonStyle = css`
+export const modalDatePickerHeader_iconButtonStyle = css`
 .iconButton {
   --md-icon-button-state-layer-width: 48px;
   --md-icon-button-state-layer-height: 48px;

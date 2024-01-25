@@ -4,10 +4,10 @@
 // import '../date-picker-dialog/app-date-picker-dialog.js';
 import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '@material/web/dialog/dialog.js';
-import '../date-picker-header/date-picker-header.js';
+import '../modal-date-picker-header/modal-date-picker-header.js';
 import '../date-picker-body/date-picker-body.js';
 import '../date-picker-body-menu/date-picker-body-menu.js';
-import '../date-picker-footer/date-picker-footer.js';
+import '../modal-date-picker-footer/modal-date-picker-footer.js';
 import '../calendar/app-calendar.js';
 import '../year-grid/year-grid.js';
 
