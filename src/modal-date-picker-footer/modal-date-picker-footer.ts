@@ -5,17 +5,18 @@ import { customElement, state } from 'lit/decorators.js';
 
 import { noop } from '../constants.js';
 import { RootElement } from '../root-element/root-element.js';
-import { resetShadowRoot } from '../stylings.js';
-import { modalDatePickerFooterName, defaultConfirmText, defaultDenyText } from './constants.js';
-import { modalDatePickerFooter_confirmTextStyle, modalDatePickerFooter_denyTextStyle, modalDatePickerFooter_textButtonsStyle } from './styles.js';
+import { baseStyling, resetShadowRoot } from '../stylings.js';
+import { defaultConfirmText, defaultDenyText, modalDatePickerFooterName } from './constants.js';
+import { modalDatePickerFooter_confirmTextStyle, modalDatePickerFooter_denyTextStyle, modalDatePickerFooter_footerStyle } from './styles.js';
 
 @customElement(modalDatePickerFooterName)
 export class ModalDatePickerFooter extends RootElement {
   static override styles: CSSResultGroup = [
     resetShadowRoot,
+    baseStyling,
     modalDatePickerFooter_confirmTextStyle,
     modalDatePickerFooter_denyTextStyle,
-    modalDatePickerFooter_textButtonsStyle,
+    modalDatePickerFooter_footerStyle,
   ];
 
   @state() confirmText: string = defaultConfirmText;
@@ -30,7 +31,7 @@ export class ModalDatePickerFooter extends RootElement {
     } = this;
 
     return html`
-    <div class=textButtons>
+    <div class=footer>
       <md-text-button class=denyText @click=${this.onDenyClick}>${denyText}</md-text-button>
       <md-text-button class=confirmText @click=${this.onConfirmClick}>${confirmText}</md-text-button>
     </div>

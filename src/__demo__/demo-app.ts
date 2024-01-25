@@ -10,6 +10,7 @@ import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import '../modal-date-picker-footer/modal-date-picker-footer.js';
 import '../calendar/app-calendar.js';
 import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
+import '../modal-date-picker/modal-date-picker.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
@@ -141,28 +142,34 @@ export class DemoApp extends RootElement {
 
     return html`
     <div style="width:calc(48px * 7 + 12px * 2);">
-      <date-picker-header
+      <modal-date-picker-header
         .headline=${new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', weekday: 'short' }).format(new Date())}
         .iconButton=${iconEdit}
         .onHeadlineClick=${(ev: MouseEvent) => console.debug('headline:click', ev)}
         .onIconButtonClick=${(ev: MouseEvent) => console.debug('iconButton:click', ev)}
-      ></date-picker-header>
-      <date-picker-body-menu
+      ></modal-date-picker-header>
+      <modal-date-picker-body-menu
         .menuText=${longMonthYearFormat(date)}
         .onMenuButtonClick=${(ev: MouseEvent) => console.debug('menubutton:click', ev)}
         .onNextIconButtonClick=${(ev: MouseEvent) => console.debug('nexticonbutton:click', ev)}
         .onPrevIconButtonClick=${(ev: MouseEvent) => console.debug('previconbutton:click', ev)}
-      ></date-picker-body-menu>
-      <date-picker-footer
+      ></modal-date-picker-body-menu>
+      <modal-date-picker-footer
         .confirmText=${'OK'}
         .denyText=${'Cancel'}
         .onConfirmClick=${(ev: MouseEvent) => console.debug('confirm:click', ev)}
         .onDenyClick=${(ev: MouseEvent) => console.debug('deny:click', ev)}
-      ></date-picker-footer>
+      ></modal-date-picker-footer>
 
       <hr />
 
-      <date-picker-body
+      <modal-date-picker>
+        modal date picker
+      </modal-date-picker>
+
+      <hr />
+
+      <modal-date-picker-body
         .chooseMonthLabel=${labelChooseMonth}
         .chooseYearLabel=${labelChooseYear}
         .disabledDates=${''}
@@ -185,7 +192,7 @@ export class DemoApp extends RootElement {
         .weekLabel=${labelWeek}
         .weekNumberTemplate=${weekNumberTemplate}
         .weekNumberType=${'first-4-day-week'}
-      ></date-picker-body>
+      ></modal-date-picker-body>
 
       <hr />
 
@@ -199,9 +206,9 @@ export class DemoApp extends RootElement {
       </div>
     </div>
 
-    <date-picker-input>
+    <modal-date-picker-input>
       <p>loading...</p>
-    </date-picker-input>
+    </modal-date-picker-input>
 
     <app-date-picker
       id="datePicker1"

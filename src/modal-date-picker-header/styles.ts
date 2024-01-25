@@ -1,7 +1,13 @@
 import { css } from 'lit';
 
 export const modalDatePickerHeader_headerStyle = css`
+:host {
+  --_side: 12px;
+}
+
 .header {
+  --_padding: var(--_side);
+
   display: grid;
   grid-template-areas: 'supportingText .' 'headline iconButton';
   grid-template-columns: minmax(1px, 1fr) 48px;
@@ -9,7 +15,7 @@ export const modalDatePickerHeader_headerStyle = css`
 
   width: 100%;
   height: 120px;
-  padding: 16px 12px 12px 24px;
+  padding: 16px var(--_padding) 12px var(--_padding);
   border: none;
   border-start-start-radius: var(--md-sys-shape-corner-extra-large);
   border-start-end-radius: var(--md-sys-shape-corner-extra-large);
@@ -24,6 +30,11 @@ export const modalDatePickerHeader_headerStyle = css`
 
 p {
   margin: 0;
+}
+
+.supportingText,
+.headline {
+  padding-inline: var(--_side) 0;
 }
 `;
 
