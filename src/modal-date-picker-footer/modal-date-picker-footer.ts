@@ -6,16 +6,16 @@ import { customElement, state } from 'lit/decorators.js';
 import { noop } from '../constants.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
-import { datePickerFooterName, defaultConfirmText, defaultDenyText } from './constants.js';
-import { datePickerFooter_confirmTextStyle, datePickerFooter_denyTextStyle, datePickerFooter_textButtonsStyle } from './styles.js';
+import { modalDatePickerFooterName, defaultConfirmText, defaultDenyText } from './constants.js';
+import { modalDatePickerFooter_confirmTextStyle, modalDatePickerFooter_denyTextStyle, modalDatePickerFooter_textButtonsStyle } from './styles.js';
 
-@customElement(datePickerFooterName)
-export class DatePickerFooter extends RootElement {
+@customElement(modalDatePickerFooterName)
+export class ModalDatePickerFooter extends RootElement {
   static override styles: CSSResultGroup = [
     resetShadowRoot,
-    datePickerFooter_confirmTextStyle,
-    datePickerFooter_denyTextStyle,
-    datePickerFooter_textButtonsStyle,
+    modalDatePickerFooter_confirmTextStyle,
+    modalDatePickerFooter_denyTextStyle,
+    modalDatePickerFooter_textButtonsStyle,
   ];
 
   @state() confirmText: string = defaultConfirmText;
@@ -40,6 +40,6 @@ export class DatePickerFooter extends RootElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    [datePickerFooterName]: DatePickerFooter;
+    [modalDatePickerFooterName]: ModalDatePickerFooter;
   }
 }

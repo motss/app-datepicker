@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const datePickerFooter_textButtonsStyle = css`
+export const modalDatePickerFooter_textButtonsStyle = css`
 .textButtons {
   display: grid;
   grid-template-areas: '. denyText confirmText';
@@ -13,13 +13,13 @@ export const datePickerFooter_textButtonsStyle = css`
 }
 `;
 
-export const datePickerFooter_denyTextStyle = css`
+export const modalDatePickerFooter_denyTextStyle = css`
 .denyText {
   grid-area: denyText;
 }
 `;
 
-export const datePickerFooter_confirmTextStyle = css`
+export const modalDatePickerFooter_confirmTextStyle = css`
 .confirmText {
   grid-area: confirmText;
 }
