@@ -4,16 +4,17 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
-import { datePickerBodyMenuName } from './constants.js';
-import { bodyMenuStyle } from './styles.js';
-import type { DatePickerBodyMenuProperties } from './types.js';
+import { modalDatePickerBodyMenuName } from './constants.js';
+import { modalDatePickerBodyMenu_bodyMenuStyle, modalDatePickerBodyMenu_buttonsStyle } from './styles.js';
+import type { ModalDatePickerBodyMenuProperties } from './types.js';
 
-@customElement(datePickerBodyMenuName)
-export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMenuProperties {
+@customElement(modalDatePickerBodyMenuName)
+export class ModalDatePickerBodyMenu extends RootElement implements ModalDatePickerBodyMenuProperties {
   static override styles: CSSResultGroup = [
     resetShadowRoot,
     baseStyling,
-    bodyMenuStyle,
+    modalDatePickerBodyMenu_bodyMenuStyle,
+    modalDatePickerBodyMenu_buttonsStyle,
   ];
 
   #onMenuClick = (ev: MouseEvent) => {
@@ -27,9 +28,9 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
   @property() menuLabel: string = '';
   @property() menuText: string = '';
   @property() nextIconButtonLabel: string = '';
-  @state() onMenuClick?: DatePickerBodyMenuProperties['onMenuClick'];
-  @state() onNextClick?: DatePickerBodyMenuProperties['onNextClick'];
-  @state() onPrevClick?: DatePickerBodyMenuProperties['onPrevClick'];
+  @state() onMenuClick?: ModalDatePickerBodyMenuProperties['onMenuClick'];
+  @state() onNextClick?: ModalDatePickerBodyMenuProperties['onNextClick'];
+  @state() onPrevClick?: ModalDatePickerBodyMenuProperties['onPrevClick'];
   @property() prevIconButtonLabel: string = '';
   @property({ type: Boolean }) showNextButton: boolean = false;
   @property({ type: Boolean }) showPrevButton: boolean = false;
@@ -63,6 +64,6 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
 
 declare global {
   interface HTMLElementTagNameMap {
-    [datePickerBodyMenuName]: DatePickerBodyMenu;
+    [modalDatePickerBodyMenuName]: ModalDatePickerBodyMenu;
   }
 }

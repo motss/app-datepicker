@@ -1,5 +1,5 @@
 import '../calendar/app-calendar.js';
-import '../date-picker-body-menu/date-picker-body-menu.js';
+import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import '../year-grid/year-grid.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
@@ -14,7 +14,7 @@ import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/rende
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
 import { navigationKeySetGrid, renderNoop } from '../constants.js';
-import type { DatePickerBodyMenu } from '../date-picker-body-menu/date-picker-body-menu.js';
+import type { ModalDatePickerBodyMenu } from '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import { isSameMonth } from '../helpers/is-same-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
@@ -163,7 +163,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     }
   };
 
-  bodyMenuRef: Ref<DatePickerBodyMenu> = createRef();
+  bodyMenuRef: Ref<ModalDatePickerBodyMenu> = createRef();
 
   protected override render() {
     const {

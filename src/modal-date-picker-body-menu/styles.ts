@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const bodyMenuStyle = css`
+export const modalDatePickerBodyMenu_bodyMenuStyle = css`
 :host {
   --_btn-size: 48px;
 
@@ -21,7 +21,9 @@ export const bodyMenuStyle = css`
   grid-template-rows: var(--_btn-size);
   align-items: center;
 }
+`;
 
+export const modalDatePickerBodyMenu_buttonsStyle = css`
 .menuButton,
 .prevIconButton,
 .nextIconButton {

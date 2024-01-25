@@ -1,4 +1,4 @@
-export interface DatePickerBodyMenuProperties {
+export interface ModalDatePickerBodyMenuProperties {
   menuLabel: string;
   menuText: string;
   nextIconButtonLabel: string;
