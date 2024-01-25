@@ -163,7 +163,30 @@ export class DemoApp extends RootElement {
 
       <hr />
 
-      <modal-date-picker>
+      <modal-date-picker
+        .chooseMonthLabel=${labelChooseMonth}
+        .chooseYearLabel=${labelChooseYear}
+        .disabledDates=${''}
+        .disabledDays=${''}
+        .firstDayOfWeek=${0}
+        .locale=${'en-US'}
+        .max=${''}
+        .min=${''}
+        .nextMonthLabel=${labelNextMonth}
+        .previousMonthLabel=${labelPreviousMonth}
+        .selectDateLabel=${labelSelectDate}
+        .selectedDateLabel=${labelSelectedDate}
+        .selectedYearTemplate=${selectedYearTemplate}
+        .shortWeekLabel=${labelShortWeek}
+        .showWeekNumber=${false}
+        .startView=${'calendar'}
+        .todayLabel=${labelToday}
+        .toyearTemplate=${toyearTemplate}
+        .value=${'2020-05-05'}
+        .weekLabel=${labelWeek}
+        .weekNumberTemplate=${weekNumberTemplate}
+        .weekNumberType=${'first-4-day-week'}
+      >
         modal date picker
       </modal-date-picker>
 
