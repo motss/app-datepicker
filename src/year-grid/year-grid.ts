@@ -93,7 +93,7 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
     }
   };
 
-  #todayYear: number;
+  #todayYear: number = toResolvedDate().getUTCFullYear();
   #yearFormat: Intl.DateTimeFormat = intlDateTimeFormatNoop;
 
   @property() public locale: string = new Intl.DateTimeFormat().resolvedOptions().locale;
@@ -103,13 +103,6 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
   @property() public toyearTemplate: string = toyearTemplate;
   @property() public value: null | string | undefined = '';
   @queryAsync('.year-grid') yearGrid!: Promise<HTMLDivElement | null>;
-
-  constructor() {
-    super();
-
-    const todayDate = toResolvedDate();
-    this.#focusingYear = this.#todayYear = todayDate.getUTCFullYear();
-  }
 
   protected override render(): TemplateResult {
     const { selectedYearTemplate, toyearTemplate, value } = this;
@@ -158,13 +151,27 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
      * instead of just the year grid container. So what is doing here is to calculate the position of
      * the selected year and updates the `.scrollTop`.
      */
-    this.scrollTop = Math.floor((this.#focusingYear - this.#minDateTime.getUTCFullYear()) / yearGridMaxColumn) * 48;
+    const diffInYears = this.#focusingYear - this.#minDateTime.getUTCFullYear();
+    const whichRow = Math.floor(diffInYears / yearGridMaxColumn);
+    const whichRowThatCentered = whichRow - yearGridMaxColumn;
+    const buttonHeight = 48;
+
+    this.scrollTop = whichRowThatCentered * buttonHeight;
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
     this.#installYearFormat(changedProperties);
+    this.#updateFocusingYear(changedProperties);
     this.#updateMinMax(changedProperties);
   }
+
+  #updateFocusingYear = (changedProperties: PropertyValueMap<this>) => {
+    const { value } = this;
+
+    if (changedProperties.has('value') && value !== changedProperties.get('value')) {
+      this.#focusingYear = toResolvedDate(value).getUTCFullYear();
+    }
+  };
 }
 
 declare global {
