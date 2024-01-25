@@ -26,7 +26,7 @@ import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
 import type { YearGridProperties } from '../year-grid/types.js';
-import { datePickerBodyName } from './constants.js';
+import { datePickerBodyName, defaultDate } from './constants.js';
 import { datePickerBodyStyle } from './styles.js';
 
 @customElement(datePickerBodyName)
@@ -37,7 +37,9 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     datePickerBodyStyle,
   ];
 
-  #focusedDate: Date;
+  #focusedDate: Date = defaultDate;
+  #minDate: Date = defaultDate;
+  #maxDate: Date = defaultDate;
 
   #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (ev) => {
     const path = ev.composedPath() as HTMLElement[];
@@ -117,8 +119,8 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     return renderWeekDay(weekday);
   };
 
-  #selectedDate: Date;
-  #tabbableDate: Date;
+  #selectedDate: Date = defaultDate;
+  #tabbableDate: Date = defaultDate;
   #todayDate: Date = toResolvedDate();
 
   #updateFocusOnViewChange = (changedProperties: PropertyValueMap<this>) => {
@@ -133,49 +135,35 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
   };
 
   #updateTabbableDate = () => {
-    const {
-      disabledDates,
-      disabledDays,
-      max,
-      min,
-    } = this;
     const isWithinSameMonth = isSameMonth(this.#selectedDate, this.#focusedDate);
 
-    /**
-     * NOTE: This reset tabindex of a tab-able calendar day to
-     * the first day of month when navigating away from the current month
-     * where the focused/ selected date is no longer in the new current month.
-     */
-    const disabledDateList = splitString(disabledDates, toResolvedDate);
-    const disabledDayList = splitString(disabledDays, Number);
-    const maxDateTime = toResolvedDate(max);
-    const minDateTime = toResolvedDate(min);
+    if (isWithinSameMonth) {
+      this.#tabbableDate = this.#selectedDate;
+    } else {
+      const { disabledDates, disabledDays } = this;
 
-    this.#tabbableDate = isWithinSameMonth
-      ? this.#selectedDate
-      : toNextSelectedDate({
-          currentDate: this.#focusedDate,
-          date: this.#selectedDate,
-          disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
-          disabledDaysSet: new Set(disabledDayList),
-          hasAltKey: false,
-          key: keyHome,
-          maxTime: maxDateTime.getTime(),
-          minTime: minDateTime.getTime(),
-        });
+      /**
+       * NOTE: This reset tabindex of a tab-able calendar day to
+       * the first day of month when navigating away from the current month
+       * where the focused/ selected date is no longer in the new current month.
+       */
+      const disabledDateList = splitString(disabledDates, toResolvedDate);
+      const disabledDayList = splitString(disabledDays, Number);
+
+      this.#tabbableDate = toNextSelectedDate({
+        currentDate: this.#focusedDate,
+        date: this.#selectedDate,
+        disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
+        disabledDaysSet: new Set(disabledDayList),
+        hasAltKey: false,
+        key: keyHome,
+        maxTime: this.#maxDate.getTime(),
+        minTime: this.#minDate.getTime(),
+      });
+    }
   };
 
   bodyMenuRef: Ref<DatePickerBodyMenu> = createRef();
-
-  constructor() {
-    super();
-
-    const { value } = this;
-
-    this.#focusedDate = toResolvedDate(value);
-    this.#selectedDate = toResolvedDate(value);
-    this.#tabbableDate = toResolvedDate(value);
-  }
 
   protected override render() {
     const {
@@ -197,6 +185,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
+      bodyMenuRef,
     } = this;
     const fd = this.#focusedDate;
 
@@ -208,15 +197,13 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     }).format;
     const isCalendarView = startView === 'calendar';
     const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
-
-    // fixme: show and hide buttons when calendar reaches min or max
-    const showNextButton = isCalendarView;
-    const showPrevButton = isCalendarView;
+    const showNextButton = isCalendarView && !isSameMonth(fd, this.#maxDate);
+    const showPrevButton = isCalendarView && !isSameMonth(fd, this.#minDate);
 
     return html`
     <div class=datePickerBody>
       <date-picker-body-menu
-        ${ref(this.bodyMenuRef)}
+        ${ref(bodyMenuRef)}
         class=menu
         menuLabel=${menuLabel}
         menuText=${longMonthYearFormat(fd)}
@@ -229,8 +216,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
         ?showPrevButton=${showPrevButton}
       ></date-picker-body-menu>
 
-      ${
-        this.startView === 'calendar' ? html`
+      ${isCalendarView ? html`
         <app-calendar
           class=body
           disabledDates=${disabledDates}
@@ -274,9 +260,33 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     this.#updateFocusOnViewChange(changedProperties);
   }
 
-  protected override willUpdate(_changedProperties: Map<PropertyKey, unknown> | PropertyValueMap<this>): void {
+  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    this.#updateDatesByValue(changedProperties);
+    this.#updateMinMax(changedProperties);
     this.#updateTabbableDate();
   }
+
+  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
+    const { max, min } = this;
+
+    if (changedProperties.has('max') && max !== changedProperties.get('max')) {
+      this.#maxDate = toResolvedDate(max);
+    }
+
+    if (changedProperties.has('min') && min !== changedProperties.get('min')) {
+      this.#minDate = toResolvedDate(min);
+    }
+  };
+
+  #updateDatesByValue = (changedProperties: PropertyValueMap<this>) => {
+    const { value } = this;
+
+    if (changedProperties.has('value') && value !== changedProperties.get('value')) {
+      this.#focusedDate =
+        this.#selectedDate =
+        this.#tabbableDate = toResolvedDate(value);
+    }
+  };
 }
 
 declare global {

@@ -17,7 +17,7 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
   ];
 
   #onMenuClick = (ev: MouseEvent) => {
-    this.#state = this.#state === 'down' ?  'up' : 'down';
+    this.#state = this.#state === 'down' ? 'up' : 'down';
     this.requestUpdate();
     this.onMenuClick?.(ev);
   };
@@ -31,8 +31,8 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
   @state() onNextClick?: DatePickerBodyMenuProperties['onNextClick'];
   @state() onPrevClick?: DatePickerBodyMenuProperties['onPrevClick'];
   @property() prevIconButtonLabel: string = '';
-  @property({ type: Boolean }) showNextButton: boolean = true;
-  @property({ type: Boolean }) showPrevButton: boolean = true;
+  @property({ type: Boolean }) showNextButton: boolean = false;
+  @property({ type: Boolean }) showPrevButton: boolean = false;
 
   protected override render(): TemplateResult {
     const {
@@ -42,6 +42,8 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
       onNextClick,
       onPrevClick,
       prevIconButtonLabel,
+      showNextButton,
+      showPrevButton,
     } = this;
     const iconState = this.#state === 'down' ? 0 : 180;
 
@@ -52,8 +54,8 @@ export class DatePickerBodyMenu extends RootElement implements DatePickerBodyMen
         <div class=icon style="--_state:${iconState}deg;" slot=icon>${iconArrowDropdown}</div>
       </md-text-button>
 
-      ${this.showNextButton ? html`<md-icon-button class=prevIconButton @click=${onPrevClick} aria-label=${prevIconButtonLabel} title=${prevIconButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
-      ${this.showPrevButton ? html`<md-icon-button class=nextIconButton @click=${onNextClick} aria-label=${nextIconButtonLabel} title=${nextIconButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
+      ${showPrevButton ? html`<md-icon-button class=prevIconButton @click=${onPrevClick} aria-label=${prevIconButtonLabel} title=${prevIconButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
+      ${showNextButton ? html`<md-icon-button class=nextIconButton @click=${onNextClick} aria-label=${nextIconButtonLabel} title=${nextIconButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
     </div>
     `;
   }

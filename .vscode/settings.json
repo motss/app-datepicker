@@ -3,8 +3,8 @@
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports.eslint": true
+    "source.fixAll.eslint": "always",
+    "source.organizeImports.eslint": "always"
   },
   "files.insertFinalNewline": true,
   "typescript.tsdk": "node_modules/typescript/lib",

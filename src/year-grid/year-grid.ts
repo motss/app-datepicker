@@ -81,7 +81,7 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
     }
   };
 
-  #setMinMaxDateTime = (changedProperties: PropertyValueMap<this>) => {
+  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
     const { max, min } = this;
 
     if (changedProperties.has('max') && changedProperties.get('max') !== max) {
@@ -126,30 +126,29 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
       @keyup=${this.#onYearChange}
       class=yearGrid
       part=year-grid
-    >${
-      yearList.map((year) => {
-        const selected = year === selectedDateYear;
-        const tabIndex = year === this.#focusingYear ? 0 : -1;
-        const toyear = this.#todayYear === year;
-        const yearLabel = this.#yearFormat.format(new Date(`${year}-01-01`));
+    >${yearList.map((year) => {
+      const selected = year === selectedDateYear;
+      const tabIndex = year === this.#focusingYear ? 0 : -1;
+      const toyear = this.#todayYear === year;
+      const yearLabel = this.#yearFormat.format(new Date(`${year}-01-01`));
 
-        const template =
-          selected ?
-            selectedYearTemplate :
-            toyear
-              ? toyearTemplate
-              : defaultYearGridButtonYearTemplate;
-        const label = templateReplacer(template, [yearLabel]);
+      const template =
+        selected ?
+          selectedYearTemplate :
+          toyear
+            ? toyearTemplate
+            : defaultYearGridButtonYearTemplate;
+      const label = templateReplacer(template, [yearLabel]);
 
-        return renderYearGridButton({
-          label,
-          selected,
-          tabIndex,
-          toyear,
-          year,
-        });
-      })
-    }</div>
+      return renderYearGridButton({
+        label,
+        selected,
+        tabIndex,
+        toyear,
+        year,
+      });
+    })
+      }</div>
     `;
   }
 
@@ -163,8 +162,8 @@ export class YearGrid extends DatePickerMinMaxMixin(RootElement) implements Year
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {
-    this.#setMinMaxDateTime(changedProperties);
     this.#installYearFormat(changedProperties);
+    this.#updateMinMax(changedProperties);
   }
 }
 
