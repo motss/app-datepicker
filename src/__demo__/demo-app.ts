@@ -9,7 +9,7 @@ import '../date-picker-body/date-picker-body.js';
 import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import '../modal-date-picker-footer/modal-date-picker-footer.js';
 import '../calendar/app-calendar.js';
-import '../year-grid/year-grid.js';
+import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';

@@ -1,6 +1,6 @@
 import { clampValue } from '../../../helpers/clamp-value.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../../../key-values.js';
-import { yearGridMaxColumn } from '../../constants.js';
+import { defaultYearGridMaxColumn } from '../../constants.js';
 import type { ToNextYearInit } from './types.js';
 
 export function toNextYear({
@@ -13,11 +13,11 @@ export function toNextYear({
 
   switch (key) {
     case keyArrowUp: {
-      newYear = year - yearGridMaxColumn;
+      newYear = year - defaultYearGridMaxColumn;
       break;
     }
     case keyArrowDown: {
-      newYear = year + yearGridMaxColumn;
+      newYear = year + defaultYearGridMaxColumn;
       break;
     }
     case keyArrowLeft: {

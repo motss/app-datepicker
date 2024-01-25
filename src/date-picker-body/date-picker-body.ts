@@ -1,6 +1,6 @@
 import '../calendar/app-calendar.js';
 import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
-import '../year-grid/year-grid.js';
+import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
@@ -25,7 +25,7 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
-import type { YearGridProperties } from '../year-grid/types.js';
+import type { ModalDatePickerYearGridProperties } from '../modal-date-picker-year-grid/types.js';
 import { datePickerBodyName, defaultDate } from './constants.js';
 import { datePickerBodyStyle } from './styles.js';
 
@@ -95,7 +95,7 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
     this.requestUpdate();
   };
 
-  #onYearUpdate: NonNullable<YearGridProperties['onYearUpdate']> = (year) => {
+  #onYearUpdate: NonNullable<ModalDatePickerYearGridProperties['onYearUpdate']> = (year) => {
     const focusedDate = toResolvedDate(this.#focusedDate);
 
     this.#focusedDate = fromPartsToUtcDate(year, focusedDate.getUTCMonth(), focusedDate.getUTCDate());

@@ -1,3 +1,4 @@
+
 import '@material/web/button/filled-button.js';
 import '@material/web/button/text-button.js';
 
@@ -28,7 +29,7 @@ export function renderYearGridButton({
     type=button
   >${year}</md-filled-button>
   ` :
-  html`
+    html`
   <md-text-button
     aria-label=${ifDefined(maybeLabel)}
     aria-pressed=${selected ? 'true' : 'false'}

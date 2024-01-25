@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const yearGridStyle = css`
+export const modalDatePickerYearGrid_yearGridStyle = css`
 .yearGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(72px, auto));
@@ -17,7 +17,7 @@ export const yearGridStyle = css`
 }
 `;
 
-export const yearGrid_yearGridButtonStyle = css`
+export const modalDatePickerYearGrid_yearGridButtonStyle = css`
 .yearGridButton {
   width: 72px;
   height: 36px
