@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const datePickerBodyStyle = css`
+export const modalDatePickerBody_datePickerBodyStyle = css`
 :host {
   --_side: 12px;
 }

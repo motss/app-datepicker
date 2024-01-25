@@ -24,17 +24,18 @@ import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
-import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../typings.js';
+import type { InferredFromSet, SupportedKey } from '../typings.js';
 import type { ModalDatePickerYearGridProperties } from '../modal-date-picker-year-grid/types.js';
-import { datePickerBodyName, defaultDate } from './constants.js';
-import { datePickerBodyStyle } from './styles.js';
+import { modalDatePickerBodyName, defaultDate } from './constants.js';
+import { modalDatePickerBody_datePickerBodyStyle } from './styles.js';
+import type { ModalDatePickerBodyProperties } from './types.js';
 
-@customElement(datePickerBodyName)
-export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements DatePickerProperties {
+@customElement(modalDatePickerBodyName)
+export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements ModalDatePickerBodyProperties {
   static override styles = [
     resetShadowRoot,
     baseStyling,
-    datePickerBodyStyle,
+    modalDatePickerBody_datePickerBodyStyle,
   ];
 
   #focusedDate: Date = defaultDate;
@@ -291,6 +292,6 @@ export class DatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootEl
 
 declare global {
   interface HTMLElementTagNameMap {
-    [datePickerBodyName]: DatePickerBody;
+    [modalDatePickerBodyName]: ModalDatePickerBody;
   }
 }
