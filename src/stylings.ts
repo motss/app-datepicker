@@ -1,4 +1,4 @@
-import { css } from 'lit';
+import { css, unsafeCSS } from 'lit';
 
 export const absoluteHidden = css`[hidden] { display: none !important; }`;
 
@@ -30,6 +30,71 @@ export const baseStyling = css`
   width: calc(var(--_day-size) * var(--_cols, 7) + var(--_side, var(--_padding)) * 2);
   padding-inline: var(--_padding);
   background-color: var(--md-sys-color-surface-container-high);
+}
+
+[hidden] {
+  display: none;
+}
+`;
+
+export const includeScrollbarStyle = (prefix: string) => css`
+@supports not (scrollbar-width: thin) {
+  ${unsafeCSS(prefix)}::-webkit-scrollbar {
+    width: 8px;
+    background: none;
+  }
+
+  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb {
+    width: inherit;
+    background-color: rgba(205 205 205 / 1);
+    border-radius: 4px;
+  }
+
+  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, .35);
+  }
+
+  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:active {
+    background-color: rgba(0, 0, 0, .55);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb {
+      background-color: rgba(104 104 104 / 1)
+    }
+
+    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(73 73 73 / 1)
+    }
+
+    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:active {
+      background-color: rgba(90 90 90 / 1)
+    }
+  }
+}
+
+@supports (scrollbar-width: thin) {
+  .body {
+    --_scrollbarColor_thumb: rgba(140 140 140 / 1);
+
+    scrollbar-color: var(--_scrollbarColor_thumb) rgba(0 0 0 / 0);
+    scrollbar-width: thin;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  .body:hover {
+    --_scrollbarColor_thumb: rgba(152 152 152 / 1);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .body {
+      --_scrollbarColor_thumb: rgba(104 104 104 / 1);
+    }
+
+    .body:hover {
+      --_scrollbarColor_thumb: rgba(73 73 73 / 1);
+    }
+  }
 }
 `;
 

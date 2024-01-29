@@ -2,12 +2,11 @@
 // import '../date-picker-input-2/app-date-picker-input.js';
 // import '../date-picker-input/date-picker-input.js';
 // import '../date-picker-dialog/app-date-picker-dialog.js';
-import '../date-picker-input-surface/app-date-picker-input-surface.js';
+// import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '@material/web/dialog/dialog.js';
 import '../modal-date-picker-header/modal-date-picker-header.js';
 import '../modal-date-picker-body/modal-date-picker-body.js';
 import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
-import '../modal-date-picker-footer/modal-date-picker-footer.js';
 import '../calendar/app-calendar.js';
 import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 import '../modal-date-picker/modal-date-picker.js';
@@ -16,7 +15,7 @@ import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
 
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
-import type { AppDatePicker } from '../date-picker/app-date-picker.js';
+// import type { AppDatePicker } from '../date-picker/app-date-picker.js';
 import type { AppDatePickerDialog } from '../date-picker-dialog/app-date-picker-dialog.js';
 import type { AppDatePickerDialogBase } from '../date-picker-dialog/app-date-picker-dialog-base.js';
 import { appDatePickerDialogBaseName, appDatePickerDialogName } from '../date-picker-dialog/constants.js';
@@ -154,16 +153,11 @@ export class DemoApp extends RootElement {
         .onNextIconButtonClick=${(ev: MouseEvent) => console.debug('nexticonbutton:click', ev)}
         .onPrevIconButtonClick=${(ev: MouseEvent) => console.debug('previconbutton:click', ev)}
       ></modal-date-picker-body-menu>
-      <modal-date-picker-footer
-        .confirmText=${'OK'}
-        .denyText=${'Cancel'}
-        .onConfirmClick=${(ev: MouseEvent) => console.debug('confirm:click', ev)}
-        .onDenyClick=${(ev: MouseEvent) => console.debug('deny:click', ev)}
-      ></modal-date-picker-footer>
 
       <hr />
 
       <modal-date-picker
+        open
         .chooseMonthLabel=${labelChooseMonth}
         .chooseYearLabel=${labelChooseYear}
         .disabledDates=${''}

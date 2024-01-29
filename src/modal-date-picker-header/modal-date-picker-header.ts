@@ -34,11 +34,15 @@ export class ModalDatePickerHeader extends RootElement implements ModalDatePicke
       supportingText,
     } = this;
 
+    const editIcon =
+      /** fixme: this require new M3 TextField component to edit date */
+      html`<md-icon-button class=iconButton hidden @click=${this.onIconButtonClick}>${iconButton}</md-icon-button>`;
+
     return html`
     <div class=header>
       <p class=supportingText>${supportingText}</p>
       <p class=headline>${headline}</p>
-      <md-icon-button class=iconButton @click=${this.onIconButtonClick}>${iconButton}</md-icon-button>
+      ${editIcon}
     </div>
     `;
   }

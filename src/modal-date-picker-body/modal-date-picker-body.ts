@@ -264,7 +264,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
         ></app-calendar>
         ` : html`
         <modal-date-picker-year-grid
-          class=body
+          class="body yearGrid"
           locale=${locale}
           max=${ifDefined(max)}
           min=${ifDefined(min)}
