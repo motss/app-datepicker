@@ -14,7 +14,7 @@ import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../stylings.js';
 import type { InferredFromSet } from '../typings.js';
 import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
-import type { CalendarProperties } from './types.js';
+import type { CalendarDayElement, CalendarProperties } from './types.js';
 
 const defaultDateTimeFormat = new Intl.DateTimeFormat('en');
 
@@ -35,12 +35,34 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
 
   #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
-  #focusSelectedDate = (changedProperties: PropertyValueMap<this>) => {
+  #findSelectableCalendarDayNode = (ev: KeyboardEvent | MouseEvent) => {
+    const path = ev.composedPath() as HTMLElement[];
+    const node = path.find(n => {
+      return (
+        n.nodeType === Node.ELEMENT_NODE &&
+        n.classList.contains('calendarDayButton') &&
+        n.getAttribute('aria-disabled') !== 'true'
+      );
+    }) as CalendarDayElement;
+
+    return node;
+  };
+
+  #focusDateWhenNeeded = async (changedProperties: PropertyValueMap<this>) => {
     if (changedProperties.has('value') && this.#shouldFocusDate) {
-      this.root
-        .querySelector<HTMLTableCellElement>('[tabindex="0"]')
-        ?.focus();
+      const { value } = this;
+      const dayText = toResolvedDate(value).getUTCDate();
+
+      /**
+       * note: `lit` requires more time to re-render the `.calendarDayButton`
+       * when `value` changes. Overriding `getUpdateComplete()` does not have
+       * any effect as of writing. This will be revisited later.
+       */
+      await this.updateComplete;
+
+      this.query(`.calendarDayButton[data-day="${dayText}"]`)?.focus();
       this.#shouldFocusDate = false;
+      this.onUpdated?.();
     }
   };
 
@@ -84,6 +106,19 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
        * causes a scrollable page to be scrolled downwards via the Space key.
        */
       ev.preventDefault();
+
+      const node = this.#findSelectableCalendarDayNode(ev);
+
+      if (node) {
+        this.#shouldFocusDate = true;
+      }
+    }
+  };
+
+  #onMouseDown = (ev: MouseEvent) => {
+    const node = this.#findSelectableCalendarDayNode(ev);
+
+    if (node) {
       this.#shouldFocusDate = true;
     }
   };
@@ -256,8 +291,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     ];
 
     const caption = this.#fullDateFormat.format(date);
-    const onClick = (ev: MouseEvent) => onDateUpdateByClick?.(ev, calendarGrid);
-    const onKeyUp = (ev: KeyboardEvent) => onDateUpdateByKey?.(ev, calendarGrid);
+    const onClick = (ev: MouseEvent) => onDateUpdateByClick?.(ev, this.#findSelectableCalendarDayNode(ev), calendarGrid);
+    const onKeyUp = (ev: KeyboardEvent) => onDateUpdateByKey?.(ev, this.#findSelectableCalendarDayNode(ev), calendarGrid);
 
     return html`
     <table
@@ -266,6 +301,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       @click=${onClick}
       @keydown=${this.#onKeyDown}
       @keyup=${onKeyUp}
+      @mousedown=${this.#onMouseDown}
       tabindex=-1
       role=grid
     >
@@ -318,11 +354,14 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   };
 
   #shouldFocusDate: boolean = false;
+
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
+  onUpdated?: CalendarProperties['onUpdated'];
   @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
   @state() renderFooter: CalendarProperties['renderFooter'];
   @state() renderWeekDay: CalendarProperties['renderWeekDay'];
+  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
 
   // #updateSelectedDate = (event: KeyboardEvent): void => {
   //   const key = event.key as SupportedKey;
@@ -419,8 +458,6 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
 
   // @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
 
-  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
-
   @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
 
   protected override render(): TemplateResult | typeof nothing {
@@ -428,7 +465,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   }
 
   protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
-    this.#focusSelectedDate(changedProperties);
+    await this.#focusDateWhenNeeded(changedProperties);
   }
 
   protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
@@ -445,10 +482,5 @@ declare global {
   // interface HTMLElement {
   //   part: HTMLElementPart;
   // }
-
-  interface HTMLTableCellElement {
-    day: string;
-    fullDate: Date | undefined;
-  }
   // #endregion HTML element type extensions
 }

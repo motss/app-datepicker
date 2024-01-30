@@ -29,6 +29,10 @@ import type { DatePickerProperties } from '../typings';
 //   | 'todayLabel'
 // >;
 
+export interface CalendarDayElement extends Omit<HTMLButtonElement, 'dataset'> {
+  dataset: Record<'day' | 'fulldate', string>;
+}
+
 export interface CalendarProperties extends
   Pick<
     DatePickerProperties,
@@ -46,8 +50,9 @@ export interface CalendarProperties extends
     | 'weekNumberType'
   >
 {
-  onDateUpdateByClick?(ev: MouseEvent, calendarGrid: CalendarGrid): void;
-  onDateUpdateByKey?(ev: KeyboardEvent, calendarGrid: CalendarGrid): void;
+  onDateUpdateByClick?(ev: MouseEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
+  onDateUpdateByKey?(ev: KeyboardEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
+  onUpdated?(): void;
   renderCalendarDay?(init: RenderCalendarDayInit): TemplateResult | typeof nothing;
   renderFooter?(): TemplateResult | typeof nothing;
   renderWeekDay?(init: RenderWeekDayInit): TemplateResult | typeof nothing;

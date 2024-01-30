@@ -4,7 +4,7 @@ import '../modal-date-picker-header/modal-date-picker-header.js';
 
 import type { MdDialog } from '@material/web/dialog/dialog.js';
 import { html, type TemplateResult } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
@@ -12,6 +12,8 @@ import { labelConfirm, labelDeny } from '../constants.js';
 import { iconEdit } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import type { ModalDatePickerBody } from '../modal-date-picker-body/modal-date-picker-body.js';
+import type { ModalDatePickerBodyProperties } from '../modal-date-picker-body/types.js';
 import type { ModalDatePickerHeaderProperties } from '../modal-date-picker-header/types.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
@@ -30,19 +32,74 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     modalDatePicker_actionsStyle,
   ];
 
+  #bodyRef: Ref<ModalDatePickerBody> = createRef();
   #dialogRef: Ref<MdDialog> = createRef();
 
+  #didDateUpdate: boolean = false;
+
+  #onDateUpdate: ModalDatePickerBodyProperties['onDateUpdate'] = (updatedDate) => {
+    this.#selectedDate = updatedDate;
+    this.#didDateUpdate = true;
+  };
+
+  #onDialogCancel = () => {
+    this.fire({
+      detail: {},
+      type: 'cancel',
+    });
+  };
+
   #onDialogClose = () => {
-    console.debug('dialog:close', this.#dialogRef.value?.returnValue);
+    this.fire({
+      detail: {},
+      type: 'close',
+    });
+  };
+
+  #onDialogClosed = () => {
+    this.fire({
+      detail: {},
+      type: 'closed',
+    });
+
+    const updatedDate = this.#selectedDate;
+
+    if (this.#didDateUpdate && updatedDate && this.#dialogRef.value?.returnValue === 'confirm') {
+      // todo: add custom formatter
+      this.value = updatedDate.toJSON();
+      this.#selectedDate = undefined;
+      this.onDateUpdate?.(updatedDate);
+    }
+  };
+
+  #onDialogOpen = () => {
+    this.fire({
+      detail: {},
+      type: 'open',
+    });
+  };
+
+  #onDialogOpened = () => {
+    this.fire({
+      detail: {},
+      type: 'opened',
+    });
   };
 
   #onIconButtonClick: ModalDatePickerHeaderProperties['onIconButtonClick'] = () => {
     /** fixme: this require new M3 TextField component to edit date */
   };
 
+  #selectedDate?: Date;
+
   @property() confirmText: string = labelConfirm;
+
   @property() denyText: string = labelDeny;
+
+  @state() onDateUpdate?: ModalDatePickerProperties['onDateUpdate'];
+
   @property({ type: Boolean }) open: ModalDatePickerProperties['open'];
+
   @property() type?: MdDialog['type'];
 
   close(returnValue: ModalDatePickerPropertiesReturnValue) {
@@ -88,10 +145,14 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
 
     return html`
     <md-dialog
-      class=dialog
       ${ref(this.#dialogRef)}
-      @close=${this.#onDialogClose}
+      class=dialog
       ?open=${open}
+      @cancel=${this.#onDialogCancel}
+      @close=${this.#onDialogClose}
+      @closed=${this.#onDialogClosed}
+      @open=${this.#onDialogOpen}
+      @opened=${this.#onDialogOpened}
       type=${ifDefined(type)}
     >
       <form method=dialog slot=content id=${formId}>
@@ -103,6 +164,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
         ></modal-date-picker-header>
 
         <modal-date-picker-body
+          ${ref(this.#bodyRef)}
           .chooseMonthLabel=${chooseMonthLabel}
           .chooseYearLabel=${chooseYearLabel}
           .disabledDates=${disabledDates}
@@ -125,6 +187,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
           .weekLabel=${weekLabel}
           .weekNumberTemplate=${weekNumberTemplate}
           .weekNumberType=${weekNumberType}
+          .onDateUpdate=${this.#onDateUpdate}
         ></modal-date-picker-body>
       </form>
 
@@ -133,8 +196,17 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     `;
   }
 
+  async reset() {
+    await (this.#bodyRef.value as ModalDatePickerBody).reset();
+    return this.updateComplete;
+  }
+
   show(): Promise<void> {
     return (this.#dialogRef.value as MdDialog).show();
+  }
+
+  get returnValue(): ModalDatePickerProperties['returnValue'] {
+    return (this.#dialogRef.value as MdDialog).returnValue;
   }
 }
 

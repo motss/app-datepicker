@@ -13,6 +13,7 @@ import '../modal-date-picker/modal-date-picker.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
 // import type { AppDatePicker } from '../date-picker/app-date-picker.js';
@@ -23,6 +24,7 @@ import type { AppDatePickerInput } from '../date-picker-input-2/app-date-picker-
 import { appDatePickerInputName } from '../date-picker-input-2/constants.js';
 import { toFormatters } from '../helpers/to-formatters.js';
 import { iconEdit } from '../icons.js';
+import type { ModalDatePicker } from '../modal-date-picker/modal-date-picker.js';
 import { RootElement } from '../root-element/root-element.js';
 import type { CustomEventDetail } from '../typings.js';
 
@@ -60,6 +62,7 @@ export class DemoApp extends RootElement {
     `,
   ];
 
+  #datePickerRef: Ref<ModalDatePicker> = createRef();
   #dateUpdated = ({
     currentTarget,
     detail,
@@ -71,6 +74,7 @@ export class DemoApp extends RootElement {
       id,
     });
   };
+
   #showDialog = async (ev: MouseEvent) => {
     const { dataset } = ev.currentTarget as HTMLButtonElement;
     const dialog = this.query<AppDatePickerDialog>(`#${dataset.id}`);
@@ -88,9 +92,9 @@ export class DemoApp extends RootElement {
       valueAsNumber: new Date(dialog?.valueAsNumber as number),
     });
   };
-
   @state() _editable = false;
   @state() _outlined = false;
+
   @queryAsync(appDatePickerDialogName) dialog!: Promise<AppDatePickerDialog>;
 
   @queryAsync(appDatePickerDialogBaseName) dialogBase!: Promise<AppDatePickerDialogBase>;
@@ -157,7 +161,9 @@ export class DemoApp extends RootElement {
       <hr />
 
       <modal-date-picker
+        ${ref(this.#datePickerRef)}
         open
+        .onDateUpdate=${console.debug}
         .chooseMonthLabel=${labelChooseMonth}
         .chooseYearLabel=${labelChooseYear}
         .disabledDates=${''}
@@ -183,6 +189,10 @@ export class DemoApp extends RootElement {
       >
         modal date picker
       </modal-date-picker>
+      <md-outlined-button @click=${async () => {
+        await this.#datePickerRef.value?.reset();
+        await this.#datePickerRef.value?.show();
+      }}>Show ModalDatePicker</md-outlined-button>
 
       <hr />
 

@@ -21,8 +21,11 @@ export const calendar_tableStyle = css`
   position: relative;
   padding-top: 100%;
 }
+`;
 
-.calendar :is(td, th) > abbr {
+export const calendar_calendarDayStyle = css`
+.calendarDay > .calendarDayButton,
+.weekDay > abbr {
   display: grid;
   place-content: center;
   place-items: center;
@@ -31,13 +34,27 @@ export const calendar_tableStyle = css`
   inset: 0;
   margin: 0;
   padding: 8px;
-  cursor: default;
-  text-decoration: none;
   z-index: 1;
 }
-`;
 
-export const calendar_calendarDayStyle = css`
+.calendarDayButton {
+  --_outlineColor: rgba(0 0 0 / 0);
+  --_labelColor: var(--md-sys-color-on-surface);
+
+  --md-outlined-button-outline-color: var(--_outlineColor);
+  --md-outlined-button-label-text-color: var(--_labelColor);
+
+  padding: 0;
+}
+
+.calendarDayButton.today {
+  --_outlineColor: var(--md-sys-color-primary);
+  --_labelColor: var(--md-sys-color-primary);
+}
+
+abbr {
+  text-decoration: none;
+}
 `;
 
 // :host {

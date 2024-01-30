@@ -10,6 +10,7 @@ import { customElement } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
+import type { AppCalendar } from '../calendar/app-calendar.js';
 import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
@@ -38,27 +39,21 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
     modalDatePickerBody_datePickerBodyStyle,
   ];
 
+  #bodyMenuRef: Ref<ModalDatePickerBodyMenu> = createRef();
   #focusedDate: Date = defaultDate;
   #maxDate: Date = defaultDate;
   #minDate: Date = defaultDate;
 
-  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (ev) => {
-    const path = ev.composedPath() as HTMLElement[];
-    const node = path.find(n => {
-      return (
-        n.nodeType === Node.ELEMENT_NODE &&
-        n.localName === 'td' &&
-        !n.classList.contains('calendarDay--none')
-      );
-    }) as HTMLTableCellElement;
-
-    if (node) {
-      this.#selectedDate = new Date(node.fullDate as Date);
-      this.requestUpdate();
-    }
+  #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
+    this.onDateUpdate?.(this.#selectedDate);
   };
 
-  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, { disabledDatesSet, disabledDaysSet }) => {
+  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (_ev, node) => {
+    this.#focusedDate = this.#selectedDate = toResolvedDate(node.dataset.fulldate);
+    this.requestUpdate();
+  };
+
+  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, _node, { disabledDatesSet, disabledDaysSet }) => {
     if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
       const nextDate = toNextSelectedDate({
         currentDate: this.#focusedDate,
@@ -80,6 +75,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
         this.requestUpdate();
       }
     }
+    // fixme: handle confirm key
   };
 
   #onMenuClick = () => {
@@ -119,7 +115,6 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
   #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ ri, weekday }) => {
     return renderWeekDay(weekday);
   };
-
   #selectedDate: Date = defaultDate;
   #tabbableDate: Date = defaultDate;
   #todayDate: Date = toResolvedDate();
@@ -139,7 +134,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
       const { startView } = this;
 
       if (changedProperties.get('startView') !== startView) {
-        const menuButton = this.bodyMenuRef.value?.root.querySelector('.menuButton') as MdTextButton | null;
+        const menuButton = this.#bodyMenuRef.value?.root.querySelector('.menuButton') as MdTextButton | null;
         menuButton?.focus();
       }
     }
@@ -185,12 +180,10 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
       });
     }
   };
-
-  bodyMenuRef: Ref<ModalDatePickerBodyMenu> = createRef();
+  onDateUpdate?: ModalDatePickerBodyProperties['onDateUpdate'];
 
   protected override render() {
     const {
-      bodyMenuRef,
       chooseMonthLabel,
       chooseYearLabel,
       disabledDates,
@@ -226,7 +219,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
     return html`
     <div class=datePickerBody>
       <modal-date-picker-body-menu
-        ${ref(bodyMenuRef)}
+        ${ref(this.#bodyMenuRef)}
         class=menu
         menuLabel=${menuLabel}
         menuText=${longMonthYearFormat(fd)}
@@ -261,6 +254,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
           weekLabel=${weekLabel}
           weekNumberTemplate=${weekNumberTemplate}
           weekNumberType=${weekNumberType}
+          .onUpdated=${this.#onCalendarUpdated}
         ></app-calendar>
         ` : html`
         <modal-date-picker-year-grid
@@ -277,6 +271,13 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
       }
     </div>
     `;
+  }
+
+  async reset() {
+    this.#focusedDate = this.#selectedDate = toResolvedDate(this.value);
+    this.requestUpdate();
+
+    return this.updateComplete;
   }
 
   protected override updated(changedProperties: PropertyValueMap<this>): void {
