@@ -1,5 +1,5 @@
 import '@material/web/button/filled-button.js';
-import '@material/web/button/text-button.js';
+import '@material/web/button/outlined-button.js';
 
 import { html } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
@@ -29,7 +29,7 @@ export function renderYearGridButton({
   >${year}</md-filled-button>
   ` :
     html`
-  <md-text-button
+  <md-outlined-button
     aria-label=${ifDefined(maybeLabel)}
     aria-pressed=${selected ? 'true' : 'false'}
     class=${classMap({ toyear, yearGridButton: true })}
@@ -38,6 +38,6 @@ export function renderYearGridButton({
     tabindex=${tabIndex}
     title=${ifDefined(maybeLabel)}
     type=button
-  >${year}</md-text-button>
+  >${year}</md-outlined-button>
   `;
 }

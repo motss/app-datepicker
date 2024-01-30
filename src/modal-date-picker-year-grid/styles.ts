@@ -19,12 +19,26 @@ export const modalDatePickerYearGrid_yearGridStyle = css`
 
 export const modalDatePickerYearGrid_yearGridButtonStyle = css`
 .yearGridButton {
+  --_outlineColor: rgba(0 0 0 / 0);
+  --_labelColor: var(--md-sys-color-on-surface);
+  --_space: 12px;
+
+  --md-outlined-button-outline-color: var(--_outlineColor);
+  --md-outlined-button-leading-space: var(--_space);
+  --md-outlined-button-trailing-space: var(--_space);
+  --md-outlined-button-label-text-color: var(--_labelColor);
+
   width: 72px;
-  height: 36px
+  height: 36px;
+}
+
+.yearGridButton.toyear {
+  --_outlineColor: var(--md-sys-color-primary);
+  --_labelColor: var(--md-sys-color-primary);
 }
 
 .yearGridButton[aria-pressed="true"] {
-  --md-filled-button-leading-space: 12px;
-  --md-filled-button-trailing-space: 12px;
+  --md-filled-button-leading-space: var(--_space);
+  --md-filled-button-trailing-space: var(--_space);
 }
 `;
