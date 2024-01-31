@@ -42,25 +42,8 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     this.#didDateUpdate = true;
   };
 
-  #onDialogCancel = () => {
-    this.fire({
-      detail: {},
-      type: 'cancel',
-    });
-  };
-
-  #onDialogClose = () => {
-    this.fire({
-      detail: {},
-      type: 'close',
-    });
-  };
-
-  #onDialogClosed = () => {
-    this.fire({
-      detail: {},
-      type: 'closed',
-    });
+  #onDialogClosed = (ev: CustomEvent<object>) => {
+    this.#propagateCustomEvent(ev);
 
     const updatedDate = this.#selectedDate;
 
@@ -72,22 +55,12 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     }
   };
 
-  #onDialogOpen = () => {
-    this.fire({
-      detail: {},
-      type: 'open',
-    });
-  };
-
-  #onDialogOpened = () => {
-    this.fire({
-      detail: {},
-      type: 'opened',
-    });
-  };
-
   #onIconButtonClick: ModalDatePickerHeaderProperties['onIconButtonClick'] = () => {
     /** fixme: this require new M3 TextField component to edit date */
+  };
+
+  #propagateCustomEvent = (ev: CustomEvent<object>) => {
+    this.fire({ detail: ev.detail, type: ev.type });
   };
 
   #selectedDate?: Date;
@@ -148,11 +121,11 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
       ${ref(this.#dialogRef)}
       class=dialog
       ?open=${open}
-      @cancel=${this.#onDialogCancel}
-      @close=${this.#onDialogClose}
+      @cancel=${this.#propagateCustomEvent}
+      @close=${this.#propagateCustomEvent}
       @closed=${this.#onDialogClosed}
-      @open=${this.#onDialogOpen}
-      @opened=${this.#onDialogOpened}
+      @open=${this.#propagateCustomEvent}
+      @opened=${this.#propagateCustomEvent}
       type=${ifDefined(type)}
     >
       <form method=dialog slot=content id=${formId}>
@@ -196,13 +169,17 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     `;
   }
 
-  async reset() {
+  async reset(): Promise<boolean> {
     await (this.#bodyRef.value as ModalDatePickerBody).reset();
     return this.updateComplete;
   }
 
   show(): Promise<void> {
     return (this.#dialogRef.value as MdDialog).show();
+  }
+
+  showPicker(): ReturnType<typeof this.show> {
+    return this.show();
   }
 
   get returnValue(): ModalDatePickerProperties['returnValue'] {
