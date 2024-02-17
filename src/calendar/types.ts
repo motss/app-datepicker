@@ -48,8 +48,7 @@ export interface CalendarProperties extends
     | 'weekLabel'
     | 'weekNumberTemplate'
     | 'weekNumberType'
-  >
-{
+  > {
   onDateUpdateByClick?(ev: MouseEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
   onDateUpdateByKey?(ev: KeyboardEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
   onUpdated?(): void;

@@ -8,7 +8,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { labelConfirm, labelDeny } from '../constants.js';
+import { dateFormatOptions, labelConfirm, labelDeny } from '../constants.js';
 import { iconEdit } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
@@ -40,6 +40,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
   #onDateUpdate: ModalDatePickerBodyProperties['onDateUpdate'] = (updatedDate) => {
     this.#selectedDate = updatedDate;
     this.#didDateUpdate = true;
+    this.requestUpdate();
   };
 
   #onDialogClosed = (ev: CustomEvent<object>) => {
@@ -112,7 +113,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     } = this;
 
     const formId = id || 'modalDatePicker';
-    const headline = 'Thu, Jan 25'; // fixme: replace with focused date text
+    const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(this.#selectedDate);
     const iconButton = iconEdit;
     const supportingText = selectDateLabel;
 
