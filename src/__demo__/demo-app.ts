@@ -170,9 +170,9 @@ export class DemoApp extends RootElement {
           <label for=modalDatePicker>Selected date:</label>
           <input id=modalDatePicker type=text value=${this.#selectedDate_modalDatePicker} placeholder="Select a date" />
           <md-outlined-button @click=${async () => {
-            await this.#datePickerRef.value?.reset();
-            await this.#datePickerRef.value?.show();
-          }}>Show ModalDatePicker</md-outlined-button>
+        await this.#datePickerRef.value?.reset();
+        await this.#datePickerRef.value?.show();
+      }}>Show ModalDatePicker</md-outlined-button>
         </div>
 
         <div class=comp>
@@ -200,15 +200,16 @@ export class DemoApp extends RootElement {
             .weekLabel=${labelWeek}
             .weekNumberTemplate=${weekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
+            .onDateUpdate=${(d: Date) => {
+        this.#selectedDate_modalDatePicker = toDateString(d);
+        this.requestUpdate();
+        console.debug('ondateupdate', d);
+      }}
+            @cancel=${this.#debugCustomEvent}
             @close=${this.#debugCustomEvent}
             @closed=${this.#debugCustomEvent}
             @open=${this.#debugCustomEvent}
             @opened=${this.#debugCustomEvent}
-            .onDateUpdate=${(d: Date) => {
-              this.#selectedDate_modalDatePicker = toDateString(d);
-              this.requestUpdate();
-              console.debug('ondateupdate', d);
-            }}
           >
             modal date picker
           </modal-date-picker>
@@ -316,22 +317,22 @@ ${'' && `
   .startView=${'yearGrid'}
 ></app-date-picker-input>
 <input id=outlined1 type=checkbox .checked=${this._outlined} @input=${async () => {
-    this._outlined = !this._outlined;
+        this._outlined = !this._outlined;
 
-    const el = this.query<AppDatePickerInput>('#datePickerInputOutlined1');
+        const el = this.query<AppDatePickerInput>('#datePickerInputOutlined1');
 
-    if (el) {
-      /**
-       * NOTE(motss): Initial render with defined `outlined` and other properties will render
-       * everything correctly. However, updating any property that causes re-render will
-       * render the floating label incorrectly for unknown reasons. This is the workaround to
-       * always call `.layout()` manually and it cannot be done by the `DatePickerInput`
-       * internally.
-       */
-      await el.updateComplete;
-      await el.layout();
-    }
-  }} />
+        if (el) {
+          /**
+           * NOTE(motss): Initial render with defined `outlined` and other properties will render
+           * everything correctly. However, updating any property that causes re-render will
+           * render the floating label incorrectly for unknown reasons. This is the workaround to
+           * always call `.layout()` manually and it cannot be done by the `DatePickerInput`
+           * internally.
+           */
+          await el.updateComplete;
+          await el.layout();
+        }
+      }} />
 <label for=outlined1>
   <span>Outlined</span>
 </label>
