@@ -10,6 +10,8 @@ import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import '../calendar/app-calendar.js';
 import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 import '../modal-date-picker/modal-date-picker.js';
+import '../docked-date-picker/docked-date-picker.js';
+import '../docked-date-picker-text-field/docked-date-picker-text-field.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
@@ -214,6 +216,23 @@ export class DemoApp extends RootElement {
             modal date picker
           </modal-date-picker>
         </div>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <div class=io>
+          <docked-date-picker-text-field
+            label=${'Select date'}
+            value=${'2020-05-05'}
+          ></docked-date-picker-text-field>
+          <docked-date-picker
+            label=${'Select date'}
+            value=${'2020-05-05'}
+          ></docked-date-picker>
+        </div>
+
+        <div class=comp></div>
       </section>
     </div>
 
