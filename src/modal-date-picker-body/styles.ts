@@ -1,6 +1,4 @@
-import { css, unsafeCSS } from 'lit';
-
-import { includeScrollbarStyle } from '../stylings.js';
+import { css } from 'lit';
 
 export const modalDatePickerBody_datePickerBodyStyle = css`
 :host {
@@ -13,31 +11,13 @@ export const modalDatePickerBody_datePickerBodyStyle = css`
   grid-template-rows: calc(4px + 4px + 40px + 4px + 4px) minmax(auto, calc(48px * 7));
 }
 
-.menu,
-.body:not(.yearGrid) {
-  --_padding: var(--_side);
-}
-
 .menu {
+  --_padding: var(--_side);
+
   grid-area: menu;
 }
 
 .body {
   grid-area: body;
-
-  display: grid;
-  overflow: hidden;
-  scroll-behavior: smooth;
-  overscroll-behavior: contain;
 }
-
-.body:not(.yearGrid) {
-  scrollbar-gutter: auto;
-}
-
-.yearGrid {
-  overflow: hidden auto;
-}
-
-${unsafeCSS(includeScrollbarStyle('.body'))}
 `;

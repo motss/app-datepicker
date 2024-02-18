@@ -65,7 +65,6 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
         });
 
         this.#focusingYear = focusingYear;
-        this.#shouldFocusYear = true;
         this.requestUpdate();
       }
     } else if (event.type === 'click') {
@@ -82,7 +81,6 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
     }
   };
 
-  #shouldFocusYear: boolean = false;
   #todayYear: number = toResolvedDate().getUTCFullYear();
 
   #updateFocusingYear = (changedProperties: PropertyValueMap<this>) => {
@@ -115,7 +113,7 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
 
   @queryAsync('.year-grid') yearGrid!: Promise<HTMLDivElement | null>;
 
-  #focusYearWhenNeeded() {
+  focusYearWhenNeeded() {
     /**
      * NOTE(motss): Unable to use `.focus()` nor `.scrollIntoView()` as it will trigger the document scrolling
      * instead of just the year grid container. So what is doing here is to calculate the position of
@@ -129,7 +127,6 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
 
     this.scrollTop = whichRowThatCentered * buttonHeight;
     this.query<HTMLButtonElement>(`[data-year="${focusingYear}"]`)?.focus();
-    this.#shouldFocusYear = false;
   }
 
   protected override render(): TemplateResult {
@@ -174,7 +171,7 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
   }
 
   protected override updated(_changedProperties: PropertyValueMap<this>): void {
-    this.#focusYearWhenNeeded();
+    this.focusYearWhenNeeded();
   }
 
   public override willUpdate(changedProperties: PropertyValueMap<this>): void {

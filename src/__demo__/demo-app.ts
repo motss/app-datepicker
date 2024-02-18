@@ -3,15 +3,11 @@
 // import '../date-picker-input/date-picker-input.js';
 // import '../date-picker-dialog/app-date-picker-dialog.js';
 // import '../date-picker-input-surface/app-date-picker-input-surface.js';
-import '@material/web/dialog/dialog.js';
-import '../modal-date-picker-header/modal-date-picker-header.js';
-import '../modal-date-picker-body/modal-date-picker-body.js';
-import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
-import '../calendar/app-calendar.js';
-import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
-import '../modal-date-picker/modal-date-picker.js';
-import '../docked-date-picker/docked-date-picker.js';
+import '@material/web/button/outlined-button.js';
+import '../date-picker-calendar/date-picker-calendar.js';
 import '../docked-date-picker-text-field/docked-date-picker-text-field.js';
+import '../docked-date-picker/docked-date-picker.js';
+import '../modal-date-picker/modal-date-picker.js';
 
 import { css, html } from 'lit';
 import { customElement, queryAsync, state } from 'lit/decorators.js';
@@ -26,6 +22,7 @@ import type { AppDatePickerInput } from '../date-picker-input-2/app-date-picker-
 import { appDatePickerInputName } from '../date-picker-input-2/constants.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconEdit } from '../icons.js';
 import type { ModalDatePicker } from '../modal-date-picker/modal-date-picker.js';
 import { RootElement } from '../root-element/root-element.js';
@@ -78,6 +75,7 @@ export class DemoApp extends RootElement {
   ];
 
   #datePickerRef: Ref<ModalDatePicker> = createRef();
+
   #dateUpdated = ({
     currentTarget,
     detail,
@@ -112,6 +110,9 @@ export class DemoApp extends RootElement {
       valueAsNumber: new Date(dialog?.valueAsNumber as number),
     });
   };
+
+  @state() _datePickerCalendarFocusedDate: Date = toResolvedDate();
+  @state() _datePickerCalendarValue: string = toDateString(toResolvedDate());
 
   @state() _editable = false;
 
@@ -236,6 +237,54 @@ export class DemoApp extends RootElement {
       </section>
     </div>
 
+    <div>
+      <section>
+        <div class=io>
+          <label for=modalDatePicker>Selected date:</label>
+          <input id=modalDatePicker type=text readonly value=${this._datePickerCalendarValue} />
+          <hr />
+          <label for=modalDatePicker>Focused date:</label>
+          <input id=modalDatePicker type=text readonly value=${toDateString(this._datePickerCalendarFocusedDate)} />
+        </div>
+
+        <div class=comp>
+          <date-picker-calendar
+            .chooseMonthLabel=${labelChooseMonth}
+            .chooseYearLabel=${labelChooseYear}
+            .disabledDates=${''}
+            .disabledDays=${''}
+            .firstDayOfWeek=${0}
+            .locale=${'en-US'}
+            .max=${''}
+            .min=${''}
+            .nextMonthLabel=${labelNextMonth}
+            .previousMonthLabel=${labelPreviousMonth}
+            .selectDateLabel=${labelSelectDate}
+            .selectedDateLabel=${labelSelectedDate}
+            .selectedYearTemplate=${selectedYearTemplate}
+            .shortWeekLabel=${labelShortWeek}
+            .showWeekNumber=${false}
+            .startView=${'calendar'}
+            .todayLabel=${labelToday}
+            .toyearTemplate=${toyearTemplate}
+            .value=${this._datePickerCalendarValue}
+            .weekLabel=${labelWeek}
+            .weekNumberTemplate=${weekNumberTemplate}
+            .weekNumberType=${'first-4-day-week'}
+            .onDateUpdate=${(d: Date) => {
+              console.debug('datePickerCalendar:onDateUpdate', d);
+              this._datePickerCalendarValue = toDateString(d);
+            }}
+            .onFocusedDateUpdate=${(d: Date) => {
+              console.debug('datePickerCalendar:onFocusedDateUpdate', d);
+              this._datePickerCalendarFocusedDate = d;
+            }}
+          >
+            modal date picker
+          </date-picker-calendar>
+        </div>
+      </section>
+    </div>
 ${'' && `
 <hr />
 

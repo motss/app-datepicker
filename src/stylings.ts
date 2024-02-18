@@ -37,66 +37,70 @@ export const baseStyling = css`
 }
 `;
 
-export const includeScrollbarStyle = (prefix: string) => css`
-@supports not (scrollbar-width: thin) {
-  ${unsafeCSS(prefix)}::-webkit-scrollbar {
-    width: 8px;
-    background: none;
-  }
+export const includeScrollbarStyle = (prefix: string) => {
+  const selector = unsafeCSS(prefix);
 
-  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb {
-    width: inherit;
-    background-color: rgba(205 205 205 / 1);
-    border-radius: 4px;
-  }
-
-  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, .35);
-  }
-
-  ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:active {
-    background-color: rgba(0, 0, 0, .55);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb {
-      background-color: rgba(104 104 104 / 1)
+  return  css`
+  @supports not (scrollbar-width: thin) {
+    ${selector}::-webkit-scrollbar {
+      width: 8px;
+      background: none;
     }
 
-    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(73 73 73 / 1)
+    ${selector}::-webkit-scrollbar-thumb {
+      width: inherit;
+      background-color: rgba(205 205 205 / 1);
+      border-radius: 4px;
     }
 
-    ${unsafeCSS(prefix)}::-webkit-scrollbar-thumb:active {
-      background-color: rgba(90 90 90 / 1)
-    }
-  }
-}
-
-@supports (scrollbar-width: thin) {
-  .body {
-    --_scrollbarColor_thumb: rgba(140 140 140 / 1);
-
-    scrollbar-color: var(--_scrollbarColor_thumb) rgba(0 0 0 / 0);
-    scrollbar-width: thin;
-    scrollbar-gutter: stable both-edges;
-  }
-
-  .body:hover {
-    --_scrollbarColor_thumb: rgba(152 152 152 / 1);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .body {
-      --_scrollbarColor_thumb: rgba(104 104 104 / 1);
+    ${selector}::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, .35);
     }
 
-    .body:hover {
-      --_scrollbarColor_thumb: rgba(73 73 73 / 1);
+    ${selector}::-webkit-scrollbar-thumb:active {
+      background-color: rgba(0, 0, 0, .55);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      ${selector}::-webkit-scrollbar-thumb {
+        background-color: rgba(104 104 104 / 1)
+      }
+
+      ${selector}::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(73 73 73 / 1)
+      }
+
+      ${selector}::-webkit-scrollbar-thumb:active {
+        background-color: rgba(90 90 90 / 1)
+      }
     }
   }
-}
-`;
+
+  @supports (scrollbar-width: thin) {
+    ${selector} {
+      --_scrollbarColor_thumb: rgba(140 140 140 / 1);
+
+      scrollbar-color: var(--_scrollbarColor_thumb) rgba(0 0 0 / 0);
+      scrollbar-width: thin;
+      scrollbar-gutter: stable both-edges;
+    }
+
+    ${selector}:hover {
+      --_scrollbarColor_thumb: rgba(152 152 152 / 1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      ${selector} {
+        --_scrollbarColor_thumb: rgba(104 104 104 / 1);
+      }
+
+      ${selector}:hover {
+        --_scrollbarColor_thumb: rgba(73 73 73 / 1);
+      }
+    }
+  }
+  `;
+};
 
 export const resetAnchor = css`
 a {

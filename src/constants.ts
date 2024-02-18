@@ -1,6 +1,6 @@
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { nothing } from 'lit';
 
-import { toResolvedDate } from './helpers/to-resolved-date.js';
 import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace } from './key-values.js';
 
 export const confirmKeySet = new Set([keyEnter, keySpace]);
@@ -18,8 +18,8 @@ export const labelShortWeek = 'Wk' as const;
 export const labelToday = 'Today' as const;
 export const toyearTemplate = 'Toyear is %s' as const;
 export const labelWeek = 'Week' as const;
-export const MAX_DATE = toResolvedDate('2100-12-31');
-export const MIN_DATE = toResolvedDate('1970-01-01');
+export const MAX_DATE = fromPartsToUtcDate(2100, 11, 31);
+export const MIN_DATE = fromPartsToUtcDate(1900, 1, 1);
 export const navigationKeyListNext = [keyArrowDown, keyPageDown, keyEnd];
 export const navigationKeyListPrevious = [keyArrowUp, keyPageUp, keyHome];
 export const navigationKeySetDayNext = new Set([...navigationKeyListNext, keyArrowRight]);

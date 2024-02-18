@@ -5,7 +5,7 @@ import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { confirmKeySet, navigationKeySetGrid, renderNoop } from '../constants.js';
+import { confirmKeySet, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../constants.js';
 import { splitString } from '../helpers/split-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
@@ -98,9 +98,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     const { key } = ev;
 
     const isNavigationKey = navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>);
-    const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
 
-    if (isNavigationKey || isConfirmKey) {
+    if (isNavigationKey) {
       /**
        * note: this prevents keyboard event propagates upwards and
        * causes a scrollable page to be scrolled downwards via the Space key.
@@ -268,8 +267,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       firstDayOfWeek,
       fullDateFormat: this.#fullDateFormat,
       locale,
-      max: max ? toResolvedDate(max) : fromPartsToUtcDate(2100, 11, 31),
-      min: min ? toResolvedDate(min) : fromPartsToUtcDate(1900, 0, 1),
+      max: max ? toResolvedDate(max) : MAX_DATE,
+      min: min ? toResolvedDate(min) : MIN_DATE,
       showWeekNumber,
       weekNumberTemplate,
       weekNumberType,
@@ -471,16 +470,4 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
     this.#installFormatters(changedProperties);
   }
-}
-
-declare global {
-  // #region HTML element type extensions
-  // interface HTMLButtonElement {
-  //   year: number;
-  // }
-
-  // interface HTMLElement {
-  //   part: HTMLElementPart;
-  // }
-  // #endregion HTML element type extensions
 }
