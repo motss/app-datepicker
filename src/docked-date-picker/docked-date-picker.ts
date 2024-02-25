@@ -209,46 +209,48 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
           anchor=${anchorId}
           stay-open-on-focusout
         >
-          ${renderHeader({
-            date,
-            locale,
-            max: this.#maxDate,
-            min: this.#minDate,
-            nextMonthButtonLabel: 'next month',
-            nextYearButtonLabel: 'next year',
-            onMonthClick: () => { /** todo: */ },
-            onYearClick: () => { /** todo: */ },
-            prevMonthButtonLabel: 'previous month',
-            prevYearButtonLabel: 'previous year',
-          })}
+          <div style="display:contents;">
+            ${renderHeader({
+              date,
+              locale,
+              max: this.#maxDate,
+              min: this.#minDate,
+              nextMonthButtonLabel: 'next month',
+              nextYearButtonLabel: 'next year',
+              onMonthClick: () => { /** todo: */ },
+              onYearClick: () => { /** todo: */ },
+              prevMonthButtonLabel: 'previous month',
+              prevYearButtonLabel: 'previous year',
+            })}
 
-          <date-picker-calendar
-            disabledDates=${disabledDates}
-            disabledDays=${disabledDays}
-            firstDayOfWeek=${firstDayOfWeek}
-            locale=${locale}
-            max=${ifDefined(max)}
-            min=${ifDefined(min)}
-            selectedYearTemplate=${selectedYearTemplate}
-            shortWeekLabel=${shortWeekLabel}
-            startView=${this.startView}
-            toyearTemplate=${toyearTemplate}
-            weekLabel=${weekLabel}
-            weekNumberTemplate=${weekNumberTemplate}
-            weekNumberType=${weekNumberType}
-            .onDateChange=${() => { /** todo: */ }}
-            .onDateUpdate=${() => { /** todo: */ }}
-            .onYearUpdate=${() => { /** todo: */ }}
-            .value=${value}
-            ?showWeekNumber=${showWeekNumber}
-          ></date-picker-calendar>
+            <date-picker-calendar
+              disabledDates=${disabledDates}
+              disabledDays=${disabledDays}
+              firstDayOfWeek=${firstDayOfWeek}
+              locale=${locale}
+              max=${ifDefined(max)}
+              min=${ifDefined(min)}
+              selectedYearTemplate=${selectedYearTemplate}
+              shortWeekLabel=${shortWeekLabel}
+              startView=${this.startView}
+              toyearTemplate=${toyearTemplate}
+              weekLabel=${weekLabel}
+              weekNumberTemplate=${weekNumberTemplate}
+              weekNumberType=${weekNumberType}
+              .onDateChange=${() => { /** todo: */ }}
+              .onDateUpdate=${() => { /** todo: */ }}
+              .onYearUpdate=${() => { /** todo: */ }}
+              .value=${value}
+              ?showWeekNumber=${showWeekNumber}
+            ></date-picker-calendar>
 
-          ${renderActions({
-            confirmText,
-            denyText,
-            onConfirm: this.#onConfirm,
-            onDeny: this.#onDeny,
-          })}
+            ${renderActions({
+              confirmText,
+              denyText,
+              onConfirm: this.#onConfirm,
+              onDeny: this.#onDeny,
+            })}
+          </div>
         </md-menu-surface>
       </div>
     </div>
