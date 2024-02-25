@@ -1,7 +1,7 @@
 import '@material/web/button/text-button.js';
 import '@material/web/iconbutton/icon-button.js';
 
-import { html, type TemplateResult } from 'lit';
+import { html, svg, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import { noop } from '../constants.js';
@@ -23,7 +23,7 @@ export class ModalDatePickerHeader extends RootElement implements ModalDatePicke
   ];
 
   @state() headline: string = '';
-  @state() iconButton: TemplateResult | string = '';
+  @state() iconButton: TemplateResult<2> = svg``;
   @state() onIconButtonClick: (ev: MouseEvent) => unknown = noop;
   @state() supportingText: string = defaultSupportingText;
 

@@ -7,7 +7,6 @@ import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import type { MdTextButton } from '@material/web/button/text-button.js';
 import { html, type PropertyValueMap } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 

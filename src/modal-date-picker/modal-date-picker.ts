@@ -15,11 +15,12 @@ import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import type { ModalDatePickerBody } from '../modal-date-picker-body/modal-date-picker-body.js';
 import type { ModalDatePickerBodyProperties } from '../modal-date-picker-body/types.js';
 import type { ModalDatePickerHeaderProperties } from '../modal-date-picker-header/types.js';
+import { renderActions } from '../render-helpers/render-actions/render-actions.js';
+import { renderActionsStyle } from '../render-helpers/render-actions/styles.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import { modalDatePickerName } from './constants.js';
-import { renderActions } from './helpers/render-actions/render-actions.js';
-import { modalDatePicker_actionsStyle, modalDatePicker_dialogStyle, modalDatePicker_formStyle } from './styles.js';
+import { modalDatePicker_dialogStyle, modalDatePicker_formStyle } from './styles.js';
 import type { ModalDatePickerProperties, ModalDatePickerPropertiesReturnValue } from './types.js';
 
 @customElement(modalDatePickerName)
@@ -29,7 +30,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     baseStyling,
     modalDatePicker_dialogStyle,
     modalDatePicker_formStyle,
-    modalDatePicker_actionsStyle,
+    renderActionsStyle,
   ];
 
   #bodyRef: Ref<ModalDatePickerBody> = createRef();
@@ -56,7 +57,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
     }
   };
 
-  #onIconButtonClick: ModalDatePickerHeaderProperties['onIconButtonClick'] = () => {
+  #onIconButtonClick: NonNullable<ModalDatePickerHeaderProperties['onIconButtonClick']> = () => {
     /** fixme: this require new M3 TextField component to edit date */
   };
 
@@ -165,7 +166,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootE
         ></modal-date-picker-body>
       </form>
 
-      ${renderActions({ confirmText, denyText, formId })}
+      ${renderActions({ confirmText, denyText, formId, slot: 'actions' })}
     </md-dialog>
     `;
   }

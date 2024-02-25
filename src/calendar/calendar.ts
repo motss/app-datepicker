@@ -1,11 +1,10 @@
 import { calendar } from '@ipohjs/calendar';
 import type { CalendarWeekday } from '@ipohjs/calendar/dist/typings.js';
-import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { confirmKeySet, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../constants.js';
+import { MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../constants.js';
 import { splitString } from '../helpers/split-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';

@@ -14,10 +14,3 @@ form {
   padding: 0;
 }
 `;
-
-export const modalDatePicker_actionsStyle = css`
-.actions {
-  padding-inline: 12px;
-  padding-block: 8px 12px;
-}
-`;

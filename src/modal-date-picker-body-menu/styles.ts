@@ -38,15 +38,7 @@ export const modalDatePickerBodyMenu_buttonsStyle = css`
 }
 
 .menuButton {
-  --_icon-size: 24px; /** note(do-not-remove): this is md3 private css variable. */
-
   grid-area: menuButton;
-}
-
-.menuButton .icon {
-  transition: transform 350ms cubic-bezier(0.05, 0.7, 0.1, 1.0);
-  transform: rotateZ(var(--_state, 0deg));
-  will-change: transform;
 }
 
 .prevIconButton {

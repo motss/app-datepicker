@@ -1,22 +1,29 @@
 import '@material/web/iconbutton/icon-button.js';
-import '../docked-date-picker-text-field/docked-date-picker-text-field.js';
+import '@material/web/textfield/outlined-text-field.js';
+import '../date-picker-calendar/date-picker-calendar.js';
 import '../md-menu-surface/md-menu-surface.js';
 
-import type { CloseMenuEvent } from '@material/web/menu/internal/controllers/shared.js';
-import { html, type TemplateResult } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import type { CloseMenuEvent } from '@material/web/menu/menu.js';
+import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
+import { html, type PropertyValueMap, type TemplateResult } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { dockedDatePickerTextFieldName } from '../docked-date-picker-text-field/constants.js';
-import type { DockedDatePickerTextField } from '../docked-date-picker-text-field/docked-date-picker-text-field.js';
+import { labelConfirm, labelDeny, MAX_DATE, MIN_DATE } from '../constants.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconCalendar } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../mixins/element-mixin.js';
+import { renderActions } from '../render-helpers/render-actions/render-actions.js';
+import { renderActionsStyle } from '../render-helpers/render-actions/styles.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
 import { dockedDatePicker_calendarIconLabel, dockedDatePickerName } from './constants.js';
+import { renderHeader } from './render-helpers/render-header/render-header.js';
+import { renderHeaderStyle } from './render-helpers/render-header/styles.js';
+import { dockedDatePicker_actionsStyle, dockedDatePicker_headerStyle } from './styles.js';
 import type { DockedDatePickerProperties } from './types.js';
 
 @customElement(dockedDatePickerName)
@@ -39,6 +46,10 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   static override styles = [
     resetShadowRoot,
+    renderActionsStyle,
+    dockedDatePicker_actionsStyle,
+    renderHeaderStyle,
+    dockedDatePicker_headerStyle,
   ];
 
   /**
@@ -50,6 +61,10 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   };
 
   #hostRef: Ref<this> = createRef();
+
+  #maxDate: Date;
+
+  #minDate: Date;
 
   #onCloseMenu = (event: CloseMenuEvent) => {
     const reason = event.detail.reason;
@@ -74,38 +89,75 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
       this.#dispatchInteractionEvents();
     }
 
-    this._open = false;
+    this.open = false;
   };
 
   #onClosing = () => {
-    this._open = false;
+    this.open = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.#textFieldRef.value as any).focused = false;
   };
 
+  #onConfirm = () => {};
+
+  #onDeny = () => {};
+
+  // @query('md-outlined-text-field') private readonly textField!: MdOutlinedTextField | null;
+
   #onOpening = () => {
-    // todo:
+    this.open = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.#textFieldRef.value as any).focused = true;
   };
 
   #showMenuSurface = () => {
-    this._open = !this._open;
+    if (this.open) {
+      this.#onClosing();
+    } else {
+      this.#onOpening();
+    }
   };
 
-  @state() _open: boolean = false;
+  #textFieldRef = createRef<MdOutlinedTextField>();
 
-  @query(dockedDatePickerTextFieldName) private readonly textField!: DockedDatePickerTextField | null;
+  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
+    const { max, min } = this;
+
+    if (changedProperties.has('max') && changedProperties.get('max') !== max) {
+      this.#maxDate = toResolvedDate(max || MAX_DATE);
+    }
+
+    if (changedProperties.has('min') && changedProperties.get('min') !== min) {
+      this.#minDate = toResolvedDate(min || MIN_DATE);
+    }
+  };
 
   @property() calendarIconLabel: string = dockedDatePicker_calendarIconLabel;
 
+  @property() confirmText: string = labelConfirm;
+
+  @property() denyText: string = labelDeny;
+
   @property() label = '';
+
+  @property({ reflect: true, type: Boolean }) open: boolean = false;
 
   /**
    * Opens the menu synchronously with no animation.
    */
   @property({ type: Boolean }) quick = false;
 
+  constructor() {
+    super();
+
+    this.#maxDate = MAX_DATE;
+    this.#minDate = MIN_DATE;
+  }
   protected override render(): TemplateResult {
     const {
-      _open,
       calendarIconLabel,
+      confirmText,
+      denyText,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
@@ -113,6 +165,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
       locale,
       max,
       min,
+      open,
       quick,
       selectedYearTemplate,
       shortWeekLabel,
@@ -125,11 +178,13 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
-    const v = ifDefined(value);
+    const v = value ?? '';
+    const date = toResolvedDate(value);
 
     return html`
     <div ${ref(this.#hostRef)}>
-      <docked-date-picker-text-field
+      <md-outlined-text-field
+        ${ref(this.#textFieldRef)}
         id=${anchorId}
         label=${label}
         value=${v}
@@ -142,11 +197,11 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
         >
           ${iconCalendar}
         </md-icon-button>
-      </docked-date-picker-text-field>
+      </md-outlined-text-field>
 
       <div class=menu>
         <md-menu-surface
-          ?open=${_open}
+          ?open=${open}
           ?quick=${quick}
           @close-menu=${this.#onCloseMenu}
           @closing=${this.#onClosing}
@@ -154,6 +209,19 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
           anchor=${anchorId}
           stay-open-on-focusout
         >
+          ${renderHeader({
+            date,
+            locale,
+            max: this.#maxDate,
+            min: this.#minDate,
+            nextMonthButtonLabel: 'next month',
+            nextYearButtonLabel: 'next year',
+            onMonthClick: () => { /** todo: */ },
+            onYearClick: () => { /** todo: */ },
+            prevMonthButtonLabel: 'previous month',
+            prevYearButtonLabel: 'previous year',
+          })}
+
           <date-picker-calendar
             disabledDates=${disabledDates}
             disabledDays=${disabledDays}
@@ -174,10 +242,21 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
             .value=${value}
             ?showWeekNumber=${showWeekNumber}
           ></date-picker-calendar>
+
+          ${renderActions({
+            confirmText,
+            denyText,
+            onConfirm: this.#onConfirm,
+            onDeny: this.#onDeny,
+          })}
         </md-menu-surface>
       </div>
     </div>
     `;
+  }
+
+  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    this.#updateMinMax(changedProperties);
   }
 }
 
@@ -186,3 +265,5 @@ declare global {
     [dockedDatePickerName]: DockedDatePicker;
   }
 }
+
+// fixme: focus calendar when opened

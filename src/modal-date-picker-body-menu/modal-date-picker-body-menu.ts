@@ -1,7 +1,10 @@
 import { type CSSResultGroup, html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
-import { iconArrowDropdown, iconChevronLeft, iconChevronRight } from '../icons.js';
+import { iconChevronLeft, iconChevronRight } from '../icons.js';
+import { renderMenuButton } from '../render-helpers/render-menu-button/render-menu-button.js';
+import { renderMenuButtonStyle } from '../render-helpers/render-menu-button/styles.js';
+import type { RenderMenuButtonInit } from '../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import { modalDatePickerBodyMenuName } from './constants.js';
@@ -13,6 +16,7 @@ export class ModalDatePickerBodyMenu extends RootElement implements ModalDatePic
   static override styles: CSSResultGroup = [
     resetShadowRoot,
     baseStyling,
+    renderMenuButtonStyle,
     modalDatePickerBodyMenu_bodyMenuStyle,
     modalDatePickerBodyMenu_buttonsStyle,
   ];
@@ -23,7 +27,7 @@ export class ModalDatePickerBodyMenu extends RootElement implements ModalDatePic
     this.onMenuClick?.(ev);
   };
 
-  #state: string = 'down';
+  #state: RenderMenuButtonInit['iconDirection'] = 'down';
 
   @property() menuLabel: string = '';
   @property() menuText: string = '';
@@ -46,14 +50,10 @@ export class ModalDatePickerBodyMenu extends RootElement implements ModalDatePic
       showNextButton,
       showPrevButton,
     } = this;
-    const iconState = this.#state === 'down' ? 0 : 180;
 
     return html`
     <div class=bodyMenu>
-      <md-text-button class=menuButton trailing-icon @click=${this.#onMenuClick} aria-label=${menuLabel} title=${menuLabel}>
-        ${menuText}
-        <div class=icon style="--_state:${iconState}deg;" slot=icon>${iconArrowDropdown}</div>
-      </md-text-button>
+      ${renderMenuButton({ iconDirection: this.#state, label: menuLabel, onClick: this.#onMenuClick, text: menuText })}
 
       ${showPrevButton ? html`<md-icon-button class=prevIconButton @click=${onPrevClick} aria-label=${prevIconButtonLabel} title=${prevIconButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
       ${showNextButton ? html`<md-icon-button class=nextIconButton @click=${onNextClick} aria-label=${nextIconButtonLabel} title=${nextIconButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}

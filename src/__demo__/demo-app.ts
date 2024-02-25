@@ -4,8 +4,8 @@
 // import '../date-picker-dialog/app-date-picker-dialog.js';
 // import '../date-picker-input-surface/app-date-picker-input-surface.js';
 import '@material/web/button/outlined-button.js';
+import '@material/web/textfield/outlined-text-field.js';
 import '../date-picker-calendar/date-picker-calendar.js';
-import '../docked-date-picker-text-field/docked-date-picker-text-field.js';
 import '../docked-date-picker/docked-date-picker.js';
 import '../modal-date-picker/modal-date-picker.js';
 
@@ -223,10 +223,10 @@ export class DemoApp extends RootElement {
     <div>
       <section>
         <div class=io>
-          <docked-date-picker-text-field
+          <md-outlined-text-field
             label=${'Select date'}
             value=${'2020-05-05'}
-          ></docked-date-picker-text-field>
+          ></md-outlined-text-field>
           <docked-date-picker
             label=${'Select date'}
             value=${'2020-05-05'}
@@ -272,13 +272,13 @@ export class DemoApp extends RootElement {
             .weekNumberTemplate=${weekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
             .onDateUpdate=${(d: Date) => {
-              console.debug('datePickerCalendar:onDateUpdate', d);
-              this._datePickerCalendarValue = toDateString(d);
-            }}
+        console.debug('datePickerCalendar:onDateUpdate', d);
+        this._datePickerCalendarValue = toDateString(d);
+      }}
             .onFocusedDateUpdate=${(d: Date) => {
-              console.debug('datePickerCalendar:onFocusedDateUpdate', d);
-              this._datePickerCalendarFocusedDate = d;
-            }}
+        console.debug('datePickerCalendar:onFocusedDateUpdate', d);
+        this._datePickerCalendarFocusedDate = d;
+      }}
           >
             modal date picker
           </date-picker-calendar>

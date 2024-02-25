@@ -1,8 +1,7 @@
+import type { DateTimeFormatter } from '@ipohjs/calendar/dist/typings.js';
 import type { LitElement, PropertyValues } from 'lit';
-import type { DateTimeFormatter } from 'nodemod/dist/calendar/typings.js';
 
 import type { startViews } from './constants.js';
-import type { DatePicker } from './date-picker/date-picker.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
 import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
 import type { Constructor } from './utility-typings.js';
@@ -38,9 +37,9 @@ export interface DatePickerProperties extends
   DatePickerMixinProperties,
   ElementMixinProperties {}
 
-type DatePickerValues = Required<Pick<DatePicker, 'value' | 'valueAsDate' | 'valueAsNumber'>>;
+type DatePickerValues = Required<Pick<DatePickerProperties, 'value'>>;
 
-export interface Formatters extends Pick<DatePicker, 'locale'> {
+export interface Formatters extends Pick<DatePickerProperties, 'locale'> {
   dateFormat: DateTimeFormatter;
   dayFormat: DateTimeFormatter;
   fullDateFormat: DateTimeFormatter;

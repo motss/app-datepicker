@@ -90,9 +90,7 @@ export class DatePickerCalendar extends DatePickerMinMaxMixin(DatePickerMixin(Ro
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
-    ci,
     data,
-    ri,
   }) => {
     return renderCalendarDay({
       data,
@@ -102,7 +100,7 @@ export class DatePickerCalendar extends DatePickerMinMaxMixin(DatePickerMixin(Ro
     });
   };
 
-  #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ ri, weekday }) => {
+  #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ weekday }) => {
     return renderWeekDay(weekday);
   };
 

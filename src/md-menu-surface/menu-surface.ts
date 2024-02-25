@@ -123,7 +123,6 @@ export abstract class MenuSurface extends LitElement {
   private readonly menuPositionController = new SurfacePositionController(
     this,
     () => {
-      debugger;
       return {
         anchorCorner: this.anchorCorner,
         anchorEl: this.anchorElement,
