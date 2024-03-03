@@ -15,6 +15,7 @@ import { isSameMonth } from '../helpers/is-same-month.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import { DatePickerStartViewMixin } from '../mixins/date-picker-start-view-mixin.js';
 import type { ModalDatePickerBodyMenu } from '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
@@ -23,7 +24,7 @@ import { modalDatePickerBody_datePickerBodyStyle } from './styles.js';
 import type { ModalDatePickerBodyProperties } from './types.js';
 
 @customElement(modalDatePickerBodyName)
-export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements ModalDatePickerBodyProperties {
+export class ModalDatePickerBody extends DatePickerStartViewMixin(DatePickerMinMaxMixin(DatePickerMixin(RootElement))) implements ModalDatePickerBodyProperties {
   static override styles = [
     resetShadowRoot,
     baseStyling,
@@ -153,7 +154,7 @@ export class ModalDatePickerBody extends DatePickerMinMaxMixin(DatePickerMixin(R
         min=${ifDefined(min)}
         selectedYearTemplate=${selectedYearTemplate}
         shortWeekLabel=${shortWeekLabel}
-        startView=${this.startView}
+        startView=${ifDefined(this.startView)}
         toyearTemplate=${toyearTemplate}
         value=${focusedDateValue}
         weekLabel=${weekLabel}

@@ -1,8 +1,5 @@
-import type { CalendarInit } from '@ipohjs/calendar/dist/typings.js';
-
-import type { Calendar } from '../calendar/calendar.js';
 import type { ElementMixinProperties } from '../mixins/typings.js';
-import type { CustomEventDetail, DatePickerProperties, Formatters, SupportedKey } from '../typings.js';
+import type { CustomEventDetail, DatePickerProperties, SupportedKey } from '../typings.js';
 import type { OmitKey } from '../utility-typings.js';
 
 export interface DateValidatorResult {
@@ -12,25 +9,9 @@ export interface DateValidatorResult {
 
 export type MaybeDate = Date | null | number | string;
 
-export interface MultiCalendars extends Omit<Calendar, 'calendar'> {
-  calendars: Pick<Calendar, 'calendar' | 'key'>[];
-  weekdays: CalendarWeekday[];
-}
-
 export interface SlotDatePickerInit extends OmitKey<DatePickerProperties, keyof ElementMixinProperties>, Partial<Pick<HTMLElement, 'slot'>> {
   onDatePickerDateUpdated(event: CustomEvent<CustomEventDetail['date-updated']['detail']>): Promise<void> | void;
   onDatePickerFirstUpdated(event: CustomEvent<CustomEventDetail['first-updated']['detail']>): Promise<void> | void;
-}
-
-export interface ToMultiCalendarsInit extends
-Pick<Formatters, 'dayFormat' | 'fullDateFormat' | 'longWeekdayFormat' | 'narrowWeekdayFormat'>,
-Partial<Pick<
-  DatePickerProperties, 'firstDayOfWeek' | 'showWeekNumber' | 'weekLabel' | 'weekNumberType'
->>,
-Pick<DatePickerProperties, 'locale'>,
-Pick<CalendarInit, 'disabledDates' | 'disabledDays' | 'max' | 'min'> {
-  count?: number;
-  currentDate: CalendarInit['date'];
 }
 
 export interface ToNextSelectableDateInit {

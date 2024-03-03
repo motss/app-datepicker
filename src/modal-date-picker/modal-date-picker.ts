@@ -156,7 +156,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
           .selectedYearTemplate=${selectedYearTemplate}
           .shortWeekLabel=${shortWeekLabel}
           .showWeekNumber=${showWeekNumber}
-          .startView=${startView}
+          startView=${ifDefined(startView)}
           .todayLabel=${todayLabel}
           .toyearTemplate=${toyearTemplate}
           .value=${value}
