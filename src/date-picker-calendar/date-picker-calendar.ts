@@ -16,6 +16,7 @@ import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { keyHome } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import { DatePickerStartViewMixin } from '../mixins/date-picker-start-view-mixin.js';
 import type { ModalDatePickerYearGrid } from '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 import type { ModalDatePickerYearGridProperties } from '../modal-date-picker-year-grid/types.js';
 import { RootElement } from '../root-element/root-element.js';
@@ -28,7 +29,7 @@ import type { DatePickerCalendarProperties } from './types.js';
 const defaultDate = toResolvedDate();
 
 @customElement(datePickerCalendarName)
-export class DatePickerCalendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements DatePickerCalendarProperties {
+export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMaxMixin(DatePickerMixin(RootElement))) implements DatePickerCalendarProperties {
   static override styles = [
     resetShadowRoot,
     datePickerCalendarStyle,

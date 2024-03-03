@@ -9,3 +9,5 @@ export interface DockedDatePickerProperties extends DatePickerProperties {
 }
 
 export type DockedDatePickerPropertiesReturnValue = 'confirm' | 'deny';
+
+export type MenuListType = 'monthMenu' | 'yearMenu';

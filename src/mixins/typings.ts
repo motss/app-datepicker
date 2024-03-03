@@ -1,7 +1,7 @@
-import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
+import type { WeekNumberType } from "@ipohjs/calendar/dist/typings.js";
 
-import type { CustomEventAction, LitConstructor, StartView } from '../typings.js';
-import type { Constructor } from '../utility-typings.js';
+import type { CustomEventAction, LitConstructor, StartView } from "../typings.js";
+import type { Constructor } from "../utility-typings.js";
 
 export interface DatePickerMinMaxProperties {
   max?: string;
@@ -22,13 +22,16 @@ export interface DatePickerMixinProperties {
   selectedYearTemplate: string;
   shortWeekLabel: string;
   showWeekNumber: boolean;
-  startView: StartView;
   todayLabel: string;
   toyearTemplate: string;
   value?: null | string;
   weekLabel: string;
   weekNumberTemplate: string;
   weekNumberType: WeekNumberType;
+}
+
+export interface DatePickerStartViewProperties {
+  startView?: StartView;
 }
 
 export interface ElementMixinProperties {

@@ -12,6 +12,7 @@ import { dateFormatOptions, labelConfirm, labelDeny } from '../constants.js';
 import { iconEdit } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
+import { DatePickerStartViewMixin } from '../mixins/date-picker-start-view-mixin.js';
 import type { ModalDatePickerBody } from '../modal-date-picker-body/modal-date-picker-body.js';
 import type { ModalDatePickerBodyProperties } from '../modal-date-picker-body/types.js';
 import type { ModalDatePickerHeaderProperties } from '../modal-date-picker-header/types.js';
@@ -24,7 +25,7 @@ import { modalDatePicker_dialogStyle, modalDatePicker_formStyle } from './styles
 import type { ModalDatePickerProperties, ModalDatePickerPropertiesReturnValue } from './types.js';
 
 @customElement(modalDatePickerName)
-export class ModalDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(RootElement)) implements ModalDatePickerProperties {
+export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(DatePickerMinMaxMixin(RootElement))) implements ModalDatePickerProperties {
   static override styles = [
     resetShadowRoot,
     baseStyling,

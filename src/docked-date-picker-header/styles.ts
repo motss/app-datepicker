@@ -1,19 +1,19 @@
 import { css, type CSSResult, unsafeCSS } from 'lit';
 
-import { renderMenuButtonStyle } from '../../../render-helpers/render-menu-button/styles.js';
+import { renderMenuButtonStyle } from '../render-helpers/render-menu-button/styles.js';
 
 const areas = ['prevMonth', 'month', 'nextMonth', 'prevYear', 'year', 'nextYear'] as const;
 
 const gridTemplateAreas: CSSResult = unsafeCSS(areas.join(' '));
 const buttons = unsafeCSS(areas.map((area) => `.${area} { grid-area: ${area} }`).join('\n'));
 
-export const renderHeaderStyle = css`
+export const dockedDatePickerHeaderStyles = css`
 ${renderMenuButtonStyle}
 
 .header {
   display: grid;
   grid-template-areas: '${gridTemplateAreas}';
-  grid-template-columns: repeat(2, 40px minmax(0px, min-content) 40px);
+  grid-template-columns: repeat(2, 40px minmax(0px, 1fr) 40px);
 
   padding-block: var(--_padding-block);
   padding-inline: var(--_padding-inline);
@@ -46,6 +46,9 @@ ${renderMenuButtonStyle}
   --md-text-button-pressed-icon-color: var(--md-sys-color-on-surface-variant);
   --md-text-button-pressed-label-text-color: var(--md-sys-color-on-surface-variant);
   --md-text-button-pressed-state-layer-color: var(--md-sys-color-on-surface-variant);
+
+  /** note: this forces the content to render without ellipsis. */
+  width: fit-content;
 }
 
 .header ${buttons}

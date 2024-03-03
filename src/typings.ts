@@ -57,6 +57,11 @@ interface KeyEvent {
   key?: SupportedKey;
 }
 
+export interface LabelValue<V = string> {
+  label: string;
+  value: V;
+}
+
 export type LitConstructor = Constructor<LitElement>;
 
 export type StartView = StartViewTuple[number];
