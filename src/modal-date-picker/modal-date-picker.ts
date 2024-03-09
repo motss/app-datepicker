@@ -195,3 +195,5 @@ declare global {
     [modalDatePickerName]: ModalDatePicker;
   }
 }
+
+// fixme: selected daet but close modal without confirming should not update selected date

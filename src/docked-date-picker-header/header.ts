@@ -143,7 +143,7 @@ export class Header extends RootElement implements HeaderProperties {
 
     return html`
     <div class=header>
-      ${showPrevMonthButton ? html`<md-icon-button class=prevMonth data-type=montDec @click=${onClick} aria-label=${prevMonthButtonLabel} title=${prevMonthButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
+      ${showPrevMonthButton ? html`<md-icon-button class=prevMonth data-type=monthDec @click=${onClick} aria-label=${prevMonthButtonLabel} title=${prevMonthButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
       ${renderMenuButton({ className: 'month', disabled: isViewYearMenu, label: monthLabel, onClick, text: monthLabel, type: 'monthMenu' })}
       ${showNextMonthButton ? html`<md-icon-button class=nextMonth data-type=monthInc @click=${onClick} aria-label=${nextMonthButtonLabel} title=${nextMonthButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
 

@@ -108,11 +108,16 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     (this.#textFieldRef.value as any).focused = false;
   };
 
-  #onConfirm = () => { };
+  #onConfirm = () => {
+    this.#didConfirm = true;
+    this.#onClosing();
+  };
 
   #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (_ev, node) => {
-    // this._focusedDate = this._selectedDate = toResolvedDate(node.dataset.fulldate);
+    this._focusedDate = this._selectedDate = toResolvedDate(node.dataset.fulldate);
   };
+
+  #didConfirm: boolean = false;
 
   #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, _node, { disabledDatesSet, disabledDaysSet }) => {
     // if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
@@ -141,7 +146,9 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   // @query('md-outlined-text-field') private readonly textField!: MdOutlinedTextField | null;
 
-  #onDeny = () => { };
+  #onDeny = () => {
+    this.#onClosing();
+  };
 
   #onMenuChange: DockedDatePickerMenuList['onMenuChange'] = ({ type, value }) => {
     const {
@@ -180,7 +187,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     return renderWeekDay(weekday);
   };
 
-  #showMenuSurface = () => {
+  #toggleMenuSurface = () => {
     if (this.open) {
       this.#onClosing();
     } else {
@@ -213,11 +220,24 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   };
 
   #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (init) => {
-    if (init.type === 'monthMenu' || init.type === 'yearMenu') {
-      const { startView } = this;
+    switch (init.type) {
+      case 'monthDec':
+      case 'monthInc':
+      case 'yearDec':
+      case 'yearInc': {
+        this._focusedDate = init.date;
+        break;
+      }
+      case 'monthMenu':
+      case 'yearMenu': {
+        const { startView } = this;
 
-      this.startView = startView === 'monthMenu' || startView === 'yearMenu' ?
-        'calendar' : init.type;
+        this.startView = startView === 'monthMenu' || startView === 'yearMenu' ?
+          'calendar' : init.type;
+
+        break;
+      }
+      default:
     }
   };
 
@@ -284,10 +304,13 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
+      _focusedDate,
+      value,
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
-    const value = toDateString(toResolvedDate(this._focusedDate));
+    const focusedValue = toDateString(_focusedDate);
+    const valueValue = toDateString(toResolvedDate(value));
 
     return html`
     <div ${ref(this.#hostRef)}>
@@ -295,11 +318,11 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
         ${ref(this.#textFieldRef)}
         id=${anchorId}
         label=${label}
-        value=${value}
+        value=${valueValue}
       >
         <md-icon-button
           slot="trailing-icon"
-          @click=${this.#showMenuSurface}
+          @click=${this.#toggleMenuSurface}
           aria-label=${calendarIconLabel}
           title=${calendarIconLabel}
         >
@@ -312,6 +335,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
           ?open=${open}
           ?quick=${quick}
           @close-menu=${this.#onCloseMenu}
+          @closed=${this.#onClosed}
           @closing=${this.#onClosing}
           @opening=${this.#onOpening}
           anchor=${anchorId}
@@ -323,7 +347,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
               locale=${locale}
               max=${ifDefined(max)}
               min=${ifDefined(min)}
-              value=${value}
+              value=${focusedValue}
               nextMonthButtonLabel=${labelNextMonth}
               prevMonthButtonLabel=${labelPreviousMonth}
               nextYearButtonLabel=${labelNextYear}
@@ -339,6 +363,16 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
             >${
               startView === 'calendar' ? html`
               <app-calendar
+                ?showWeekNumber=${showWeekNumber}
+                .onDateUpdateByClick=${this.#onDateUpdateByClick}
+                .onDateUpdateByKey=${this.#onDateUpdateByKey}
+                .onUpdated=${this.#onCalendarUpdated}
+                .renderCalendarDay=${this.#renderCalendarDay}
+                .renderFooter=${renderNoop}
+                .renderWeekDay=${this.#renderWeekDay}
+                .renderWeekLabel=${renderNoop}
+                .renderWeekNumber=${renderNoop}
+                .value=${focusedValue}
                 class=calendar
                 disabledDates=${disabledDates}
                 disabledDays=${disabledDays}
@@ -353,19 +387,6 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
                 weekLabel=${weekLabel}
                 weekNumberTemplate=${weekNumberTemplate}
                 weekNumberType=${weekNumberType}
-                .onDateChange=${() => { /** todo: */ }}
-                .onDateUpdate=${() => { /** todo: */ }}
-                .onYearUpdate=${() => { /** todo: */ }}
-                .value=${value}
-                ?showWeekNumber=${showWeekNumber}
-                .onDateUpdateByClick=${this.#onDateUpdateByClick}
-                .onDateUpdateByKey=${this.#onDateUpdateByKey}
-                .renderCalendarDay=${this.#renderCalendarDay}
-                .renderFooter=${renderNoop}
-                .renderWeekDay=${this.#renderWeekDay}
-                .renderWeekLabel=${renderNoop}
-                .renderWeekNumber=${renderNoop}
-                .onUpdated=${this.#onCalendarUpdated}
               ></app-calendar>
 
               ${renderActions({
@@ -385,7 +406,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
                 monthMenuItemTemplate=${labelMonthMenuItemTemplate}
                 selectedMonthMenuItemTemplate=${labelSelectedMonthMenuItemTemplate}
                 selectedYearMenuItemTemplate=${labelSelectedYearMenuItemTemplate}
-                value=${value}
+                value=${focusedValue}
                 yearMenuItemTemplate=${labelYearMenuItemTemplate}
                 .onMenuChange=${this.#onMenuChange}
               ></docked-date-picker-menu-list>
@@ -402,6 +423,17 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this.#updateDatesByValue(changedProperties);
     this.#updateMinMax(changedProperties);
   }
+
+  #onClosed = () => {
+    const { _selectedDate, value } = this;
+
+    if (this.#didConfirm) {
+      this.value = toDateString(_selectedDate);
+      this.#didConfirm = false;
+    } else {
+      this._focusedDate = this._selectedDate = toResolvedDate(value);
+    }
+  };
 
   protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
     this.#scrollIntoViewWhenNeeded(changedProperties);
@@ -435,3 +467,9 @@ declare global {
 }
 
 // fixme: focus calendar when opened
+// fixme: focus menulist when opened
+// fixme: update tabbale date
+// fixme: update date by key
+//
+// done: update focused, selected date
+// done: navigate month and year in calendar view
