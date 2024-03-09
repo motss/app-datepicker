@@ -9,6 +9,7 @@ import { iconChevronLeft, iconChevronRight } from '../icons.js';
 import { renderMenuButton } from '../render-helpers/render-menu-button/render-menu-button.js';
 import type { RenderMenuButtonInit } from '../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../root-element/root-element.js';
+import type { MenuListType } from '../typings.js';
 import type { HeaderDataset, HeaderProperties } from './types.js';
 
 const offsetByType = {
@@ -94,6 +95,7 @@ export class Header extends RootElement implements HeaderProperties {
   @property({ attribute: false }) onYearMenuClick?: HeaderProperties['onYearMenuClick'];
   @property() prevMonthButtonLabel: string = labelPreviousMonth;
   @property() prevYearButtonLabel: string = labelPreviousYear;
+  @property({ reflect: true }) startView: 'calendar' | MenuListType = 'calendar';
   @property() value?: string;
 
   constructor() {
@@ -112,6 +114,7 @@ export class Header extends RootElement implements HeaderProperties {
       nextYearButtonLabel,
       prevMonthButtonLabel,
       prevYearButtonLabel,
+      startView,
     } = this;
 
     const date = this.#valueDate;
@@ -119,6 +122,9 @@ export class Header extends RootElement implements HeaderProperties {
     const max = this.#maxDate;
     const monthLabel = this.#monthFormat(date);
     const yearLabel = this.#yearFormat(date);
+    const isViewCalendar = startView === 'calendar';
+    const isViewMonthMenu = startView === 'monthMenu';
+    const isViewYearMenu = startView === 'yearMenu';
 
     const mit = fromPartsToUtcDate(min.getUTCFullYear(), min.getUTCMonth(), 1).getTime();
     const mat = fromPartsToUtcDate(max.getUTCFullYear(), max.getUTCMonth(), 1).getTime();
@@ -128,21 +134,21 @@ export class Header extends RootElement implements HeaderProperties {
     const dt_py = toUTCDate(date, { year: -1 }).getTime();
     const dt_ny = toUTCDate(date, { year: 1 }).getTime();
 
-    const showPrevMonthButton = dt_pm > mit;
-    const showNextMonthButton = dt_nm > mit && dt_nm < mat;
-    const showNextYearButton = dt_py > mit && dt_py < mat;
-    const showPrevYearButton = dt_ny < mat;
+    const showPrevMonthButton = isViewCalendar && dt_pm > mit;
+    const showNextMonthButton = isViewCalendar && dt_nm > mit && dt_nm < mat;
+    const showNextYearButton = isViewCalendar && dt_py > mit && dt_py < mat;
+    const showPrevYearButton = isViewCalendar && dt_ny < mat;
 
     const onClick = this.#onMenuButtonClick;
 
     return html`
     <div class=header>
       ${showPrevMonthButton ? html`<md-icon-button class=prevMonth data-type=montDec @click=${onClick} aria-label=${prevMonthButtonLabel} title=${prevMonthButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
-      ${renderMenuButton({ className: 'month', label: monthLabel, onClick, text: monthLabel, type: 'monthMenu' })}
+      ${renderMenuButton({ className: 'month', disabled: isViewYearMenu, label: monthLabel, onClick, text: monthLabel, type: 'monthMenu' })}
       ${showNextMonthButton ? html`<md-icon-button class=nextMonth data-type=monthInc @click=${onClick} aria-label=${nextMonthButtonLabel} title=${nextMonthButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
 
       ${showPrevYearButton ? html`<md-icon-button class=prevYear data-type=yearDec @click=${onClick} aria-label=${prevYearButtonLabel} title=${prevYearButtonLabel}>${iconChevronLeft}</md-icon-button>` : nothing}
-      ${renderMenuButton({ className: 'year', label: yearLabel, onClick, text: yearLabel, type: 'yearMenu' })}
+      ${renderMenuButton({ className: 'year', disabled: isViewMonthMenu, label: yearLabel, onClick, text: yearLabel, type: 'yearMenu' })}
       ${showNextYearButton ? html`<md-icon-button class=nextYear data-type=yearInc @click=${onClick} aria-label=${nextYearButtonLabel} title=${nextYearButtonLabel}>${iconChevronRight}</md-icon-button>` : nothing}
     </div>
     `;

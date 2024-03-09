@@ -3,7 +3,7 @@ import type { LitElement, PropertyValues } from 'lit';
 
 import type { startViews } from './constants.js';
 import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
-import type { DatePickerMinMaxProperties, DatePickerMixinProperties, ElementMixinProperties } from './mixins/typings.js';
+import type { DatePickerMinMaxProperties, DatePickerMixinProperties, DatePickerStartViewProperties, ElementMixinProperties } from './mixins/typings.js';
 import type { Constructor } from './utility-typings.js';
 
 export type ChangedProperties<T = Record<string, unknown>> = PropertyValues & Map<keyof T, T[keyof T]>;
@@ -33,9 +33,10 @@ interface CustomEventDetailYearUpdated {
 }
 
 export interface DatePickerProperties extends
+ElementMixinProperties,
   DatePickerMinMaxProperties,
   DatePickerMixinProperties,
-  ElementMixinProperties {}
+  DatePickerStartViewProperties {}
 
 type DatePickerValues = Required<Pick<DatePickerProperties, 'value'>>;
 
@@ -63,6 +64,8 @@ export interface LabelValue<V = string> {
 }
 
 export type LitConstructor = Constructor<LitElement>;
+
+export type MenuListType = 'monthMenu' | 'yearMenu';
 
 export type StartView = StartViewTuple[number];
 

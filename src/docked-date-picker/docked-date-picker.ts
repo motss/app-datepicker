@@ -10,6 +10,7 @@ import type { CloseMenuEvent } from '@material/web/menu/menu.js';
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
@@ -19,7 +20,7 @@ import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-d
 import type { CalendarProperties } from '../calendar/types.js';
 import { labelConfirm, labelDeny, labelMonthMenuItemTemplate, labelNextMonth, labelNextYear, labelPreviousMonth, labelPreviousYear, labelSelectedMonthMenuItemTemplate, labelSelectedYearMenuItemTemplate, labelYearMenuItemTemplate, MAX_DATE, MIN_DATE, renderNoop } from '../constants.js';
 import type { DockedDatePickerHeader } from '../docked-date-picker-header/docked-date-picker-header.js';
-import type { DockedDatePickerMenuList } from '../docked-date-picker-menu-list/docked-date-picker-menu-list.js';
+import { DockedDatePickerMenuList } from '../docked-date-picker-menu-list/docked-date-picker-menu-list.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconCalendar } from '../icons.js';
@@ -30,9 +31,10 @@ import { renderActions } from '../render-helpers/render-actions/render-actions.j
 import { renderActionsStyle } from '../render-helpers/render-actions/styles.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
+import type { MenuListType } from '../typings.js';
 import { dockedDatePicker_calendarIconLabel, dockedDatePickerName } from './constants.js';
 import { dockedDatePickerStyles } from './styles.js';
-import type { DockedDatePickerProperties, MenuListType } from './types.js';
+import type { DockedDatePickerProperties } from './types.js';
 
 const defaultDate = toResolvedDate();
 
@@ -137,9 +139,9 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     // }
   };
 
-  #onDeny = () => { };
-
   // @query('md-outlined-text-field') private readonly textField!: MdOutlinedTextField | null;
+
+  #onDeny = () => { };
 
   #onMenuChange: DockedDatePickerMenuList['onMenuChange'] = ({ type, value }) => {
     const {
@@ -246,6 +248,10 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   @property({ reflect: true }) startView: 'calendar' | MenuListType = 'calendar';
 
+  #bodyRef = createRef<HTMLDivElement>();
+
+  #menuListRef = createRef<DockedDatePickerMenuList>();
+
   constructor() {
     super();
 
@@ -322,11 +328,15 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
               prevMonthButtonLabel=${labelPreviousMonth}
               nextYearButtonLabel=${labelNextYear}
               prevYearButtonLabel=${labelPreviousYear}
+              startView=${startView}
               .onMonthMenuClick=${this.#updateStartViewByMenuListType}
               .onYearMenuClick=${this.#updateStartViewByMenuListType}
             ></docked-date-picker-header>
 
-            <div class=body>${
+            <div
+              ${ref(this.#bodyRef)}
+              class=${classMap({ body: true, [startView]: true })}
+            >${
               startView === 'calendar' ? html`
               <app-calendar
                 class=calendar
@@ -366,6 +376,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
               })}
               ` : html`
               <docked-date-picker-menu-list
+                ${ref(this.#menuListRef)}
                 class=menuList
                 locale=${locale}
                 max=${ifDefined(max)}
@@ -391,6 +402,30 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this.#updateDatesByValue(changedProperties);
     this.#updateMinMax(changedProperties);
   }
+
+  protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
+    this.#scrollIntoViewWhenNeeded(changedProperties);
+  }
+
+  #scrollIntoViewWhenNeeded = async (changedProperties: PropertyValueMap<this>) => {
+    const { startView } = this;
+
+    if (
+      changedProperties.get('startView') &&
+      changedProperties.get('startView') !== startView
+    ) {
+      const body = this.#bodyRef.value;
+      const listItems = (await this.#menuListRef.value?.getListItems()) ?? [];
+      const selectedListItemIdx = listItems.findIndex(n => !n.disabled && n.tabIndex > -1);
+
+      if (body && selectedListItemIdx > -1) {
+        const listItemRect = listItems[0].getBoundingClientRect();
+        const offsetToCenter = 2;
+
+        body.scrollTop = (selectedListItemIdx - offsetToCenter) * listItemRect.height;
+      }
+    }
+  };
 }
 
 declare global {

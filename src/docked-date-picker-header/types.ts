@@ -1,5 +1,4 @@
-import type { MenuListType } from '../docked-date-picker/types.js';
-import type { DatePickerProperties } from '../typings.js';
+import type { DatePickerProperties, MenuListType } from '../typings.js';
 
 export interface HeaderDataset extends DOMStringMap {
   type: HeaderMenuType;
@@ -14,6 +13,7 @@ export interface HeaderProperties extends Partial<Pick<DatePickerProperties, 'lo
   onYearMenuClick?(init: HeaderPropertiesMenuClickFnInit): void;
   prevMonthButtonLabel?: string;
   prevYearButtonLabel?: string;
+  startView?: MenuListType | NonNullable<DatePickerProperties['startView']>;
 }
 
 export interface HeaderPropertiesMenuClickFnInit {

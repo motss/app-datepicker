@@ -7,13 +7,16 @@ import { property, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 
 import { MAX_DATE, MIN_DATE, labelMonthMenuItemTemplate, labelSelectedMonthMenuItemTemplate, labelSelectedYearMenuItemTemplate, labelYearMenuItemTemplate, longMonthFormatOptions, yearFormatOptions } from '../constants.js';
-import type { MenuListType } from '../docked-date-picker/types.js';
 import { templateReplacer } from '../helpers/template-replacer.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconCheck } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { RootElement } from '../root-element/root-element.js';
 import type { MdListItemDataset, MenuListItem, MenuListProperties } from './types.js';
+import type { MenuListType } from '../typings.js';
+import { createRef, ref } from 'lit/directives/ref.js';
+import type { MdList } from '@material/web/list/list.js';
+import type { ListItem } from '@material/web/menu/menu.js';
 
 const monthList: number[] = Array.from(Array(12), (_, i) => i);
 
@@ -144,6 +147,8 @@ export class MenuList extends DatePickerMinMaxMixin(RootElement) implements Menu
   @property() value: string = '';
   @property() yearMenuItemTemplate: string = labelYearMenuItemTemplate;
 
+  #listRef = createRef<MdList>();
+
   protected override render(): TemplateResult {
     const {
       _menuList,
@@ -151,7 +156,10 @@ export class MenuList extends DatePickerMinMaxMixin(RootElement) implements Menu
     } = this;
 
     return html`
-    <md-list @click=${this.#onMenuItemClick}>${
+    <md-list
+      ${ref(this.#listRef)}
+      @click=${this.#onMenuItemClick}
+    >${
       map(_menuList, ({
         disabled,
         label,
@@ -166,6 +174,7 @@ export class MenuList extends DatePickerMinMaxMixin(RootElement) implements Menu
           aria-label=${ariaLabel}
           data-type=${menuListType}
           data-value=${value}
+          tabindex=${selected ? 0 : -1}
           type=button
         >
           <md-svg aria-hidden=true slot=start .content=${selected ? iconCheck : svg``}></md-svg>
@@ -174,6 +183,16 @@ export class MenuList extends DatePickerMinMaxMixin(RootElement) implements Menu
       })
     }</md-list>
     `;
+  }
+
+  async getListItems(): Promise<ListItem[] | undefined> {
+    await this.updateComplete;
+
+    const list = this.#listRef.value;
+
+    await list?.updateComplete;
+
+    return list?.items;
   }
 
   protected override willUpdate(changedProperties: PropertyValueMap<this>): void {

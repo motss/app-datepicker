@@ -18,11 +18,21 @@ export const dockedDatePickerStyles = css`
 }
 
 .body {
+  --_hm: 356px;
   --_w: 360px;
 
   max-width: var(--_w);
   min-width: var(--_w);
   width: 100%;
+  max-height: var(--_h, var(--_hm));
+  min-height: var(--_h, var(--_hm));
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.body.calendar {
+  --_h: 400px;
 }
 
 .calendar,
