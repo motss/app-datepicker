@@ -3,10 +3,12 @@
   "compilerOptions": {
     "declarationDir": "dist",
     "inlineSources": false,
-    "moduleDetection": "auto",
+    "isolatedModules": true,
+    "moduleDetection": "force",
     "moduleResolution": "Bundler",
     "outDir": "dist",
     "rootDir": "src",
+    "skipLibCheck": true,
     "sourceMap": false,
     "types": [
       "vite/client"
