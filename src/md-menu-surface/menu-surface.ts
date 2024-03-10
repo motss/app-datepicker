@@ -51,14 +51,19 @@ export abstract class MenuSurface extends LitElement {
    * Animates closed.
    */
   private readonly beforeClose = async () => {
-    this.open = false;
+    try {
+      this.open = false;
 
-    if (!this.skipRestoreFocus) {
-      this.lastFocusedElement?.focus?.();
-    }
+      if (!this.skipRestoreFocus) {
+        this.lastFocusedElement?.focus?.();
+      }
 
-    if (!this.quick) {
-      await this.animateClose();
+      if (!this.quick) {
+        await this.animateClose();
+      }
+    } catch (error) {
+      // fixme: uncaught promise form .animateClose();
+      console.error('beforeClose', error);
     }
   };
   private currentAnchorElement: HTMLElement | null = null;
@@ -427,7 +432,6 @@ export abstract class MenuSurface extends LitElement {
     const slotEl = this.slotEl;
 
     if (!surfaceEl || !slotEl) {
-      promiseReject();
       return animationEnded;
     }
 
@@ -634,9 +638,8 @@ export abstract class MenuSurface extends LitElement {
 
   private captureKeydown(event: KeyboardEvent) {
     if (
-      event.target === this &&
       !event.defaultPrevented &&
-      isClosableKey(event.code)
+      event.code === 'Escape'
     ) {
       event.preventDefault();
       this.close();
@@ -674,16 +677,6 @@ export abstract class MenuSurface extends LitElement {
     this.close();
   }
 
-  private onDeactivateItems(event: Event) {
-    event.stopPropagation();
-    // this.listController.onDeactivateItems();
-  }
-
-  private onRequestActivation(event: Event) {
-    event.stopPropagation();
-    // this.listController.onRequestActivation(event);
-  }
-
   /**
    * Whether the menu is animating upwards or downwards when opening. This is
    * helpful for calculating some animation calculations.
@@ -704,11 +697,8 @@ export abstract class MenuSurface extends LitElement {
    * Renders the menu items' slot
    */
   private renderMenuItems() {
-    // @slotchange=${this.listController.onSlotchange}
     return html`<slot
       @close-menu=${this.onCloseMenu}
-      @deactivate-items=${this.onDeactivateItems}
-      @request-activation=${this.onRequestActivation}
       @stay-open-on-focusout=${this.handleStayOpenOnFocusout}
       @close-on-focusout=${this.handleCloseOnFocusout}
     ></slot>`;

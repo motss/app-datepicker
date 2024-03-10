@@ -12,6 +12,7 @@ export const mdMenuSurfaceStyles = css`
 
 .items {
   background-color: var(--md-menu-surface-container-color, var(--md-sys-color-surface-container-high));
+  overflow: var(--md-menu-surface-items-overflow);
 }
 
 .item-padding {

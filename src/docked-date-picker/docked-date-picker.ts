@@ -474,6 +474,8 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     } else {
       this._focusedDate = this._selectedDate = toResolvedDate(value);
     }
+
+    this.startView = 'calendar';
   };
 
   protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
@@ -508,8 +510,8 @@ declare global {
   }
 }
 
-// fixme: Esc does not close menu
 //
+// done: Esc does not close menu
 // done: update tabbale date
 // done: update date by key
 // done: focus calendar when opened
