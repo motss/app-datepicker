@@ -1,8 +1,21 @@
 import type { DatePickerProperties } from '../typings.js';
 
-export interface DatePickerCalendarProperties extends DatePickerProperties {
+type PickDatePickerProperties = Pick<DatePickerProperties,
+| 'disabledDates'
+| 'disabledDays'
+| 'firstDayOfWeek'
+| 'locale'
+| 'max'
+| 'min'
+| 'shortWeekLabel'
+| 'showWeekNumber'
+| 'weekLabel'
+| 'weekNumberTemplate'
+| 'weekNumberType'
+>;
+
+export interface DatePickerCalendarProperties extends PickDatePickerProperties {
   onDateChange?(focusedDate: Date): void;
   onDateUpdate?(selectedDate: Date): void;
-  onYearUpdate?(): void;
   reset(): Promise<boolean>;
 }

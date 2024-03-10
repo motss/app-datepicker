@@ -1,16 +1,26 @@
 import { css } from 'lit';
 
-export const modalDatePicker_dialogStyle = css`
+export const modalDatePickerStyles = css`
+:host {
+  --_p: 12px;
+}
+
 .dialog {
   max-width: 360px;
   max-height: 572px;
   width: 360px;
   height: 572px;
 }
-`;
 
-export const modalDatePicker_formStyle = css`
 form {
   padding: 0;
+}
+
+.menu {
+  --_padding: var(--_p);
+}
+
+.body {
+  grid-area: body;
 }
 `;

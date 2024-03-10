@@ -1,27 +1,37 @@
 import '@material/web/dialog/dialog.js';
-import '../modal-date-picker-body/modal-date-picker-body.js';
+import '../date-picker-calendar/date-picker-calendar.js';
+import '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import '../modal-date-picker-header/modal-date-picker-header.js';
+import '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
 
+import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
+import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
+import type { MdTextButton } from '@material/web/button/text-button.js';
 import type { MdDialog } from '@material/web/dialog/dialog.js';
-import { html, type TemplateResult } from 'lit';
+import { html, type PropertyValueMap, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { dateFormatOptions, labelConfirm, labelDeny } from '../constants.js';
+import { dateFormatOptions, labelConfirm, labelDeny, MAX_DATE, MIN_DATE } from '../constants.js';
+import type { DatePickerCalendarProperties } from '../date-picker-calendar/types.js';
+import { isSameMonth } from '../helpers/is-same-month.js';
+import { toDateString } from '../helpers/to-date-string.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconEdit } from '../icons.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../mixins/date-picker-start-view-mixin.js';
-import type { ModalDatePickerBody } from '../modal-date-picker-body/modal-date-picker-body.js';
-import type { ModalDatePickerBodyProperties } from '../modal-date-picker-body/types.js';
+import type { ModalDatePickerBodyMenu } from '../modal-date-picker-body-menu/modal-date-picker-body-menu.js';
 import type { ModalDatePickerHeaderProperties } from '../modal-date-picker-header/types.js';
+import type { ModalDatePickerYearGrid } from '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
+import type { ModalDatePickerYearGridProperties } from '../modal-date-picker-year-grid/types.js';
 import { renderActions } from '../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../render-helpers/render-actions/styles.js';
 import { RootElement } from '../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../stylings.js';
 import { modalDatePickerName } from './constants.js';
-import { modalDatePicker_dialogStyle, modalDatePicker_formStyle } from './styles.js';
+import { modalDatePickerStyles } from './styles.js';
 import type { ModalDatePickerProperties, ModalDatePickerPropertiesReturnValue } from './types.js';
 
 @customElement(modalDatePickerName)
@@ -29,17 +39,28 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
   static override styles = [
     resetShadowRoot,
     baseStyling,
-    modalDatePicker_dialogStyle,
-    modalDatePicker_formStyle,
+    modalDatePickerStyles,
     renderActionsStyle,
   ];
 
-  #bodyRef: Ref<ModalDatePickerBody> = createRef();
+  #bodyMenuRef = createRef<ModalDatePickerBodyMenu>();
+
   #dialogRef: Ref<MdDialog> = createRef();
 
   #didDateUpdate: boolean = false;
 
-  #onDateUpdate: ModalDatePickerBodyProperties['onDateUpdate'] = (updatedDate) => {
+  #focusSelectedYear = async (changedProperties: PropertyValueMap<this>): Promise<void> => {
+    if (changedProperties.has('startView')) {
+      const yearGridElement = this.#yearGridRef.value;
+
+      if (yearGridElement) {
+        await yearGridElement.updateComplete;
+        yearGridElement.focusYearWhenNeeded();
+      }
+    }
+  };
+
+  #onDateUpdate: DatePickerCalendarProperties['onDateUpdate'] = (updatedDate) => {
     this.#selectedDate = updatedDate;
     this.#didDateUpdate = true;
     this.requestUpdate();
@@ -54,12 +75,31 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
       // todo: add custom formatter
       this.value = updatedDate.toJSON();
       this.#selectedDate = undefined;
-      this.onDateUpdate?.(updatedDate);
+      // this.onDateUpdate?.(updatedDate);
     }
   };
 
   #onIconButtonClick: NonNullable<ModalDatePickerHeaderProperties['onIconButtonClick']> = () => {
     /** fixme: this require new M3 TextField component to edit date */
+  };
+
+  #onMenuClick = () => {
+    this.startView = this.startView === 'calendar' ? 'yearGrid' : 'calendar';
+  };
+
+  #onNextClick = () => {
+    this._focusedDate = toUTCDate(this._focusedDate, { month: 1 });
+  };
+
+  #onPrevClick = () => {
+    this._focusedDate = toUTCDate(this._focusedDate, { month: -1 });
+  };
+
+  #onYearUpdate: NonNullable<ModalDatePickerYearGridProperties['onYearUpdate']> = (year) => {
+    const focusedDate = toResolvedDate(this._focusedDate);
+
+    this._focusedDate = fromPartsToUtcDate(year, focusedDate.getUTCMonth(), focusedDate.getUTCDate());
+    this.startView = 'calendar';
   };
 
   #propagateCustomEvent = (ev: CustomEvent<object>) => {
@@ -68,15 +108,70 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
 
   #selectedDate?: Date;
 
+  #updateFocusOnViewChange = (changedProperties: PropertyValueMap<this>) => {
+    if (changedProperties.has('startView')) {
+      const { startView } = this;
+
+      if (changedProperties.get('startView') !== startView) {
+        const menuButton = this.#bodyMenuRef.value?.root.querySelector<MdTextButton>('.menuButton');
+
+        menuButton?.focus();
+      }
+    }
+  };
+
+  #updateFocusedDate = (date: Date) => {
+    this._focusedDate = toResolvedDate(date);
+  };
+
+  #updateFocusedDateByValue = (changedProperties: PropertyValueMap<this>) => {
+    if (changedProperties.has('value') && this.value !== changedProperties.get('value')) {
+      this.#updateFocusedDate(toResolvedDate(this.value));
+    }
+  };
+
+  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
+    const { max, min } = this;
+
+    if (changedProperties.has('max') && max !== changedProperties.get('max')) {
+      this._maxDate = toResolvedDate(max);
+    }
+
+    if (changedProperties.has('min') && min !== changedProperties.get('min')) {
+      this._minDate = toResolvedDate(min);
+    }
+  };
+
+  #updateStartView = () => {
+    this.startView = 'calendar';
+  };
+
+  #yearGridRef = createRef<ModalDatePickerYearGrid>();
+
+  @state() _focusedDate: Date;
+
+  @state() _maxDate: Date;
+
+  @state() _minDate: Date;
+
   @property() confirmText: string = labelConfirm;
 
   @property() denyText: string = labelDeny;
 
-  @state() onDateUpdate?: ModalDatePickerProperties['onDateUpdate'];
-
   @property({ type: Boolean }) open: ModalDatePickerProperties['open'];
 
   @property() type?: MdDialog['type'];
+
+  constructor() {
+    super();
+
+    const { max, min, value } = this;
+
+    this._maxDate = toResolvedDate(max ?? MAX_DATE);
+    this._minDate = toResolvedDate(min ?? MIN_DATE);
+    this._focusedDate = toResolvedDate(value);
+    // this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+  }
 
   close(returnValue: ModalDatePickerPropertiesReturnValue) {
     return (this.#dialogRef.value as MdDialog).close(returnValue);
@@ -85,6 +180,9 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
   protected override render(): TemplateResult {
     // fixme: move logics from body to here!
     const {
+      _focusedDate,
+      _maxDate,
+      _minDate,
       chooseMonthLabel,
       chooseYearLabel,
       confirmText,
@@ -108,7 +206,6 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
       todayLabel,
       toyearTemplate,
       type,
-      value,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
@@ -119,16 +216,27 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     const iconButton = iconEdit;
     const supportingText = selectDateLabel;
 
+    const isCalendarView = startView === 'calendar';
+    const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
+      month: 'long',
+      timeZone: 'UTC',
+      year: 'numeric',
+    }).format;
+    const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
+    const showNextButton = isCalendarView && !isSameMonth(_focusedDate, _maxDate);
+    const showPrevButton = isCalendarView && !isSameMonth(_focusedDate, _minDate);
+    const valueValue = toDateString(_focusedDate);
+
     return html`
     <md-dialog
       ${ref(this.#dialogRef)}
-      class=dialog
       ?open=${open}
       @cancel=${this.#propagateCustomEvent}
       @close=${this.#propagateCustomEvent}
       @closed=${this.#onDialogClosed}
       @open=${this.#propagateCustomEvent}
       @opened=${this.#propagateCustomEvent}
+      class=dialog
       type=${ifDefined(type)}
     >
       <form method=dialog slot=content id=${formId}>
@@ -139,32 +247,57 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
           .supportingText=${supportingText}
         ></modal-date-picker-header>
 
-        <modal-date-picker-body
-          ${ref(this.#bodyRef)}
-          .chooseMonthLabel=${chooseMonthLabel}
-          .chooseYearLabel=${chooseYearLabel}
-          .disabledDates=${disabledDates}
-          .disabledDays=${disabledDays}
-          .firstDayOfWeek=${firstDayOfWeek}
-          .locale=${locale}
-          .max=${max}
-          .min=${min}
-          .nextMonthLabel=${nextMonthLabel}
-          .previousMonthLabel=${previousMonthLabel}
-          .selectDateLabel=${selectDateLabel}
-          .selectedDateLabel=${selectedDateLabel}
-          .selectedYearTemplate=${selectedYearTemplate}
-          .shortWeekLabel=${shortWeekLabel}
-          .showWeekNumber=${showWeekNumber}
-          startView=${ifDefined(startView)}
-          .todayLabel=${todayLabel}
-          .toyearTemplate=${toyearTemplate}
-          .value=${value}
-          .weekLabel=${weekLabel}
-          .weekNumberTemplate=${weekNumberTemplate}
-          .weekNumberType=${weekNumberType}
-          .onDateUpdate=${this.#onDateUpdate}
-        ></modal-date-picker-body>
+        <modal-date-picker-body-menu
+          ${ref(this.#bodyMenuRef)}
+          class=menu
+          menuLabel=${menuLabel}
+          menuText=${longMonthYearFormat(_focusedDate)}
+          nextIconButtonLabel=${nextMonthLabel}
+          .onMenuClick=${this.#onMenuClick}
+          .onNextClick=${this.#onNextClick}
+          .onPrevClick=${this.#onPrevClick}
+          .prevIconButtonLabel=${previousMonthLabel}
+          ?showNextButton=${showNextButton}
+          ?showPrevButton=${showPrevButton}
+        ></modal-date-picker-body-menu>
+
+        <div class=body>${
+          startView === 'calendar' ?
+            html`<date-picker-calendar
+              ?showWeekNumber=${showWeekNumber}
+              .max=${max}
+              .min=${min}
+              .onDateChange=${this.#updateFocusedDate}
+              .onDateUpdate=${this.#onDateUpdate}
+              .onYearUpdate=${this.#updateStartView}
+              class=body
+              disabledDates=${disabledDates}
+              disabledDays=${disabledDays}
+              firstDayOfWeek=${firstDayOfWeek}
+              locale=${locale}
+              selectDateLabel=${selectDateLabel}
+              selectedDateLabel=${selectedDateLabel}
+              selectedYearTemplate=${selectedYearTemplate}
+              shortWeekLabel=${shortWeekLabel}
+              startView=${startView}
+              todayLabel=${todayLabel}
+              toyearTemplate=${toyearTemplate}
+              value=${valueValue}
+              weekLabel=${weekLabel}
+              weekNumberTemplate=${weekNumberTemplate}
+              weekNumberType=${weekNumberType}
+            ></date-picker-calendar>` :
+            html`<modal-date-picker-year-grid
+              ${ref(this.#yearGridRef)}
+              .max=${max}
+              .min=${min}
+              .onYearUpdate=${this.#onYearUpdate}
+              locale=${locale}
+              selectedYearTemplate=${selectedYearTemplate}
+              toyearTemplate=${toyearTemplate}
+              value=${valueValue}
+            ></modal-date-picker-year-grid>`
+        }</div>
       </form>
 
       ${renderActions({ confirmText, denyText, formId, slot: 'actions' })}
@@ -173,7 +306,8 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
   }
 
   async reset(): Promise<boolean> {
-    await (this.#bodyRef.value as ModalDatePickerBody).reset();
+    // await (this.#bodyRef.value as ModalDatePickerBody).reset();
+    this._focusedDate = toResolvedDate(this.value);
     return this.updateComplete;
   }
 
@@ -183,6 +317,16 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
 
   showPicker(): ReturnType<typeof this.show> {
     return this.show();
+  }
+
+  protected override updated(changedProperties: PropertyValueMap<this>): void {
+    this.#focusSelectedYear(changedProperties);
+    this.#updateFocusOnViewChange(changedProperties);
+  }
+
+  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+    this.#updateFocusedDateByValue(changedProperties);
+    this.#updateMinMax(changedProperties);
   }
 
   get returnValue(): ModalDatePickerProperties['returnValue'] {

@@ -1,14 +1,13 @@
-import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
+import '../calendar/app-calendar.js';
+
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
-import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import type { AppCalendar } from '../calendar/app-calendar.js';
 import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../calendar/types.js';
-import { confirmKeySet, navigationKeySetGrid, renderNoop } from '../constants.js';
+import { confirmKeySet, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../constants.js';
 import { isSameMonth } from '../helpers/is-same-month.js';
 import { splitString } from '../helpers/split-string.js';
 import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
@@ -17,38 +16,19 @@ import { keyHome } from '../key-values.js';
 import { DatePickerMinMaxMixin } from '../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../mixins/date-picker-start-view-mixin.js';
-import type { ModalDatePickerYearGrid } from '../modal-date-picker-year-grid/modal-date-picker-year-grid.js';
-import type { ModalDatePickerYearGridProperties } from '../modal-date-picker-year-grid/types.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
 import type { InferredFromSet, SupportedKey } from '../typings.js';
 import { datePickerCalendarName } from './constants.js';
-import { datePickerCalendarStyle } from './styles.js';
+import { datePickerCalendarStyles } from './styles.js';
 import type { DatePickerCalendarProperties } from './types.js';
-
-const defaultDate = toResolvedDate();
 
 @customElement(datePickerCalendarName)
 export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMaxMixin(DatePickerMixin(RootElement))) implements DatePickerCalendarProperties {
   static override styles = [
     resetShadowRoot,
-    datePickerCalendarStyle,
+    datePickerCalendarStyles,
   ];
-
-  #focusSelectedYear = async (changedProperties: PropertyValueMap<this>): Promise<void> => {
-    if (changedProperties.has('startView')) {
-      const yearGridElement = this.#yearGridRef.value;
-
-      if (yearGridElement) {
-        await yearGridElement.updateComplete;
-        yearGridElement.focusYearWhenNeeded();
-      }
-    }
-  };
-
-  #maxDate: Date = defaultDate;
-
-  #minDate: Date = defaultDate;
 
   #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
     this.onDateUpdate?.(this._selectedDate);
@@ -83,13 +63,6 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
     }
   };
 
-  #onYearUpdate: NonNullable<ModalDatePickerYearGridProperties['onYearUpdate']> = (year) => {
-    const focusedDate = toResolvedDate(this._focusedDate);
-
-    this._focusedDate = fromPartsToUtcDate(year, focusedDate.getUTCMonth(), focusedDate.getUTCDate());
-    this.onYearUpdate?.();
-  };
-
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
     data,
   }) => {
@@ -119,11 +92,11 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
     const { max, min } = this;
 
     if (changedProperties.has('max') && max !== changedProperties.get('max')) {
-      this.#maxDate = toResolvedDate(max);
+      this._maxDate = toResolvedDate(max);
     }
 
     if (changedProperties.has('min') && min !== changedProperties.get('min')) {
-      this.#minDate = toResolvedDate(min);
+      this._minDate = toResolvedDate(min);
     }
   };
 
@@ -133,7 +106,7 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
     if (isWithinSameMonth) {
       this._tabbableDate = this._selectedDate;
     } else {
-      const { disabledDates, disabledDays } = this;
+      const { _maxDate, _minDate, disabledDates, disabledDays } = this;
 
       /**
        * NOTE: This reset tabindex of a tab-able calendar day to
@@ -150,25 +123,35 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
         disabledDaysSet: new Set(disabledDayList),
         hasAltKey: false,
         key: keyHome,
-        maxTime: this.#maxDate.getTime(),
-        minTime: this.#minDate.getTime(),
+        maxTime: _maxDate.getTime(),
+        minTime: _minDate.getTime(),
       });
     }
   };
 
-  #yearGridRef: Ref<ModalDatePickerYearGrid> = createRef();
+  @state() _focusedDate: Date;
 
-  @state() _focusedDate: Date = defaultDate;
+  @state() _maxDate: Date;
 
-  @state() _selectedDate: Date = defaultDate;
+  @state() _minDate: Date;
 
-  @state() private _tabbableDate: Date = defaultDate;
+  @state() _selectedDate: Date;
+
+  @state() _tabbableDate: Date;
 
   onDateChange?: DatePickerCalendarProperties['onDateChange'];
 
   onDateUpdate?: DatePickerCalendarProperties['onDateUpdate'];
 
-  onYearUpdate?: DatePickerCalendarProperties['onYearUpdate'];
+  constructor() {
+    super();
+
+    const { max, min, value } = this;
+
+    this._maxDate = toResolvedDate(max ?? MAX_DATE);
+    this._minDate = toResolvedDate(min ?? MIN_DATE);
+    this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+  }
 
   #notifyDateUpdate(changedProperties: PropertyValueMap<this>): void {
     if (changedProperties.has('_focusedDate')) {
@@ -184,64 +167,45 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
       locale,
       max,
       min,
-      selectedYearTemplate,
       shortWeekLabel,
       showWeekNumber,
-      startView,
-      toyearTemplate,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
     } = this;
 
-    const isCalendarView = startView === 'calendar';
     const value = toResolvedDate(this._focusedDate).toJSON();
 
-    return isCalendarView ? html`
+    return html`
     <app-calendar
-      disabledDates=${disabledDates}
-      disabledDays=${disabledDays}
-      firstDayOfWeek=${firstDayOfWeek}
-      locale=${locale}
-      max=${ifDefined(max)}
-      min=${ifDefined(min)}
+      ?showWeekNumber=${showWeekNumber}
+      .max=${max}
+      .min=${min}
       .onDateUpdateByClick=${this.#onDateUpdateByClick}
       .onDateUpdateByKey=${this.#onDateUpdateByKey}
+      .onUpdated=${this.#onCalendarUpdated}
       .renderCalendarDay=${this.#renderCalendarDay}
       .renderFooter=${renderNoop}
       .renderWeekDay=${this.#renderWeekDay}
       .renderWeekLabel=${renderNoop}
       .renderWeekNumber=${renderNoop}
+      disabledDates=${disabledDates}
+      disabledDays=${disabledDays}
+      firstDayOfWeek=${firstDayOfWeek}
+      locale=${locale}
       shortWeekLabel=${shortWeekLabel}
-      ?showWeekNumber=${showWeekNumber}
       value=${value}
       weekLabel=${weekLabel}
       weekNumberTemplate=${weekNumberTemplate}
       weekNumberType=${weekNumberType}
-      .onUpdated=${this.#onCalendarUpdated}
     ></app-calendar>
-    ` : html`
-    <modal-date-picker-year-grid
-      ${ref(this.#yearGridRef)}
-      locale=${locale}
-      max=${ifDefined(max)}
-      min=${ifDefined(min)}
-      selectedYearTemplate=${selectedYearTemplate}
-      toyearTemplate=${toyearTemplate}
-      value=${value}
-      .onYearUpdate=${this.#onYearUpdate}
-    ></modal-date-picker-year-grid>
     `;
   }
 
-  async reset() {
+  async reset(): Promise<boolean> {
     this._focusedDate = this._selectedDate = toResolvedDate(this.value);
 
     return this.updateComplete;
-  }
-
-  protected override updated(changedProperties: PropertyValueMap<this>): void {
-    this.#focusSelectedYear(changedProperties);
   }
 
   protected override willUpdate(changedProperties: PropertyValueMap<this>): void {

@@ -256,33 +256,6 @@ ${'' && `
 
 <hr />
 
-<modal-date-picker-body
-  .chooseMonthLabel=${labelChooseMonth}
-  .chooseYearLabel=${labelChooseYear}
-  .disabledDates=${''}
-  .disabledDays=${''}
-  .firstDayOfWeek=${0}
-  .locale=${'en-US'}
-  .max=${''}
-  .min=${''}
-  .nextMonthLabel=${labelNextMonth}
-  .previousMonthLabel=${labelPreviousMonth}
-  .selectDateLabel=${labelSelectDate}
-  .selectedDateLabel=${labelSelectedDate}
-  .selectedYearTemplate=${selectedYearTemplate}
-  .shortWeekLabel=${labelShortWeek}
-  .showWeekNumber=${false}
-  .startView=${'calendar'}
-  .todayLabel=${labelToday}
-  .toyearTemplate=${toyearTemplate}
-  .value=${'2020-02-02'}
-  .weekLabel=${labelWeek}
-  .weekNumberTemplate=${weekNumberTemplate}
-  .weekNumberType=${'first-4-day-week'}
-></modal-date-picker-body>
-
-<hr />
-
 <div style="max-height:300px;overflow:auto;">
   <year-grid
     locale=${'en-US'}

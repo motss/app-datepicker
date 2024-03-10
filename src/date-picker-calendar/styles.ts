@@ -2,24 +2,22 @@ import { css, unsafeCSS } from 'lit';
 
 import { includeScrollbarStyle } from '../stylings.js';
 
-export const datePickerCalendarStyle = css`
+export const datePickerCalendarStyles = css`
 :host {
-  --_size: 12px;
+  --_o: hidden;
+  --_p: 12px;
 
   display: grid;
-  overflow: hidden;
+  overflow: var(--_o);
   scroll-behavior: smooth;
   overscroll-behavior: contain;
-  scrollbar-gutter: auto;
 }
-
 :host([startview="yearGrid"]) {
-  overflow: hidden auto;
+  --_o: hidden auto;
 }
+${unsafeCSS(includeScrollbarStyle(':host([startview="yearGrid"])'))}
 
 app-calendar {
-  --_padding: var(--_size);
+  --_padding: var(--_p);
 }
-
-${unsafeCSS(includeScrollbarStyle(':host([startview="yearGrid"])'))}
 `;

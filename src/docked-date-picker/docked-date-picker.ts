@@ -71,11 +71,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   ];
 
   #confirmSelectedDate = async (node: CalendarDayElement) => {
-    const fulldate = node?.dataset.fulldate;
-
-    if (fulldate) {
-      this._focusedDate = this._selectedDate = toResolvedDate(fulldate);
-    }
+    this._focusedDate = this._selectedDate = toResolvedDate(node.dataset.fulldate);
   };
 
   #onClosing = () => {
@@ -510,6 +506,8 @@ declare global {
   }
 }
 
+// fixme: create more controllers to share code to update properties
+// fixme: add showPicker(), show(), close(), reset()
 //
 // done: Esc does not close menu
 // done: update tabbale date
