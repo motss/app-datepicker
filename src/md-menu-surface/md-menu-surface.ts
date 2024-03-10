@@ -3,15 +3,13 @@ import { customElement } from 'lit/decorators.js';
 
 import { MdMenuSurfaceName } from './constants.js';
 import { MenuSurface } from './menu-surface.js';
-import { mdMenuSurface_itemsStyle, mdMenuSurface_menuStyle, mdMenuSurfaceStyle } from './styles.js';
+import { mdMenuSurfaceStyles } from './styles.js';
 
 @customElement(MdMenuSurfaceName)
 export class MdMenuSurface extends MenuSurface {
   static override styles = [
     styles,
-    mdMenuSurfaceStyle,
-    mdMenuSurface_menuStyle,
-    mdMenuSurface_itemsStyle,
+    mdMenuSurfaceStyles,
   ];
 }
 

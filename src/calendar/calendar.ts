@@ -1,5 +1,5 @@
 import { calendar } from '@ipohjs/calendar';
-import type { CalendarWeekday } from '@ipohjs/calendar/dist/typings.js';
+import type { CalendarGrid, CalendarWeekday } from '@ipohjs/calendar/dist/typings.js';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
@@ -34,7 +34,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
 
   #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
-  #findSelectableCalendarDayNode = (ev: KeyboardEvent | MouseEvent) => {
+  #findSelectableCalendarDayNode = (ev: UIEvent) => {
     const path = ev.composedPath() as HTMLElement[];
     const node = path.find(n => {
       return (
@@ -42,7 +42,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
         n.classList.contains('calendarDayButton') &&
         n.getAttribute('aria-disabled') !== 'true'
       );
-    }) as CalendarDayElement;
+    }) as CalendarDayElement | null;
 
     return node;
   };
@@ -92,6 +92,22 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   #longWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #narrowWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
+
+  #onClickOrKeyUp = <T extends 'click' | 'key'>(calendarGrid: CalendarGrid) => (ev: T extends 'click' ? MouseEvent : KeyboardEvent) => {
+    const node = this.#findSelectableCalendarDayNode(ev);
+
+    if (node) {
+      const typedEvent = ev as KeyboardEvent & { type: `key${string}`} | MouseEvent & { type: 'click' };
+
+      if (typedEvent.type === 'click') {
+        this.onDateUpdateByClick?.(typedEvent, node, calendarGrid);
+      }
+
+      if (typedEvent.type === 'keyup') {
+        this.onDateUpdateByKey?.(typedEvent, node, calendarGrid);
+      }
+    }
+  };
 
   #onKeyDown = (ev: KeyboardEvent) => {
     const { key } = ev;
@@ -241,8 +257,6 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       locale,
       max,
       min,
-      onDateUpdateByClick,
-      onDateUpdateByKey,
       renderCalendarDay,
       renderFooter,
       renderWeekDay,
@@ -289,16 +303,14 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     ];
 
     const caption = this.#fullDateFormat.format(date);
-    const onClick = (ev: MouseEvent) => onDateUpdateByClick?.(ev, this.#findSelectableCalendarDayNode(ev), calendarGrid);
-    const onKeyUp = (ev: KeyboardEvent) => onDateUpdateByKey?.(ev, this.#findSelectableCalendarDayNode(ev), calendarGrid);
 
     return html`
     <table
       class=calendar
       part=calendar
-      @click=${onClick}
+      @click=${this.#onClickOrKeyUp<'click'>(calendarGrid)}
       @keydown=${this.#onKeyDown}
-      @keyup=${onKeyUp}
+      @keyup=${this.#onClickOrKeyUp<'key'>(calendarGrid)}
       @mousedown=${this.#onMouseDown}
       tabindex=-1
       role=grid
@@ -352,14 +364,12 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   };
 
   #shouldFocusDate: boolean = false;
-
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
   onUpdated?: CalendarProperties['onUpdated'];
   @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
   @state() renderFooter: CalendarProperties['renderFooter'];
   @state() renderWeekDay: CalendarProperties['renderWeekDay'];
-  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
 
   // #updateSelectedDate = (event: KeyboardEvent): void => {
   //   const key = event.key as SupportedKey;
@@ -455,6 +465,8 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
   // };
 
   // @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
+
+  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
 
   @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
 

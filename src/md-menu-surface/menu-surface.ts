@@ -725,7 +725,7 @@ export abstract class MenuSurface extends LitElement {
         popover=${this.positioning === 'popover' ? 'manual' : nothing}>
         ${this.renderElevation()}
         <div class="items">
-          <div class="item-padding"> ${this.renderMenuItems()} </div>
+          <div class="item-padding">${this.renderMenuItems()}</div>
         </div>
       </div>
     `;

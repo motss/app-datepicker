@@ -82,7 +82,6 @@ export const includeScrollbarStyle = (prefix: string) => {
 
       scrollbar-color: var(--_scrollbarColor_thumb) rgba(0 0 0 / 0);
       scrollbar-width: thin;
-      scrollbar-gutter: stable both-edges;
     }
 
     ${selector}:hover {

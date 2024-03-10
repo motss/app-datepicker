@@ -1,5 +1,4 @@
-import type { MenuListType } from '../docked-date-picker/types.js';
-import type { DatePickerProperties, LabelValue } from '../typings.js';
+import type { DatePickerProperties, LabelValue, MenuListType } from '../typings.js';
 
 export interface MenuListItem extends LabelValue<number> {
   disabled: boolean;

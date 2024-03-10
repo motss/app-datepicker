@@ -19,6 +19,7 @@ export const labelSelectedDate = 'Selected date' as const;
 export const labelSelectedMonthMenuItemTemplate = 'selected month is %s' as const;
 export const labelSelectedYearMenuItemTemplate = 'selected year is %s' as const;
 export const labelShortWeek = 'Wk' as const;
+export const labelSupportingText = 'YYYY-MM-DD';
 export const labelToday = 'Today' as const;
 export const labelWeek = 'Week' as const;
 export const labelYearMenuItemTemplate = 'current year is %s' as const;

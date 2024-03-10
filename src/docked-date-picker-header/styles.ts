@@ -10,6 +10,10 @@ const buttons = unsafeCSS(areas.map((area) => `.${area} { grid-area: ${area} }`)
 export const dockedDatePickerHeaderStyles = css`
 ${renderMenuButtonStyle}
 
+:host {
+  display: block;
+}
+
 .header {
   display: grid;
   grid-template-areas: '${gridTemplateAreas}';

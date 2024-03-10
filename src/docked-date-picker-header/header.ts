@@ -1,5 +1,6 @@
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
+import type { MdTextButton } from '@material/web/button/text-button.js';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 
@@ -106,6 +107,11 @@ export class Header extends RootElement implements HeaderProperties {
     this.#maxDate = toResolvedDate(max ?? MAX_DATE);
     this.#minDate = toResolvedDate(min ?? MIN_DATE);
     this.#valueDate = toResolvedDate(value);
+  }
+
+  async getMonthMenuButton(): Promise<MdTextButton | null> {
+    await this.updateComplete;
+    return this.root.querySelector<MdTextButton>('.menuButton.month');
   }
 
   protected override render(): TemplateResult {
