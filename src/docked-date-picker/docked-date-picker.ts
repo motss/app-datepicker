@@ -13,11 +13,10 @@ import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import type { AppCalendar } from '../calendar/app-calendar.js';
 import { renderCalendarDay } from '../calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../calendar/helpers/render-week-day/render-week-day.js';
-import type { CalendarProperties } from '../calendar/types.js';
-import { labelConfirm, labelDeny, labelMonthMenuItemTemplate, labelNextMonth, labelNextYear, labelPreviousMonth, labelPreviousYear, labelSelectedMonthMenuItemTemplate, labelSelectedYearMenuItemTemplate, labelSupportingText, labelYearMenuItemTemplate, MAX_DATE, MIN_DATE, renderNoop } from '../constants.js';
+import type { CalendarDayElement, CalendarProperties } from '../calendar/types.js';
+import { confirmKeySet, labelConfirm, labelDeny, labelMonthMenuItemTemplate, labelNextMonth, labelNextYear, labelPreviousMonth, labelPreviousYear, labelSelectedMonthMenuItemTemplate, labelSelectedYearMenuItemTemplate, labelSupportingText, labelYearMenuItemTemplate, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../constants.js';
 import type { DockedDatePickerHeader } from '../docked-date-picker-header/docked-date-picker-header.js';
 import { DockedDatePickerMenuList } from '../docked-date-picker-menu-list/docked-date-picker-menu-list.js';
 import { toDateString } from '../helpers/to-date-string.js';
@@ -30,10 +29,14 @@ import { renderActions } from '../render-helpers/render-actions/render-actions.j
 import { renderActionsStyle } from '../render-helpers/render-actions/styles.js';
 import { RootElement } from '../root-element/root-element.js';
 import { resetShadowRoot } from '../stylings.js';
-import type { MenuListType } from '../typings.js';
+import type { InferredFromSet, MenuListType, SupportedKey } from '../typings.js';
 import { dockedDatePicker_calendarIconLabel, dockedDatePicker_mdMenuSurfaceYOffset, dockedDatePickerName } from './constants.js';
 import { dockedDatePickerStyles } from './styles.js';
 import type { DockedDatePickerProperties } from './types.js';
+import { toNextSelectedDate } from '../helpers/to-next-selected-date.js';
+import { isSameMonth } from '../helpers/is-same-month.js';
+import { splitString } from '../helpers/split-string.js';
+import { keyHome } from '../key-values.js';
 
 const defaultDate = toResolvedDate();
 
@@ -67,22 +70,28 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     dockedDatePickerStyles,
   ];
 
-  /**
-   * Dispatches the `input` and `change` events.
-   */
-  #dispatchInteractionEvents = () => {
-    this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
-    this.dispatchEvent(new Event('change', { bubbles: true }));
-  };
+  #confirmSelectedDate = async (node: CalendarDayElement) => {
+    const fulldate = node?.dataset.fulldate;
 
-  #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
-    // this.onDateUpdate?.(this._selectedDate);
+    if (fulldate) {
+      this._focusedDate = this._selectedDate = toResolvedDate(fulldate);
+    }
   };
 
   #onClosing = () => {
     this.open = false;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this.#textFieldRef.value as any).focused = false;
+    this.#updateTextFieldFocusedTo(false);
+  };
+
+  #updateTextFieldFocusedTo = (focused: boolean) => {
+    /**
+     * NOTE: A workaround to ensure that the text field renders in its focused state
+     * when the user focuses the menu surface.
+     */
+    interface MdOutlinedTextFieldWithFocused extends Omit<MdOutlinedTextField, 'focused'> {
+      focused: boolean;
+    }
+    (this.#textFieldRef.value as unknown as MdOutlinedTextFieldWithFocused).focused = focused;
   };
 
   #onConfirm = () => {
@@ -91,36 +100,32 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   };
 
   #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (_ev, node) => {
-    const fulldate = node?.dataset.fulldate;
-
-    if (fulldate) {
-      this._focusedDate = this._selectedDate = toResolvedDate(fulldate);
-    }
+    this.#confirmSelectedDate(node);
   };
 
-  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, _node, { disabledDatesSet, disabledDaysSet }) => {
-    // if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
-    //   const nextDate = toNextSelectedDate({
-    //     currentDate: this._focusedDate,
-    //     date: this._selectedDate,
-    //     disabledDatesSet,
-    //     disabledDaysSet,
-    //     hasAltKey: ev.altKey,
-    //     key: ev.key as SupportedKey,
-    //     maxTime: toResolvedDate(this.max).getTime(),
-    //     minTime: toResolvedDate(this.min).getTime(),
-    //   });
-    //   const nextDateTime = nextDate.getTime();
+  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, node, { disabledDatesSet, disabledDaysSet }) => {
+    if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
+      const nextDate = toNextSelectedDate({
+        currentDate: this._focusedDate,
+        date: this._selectedDate,
+        disabledDatesSet,
+        disabledDaysSet,
+        hasAltKey: ev.altKey,
+        key: ev.key as SupportedKey,
+        maxTime: toResolvedDate(this.max).getTime(),
+        minTime: toResolvedDate(this.min).getTime(),
+      });
+      const nextDateTime = nextDate.getTime();
 
-    //   if (
-    //     nextDateTime !== this._focusedDate.getTime() ||
-    //     nextDateTime !== this._selectedDate.getTime()
-    //   ) {
-    //     this._focusedDate = this._selectedDate = nextDate;
-    //   }
-    // } else if (confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)) {
-    //   this.#onCalendarUpdated?.();
-    // }
+      if (
+        nextDateTime !== this._focusedDate.getTime() ||
+        nextDateTime !== this._selectedDate.getTime()
+      ) {
+        this._focusedDate = this._selectedDate = nextDate;
+      }
+    } else if (confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)) {
+      this.#onConfirm();
+    }
   };
 
   #onDeny = () => {
@@ -145,15 +150,41 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   #onOpening = () => {
     this.open = true;
+    this.#updateTextFieldFocusedTo(true);
+  };
 
-    /**
-     * NOTE: A workaround to ensure that the text field renders in its focused state
-     * when the user focuses the menu surface.
-     */
-    interface MdOutlinedTextFieldWithFocused extends Omit<MdOutlinedTextField, 'focused'> {
-      focused: boolean;
+  #updateTabbableDate = (changedProperties: PropertyValueMap<this>) => {
+    const { _focusedDate, _selectedDate, disabledDates, disabledDays } = this;
+
+    if (
+      changedProperties.has('_focusedDate') && changedProperties.get('_focusedDate') !== _focusedDate ||
+      changedProperties.has('_selectedDate') && changedProperties.get('_selectedDate') !== _selectedDate
+    ) {
+      const isWithinSameMonth = isSameMonth(_selectedDate, _focusedDate);
+
+      if (isWithinSameMonth) {
+        this._tabbableDate = _selectedDate;
+      } else {
+        /**
+         * NOTE: This reset tabindex of a tab-able calendar day to
+         * the first day of month when navigating away from the current month
+         * where the focused/ selected date is no longer in the new current month.
+         */
+        const disabledDateList = splitString(disabledDates, toResolvedDate);
+        const disabledDayList = splitString(disabledDays, Number);
+
+        this._tabbableDate = toNextSelectedDate({
+          currentDate: this._focusedDate,
+          date: this._selectedDate,
+          disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
+          disabledDaysSet: new Set(disabledDayList),
+          hasAltKey: false,
+          key: keyHome,
+          maxTime: this._maxDate.getTime(),
+          minTime: this._minDate.getTime(),
+        });
+      }
     }
-    (this.#textFieldRef.value as unknown as MdOutlinedTextFieldWithFocused).focused = true;
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
@@ -262,7 +293,6 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this._maxDate = toResolvedDate(max ?? MAX_DATE);
     this._minDate = toResolvedDate(min ?? MIN_DATE);
     this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
-    this.supportingText
   }
 
   protected override render(): TemplateResult {
@@ -356,7 +386,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
                 ?showWeekNumber=${showWeekNumber}
                 .onDateUpdateByClick=${this.#onDateUpdateByClick}
                 .onDateUpdateByKey=${this.#onDateUpdateByKey}
-                .onUpdated=${this.#onCalendarUpdated}
+                .onUpdated=${() => { /** todo: */}}
                 .renderCalendarDay=${this.#renderCalendarDay}
                 .renderFooter=${renderNoop}
                 .renderWeekDay=${this.#renderWeekDay}
@@ -412,6 +442,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
     this.#updateDatesByValue(changedProperties);
     this.#updateMinMax(changedProperties);
+    this.#updateTabbableDate(changedProperties);
   }
 
   #onOpened = async () => {
@@ -477,9 +508,10 @@ declare global {
   }
 }
 
-// fixme: update tabbale date
-// fixme: update date by key
+// fixme: Esc does not close menu
 //
+// done: update tabbale date
+// done: update date by key
 // done: focus calendar when opened
 // done: focus menulist when opened
 // done: update focused, selected date
