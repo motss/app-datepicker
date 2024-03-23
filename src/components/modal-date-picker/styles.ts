@@ -1,6 +1,7 @@
 import { css } from 'lit';
 
 import { includeScrollbarStyles, includeSeparatorStyles } from '../../styles.js';
+import { mdRefTypefacePlain } from '../../typography.js';
 
 export const modalDatePickerStyles = css`
 :host {
@@ -8,6 +9,8 @@ export const modalDatePickerStyles = css`
   --_dh: 572px;
   --_bh: minmax(calc(48px * 6), calc(48px * 7));
   --_bo: initial;
+
+  font-family: ${mdRefTypefacePlain(`'Open Sans', sans-serif, system-ui`)};
 }
 :host([startview=yearGrid]) {
   --_dh: 516px;

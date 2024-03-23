@@ -1,5 +1,7 @@
 import { css } from 'lit';
 
+import { mdSysTypescaleBodyLarge, mdSysTypescaleTitleMedium } from '../../../typography.js';
+
 export const modalDatePickerYearGridStyles = css`
 .yearGrid {
   display: grid;
@@ -11,10 +13,10 @@ export const modalDatePickerYearGridStyles = css`
   padding-block: 8px;
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
-  font-family: var(--md-sys-typescale-body-large-font);
-  font-size: var(--md-sys-typescale-body-large-line-size);
-  font-weight: var(--md-sys-typescale-body-large-weight);
-  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+
+  font-size: ${mdSysTypescaleBodyLarge.size};
+  font-weight: ${mdSysTypescaleBodyLarge.weight};
+  line-height: ${mdSysTypescaleBodyLarge.lineHeight};
 }
 
 .yearGridButton {
@@ -22,10 +24,13 @@ export const modalDatePickerYearGridStyles = css`
   --_labelColor: var(--md-sys-color-on-surface);
   --_space: 12px;
 
-  --md-outlined-button-outline-color: var(--_outlineColor);
-  --md-outlined-button-leading-space: var(--_space);
-  --md-outlined-button-trailing-space: var(--_space);
   --md-outlined-button-label-text-color: var(--_labelColor);
+  --md-outlined-button-label-text-line-height: ${mdSysTypescaleBodyLarge.lineHeight};
+  --md-outlined-button-label-text-size: ${mdSysTypescaleBodyLarge.size};
+  --md-outlined-button-label-text-weight: ${mdSysTypescaleBodyLarge.weight};
+  --md-outlined-button-leading-space: var(--_space);
+  --md-outlined-button-outline-color: var(--_outlineColor);
+  --md-outlined-button-trailing-space: var(--_space);
 
   width: 72px;
   height: 36px;
@@ -39,5 +44,8 @@ export const modalDatePickerYearGridStyles = css`
 .yearGridButton[aria-pressed="true"] {
   --md-filled-button-leading-space: var(--_space);
   --md-filled-button-trailing-space: var(--_space);
+  --md-filled-button-label-text-line-height: ${mdSysTypescaleTitleMedium.lineHeight};
+  --md-filled-button-label-text-size: ${mdSysTypescaleTitleMedium.size};
+  --md-filled-button-label-text-weight: ${mdSysTypescaleTitleMedium.weight};
 }
 `;

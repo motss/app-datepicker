@@ -1,5 +1,7 @@
 import { css } from 'lit';
 
+import { mdSysTypescaleBodyLarge } from '../../../typography.js';
+
 export const modalDatePickerBodyMenuStyles = css`
 :host {
   --_btn-size: 48px;
@@ -30,9 +32,9 @@ export const modalDatePickerBodyMenuStyles = css`
 .menuButton {
   --md-text-button-icon-color: var(--md-sys-color-on-surface-variant);
   --md-text-button-label-text-color: var(--md-sys-color-on-surface-variant);
-  --md-text-button-label-text-line-height: var(--md-sys-typescale-body-large-line-height);
-  --md-text-button-label-text-size: var(--md-sys-typescale-body-large-size);
-  --md-text-button-label-text-weight: var(--md-sys-typescale-body-large-weight);
+  --md-text-button-label-text-line-height: ${mdSysTypescaleBodyLarge.lineHeight};
+  --md-text-button-label-text-size: ${mdSysTypescaleBodyLarge.size};
+  --md-text-button-label-text-weight: ${mdSysTypescaleBodyLarge.weight};
 
   grid-area: menuButton;
 }

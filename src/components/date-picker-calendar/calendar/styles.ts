@@ -1,5 +1,7 @@
 import { css } from 'lit';
 
+import { mdSysTypescaleBodyLarge } from '../../../typography.js';
+
 export const calendarStyles = css`
 :host {
   background-color: var(--md-sys-color-surface-container-high);
@@ -36,9 +38,9 @@ export const calendarStyles = css`
 
   --md-outlined-button-outline-color: var(--_cdb-oc);
   --md-outlined-button-label-text-color: var(--_cdb-lc);
-  --md-outlined-button-label-text-line-height: var(--md-sys-typescale-body-large-line-height);
-  --md-outlined-button-label-text-size: var(--md-sys-typescale-body-large-size);
-  --md-outlined-button-label-text-weight: var(--md-sys-typescale-body-large-weight);
+  --md-outlined-button-label-text-line-height: ${mdSysTypescaleBodyLarge.lineHeight};
+  --md-outlined-button-label-text-size: ${mdSysTypescaleBodyLarge.size};
+  --md-outlined-button-label-text-weight: ${mdSysTypescaleBodyLarge.weight};
 
   padding: 0;
 }

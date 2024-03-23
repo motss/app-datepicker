@@ -1,7 +1,6 @@
 import '@material/web/button/text-button.js';
 import '@material/web/iconbutton/icon-button.js';
 
-import { styles as mdTypeScaleStyles } from '@material/web/typography/md-typescale-styles.js';
 import { html, svg, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
@@ -23,7 +22,6 @@ export class ModalDatePickerHeader
   static override styles = [
     resetShadowRoot,
     baseStyling,
-    mdTypeScaleStyles,
     modalDatePickerHeaderStyles,
   ];
 
@@ -41,8 +39,8 @@ export class ModalDatePickerHeader
 
     return html`
     <div class=header>
-      <p class="supportingText md-typescale-label-large">${supportingText}</p>
-      <p class="headline md-typescale-headline-large">${headline}</p>
+      <p class="supportingText">${supportingText}</p>
+      <p class="headline">${headline}</p>
       ${editIcon}
     </div>
     `;

@@ -1,5 +1,7 @@
 import { css } from 'lit';
 
+import { mdSysTypescaleHeadlineLarge, mdSysTypescaleLabelLarge } from '../../../typography.js';
+
 export const modalDatePickerHeaderStyles = css`
 .header {
   display: grid;
@@ -16,6 +18,9 @@ export const modalDatePickerHeaderStyles = css`
   border-start-end-radius: var(--md-sys-shape-corner-extra-large);
 
   color: var(--md-sys-color-on-surface-variant);
+  font-size: ${mdSysTypescaleLabelLarge.size};
+  font-weight: ${mdSysTypescaleLabelLarge.weight};
+  line-height: ${mdSysTypescaleLabelLarge.lineHeight};
 }
 
 p {
@@ -29,13 +34,6 @@ p {
 
 .supportingText {
   grid-area: supportingText;
-
-  color: inherit;
-  font-family: inherit;
-  line-height: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: inherit;
 }
 
 .headline {
@@ -43,6 +41,9 @@ p {
   align-self: end;
 
   color: var(--md-sys-color-on-surface);
+  font-size: ${mdSysTypescaleHeadlineLarge.size};
+  font-weight: ${mdSysTypescaleHeadlineLarge.weight};
+  line-height: ${mdSysTypescaleHeadlineLarge.lineHeight};
 }
 
 .iconButton {
