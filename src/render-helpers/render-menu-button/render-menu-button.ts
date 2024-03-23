@@ -1,5 +1,5 @@
 import '@material/web/button/text-button.js';
-import '../../md-svg/md-svg.js';
+import '../../components/md-svg/md-svg.js';
 
 import { html, nothing, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';

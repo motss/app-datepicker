@@ -1,20 +1,20 @@
 import '@material/web/button/outlined-button.js';
 import '@material/web/textfield/outlined-text-field.js';
-import '../date-picker-calendar/date-picker-calendar.js';
-import '../docked-date-picker/docked-date-picker.js';
-import '../modal-date-picker/modal-date-picker.js';
+import '../components/date-picker-calendar/date-picker-calendar.js';
+import '../components/docked-date-picker/docked-date-picker.js';
+import '../components/modal-date-picker/modal-date-picker.js';
 
 import { styles as MdTypeScaleStyles } from '@material/web/typography/md-typescale-styles.js';
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
+import type { ModalDatePicker } from '../components/modal-date-picker/modal-date-picker.js';
 import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toFormatters } from '../helpers/to-formatters.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import { iconEdit } from '../icons.js';
-import type { ModalDatePicker } from '../modal-date-picker/modal-date-picker.js';
 import { RootElement } from '../root-element/root-element.js';
 
 @customElement('demo-app')
