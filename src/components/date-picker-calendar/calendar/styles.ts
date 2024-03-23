@@ -6,6 +6,9 @@ export const calendarStyles = css`
 :host {
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface);
+  font-size: ${mdSysTypescaleBodyLarge.size};
+  font-weight: ${mdSysTypescaleBodyLarge.weight};
+  line-height: ${mdSysTypescaleBodyLarge.lineHeight};
 }
 
 .calendar col {
@@ -35,6 +38,10 @@ export const calendarStyles = css`
 .calendarDayButton {
   --_cdb-oc: rgba(0 0 0 / 0);
   --_cdb-lc: var(--md-sys-color-on-surface);
+
+  --md-filled-button-label-text-line-height: ${mdSysTypescaleBodyLarge.lineHeight};
+  --md-filled-button-label-text-size: ${mdSysTypescaleBodyLarge.size};
+  --md-filled-button-label-text-weight: ${mdSysTypescaleBodyLarge.weight};
 
   --md-outlined-button-outline-color: var(--_cdb-oc);
   --md-outlined-button-label-text-color: var(--_cdb-lc);

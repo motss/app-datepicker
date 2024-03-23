@@ -4,12 +4,13 @@ import { includeScrollbarStyles, includeSeparatorStyles } from '../../styles.js'
 
 export const dockedDatePickerStyles = css`
 :host {
-  --_p: 12px;
-
   --_b_h: 396px;
-  --_b_hpb: var(--_p);
   --_b_mbe: 0px;
   --_b_mbs: 0px;
+  --_h_pbs: 12px;
+  --_h_pbe: 12px;
+  --_h_pis: 4px;
+  --_h_pie: 4px;
   --_ms_ipbe: 0px;
   --_ms_ipbs: 0px;
 
@@ -18,8 +19,9 @@ export const dockedDatePickerStyles = css`
 }
 :host(:is([startview="monthMenu"],[startview="yearMenu"])) {
   --_b_h: 364px;
-  --_b_hpb: 2px;
   --_b_mbs: 8px;
+  --_h_pbs: 2px;
+  --_h_pbe: 2px;
   --_ms_ipbe: 20px;
   --_ms_ipbs: 0px;
 
@@ -28,8 +30,10 @@ export const dockedDatePickerStyles = css`
 ${includeSeparatorStyles(':host(:is([startview="monthMenu"],[startview="yearMenu"])) .header', 'end')}
 
 .header {
-  --_padding-block: var(--_b_hpb);
-  --_padding-inline: 4px;
+  --_padding-block-start: var(--_h_pbs);
+  --_padding-block-end: var(--_h_pbe);
+  --_padding-inline-start: var(--_h_pis);
+  --_padding-inline-end: var(--_h_pie);
 }
 
 .body {
@@ -49,7 +53,8 @@ ${includeSeparatorStyles(':host(:is([startview="monthMenu"],[startview="yearMenu
 ${includeScrollbarStyles(':is(.monthMenu,.yearMenu) > .body')}
 
 .appCalendar {
-  --_padding: var(--_p);
+  --_padding-inline-start: 12px;
+  --_padding-inline-end: 12px;
 
   margin-block: 0 4px;
 }
