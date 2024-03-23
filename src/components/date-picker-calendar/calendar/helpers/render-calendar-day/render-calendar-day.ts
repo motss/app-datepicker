@@ -24,7 +24,6 @@ export function renderCalendarDay({
     const today = colTime === todayDate.getTime();
 
     const ariaCurrent = today ? 'date' : undefined;
-    const ariaDisabled = disabled ? 'true' : 'false';
     const ariaSelected = selected ? 'true' : 'false';
     const tabindex = tabbable ? 0 : -1;
 
@@ -32,8 +31,8 @@ export function renderCalendarDay({
     const button = selected
       ? html`
       <md-filled-button
+        ?disabled=${disabled}
         aria-current=${ifDefined(ariaCurrent)}
-        aria-disabled=${ariaDisabled}
         aria-label=${label}
         aria-pressed=${ariaSelected}
         class=${classMap({ calendarDayButton: true, today })}
@@ -47,9 +46,9 @@ export function renderCalendarDay({
       `
       : html`
       <md-outlined-button
+        ?disabled=${disabled}
         .fullDate=${fullDate}
         aria-current=${ifDefined(ariaCurrent)}
-        aria-disabled=${ariaDisabled}
         aria-label=${label}
         aria-pressed=${ariaSelected}
         class=${classMap({ calendarDayButton: true, today })}

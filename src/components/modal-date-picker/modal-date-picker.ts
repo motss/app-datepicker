@@ -13,13 +13,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import {
-  dateFormatOptions,
-  labelConfirm,
-  labelDeny,
-  MAX_DATE,
-  MIN_DATE,
-} from '../../constants.js';
+import { dateFormatOptions, labelConfirm, labelDeny } from '../../constants.js';
+import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
@@ -75,6 +70,8 @@ export class ModalDatePicker
       }
     }
   };
+
+  #minMax_ = new MinMaxController(this);
 
   #onDateUpdate: DatePickerCalendarProperties['onDateUpdate'] = (
     updatedDate
@@ -166,18 +163,6 @@ export class ModalDatePicker
     }
   };
 
-  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
-    const { max, min } = this;
-
-    if (changedProperties.has('max') && max !== changedProperties.get('max')) {
-      this._maxDate = toResolvedDate(max);
-    }
-
-    if (changedProperties.has('min') && min !== changedProperties.get('min')) {
-      this._minDate = toResolvedDate(min);
-    }
-  };
-
   #updateStartView = () => {
     this.startView = 'calendar';
   };
@@ -185,10 +170,6 @@ export class ModalDatePicker
   #yearGridRef = createRef<ModalDatePickerYearGrid>();
 
   @state() _focusedDate: Date;
-
-  @state() _maxDate: Date;
-
-  @state() _minDate: Date;
 
   @property() confirmText: string = labelConfirm;
 
@@ -201,10 +182,8 @@ export class ModalDatePicker
   constructor() {
     super();
 
-    const { max, min, value } = this;
+    const { value } = this;
 
-    this._maxDate = toResolvedDate(max ?? MAX_DATE);
-    this._minDate = toResolvedDate(min ?? MIN_DATE);
     this._focusedDate = toResolvedDate(value);
     // this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
   }
@@ -217,8 +196,6 @@ export class ModalDatePicker
     // fixme: move logics from body to here!
     const {
       _focusedDate,
-      _maxDate,
-      _minDate,
       chooseMonthLabel,
       chooseYearLabel,
       confirmText,
@@ -246,6 +223,7 @@ export class ModalDatePicker
       weekNumberTemplate,
       weekNumberType,
     } = this;
+    const { maxDate, minDate } = this.#minMax_;
 
     const formId = id || 'modalDatePicker';
     const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(
@@ -262,9 +240,9 @@ export class ModalDatePicker
     }).format;
     const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
     const showNextButton =
-      isCalendarView && !isSameMonth(_focusedDate, _maxDate);
+      isCalendarView && !isSameMonth(_focusedDate, maxDate);
     const showPrevButton =
-      isCalendarView && !isSameMonth(_focusedDate, _minDate);
+      isCalendarView && !isSameMonth(_focusedDate, minDate);
     const valueValue = toDateString(_focusedDate);
 
     return html`
@@ -369,7 +347,6 @@ export class ModalDatePicker
     changedProperties: PropertyValueMap<this>
   ): void {
     this.#updateFocusedDateByValue(changedProperties);
-    this.#updateMinMax(changedProperties);
   }
 
   get returnValue(): ModalDatePickerProperties['returnValue'] {
@@ -383,4 +360,5 @@ declare global {
   }
 }
 
-// fixme: selected daet but close modal without confirming should not update selected date
+// fixme: tabindex=0 does not get updated when changing min
+// fixme: selected date but close modal without confirming should not update selected date

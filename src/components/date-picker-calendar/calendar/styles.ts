@@ -43,6 +43,7 @@ export const calendarStyles = css`
   --md-filled-button-label-text-size: ${mdSysTypescaleBodyLarge.size};
   --md-filled-button-label-text-weight: ${mdSysTypescaleBodyLarge.weight};
 
+  --md-outlined-button-disabled-outline-opacity: 0;
   --md-outlined-button-outline-color: var(--_cdb-oc);
   --md-outlined-button-label-text-color: var(--_cdb-lc);
   --md-outlined-button-label-text-line-height: ${mdSysTypescaleBodyLarge.lineHeight};

@@ -1,6 +1,9 @@
 import { css } from 'lit';
 
-import { includeScrollbarStyles, includeSeparatorStyles } from '../../styles.js';
+import {
+  includeScrollbarStyles,
+  includeSeparatorStyles,
+} from '../../styles.js';
 
 export const dockedDatePickerStyles = css`
 :host {
@@ -27,7 +30,10 @@ export const dockedDatePickerStyles = css`
 
   --md-menu-surface-items-overflow: initial;
 }
-${includeSeparatorStyles(':host(:is([startview="monthMenu"],[startview="yearMenu"])) .header', 'end')}
+${includeSeparatorStyles(
+  ':host(:is([startview="monthMenu"],[startview="yearMenu"])) .header',
+  'end'
+)}
 
 .header {
   --_padding-block-start: var(--_h_pbs);

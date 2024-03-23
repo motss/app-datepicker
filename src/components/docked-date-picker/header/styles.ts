@@ -14,7 +14,9 @@ const areas = [
 
 const gridTemplateAreas: CSSResult = unsafeCSS(areas.join(' '));
 const buttons = unsafeCSS(
-  areas.map((area) => area === '.' ? '' : `.${area} { grid-area: ${area} }`).join('\n')
+  areas
+    .map((area) => (area === '.' ? '' : `.${area} { grid-area: ${area} }`))
+    .join('\n')
 );
 
 export const dockedDatePickerHeaderStyles = css`

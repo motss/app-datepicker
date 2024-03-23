@@ -1,6 +1,9 @@
 import { css } from 'lit';
 
-import { mdSysTypescaleBodyLarge, mdSysTypescaleTitleMedium } from '../../../typography.js';
+import {
+  mdSysTypescaleBodyLarge,
+  mdSysTypescaleTitleMedium,
+} from '../../../typography.js';
 
 export const modalDatePickerYearGridStyles = css`
 .yearGrid {

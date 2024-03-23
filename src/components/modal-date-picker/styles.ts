@@ -1,6 +1,9 @@
 import { css } from 'lit';
 
-import { includeScrollbarStyles, includeSeparatorStyles } from '../../styles.js';
+import {
+  includeScrollbarStyles,
+  includeSeparatorStyles,
+} from '../../styles.js';
 import { mdRefTypefacePlain } from '../../typography.js';
 
 export const modalDatePickerStyles = css`

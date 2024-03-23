@@ -37,8 +37,13 @@ export const baseStyling = css`
 }
 `;
 
-export const includeScrollbarStyles = (prefix: string, stableScrollGutter?: boolean) => {
-  const scrollbarGutterValue = stableScrollGutter ? unsafeCSS('stable both-edges') : unsafeCSS('auto');
+export const includeScrollbarStyles = (
+  prefix: string,
+  stableScrollGutter?: boolean
+) => {
+  const scrollbarGutterValue = stableScrollGutter
+    ? unsafeCSS('stable both-edges')
+    : unsafeCSS('auto');
   const selector = unsafeCSS(prefix);
 
   return css`
@@ -104,10 +109,15 @@ export const includeScrollbarStyles = (prefix: string, stableScrollGutter?: bool
   `;
 };
 
-export const includeSeparatorStyles = (prefix: string, block: 'end' | 'start') => {
+export const includeSeparatorStyles = (
+  prefix: string,
+  block: 'end' | 'start'
+) => {
   const selector = unsafeCSS(prefix);
   const isBlockStart = block === 'start';
-  const pseudoSelector = isBlockStart ? unsafeCSS('::before') : unsafeCSS('::after');
+  const pseudoSelector = isBlockStart
+    ? unsafeCSS('::before')
+    : unsafeCSS('::after');
   const position = isBlockStart ? unsafeCSS('top: 0') : unsafeCSS('bottom: 0');
 
   return css`

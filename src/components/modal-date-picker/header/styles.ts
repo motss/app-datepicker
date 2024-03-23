@@ -1,6 +1,9 @@
 import { css } from 'lit';
 
-import { mdSysTypescaleHeadlineLarge, mdSysTypescaleLabelLarge } from '../../../typography.js';
+import {
+  mdSysTypescaleHeadlineLarge,
+  mdSysTypescaleLabelLarge,
+} from '../../../typography.js';
 
 export const modalDatePickerHeaderStyles = css`
 .header {
