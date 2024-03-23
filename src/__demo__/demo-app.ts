@@ -4,6 +4,7 @@ import '../date-picker-calendar/date-picker-calendar.js';
 import '../docked-date-picker/docked-date-picker.js';
 import '../modal-date-picker/modal-date-picker.js';
 
+import { styles as MdTypeScaleStyles } from '@material/web/typography/md-typescale-styles.js';
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -19,6 +20,7 @@ import { RootElement } from '../root-element/root-element.js';
 @customElement('demo-app')
 export class DemoApp extends RootElement {
   public static override styles = [
+    MdTypeScaleStyles,
     css`
     :host {
       display: block;

@@ -1,4 +1,4 @@
-import { styles } from '@material/web/menu/internal/menu-styles.css.js';
+import { styles } from '@material/web/menu/internal/menu-styles.js';
 import { customElement } from 'lit/decorators.js';
 
 import { MdMenuSurfaceName } from './constants.js';
