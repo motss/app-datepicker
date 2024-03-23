@@ -18,26 +18,18 @@ describe(splitString.name, () => {
       $_value: expected,
       source: str,
     },
-  ])('splits string ($source)', ({
-    $_value,
-    source,
-  }) => {
+  ])('splits string ($source)', ({ $_value, source }) => {
     const result = splitString(source);
 
     expect(result).toEqual($_value);
   });
 
-  it.each<[separator?: RegExp]>([
-    [],
-    [/,\s/],
-  ])('splits string with optional callback and optional separator (%s)', (separator) => {
-      const result = splitString<[string]>(
-        str,
-        (n) => [n],
-        separator
-      );
+  it.each<[separator?: RegExp]>([[], [/,\s/]])(
+    'splits string with optional callback and optional separator (%s)',
+    (separator) => {
+      const result = splitString<[string]>(str, (n) => [n], separator);
 
-      expect(result).toEqual(expected.map(n => [n]));
-  });
-
+      expect(result).toEqual(expected.map((n) => [n]));
+    }
+  );
 });

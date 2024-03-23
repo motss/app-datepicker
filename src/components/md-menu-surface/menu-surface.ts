@@ -1,10 +1,12 @@
 import '@material/web/focus/md-focus-ring.js';
 import '@material/web/elevation/elevation.js';
 
-import { createAnimationSignal, EASING } from '@material/web/internal/motion/animation.js';
+import {
+  createAnimationSignal,
+  EASING,
+} from '@material/web/internal/motion/animation.js';
 import {
   FocusState,
-  isClosableKey,
   isElementInSubtree,
 } from '@material/web/menu/internal/controllers/shared.js';
 import {
@@ -17,7 +19,9 @@ import { property, query, queryAssignedElements } from 'lit/decorators.js';
 import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-export { Corner } from '@material/web/menu/internal/controllers/surfacePositionController.js';
+import { emptyReadonlyArray } from '../../constants.js';
+
+// export { Corner } from '@material/web/menu/internal/controllers/surfacePositionController.js';
 
 /**
  * Gets the currently focused element on the page.
@@ -33,7 +37,7 @@ function getFocusedElement(
 
   // Check for activeElement in the case that an element with a shadow root host
   // is currently focused.
-  while (activeEl && activeEl?.shadowRoot?.activeElement) {
+  while (activeEl?.shadowRoot?.activeElement) {
     activeEl = activeEl.shadowRoot.activeElement as HTMLElement | null;
   }
 
@@ -62,21 +66,21 @@ export abstract class MenuSurface extends LitElement {
         await this.animateClose();
       }
     } catch (error) {
-      // fixme: uncaught promise form .animateClose();
       console.error('beforeClose', error);
     }
   };
   private currentAnchorElement: HTMLElement | null = null;
 
   private readonly handleFocusout = async (event: FocusEvent) => {
-    const anchorEl = this.anchorElement!;
+    const anchorEl = this.anchorElement;
+
     // Do not close if we focused out by clicking on the anchor element. We
     // can't assume anchor buttons can be the related target because of iOS does
     // not focus buttons.
     if (
       this.stayOpenOnFocusout ||
       !this.open ||
-      this.pointerPath.includes(anchorEl)
+      this.pointerPath.includes(anchorEl as EventTarget)
     ) {
       return;
     }
@@ -89,7 +93,7 @@ export abstract class MenuSurface extends LitElement {
       if (
         isElementInSubtree(event.relatedTarget, this) ||
         (this.pointerPath.length !== 0 &&
-          isElementInSubtree(event.relatedTarget, anchorEl))
+          isElementInSubtree(event.relatedTarget, anchorEl as EventTarget))
       ) {
         return;
       }
@@ -177,7 +181,7 @@ export abstract class MenuSurface extends LitElement {
     if (
       !this.stayOpenOnOutsideClick &&
       !path.includes(this) &&
-      !path.includes(this.anchorElement!)
+      !path.includes(this.anchorElement as EventTarget)
     ) {
       this.open = false;
     }
@@ -208,13 +212,15 @@ export abstract class MenuSurface extends LitElement {
     // the items before the animation has begun and causes the list to slide
     // (block-padding-of-the-menu)px at the end of the animation
     switch (this.defaultFocus) {
-      case FocusState.LIST_ROOT:
+      case FocusState.LIST_ROOT: {
         this.focus();
         break;
-      default:
+      }
       case FocusState.NONE:
+      default: {
         // Do nothing.
         break;
+      }
     }
 
     if (!animationAborted) {
@@ -241,7 +247,7 @@ export abstract class MenuSurface extends LitElement {
   /**
    * The event path of the last window pointerdown event.
    */
-  private pointerPath: EventTarget[] = [];
+  private pointerPath: EventTarget[] = emptyReadonlyArray as EventTarget[];
   @query('slot') private readonly slotEl!: HTMLSlotElement | null;
 
   @query('.menu') private readonly surfaceEl!: HTMLElement | null;
@@ -262,7 +268,7 @@ export abstract class MenuSurface extends LitElement {
    * NOTE: This value may not be respected by the menu positioning algorithm
    * if the menu would render outisde the viewport.
    */
-  @property({attribute: 'anchor-corner'})
+  @property({ attribute: 'anchor-corner' })
   anchorCorner: Corner = Corner.END_START;
 
   /**
@@ -272,7 +278,7 @@ export abstract class MenuSurface extends LitElement {
    * `tabindex` to `0` and change md-menu's display to something other than
    * `display: contents` when necessary.
    */
-  @property({attribute: 'default-focus'})
+  @property({ attribute: 'default-focus' })
   defaultFocus: FocusState = FocusState.FIRST_ITEM;
   /**
    * Displays overflow content like a submenu. Not required in most cases when
@@ -282,7 +288,7 @@ export abstract class MenuSurface extends LitElement {
    * `md-menu {max-height:...}`
    * and have items overflowing items in the "y" direction.
    */
-  @property({attribute: 'has-overflow', type: Boolean}) hasOverflow = false;
+  @property({ attribute: 'has-overflow', type: Boolean }) hasOverflow = false;
 
   /**
    * Whether or not the current menu is a submenu and should not handle specific
@@ -299,13 +305,14 @@ export abstract class MenuSurface extends LitElement {
    * NOTE: This value may not be respected by the menu positioning algorithm
    * if the menu would render outisde the viewport.
    */
-  @property({attribute: 'menu-corner'}) menuCorner: Corner = Corner.START_START;
+  @property({ attribute: 'menu-corner' }) menuCorner: Corner =
+    Corner.START_START;
 
   /**
    * Opens the menu and makes it visible. Alternative to the `.show()` and
    * `.close()` methods
    */
-  @property({reflect: true, type: Boolean}) open = false;
+  @property({ reflect: true, type: Boolean }) open = false;
 
   /**
    * Whether the positioning algorithm should calculate relative to the parent
@@ -351,18 +358,19 @@ export abstract class MenuSurface extends LitElement {
   /**
    * Skips the opening and closing animations.
    */
-  @property({type: Boolean}) quick = false;
+  @property({ type: Boolean }) quick = false;
 
   /**
    * After closing, does not restore focus to the last focused element before
    * the menu was opened.
    */
-  @property({attribute: 'skip-restore-focus', type: Boolean})
+  @property({ attribute: 'skip-restore-focus', type: Boolean })
   skipRestoreFocus = false;
 
-  @queryAssignedElements({ flatten: true }) readonly slotElements!: HTMLElement[];
+  @queryAssignedElements({ flatten: true })
+  readonly slotElements!: HTMLElement[];
 
-  @queryAssignedElements({flatten: true}) protected slotItems!: HTMLElement[];
+  @queryAssignedElements({ flatten: true }) protected slotItems!: HTMLElement[];
 
   /**
    * Keeps the menu open when focus leaves the menu's composed subtree.
@@ -370,7 +378,7 @@ export abstract class MenuSurface extends LitElement {
    * NOTE: Focusout behavior will stop propagation of the focusout event. Set
    * this property to true to opt-out of menu's focusout handling altogether.
    */
-  @property({attribute: 'stay-open-on-focusout', type: Boolean})
+  @property({ attribute: 'stay-open-on-focusout', type: Boolean })
   stayOpenOnFocusout = false;
 
   /**
@@ -379,7 +387,7 @@ export abstract class MenuSurface extends LitElement {
    * NOTE: clicking outside may still cause focusout to close the menu so see
    * `stayOpenOnFocusout`.
    */
-  @property({attribute: 'stay-open-on-outside-click', type: Boolean})
+  @property({ attribute: 'stay-open-on-outside-click', type: Boolean })
   stayOpenOnOutsideClick = false;
 
   /**
@@ -390,7 +398,7 @@ export abstract class MenuSurface extends LitElement {
    * e.g. LTR: positive -> right, negative -> left
    *      RTL: positive -> left, negative -> right
    */
-  @property({attribute: 'x-offset', type: Number}) xOffset = 0;
+  @property({ attribute: 'x-offset', type: Number }) xOffset = 0;
 
   /**
    * Offsets the menu's block alignment from the anchor by the given number in
@@ -398,7 +406,7 @@ export abstract class MenuSurface extends LitElement {
    *
    * e.g. positive -> down, negative -> up
    */
-  @property({attribute: 'y-offset', type: Number}) yOffset = 0;
+  @property({ attribute: 'y-offset', type: Number }) yOffset = 0;
 
   constructor() {
     super();
@@ -407,7 +415,7 @@ export abstract class MenuSurface extends LitElement {
       // Capture so that we can grab the event before it reaches the menu item
       // istelf. Specifically useful for the case where typeahead encounters a
       // space and we don't want the menu item to close the menu.
-      this.addEventListener('keydown', this.captureKeydown, {capture: true});
+      this.addEventListener('keydown', this.captureKeydown, { capture: true });
       this.addEventListener('focusout', this.handleFocusout);
     }
   }
@@ -417,22 +425,14 @@ export abstract class MenuSurface extends LitElement {
    *
    * https://direct.googleplex.com/#/spec/295000003+271060003
    */
-  private animateClose() {
-    let promiseResolve!: (value: unknown) => void;
-    let promiseReject!: () => void;
-
-    // This promise blocks the surface position controller from setting
-    // display: none on the surface which will interfere with this animation.
-    const animationEnded = new Promise((resolve, reject) => {
-      promiseResolve = resolve;
-      promiseReject = reject;
-    });
-
+  private async animateClose() {
     const surfaceEl = this.surfaceEl;
     const slotEl = this.slotEl;
 
-    if (!surfaceEl || !slotEl) {
-      return animationEnded;
+    const { promise, resolve } = Promise.withResolvers();
+
+    if (surfaceEl == null || slotEl == null) {
+      return true;
     }
 
     const openDirection = this.openDirection;
@@ -444,28 +444,28 @@ export abstract class MenuSurface extends LitElement {
     const signal = this.openCloseAnimationSignal.start();
     const height = surfaceEl.offsetHeight;
     const children = this.items;
-    const FULL_DURATION = 150;
-    const SURFACE_OPACITY_DURATION = 50;
+    const fullDuration = 150;
+    const surfaceOpacityDuration = 50;
     // The surface fades away at the very end
-    const SURFACE_OPACITY_DELAY = FULL_DURATION - SURFACE_OPACITY_DURATION;
-    const ITEM_OPACITY_DURATION = 50;
-    const ITEM_OPACITY_INITIAL_DELAY = 50;
-    const END_HEIGHT_PERCENTAGE = 0.35;
+    const surfaceOpacityDelay = fullDuration - surfaceOpacityDuration;
+    const itemOpacityDuration = 50;
+    const itemOpacityInitialDelay = 50;
+    const endHeightPercentage = 0.35;
 
     // We want to fit every child fade-out animation within the full duration of
     // the animation.
-    const DELAY_BETWEEN_ITEMS =
-      (FULL_DURATION - ITEM_OPACITY_INITIAL_DELAY - ITEM_OPACITY_DURATION) /
+    const delayBetweenItems =
+      (fullDuration - itemOpacityInitialDelay - itemOpacityDuration) /
       children.length;
 
     // The mock has the animation shrink to 35%
     const surfaceHeightAnimation = surfaceEl.animate(
       [
-        {height: `${height}px`},
-        {height: `${height * END_HEIGHT_PERCENTAGE}px`},
+        { height: `${height}px` },
+        { height: `${height * endHeightPercentage}px` },
       ],
       {
-        duration: FULL_DURATION,
+        duration: fullDuration,
         easing: EASING.EMPHASIZED_ACCELERATE,
       }
     );
@@ -475,63 +475,71 @@ export abstract class MenuSurface extends LitElement {
     // of the height animation
     const downPositionCorrectionAnimation = slotEl.animate(
       [
-        {transform: ''},
+        { transform: '' },
         {
           transform: closingDownwards
-            ? `translateY(-${height * (1 - END_HEIGHT_PERCENTAGE)}px)`
+            ? `translateY(-${height * (1 - endHeightPercentage)}px)`
             : '',
         },
       ],
-      {duration: FULL_DURATION, easing: EASING.EMPHASIZED_ACCELERATE}
+      { duration: fullDuration, easing: EASING.EMPHASIZED_ACCELERATE }
     );
 
     const surfaceOpacityAnimation = surfaceEl.animate(
-      [{opacity: 1}, {opacity: 0}],
-      {delay: SURFACE_OPACITY_DELAY, duration: SURFACE_OPACITY_DURATION}
+      [{ opacity: 1 }, { opacity: 0 }],
+      { delay: surfaceOpacityDelay, duration: surfaceOpacityDuration }
     );
 
-    const childrenAnimations: Array<[HTMLElement, Animation]> = [];
+    const childrenAnimations: [HTMLElement, Animation][] =
+      emptyReadonlyArray as [HTMLElement, Animation][];
 
     for (let i = 0; i < children.length; i++) {
       // If the animation is closing upwards, then reverse the list of
       // children so that we animate in the opposite direction.
       const directionalIndex = closingDownwards ? i : children.length - 1 - i;
-      const child = children[directionalIndex];
-      const animation = child.animate([{opacity: 1}, {opacity: 0}], {
-        delay: ITEM_OPACITY_INITIAL_DELAY + DELAY_BETWEEN_ITEMS * i,
-        duration: ITEM_OPACITY_DURATION,
-      });
+      const child = children.at(directionalIndex);
 
-      // Make sure the items stay hidden at the end of each child animation.
-      // We clean this up at the end of the overall animation.
-      animation.addEventListener('finish', () => {
-        child.classList.toggle('md-menu-hidden', true);
-      });
-      childrenAnimations.push([child, animation]);
+      if (child) {
+        const animation = child.animate([{ opacity: 1 }, { opacity: 0 }], {
+          delay: itemOpacityInitialDelay + delayBetweenItems * i,
+          duration: itemOpacityDuration,
+        });
+
+        // Make sure the items stay hidden at the end of each child animation.
+        // We clean this up at the end of the overall animation.
+        animation.addEventListener('finish', () => {
+          child.classList.toggle('md-menu-hidden', true);
+        });
+        childrenAnimations.push([child, animation]);
+      }
     }
 
     signal.addEventListener('abort', () => {
       surfaceHeightAnimation.cancel();
       downPositionCorrectionAnimation.cancel();
       surfaceOpacityAnimation.cancel();
-      childrenAnimations.forEach(([child, animation]) => {
+
+      for (const [child, animation] of childrenAnimations) {
         animation.cancel();
         child.classList.toggle('md-menu-hidden', false);
-      });
-      promiseReject();
+      }
+
+      resolve(true);
     });
 
     surfaceHeightAnimation.addEventListener('finish', () => {
       surfaceEl.classList.toggle('animating', false);
-      childrenAnimations.forEach(([child]) => {
+
+      for (const [child] of childrenAnimations) {
         child.classList.toggle('md-menu-hidden', false);
-      });
+      }
       this.openCloseAnimationSignal.finish();
       this.dispatchEvent(new Event('closed'));
-      promiseResolve(true);
+
+      resolve(false);
     });
 
-    return animationEnded;
+    return promise;
   }
 
   /**
@@ -546,7 +554,9 @@ export abstract class MenuSurface extends LitElement {
     const surfaceEl = this.surfaceEl;
     const slotEl = this.slotEl;
 
-    if (!surfaceEl || !slotEl) return true;
+    if (surfaceEl == null || slotEl == null) {
+      return true;
+    }
 
     const openDirection = this.openDirection;
     this.dispatchEvent(new Event('opening'));
@@ -558,18 +568,18 @@ export abstract class MenuSurface extends LitElement {
     const height = surfaceEl.offsetHeight;
     const openingUpwards = openDirection === 'UP';
     const children = this.items;
-    const FULL_DURATION = 500;
-    const SURFACE_OPACITY_DURATION = 50;
-    const ITEM_OPACITY_DURATION = 250;
+    const fullDuration = 500;
+    const surfaceOpacityDuration = 50;
+    const itemOpacityDuration = 250;
     // We want to fit every child fade-in animation within the full duration of
     // the animation.
-    const DELAY_BETWEEN_ITEMS =
-      (FULL_DURATION - ITEM_OPACITY_DURATION) / children.length;
+    const delayBetweenItems =
+      (fullDuration - itemOpacityDuration) / children.length;
 
     const surfaceHeightAnimation = surfaceEl.animate(
-      [{height: '0px'}, {height: `${height}px`}],
+      [{ height: '0px' }, { height: `${height}px` }],
       {
-        duration: FULL_DURATION,
+        duration: fullDuration,
         easing: EASING.EMPHASIZED,
       }
     );
@@ -578,69 +588,68 @@ export abstract class MenuSurface extends LitElement {
     // height animation
     const upPositionCorrectionAnimation = slotEl.animate(
       [
-        {transform: openingUpwards ? `translateY(-${height}px)` : ''},
-        {transform: ''},
+        { transform: openingUpwards ? `translateY(-${height}px)` : '' },
+        { transform: '' },
       ],
-      {duration: FULL_DURATION, easing: EASING.EMPHASIZED}
+      { duration: fullDuration, easing: EASING.EMPHASIZED }
     );
 
     const surfaceOpacityAnimation = surfaceEl.animate(
-      [{opacity: 0}, {opacity: 1}],
-      SURFACE_OPACITY_DURATION
+      [{ opacity: 0 }, { opacity: 1 }],
+      surfaceOpacityDuration
     );
 
-    const childrenAnimations: Array<[HTMLElement, Animation]> = [];
+    const childrenAnimations: [HTMLElement, Animation][] =
+      emptyReadonlyArray as [HTMLElement, Animation][];
 
     for (let i = 0; i < children.length; i++) {
       // If we are animating upwards, then reverse the children list.
       const directionalIndex = openingUpwards ? children.length - 1 - i : i;
-      const child = children[directionalIndex];
-      const animation = child.animate([{opacity: 0}, {opacity: 1}], {
-        delay: DELAY_BETWEEN_ITEMS * i,
-        duration: ITEM_OPACITY_DURATION,
-      });
+      const child = children.at(directionalIndex);
 
-      // Make them all initially hidden and then clean up at the end of each
-      // animation.
-      child.classList.toggle('md-menu-hidden', true);
-      animation.addEventListener('finish', () => {
-        child.classList.toggle('md-menu-hidden', false);
-      });
+      if (child) {
+        const animation = child.animate([{ opacity: 0 }, { opacity: 1 }], {
+          delay: delayBetweenItems * i,
+          duration: itemOpacityDuration,
+        });
 
-      childrenAnimations.push([child, animation]);
+        // Make them all initially hidden and then clean up at the end of each
+        // animation.
+        child.classList.toggle('md-menu-hidden', true);
+        animation.addEventListener('finish', () => {
+          child.classList.toggle('md-menu-hidden', false);
+        });
+
+        childrenAnimations.push([child, animation]);
+      }
     }
 
-    let resolveAnimation = (_value: boolean) => {};
-    const animationFinished = new Promise<boolean>((resolve) => {
-      resolveAnimation = resolve;
-    });
+    const { promise, resolve } = Promise.withResolvers();
 
     signal.addEventListener('abort', () => {
       surfaceHeightAnimation.cancel();
       upPositionCorrectionAnimation.cancel();
       surfaceOpacityAnimation.cancel();
-      childrenAnimations.forEach(([child, animation]) => {
+
+      for (const [child, animation] of childrenAnimations) {
         child.classList.toggle('md-menu-hidden', false);
         animation.cancel();
-      });
+      }
 
-      resolveAnimation(true);
+      resolve(true);
     });
 
     surfaceHeightAnimation.addEventListener('finish', () => {
       surfaceEl.classList.toggle('animating', false);
       this.openCloseAnimationSignal.finish();
-      resolveAnimation(false);
+      resolve(false);
     });
 
-    return await animationFinished;
+    return await promise;
   }
 
   private captureKeydown(event: KeyboardEvent) {
-    if (
-      !event.defaultPrevented &&
-      event.code === 'Escape'
-    ) {
+    if (!event.defaultPrevented && event.code === 'Escape') {
       event.preventDefault();
       this.close();
     }
@@ -682,7 +691,7 @@ export abstract class MenuSurface extends LitElement {
    * helpful for calculating some animation calculations.
    */
   private get openDirection(): 'DOWN' | 'UP' {
-    const menuCornerBlock = this.menuCorner.split('-')[0];
+    const menuCornerBlock = this.menuCorner.split('-').at(0);
     return menuCornerBlock === 'start' ? 'DOWN' : 'UP';
   }
 
@@ -722,20 +731,21 @@ export abstract class MenuSurface extends LitElement {
   }
 
   private setUpGlobalEventListeners() {
-    document.addEventListener('click', this.onDocumentClick, {capture: true});
+    document.addEventListener('click', this.onDocumentClick, { capture: true });
     window.addEventListener('pointerdown', this.onWindowPointerdown);
-    document.addEventListener('resize', this.onWindowResize, {passive: true});
-    window.addEventListener('resize', this.onWindowResize, {passive: true});
+    document.addEventListener('resize', this.onWindowResize, { passive: true });
+    window.addEventListener('resize', this.onWindowResize, { passive: true });
   }
 
   close() {
     this.open = false;
     const maybeSubmenu = this.slotItems as Array<
-      HTMLElement & {close?: () => void}
+      HTMLElement & { close?: () => void }
     >;
-    maybeSubmenu.forEach((item) => {
+
+    for (const item of maybeSubmenu) {
       item.close?.();
-    });
+    }
   }
 
   override connectedCallback() {
@@ -784,7 +794,7 @@ export abstract class MenuSurface extends LitElement {
       changed.has('positioning') &&
       this.positioning === 'popover' &&
       // type required for Google JS conformance
-      !(this as unknown as {showPopover?: () => void}).showPopover
+      !(this as unknown as { showPopover?: () => void }).showPopover
     ) {
       this.positioning = 'fixed';
     }
@@ -820,9 +830,9 @@ export abstract class MenuSurface extends LitElement {
     return this.currentAnchorElement;
   }
 
-  set anchorElement(
-    element: (HTMLElement & Partial<SurfacePositionTarget>) | null
-  ) {
+  set anchorElement(element:
+    | (HTMLElement & Partial<SurfacePositionTarget>)
+    | null) {
     this.currentAnchorElement = element;
     this.requestUpdate('anchorElement');
   }

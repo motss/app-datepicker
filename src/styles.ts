@@ -27,8 +27,8 @@ export const baseStyling = css`
   --_padding: 0px;
 
   display: block;
-  width: calc(var(--_day-size) * var(--_cols, 7) + var(--_side, var(--_padding)) * 2);
-  padding-inline: var(--_padding);
+  width: calc(var(--_day-size) * var(--_cols, 7) + var(--_padding-inline-start) + var(--_padding-inline-end));
+  padding-inline: var(--_padding-inline-start) var(--_padding-inline-end);
   background-color: var(--md-sys-color-surface-container-high);
 }
 
@@ -37,10 +37,11 @@ export const baseStyling = css`
 }
 `;
 
-export const includeScrollbarStyle = (prefix: string) => {
+export const includeScrollbarStyles = (prefix: string, stableScrollGutter?: boolean) => {
+  const scrollbarGutterValue = stableScrollGutter ? unsafeCSS('stable both-edges') : unsafeCSS('auto');
   const selector = unsafeCSS(prefix);
 
-  return  css`
+  return css`
   @supports not (scrollbar-width: thin) {
     ${selector}::-webkit-scrollbar {
       width: 8px;
@@ -78,10 +79,12 @@ export const includeScrollbarStyle = (prefix: string) => {
 
   @supports (scrollbar-width: thin) {
     ${selector} {
+      --_sbg: ${scrollbarGutterValue};
       --_scrollbarColor_thumb: rgba(140 140 140 / 1);
 
       scrollbar-color: var(--_scrollbarColor_thumb) rgba(0 0 0 / 0);
       scrollbar-width: thin;
+      scrollbar-gutter: var(--_sbg);
     }
 
     ${selector}:hover {
@@ -101,6 +104,24 @@ export const includeScrollbarStyle = (prefix: string) => {
   `;
 };
 
+export const includeSeparatorStyles = (prefix: string, block: 'end' | 'start') => {
+  const selector = unsafeCSS(prefix);
+  const isBlockStart = block === 'start';
+  const pseudoSelector = isBlockStart ? unsafeCSS('::before') : unsafeCSS('::after');
+  const position = isBlockStart ? unsafeCSS('top: 0') : unsafeCSS('bottom: 0');
+
+  return css`
+  ${selector}${pseudoSelector} {
+    content: '';
+    position: absolute;
+    ${position};
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--md-sys-color-outline-variant);
+  }
+  `;
+};
 export const resetAnchor = css`
 a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);

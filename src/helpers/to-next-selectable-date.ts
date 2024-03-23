@@ -1,9 +1,12 @@
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 
-import { navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
-import type { InferredFromSet } from '../typings.js';
+import {
+  navigationKeySetDayNext,
+  navigationKeySetDayPrevious,
+} from '../constants.js';
+import type { InferredFromSet } from '../types.js';
 import { toDayDiffInclusive } from './to-day-diff-inclusive.js';
-import type { ToNextSelectableDateInit } from './typings.js';
+import type { ToNextSelectableDateInit } from './types.js';
 
 export function toNextSelectableDate({
   date,
@@ -14,7 +17,9 @@ export function toNextSelectableDate({
   minTime,
 }: ToNextSelectableDateInit): Date {
   // Bail when there is no valid date range (<= 1 day).
-  if (toDayDiffInclusive(minTime, maxTime) <= 1) return date;
+  if (toDayDiffInclusive(minTime, maxTime) <= 1) {
+    return date;
+  }
 
   const focusedDateTime = +date;
 
@@ -26,10 +31,14 @@ export function toNextSelectableDate({
     disabledDaysSet.has((date as Date).getUTCDay()) ||
     disabledDatesSet.has(focusedDateTime);
 
-  if (!isDisabledDay) return date;
+  if (!isDisabledDay) {
+    return date;
+  }
 
-  let newSelectableDate = isBeforeMinTime === iaAfterMaxTime ?
-    date : new Date(isBeforeMinTime ? minTime - 864e5 : 864e5 + maxTime);
+  let newSelectableDate =
+    isBeforeMinTime === iaAfterMaxTime
+      ? date
+      : new Date(isBeforeMinTime ? minTime - 864e5 : 864e5 + maxTime);
   let newSelectableDateTime = +newSelectableDate;
 
   const fy = newSelectableDate.getUTCFullYear();
@@ -37,8 +46,25 @@ export function toNextSelectableDate({
   let d = newSelectableDate.getUTCDate();
 
   while (isDisabledDay) {
-    if (isBeforeMinTime || (!iaAfterMaxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeySetDayNext>))) d += 1;
-    if (iaAfterMaxTime || (!isBeforeMinTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>))) d -= 1;
+    if (
+      isBeforeMinTime ||
+      (!iaAfterMaxTime &&
+        navigationKeySetDayNext.has(
+          key as InferredFromSet<typeof navigationKeySetDayNext>
+        ))
+    ) {
+      d += 1;
+    }
+
+    if (
+      iaAfterMaxTime ||
+      (!isBeforeMinTime &&
+        navigationKeySetDayPrevious.has(
+          key as InferredFromSet<typeof navigationKeySetDayPrevious>
+        ))
+    ) {
+      d -= 1;
+    }
 
     newSelectableDate = fromPartsToUtcDate(fy, m, d);
     newSelectableDateTime = +newSelectableDate;

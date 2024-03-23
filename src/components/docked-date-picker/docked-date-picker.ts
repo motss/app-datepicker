@@ -6,42 +6,73 @@ import './menu-list/docked-date-picker-menu-list.js';
 import '../md-menu-surface/md-menu-surface.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
-import { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
+import type { ListItem } from '@material/web/menu/menu.js';
+import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { renderCalendarDay } from '../date-picker-calendar/calendar/helpers/render-calendar-day/render-calendar-day.js';
-import { renderWeekDay } from '../date-picker-calendar/calendar/helpers/render-week-day/render-week-day.js';
-import type { CalendarDayElement, CalendarProperties } from '../date-picker-calendar/calendar/types.js';
-import { confirmKeySet, labelConfirm, labelDeny, labelMonthMenuItemTemplate, labelNextMonth, labelNextYear, labelPreviousMonth, labelPreviousYear, labelSelectedMonthMenuItemTemplate, labelSelectedYearMenuItemTemplate, labelSupportingText, labelYearMenuItemTemplate, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../../constants.js';
-import type { DockedDatePickerHeader } from './header/docked-date-picker-header.js';
-import { DockedDatePickerMenuList } from './menu-list/docked-date-picker-menu-list.js';
+import {
+  confirmKeySet,
+  emptyReadonlyArray,
+  labelConfirm,
+  labelDeny,
+  labelMonthMenuItemTemplate,
+  labelNextMonth,
+  labelNextYear,
+  labelPreviousMonth,
+  labelPreviousYear,
+  labelSelectedMonthMenuItemTemplate,
+  labelSelectedYearMenuItemTemplate,
+  labelShowCalendar,
+  labelSupportingText,
+  labelYearMenuItemTemplate,
+  MAX_DATE,
+  MIN_DATE,
+  navigationKeySetGrid,
+  renderNoop,
+} from '../../constants.js';
+import { isSameMonth } from '../../helpers/is-same-month.js';
+import { splitString } from '../../helpers/split-string.js';
 import { toDateString } from '../../helpers/to-date-string.js';
+import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconCalendar } from '../../icons.js';
+import { keyHome } from '../../key-values.js';
 import { DatePickerMinMaxMixin } from '../../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../../mixins/element-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { resetShadowRoot } from '../../stylings.js';
-import type { InferredFromSet, MenuListType, SupportedKey } from '../../typings.js';
-import { dockedDatePicker_calendarIconLabel, dockedDatePicker_mdMenuSurfaceYOffset, dockedDatePickerName } from './constants.js';
+import { resetShadowRoot } from '../../styles.js';
+import type {
+  InferredFromSet,
+  MenuListType,
+  SupportedKey,
+} from '../../types.js';
+import { renderCalendarDay } from '../date-picker-calendar/calendar/helpers/render-calendar-day/render-calendar-day.js';
+import { renderWeekDay } from '../date-picker-calendar/calendar/helpers/render-week-day/render-week-day.js';
+import type {
+  CalendarDayElement,
+  CalendarProperties,
+} from '../date-picker-calendar/calendar/types.js';
+import { dockedDatePickerName } from './constants.js';
+import type { DockedDatePickerHeader } from './header/docked-date-picker-header.js';
+import type { DockedDatePickerMenuList } from './menu-list/docked-date-picker-menu-list.js';
 import { dockedDatePickerStyles } from './styles.js';
 import type { DockedDatePickerProperties } from './types.js';
-import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
-import { isSameMonth } from '../../helpers/is-same-month.js';
-import { splitString } from '../../helpers/split-string.js';
-import { keyHome } from '../../key-values.js';
 
 const defaultDate = toResolvedDate();
+const yOffset = 7;
 
 @customElement(dockedDatePickerName)
-export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(ElementMixin(RootElement))) implements DockedDatePickerProperties {
+export class DockedDatePicker
+  extends DatePickerMixin(DatePickerMinMaxMixin(ElementMixin(RootElement)))
+  implements DockedDatePickerProperties
+{
   // close(returnValue: DockedDatePickerPropertiesReturnValue): Promise<void> {
 
   // }
@@ -58,20 +89,38 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
   //   return (this.#dialogRef.value as MdDialog).returnValue;
   // }
 
-  #hostRef: Ref<this> = createRef();
-  #didConfirm: boolean = false;
-  #headerRef = createRef<DockedDatePickerHeader>();
-  #textFieldRef = createRef<MdOutlinedTextField>();
-  readonly #todayDate: Date = toResolvedDate();
-
   static override styles = [
     resetShadowRoot,
     renderActionsStyle,
     dockedDatePickerStyles,
   ];
 
-  #confirmSelectedDate = async (node: CalendarDayElement) => {
-    this._focusedDate = this._selectedDate = toResolvedDate(node.dataset.fulldate);
+  #bodyRef = createRef<HTMLDivElement>();
+
+  #confirmSelectedDate = (node: CalendarDayElement) => {
+    this._focusedDate = this._selectedDate = toResolvedDate(
+      node.dataset.fulldate
+    );
+  };
+
+  #didConfirm = false;
+  #headerRef = createRef<DockedDatePickerHeader>();
+
+  #hostRef: Ref<this> = createRef();
+
+  #menuListRef = createRef<DockedDatePickerMenuList>();
+
+  #onClosed = () => {
+    const { _selectedDate, value } = this;
+
+    if (this.#didConfirm) {
+      this.value = toDateString(_selectedDate);
+      this.#didConfirm = false;
+    } else {
+      this._focusedDate = this._selectedDate = toResolvedDate(value);
+    }
+
+    this.startView = 'calendar';
   };
 
   #onClosing = () => {
@@ -79,28 +128,26 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this.#updateTextFieldFocusedTo(false);
   };
 
-  #updateTextFieldFocusedTo = (focused: boolean) => {
-    /**
-     * NOTE: A workaround to ensure that the text field renders in its focused state
-     * when the user focuses the menu surface.
-     */
-    interface MdOutlinedTextFieldWithFocused extends Omit<MdOutlinedTextField, 'focused'> {
-      focused: boolean;
-    }
-    (this.#textFieldRef.value as unknown as MdOutlinedTextFieldWithFocused).focused = focused;
-  };
-
   #onConfirm = () => {
     this.#didConfirm = true;
     this.#onClosing();
   };
 
-  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (_ev, node) => {
-    this.#confirmSelectedDate(node);
-  };
+  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> =
+    (_ev, node) => {
+      this.#confirmSelectedDate(node);
+    };
 
-  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, node, { disabledDatesSet, disabledDaysSet }) => {
-    if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
+  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (
+    ev,
+    _node,
+    { disabledDatesSet, disabledDaysSet }
+  ) => {
+    if (
+      navigationKeySetGrid.has(
+        ev.key as InferredFromSet<typeof navigationKeySetGrid>
+      )
+    ) {
       const nextDate = toNextSelectedDate({
         currentDate: this._focusedDate,
         date: this._selectedDate,
@@ -119,7 +166,9 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
       ) {
         this._focusedDate = this._selectedDate = nextDate;
       }
-    } else if (confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)) {
+    } else if (
+      confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
+    ) {
       this.#onConfirm();
     }
   };
@@ -128,10 +177,11 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this.#onClosing();
   };
 
-  #onMenuChange: DockedDatePickerMenuList['onMenuChange'] = ({ type, value }) => {
-    const {
-      _focusedDate,
-    } = this;
+  #onMenuChange: DockedDatePickerMenuList['onMenuChange'] = ({
+    type,
+    value,
+  }) => {
+    const { _focusedDate } = this;
     const y = _focusedDate.getUTCFullYear();
     const m = _focusedDate.getUTCMonth();
     const d = _focusedDate.getUTCDate();
@@ -144,17 +194,150 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     this.startView = 'calendar';
   };
 
+  #onOpened = async () => {
+    if (this.startView === 'calendar') {
+      await this.updateComplete;
+
+      const header = this.#headerRef.value;
+
+      if (header) {
+        await header.updateComplete;
+
+        const monthMenuButton = await header.getMonthMenuButton();
+
+        if (monthMenuButton) {
+          await monthMenuButton.updateComplete;
+
+          monthMenuButton.focus();
+        }
+      }
+    }
+  };
+
   #onOpening = () => {
     this.open = true;
     this.#updateTextFieldFocusedTo(true);
+  };
+
+  #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
+    return renderCalendarDay({
+      data,
+      selectedDate: this._selectedDate,
+      tabbableDate: this._tabbableDate,
+      todayDate: this.#todayDate,
+    });
+  };
+
+  #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ weekday }) => {
+    return renderWeekDay(weekday);
+  };
+
+  #scrollIntoViewWhenNeeded = async (
+    changedProperties: PropertyValueMap<this>
+  ) => {
+    const { startView } = this;
+
+    if (
+      changedProperties.get('startView') &&
+      changedProperties.get('startView') !== startView
+    ) {
+      const body = this.#bodyRef.value;
+      const listItems =
+        (await this.#menuListRef.value?.getListItems()) ??
+        (emptyReadonlyArray as ListItem[]);
+      const selectedListItemIdx = listItems.findIndex(
+        (n) => !n.disabled && n.tabIndex > -1
+      );
+
+      if (body && selectedListItemIdx > -1) {
+        const [firstListItem] = listItems;
+
+        if (firstListItem) {
+          const containerMarginTop = 8;
+          const offsetToCenter = 3;
+
+          const listItemRect = firstListItem.getBoundingClientRect();
+
+          body.scrollTop =
+            (selectedListItemIdx - offsetToCenter) * listItemRect.height +
+            containerMarginTop;
+        }
+      }
+    }
+  };
+
+  #textFieldRef = createRef<MdOutlinedTextField>();
+
+  readonly #todayDate: Date = toResolvedDate();
+
+  #toggleMenuSurface = () => {
+    if (this.open) {
+      this.#onClosing();
+    } else {
+      this.#onOpening();
+    }
+  };
+
+  #updateDatesByValue = (changedProperties: PropertyValueMap<this>): void => {
+    const { value } = this;
+
+    if (
+      changedProperties.has('value') &&
+      value !== changedProperties.get('value')
+    ) {
+      this._focusedDate =
+        this._selectedDate =
+        this._tabbableDate =
+          toResolvedDate(value);
+    }
+  };
+
+  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
+    const { max, min } = this;
+
+    if (changedProperties.has('max') && changedProperties.get('max') !== max) {
+      this._maxDate = toResolvedDate(max || MAX_DATE);
+    }
+
+    if (changedProperties.has('min') && changedProperties.get('min') !== min) {
+      this._minDate = toResolvedDate(min || MIN_DATE);
+    }
+  };
+
+  #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (
+    init
+  ) => {
+    switch (init.type) {
+      case 'monthDec':
+      case 'monthInc':
+      case 'yearDec':
+      case 'yearInc': {
+        this._focusedDate = init.date;
+        break;
+      }
+      case 'monthMenu':
+      case 'yearMenu': {
+        const { startView } = this;
+
+        this.startView =
+          startView === 'monthMenu' || startView === 'yearMenu'
+            ? 'calendar'
+            : init.type;
+
+        break;
+      }
+      default:
+    }
   };
 
   #updateTabbableDate = (changedProperties: PropertyValueMap<this>) => {
     const { _focusedDate, _selectedDate, disabledDates, disabledDays } = this;
 
     if (
-      changedProperties.has('_focusedDate') && changedProperties.get('_focusedDate') !== _focusedDate ||
-      changedProperties.has('_selectedDate') && changedProperties.get('_selectedDate') !== _selectedDate
+      (changedProperties.has('_focusedDate') &&
+        changedProperties.get('_focusedDate') !== _focusedDate) ||
+      (changedProperties.has('_selectedDate') &&
+        changedProperties.get('_selectedDate') !== _selectedDate)
     ) {
       const isWithinSameMonth = isSameMonth(_selectedDate, _focusedDate);
 
@@ -183,69 +366,19 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     }
   };
 
-  #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
-    data,
-  }) => {
-    return renderCalendarDay({
-      data,
-      selectedDate: this._selectedDate,
-      tabbableDate: this._tabbableDate,
-      todayDate: this.#todayDate,
-    });
-  };
-
-  #renderWeekDay: CalendarProperties['renderWeekDay'] = ({ weekday }) => {
-    return renderWeekDay(weekday);
-  };
-
-  #toggleMenuSurface = () => {
-    if (this.open) {
-      this.#onClosing();
-    } else {
-      this.#onOpening();
-    }
-  };
-
-  #updateDatesByValue = (changedProperties: PropertyValueMap<this>): void => {
-    const { value } = this;
-
-    if (changedProperties.has('value') && value !== changedProperties.get('value')) {
-      this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
-    }
-  };
-
-  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
-    const { max, min } = this;
-
-    if (changedProperties.has('max') && changedProperties.get('max') !== max) {
-      this._maxDate = toResolvedDate(max || MAX_DATE);
+  #updateTextFieldFocusedTo = (focused: boolean) => {
+    /**
+     * NOTE: A workaround to ensure that the text field renders in its focused state
+     * when the user focuses the menu surface.
+     */
+    interface MdOutlinedTextFieldWithFocused
+      extends Omit<MdOutlinedTextField, 'focused'> {
+      focused: boolean;
     }
 
-    if (changedProperties.has('min') && changedProperties.get('min') !== min) {
-      this._minDate = toResolvedDate(min || MIN_DATE);
-    }
-  };
-
-  #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (init) => {
-    switch (init.type) {
-      case 'monthDec':
-      case 'monthInc':
-      case 'yearDec':
-      case 'yearInc': {
-        this._focusedDate = init.date;
-        break;
-      }
-      case 'monthMenu':
-      case 'yearMenu': {
-        const { startView } = this;
-
-        this.startView = startView === 'monthMenu' || startView === 'yearMenu' ?
-          'calendar' : init.type;
-
-        break;
-      }
-      default:
-    }
+    (
+      this.#textFieldRef.value as unknown as MdOutlinedTextFieldWithFocused
+    ).focused = focused;
   };
 
   @state() _focusedDate: Date = defaultDate;
@@ -258,7 +391,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   @state() private _tabbableDate: Date = defaultDate;
 
-  @property() calendarIconLabel: string = dockedDatePicker_calendarIconLabel;
+  @property() calendarIconLabel: string = labelShowCalendar;
 
   @property() confirmText: string = labelConfirm;
 
@@ -266,20 +399,17 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
   @property() label = '';
 
-  @property({ reflect: true, type: Boolean }) open: boolean = false;
-
-  @property({ reflect: true }) supportingText: string = labelSupportingText;
+  @property({ reflect: true, type: Boolean }) open = false;
 
   /**
    * Opens the menu synchronously with no animation.
    */
   @property({ type: Boolean }) quick = false;
 
-  @property({ reflect: true }) startView: 'calendar' | MenuListType = 'calendar';
+  @property({ reflect: true }) startView: 'calendar' | MenuListType =
+    'calendar';
 
-  #bodyRef = createRef<HTMLDivElement>();
-
-  #menuListRef = createRef<DockedDatePickerMenuList>();
+  @property({ reflect: true }) supportingText: string = labelSupportingText;
 
   constructor() {
     super();
@@ -288,11 +418,15 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
 
     this._maxDate = toResolvedDate(max ?? MAX_DATE);
     this._minDate = toResolvedDate(min ?? MIN_DATE);
-    this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+    this._focusedDate =
+      this._selectedDate =
+      this._tabbableDate =
+        toResolvedDate(value);
   }
 
   protected override render(): TemplateResult {
     const {
+      _focusedDate,
       calendarIconLabel,
       confirmText,
       denyText,
@@ -309,13 +443,12 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
       shortWeekLabel,
       showWeekNumber,
       startView,
+      supportingText,
       toyearTemplate,
+      value,
       weekLabel,
       weekNumberTemplate,
       weekNumberType,
-      _focusedDate,
-      value,
-      supportingText,
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
@@ -351,7 +484,7 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
           @opened=${this.#onOpened}
           anchor=${anchorId}
           stay-open-on-focusout
-          y-offset=${dockedDatePicker_mdMenuSurfaceYOffset}
+          y-offset=${yOffset}
         >
           <div
             class=${classMap({ [startView]: true })}
@@ -377,12 +510,15 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
               class=body
               ${ref(this.#bodyRef)}
             >${
-              startView === 'calendar' ? html`
+              startView === 'calendar'
+                ? html`
               <app-calendar
                 ?showWeekNumber=${showWeekNumber}
                 .onDateUpdateByClick=${this.#onDateUpdateByClick}
                 .onDateUpdateByKey=${this.#onDateUpdateByKey}
-                .onUpdated=${() => { /** todo: */}}
+                .onUpdated=${() => {
+                  /** todo: */
+                }}
                 .renderCalendarDay=${this.#renderCalendarDay}
                 .renderFooter=${renderNoop}
                 .renderWeekDay=${this.#renderWeekDay}
@@ -411,7 +547,8 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
                 onConfirm: this.#onConfirm,
                 onDeny: this.#onDeny,
               })}
-              ` : html`
+              `
+                : html`
               <docked-date-picker-menu-list
                 ${ref(this.#menuListRef)}
                 class=menuList
@@ -435,69 +572,19 @@ export class DockedDatePicker extends DatePickerMixin(DatePickerMinMaxMixin(Elem
     `;
   }
 
-  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  protected override async updated(
+    changedProperties: PropertyValueMap<this>
+  ): Promise<void> {
+    this.#scrollIntoViewWhenNeeded(changedProperties);
+  }
+
+  protected override willUpdate(
+    changedProperties: PropertyValueMap<this>
+  ): void {
     this.#updateDatesByValue(changedProperties);
     this.#updateMinMax(changedProperties);
     this.#updateTabbableDate(changedProperties);
   }
-
-  #onOpened = async () => {
-    if (this.startView === 'calendar') {
-      await this.updateComplete
-
-      const header = this.#headerRef.value;
-
-      if (header) {
-        await header.updateComplete;
-
-        const monthMenuButton = await header.getMonthMenuButton()
-
-        if (monthMenuButton) {
-          await monthMenuButton.updateComplete;
-
-          monthMenuButton.focus();
-        }
-      }
-    }
-  };
-
-  #onClosed = () => {
-    const { _selectedDate, value } = this;
-
-    if (this.#didConfirm) {
-      this.value = toDateString(_selectedDate);
-      this.#didConfirm = false;
-    } else {
-      this._focusedDate = this._selectedDate = toResolvedDate(value);
-    }
-
-    this.startView = 'calendar';
-  };
-
-  protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
-    this.#scrollIntoViewWhenNeeded(changedProperties);
-  }
-
-  #scrollIntoViewWhenNeeded = async (changedProperties: PropertyValueMap<this>) => {
-    const { startView } = this;
-
-    if (
-      changedProperties.get('startView') &&
-      changedProperties.get('startView') !== startView
-    ) {
-      const body = this.#bodyRef.value;
-      const listItems = (await this.#menuListRef.value?.getListItems()) ?? [];
-      const selectedListItemIdx = listItems.findIndex(n => !n.disabled && n.tabIndex > -1);
-
-      if (body && selectedListItemIdx > -1) {
-        const containerMarginTop = 8;
-        const listItemRect = listItems[0].getBoundingClientRect();
-        const offsetToCenter = 3;
-
-        body.scrollTop = (selectedListItemIdx - offsetToCenter) * listItemRect.height + containerMarginTop;
-      }
-    }
-  };
 }
 
 declare global {

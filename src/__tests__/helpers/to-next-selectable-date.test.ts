@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { toNextSelectableDate } from '../../helpers/to-next-selectable-date';
-import type { ToNextSelectableDateInit } from '../../helpers/typings';
+import type { ToNextSelectableDateInit } from '../../helpers/types';
 
 describe(toNextSelectableDate.name, () => {
   const defaultInit: ToNextSelectableDateInit = {
@@ -28,17 +28,17 @@ describe(toNextSelectableDate.name, () => {
         minTime: +new Date('2020-02-02'),
       },
     },
-  ])('returns next selectable date for non-disabled date ($partialInit)', ({
-    $_value,
-    partialInit,
-  }) => {
-    const result = toNextSelectableDate({
-      ...defaultInit,
-      ...partialInit,
-    });
+  ])(
+    'returns next selectable date for non-disabled date ($partialInit)',
+    ({ $_value, partialInit }) => {
+      const result = toNextSelectableDate({
+        ...defaultInit,
+        ...partialInit,
+      });
 
-    expect(result).toEqual($_value);
-  });
+      expect(result).toEqual($_value);
+    }
+  );
 
   it.each<{
     $_value: Date;
@@ -143,9 +143,7 @@ describe(toNextSelectableDate.name, () => {
       $_value: new Date('2020-02-02'),
       partialInit: {
         date: new Date('2020-02-01'),
-        disabledDatesSet: new Set([
-          +new Date('2020-02-01'),
-        ]),
+        disabledDatesSet: new Set([+new Date('2020-02-01')]),
         key: 'ArrowLeft',
         minTime: +new Date('2020-02-01'),
       },
@@ -154,9 +152,7 @@ describe(toNextSelectableDate.name, () => {
       $_value: new Date('2020-04-02'),
       partialInit: {
         date: new Date('2020-04-03'),
-        disabledDatesSet: new Set([
-          +new Date('2020-04-03'),
-        ]),
+        disabledDatesSet: new Set([+new Date('2020-04-03')]),
         key: 'ArrowRight',
         maxTime: +new Date('2020-04-03'),
       },
@@ -167,24 +163,21 @@ describe(toNextSelectableDate.name, () => {
       $_value: new Date('2020-04-02'),
       partialInit: {
         date: new Date('2020-04-03'),
-        disabledDatesSet: new Set([
-          +new Date('2020-04-03'),
-        ]),
+        disabledDatesSet: new Set([+new Date('2020-04-03')]),
         key: 'ArrowRight',
         maxTime: +new Date('2020-04-03'),
         minTime: +new Date('2020-04-02'),
       },
     },
-  ])('returns next selectable date for disabled date ($partialInit)', ({
-    $_value,
-    partialInit,
-  }) => {
-    const result = toNextSelectableDate({
-      ...defaultInit,
-      ...partialInit,
-    });
+  ])(
+    'returns next selectable date for disabled date ($partialInit)',
+    ({ $_value, partialInit }) => {
+      const result = toNextSelectableDate({
+        ...defaultInit,
+        ...partialInit,
+      });
 
-    expect(result).toEqual($_value);
-  });
-
+      expect(result).toEqual($_value);
+    }
+  );
 });

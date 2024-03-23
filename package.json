@@ -140,7 +140,9 @@
     "!**/*test*/**/*.*"
   ],
   "scripts": {
+    "apply": "biome check --apply",
     "build": "npm run clean && tsc",
+    "check": "biome check",
     "clean": "sh $(npm root)/@reallyland/tools/cleanup.sh",
     "dev": "vite",
     "lint": "sh $(npm root)/@reallyland/tools/lint-build.sh -c ./.eslintrc.json",
@@ -160,6 +162,7 @@
     "wtr": "node --max-old-space-size=8192 --trace-deprecation ./node_modules/.bin/wtr --config wtr.config.mjs"
   },
   "dependencies": {
+    "@biomejs/biome": "^1.6.2",
     "@ipohjs/calendar": "0.1.0-rc.7",
     "@material/mwc-base": "^0.27.0",
     "@material/mwc-menu": "^0.27.0",

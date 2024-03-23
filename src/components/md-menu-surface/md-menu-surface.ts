@@ -7,10 +7,7 @@ import { mdMenuSurfaceStyles } from './styles.js';
 
 @customElement(MdMenuSurfaceName)
 export class MdMenuSurface extends MenuSurface {
-  static override styles = [
-    styles,
-    mdMenuSurfaceStyles,
-  ];
+  static override styles = [styles, mdMenuSurfaceStyles];
 }
 
 declare global {

@@ -6,19 +6,18 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "moduleResolution": "Bundler",
+    "noUncheckedIndexedAccess": true,
     "outDir": "dist",
     "rootDir": "src",
     "skipLibCheck": true,
     "sourceMap": false,
-    "types": [
-      "vite/client"
-    ]
+    "types": ["vite/client"]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "dist",
-    "node_modules"
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"],
+  "references": [
+    {
+      "path": "tsconfig.node.json"
+    }
   ]
 }

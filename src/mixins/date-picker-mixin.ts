@@ -1,5 +1,5 @@
-import type { WeekNumberType } from "@ipohjs/calendar/dist/typings.js";
-import { property } from "lit/decorators.js";
+import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
+import { property } from 'lit/decorators.js';
 
 import {
   DateTimeFormat,
@@ -15,24 +15,24 @@ import {
   selectedYearTemplate,
   toyearTemplate,
   weekNumberTemplate,
-} from "../constants.js";
-import { nullishAttributeConverter } from "../helpers/nullish-attribute-converter.js";
-import { toDateString } from "../helpers/to-date-string.js";
-import { toResolvedDate } from "../helpers/to-resolved-date.js";
-import type { LitConstructor } from "../typings.js";
-import type { DatePickerMixinProperties, MixinReturnType } from "./typings.js";
+} from '../constants.js';
+import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
+import { toDateString } from '../helpers/to-date-string.js';
+import { toResolvedDate } from '../helpers/to-resolved-date.js';
+import type { LitConstructor } from '../types.js';
+import type { DatePickerMixinProperties, MixinReturnType } from './types.js';
 
 export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
-  SuperClass: BaseConstructor,
+  superClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, DatePickerMixinProperties> => {
   class DatePickerMixinClass
-    extends SuperClass
+    extends superClass
     implements DatePickerMixinProperties
   {
     @property() public chooseMonthLabel: string = labelChooseMonth;
     @property() public chooseYearLabel: string = labelChooseYear;
-    @property() public disabledDates = "";
-    @property() public disabledDays = "";
+    @property() public disabledDates = '';
+    @property() public disabledDays = '';
     @property({ reflect: true, type: Number }) public firstDayOfWeek = 0;
     @property() public locale: string =
       DateTimeFormat().resolvedOptions().locale;
@@ -59,7 +59,7 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
       converter: { toAttribute: nullishAttributeConverter },
       reflect: true,
     })
-    public weekNumberType: WeekNumberType = "first-4-day-week";
+    public weekNumberType: WeekNumberType = 'first-4-day-week';
   }
 
   return DatePickerMixinClass as unknown as MixinReturnType<

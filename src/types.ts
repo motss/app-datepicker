@@ -2,11 +2,29 @@ import type { DateTimeFormatter } from '@ipohjs/calendar/dist/typings.js';
 import type { LitElement, PropertyValues } from 'lit';
 
 import type { startViews } from './constants.js';
-import type { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyEnter, keyHome, keyPageDown, keyPageUp, keySpace, keyTab } from './key-values.js';
-import type { DatePickerMinMaxProperties, DatePickerMixinProperties, DatePickerStartViewProperties, ElementMixinProperties } from './mixins/typings.js';
-import type { Constructor } from './utility-typings.js';
+import type {
+  keyArrowDown,
+  keyArrowLeft,
+  keyArrowRight,
+  keyArrowUp,
+  keyEnd,
+  keyEnter,
+  keyHome,
+  keyPageDown,
+  keyPageUp,
+  keySpace,
+  keyTab,
+} from './key-values.js';
+import type {
+  DatePickerMinMaxProperties,
+  DatePickerMixinProperties,
+  DatePickerStartViewProperties,
+  ElementMixinProperties,
+} from './mixins/types.js';
+import type { Constructor } from './utility.types.js';
 
-export type ChangedProperties<T = Record<string, unknown>> = PropertyValues & Map<keyof T, T[keyof T]>;
+export type ChangedProperties<T = Record<string, unknown>> = PropertyValues &
+  Map<keyof T, T[keyof T]>;
 
 export interface CustomEventAction<T extends string, CustomEventDetail> {
   detail: CustomEventDetail;
@@ -14,9 +32,18 @@ export interface CustomEventAction<T extends string, CustomEventDetail> {
 }
 
 export interface CustomEventDetail {
-  ['date-updated']: CustomEventAction<'date-updated', CustomEventDetailDateUpdated>;
-  ['first-updated']: CustomEventAction<'first-updated', CustomEventDetailFirstUpdated>;
-  ['year-updated']: CustomEventAction<'year-updated', CustomEventDetailYearUpdated>;
+  'date-updated': CustomEventAction<
+    'date-updated',
+    CustomEventDetailDateUpdated
+  >;
+  'first-updated': CustomEventAction<
+    'first-updated',
+    CustomEventDetailFirstUpdated
+  >;
+  'year-updated': CustomEventAction<
+    'year-updated',
+    CustomEventDetailYearUpdated
+  >;
 }
 
 interface CustomEventDetailDateUpdated extends KeyEvent, DatePickerValues {}
@@ -32,11 +59,11 @@ interface CustomEventDetailYearUpdated {
   year: number;
 }
 
-export interface DatePickerProperties extends
-ElementMixinProperties,
-  DatePickerMinMaxProperties,
-  DatePickerMixinProperties,
-  DatePickerStartViewProperties {}
+export interface DatePickerProperties
+  extends ElementMixinProperties,
+    DatePickerMinMaxProperties,
+    DatePickerMixinProperties,
+    DatePickerStartViewProperties {}
 
 type DatePickerValues = Required<Pick<DatePickerProperties, 'value'>>;
 

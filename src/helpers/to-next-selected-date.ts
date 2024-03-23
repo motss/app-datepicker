@@ -1,10 +1,23 @@
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 
-import { type navigationKeyListNext, navigationKeySetDayNext, navigationKeySetDayPrevious } from '../constants.js';
-import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome, keyPageDown, keyPageUp } from '../key-values.js';
-import type { InferredFromSet } from '../typings.js';
+import {
+  type navigationKeyListNext,
+  navigationKeySetDayNext,
+  navigationKeySetDayPrevious,
+} from '../constants.js';
+import {
+  keyArrowDown,
+  keyArrowLeft,
+  keyArrowRight,
+  keyArrowUp,
+  keyEnd,
+  keyHome,
+  keyPageDown,
+  keyPageUp,
+} from '../key-values.js';
+import type { InferredFromSet } from '../types.js';
 import { toNextSelectableDate } from './to-next-selectable-date.js';
-import type { ToNextSelectedDateInit } from './typings.js';
+import type { ToNextSelectedDateInit } from './types.js';
 
 export function toNextSelectedDate({
   currentDate,
@@ -47,7 +60,8 @@ export function toNextSelectedDate({
   const currentDateFullYear = currentDate.getUTCFullYear();
   const currentDateMonth = currentDate.getUTCMonth();
 
-  const notInCurrentMonth = currentDateMonth !== dateMonth || currentDateFullYear !== dateFullYear;
+  const notInCurrentMonth =
+    currentDateMonth !== dateMonth || currentDateFullYear !== dateFullYear;
 
   let fy = dateFullYear;
   let m = dateMonth;
@@ -65,14 +79,18 @@ export function toNextSelectedDate({
     d = 1;
 
     shouldRunSwitch =
-      key === keyPageDown ||
-      key === keyPageUp ||
-      key === keyEnd;
+      key === keyPageDown || key === keyPageUp || key === keyEnd;
   }
 
   switch (shouldRunSwitch) {
-    case dateTime === minTime && navigationKeySetDayPrevious.has(key as InferredFromSet<typeof navigationKeySetDayPrevious>):
-    case dateTime === maxTime && navigationKeySetDayNext.has(key as InferredFromSet<typeof navigationKeyListNext>):
+    case dateTime === minTime &&
+      navigationKeySetDayPrevious.has(
+        key as InferredFromSet<typeof navigationKeySetDayPrevious>
+      ):
+    case dateTime === maxTime &&
+      navigationKeySetDayNext.has(
+        key as InferredFromSet<typeof navigationKeyListNext>
+      ):
       break;
     case key === keyArrowUp: {
       d -= 7;
@@ -91,11 +109,21 @@ export function toNextSelectedDate({
       break;
     }
     case key === keyPageDown: {
-      hasAltKey ? fy += 1 : m += 1;
+      if (hasAltKey) {
+        fy += 1;
+      } else {
+        m += 1;
+      }
+
       break;
     }
     case key === keyPageUp: {
-      hasAltKey ? fy -= 1 : m -= 1;
+      if (hasAltKey) {
+        fy -= 1;
+      } else {
+        m -= 1;
+      }
+
       break;
     }
     case key === keyEnd: {

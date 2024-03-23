@@ -16,7 +16,8 @@ export function renderYearGridButton({
 }: RenderYearGridButtonInit) {
   const maybeLabel = label || undefined;
 
-  return selected ? html`
+  return selected
+    ? html`
   <md-filled-button
     aria-label=${ifDefined(maybeLabel)}
     aria-pressed=${selected ? 'true' : 'false'}
@@ -27,8 +28,8 @@ export function renderYearGridButton({
     title=${ifDefined(maybeLabel)}
     type=button
   >${year}</md-filled-button>
-  ` :
-    html`
+  `
+    : html`
   <md-outlined-button
     aria-label=${ifDefined(maybeLabel)}
     aria-pressed=${selected ? 'true' : 'false'}

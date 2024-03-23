@@ -1,7 +1,11 @@
-import type { CalendarGrid, CalendarWeekday, DatesGridColumn } from '@ipohjs/calendar/dist/typings.js';
+import type {
+  CalendarGrid,
+  CalendarWeekday,
+  DatesGridColumn,
+} from '@ipohjs/calendar/dist/typings.js';
 import type { nothing, TemplateResult } from 'lit';
 
-import type { DatePickerProperties } from '../../../typings';
+import type { DatePickerProperties } from '../../../types.js';
 
 // import type { DatePickerProperties, Formatters } from '../typings.js';
 
@@ -33,8 +37,8 @@ export interface CalendarDayElement extends Omit<HTMLButtonElement, 'dataset'> {
   dataset: Record<'day' | 'fulldate', string>;
 }
 
-export interface CalendarProperties extends
-  Pick<
+export interface CalendarProperties
+  extends Pick<
     DatePickerProperties,
     | 'disabledDates'
     | 'disabledDays'
@@ -49,14 +53,26 @@ export interface CalendarProperties extends
     | 'weekNumberTemplate'
     | 'weekNumberType'
   > {
-  onDateUpdateByClick?(ev: MouseEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
-  onDateUpdateByKey?(ev: KeyboardEvent, node: CalendarDayElement, calendarGrid: CalendarGrid): void;
+  onDateUpdateByClick?(
+    ev: MouseEvent,
+    node: CalendarDayElement,
+    calendarGrid: CalendarGrid
+  ): void;
+  onDateUpdateByKey?(
+    ev: KeyboardEvent,
+    node: CalendarDayElement,
+    calendarGrid: CalendarGrid
+  ): void;
   onUpdated?(): void;
-  renderCalendarDay?(init: RenderCalendarDayInit): TemplateResult | typeof nothing;
+  renderCalendarDay?(
+    init: RenderCalendarDayInit
+  ): TemplateResult | typeof nothing;
   renderFooter?(): TemplateResult | typeof nothing;
   renderWeekDay?(init: RenderWeekDayInit): TemplateResult | typeof nothing;
   renderWeekLabel?(init: RenderWeekLabelInit): TemplateResult | typeof nothing;
-  renderWeekNumber?(init: RenderWeekNumberInit): TemplateResult | typeof nothing;
+  renderWeekNumber?(
+    init: RenderWeekNumberInit
+  ): TemplateResult | typeof nothing;
 }
 
 export interface RenderCalendarDayInit extends GridIndices {

@@ -7,18 +7,25 @@ import { defaultIconSize, defaultViewBox } from './constants.js';
 
 export class Svg extends RootElement {
   #updateSize = (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('height') && changedProperties.get('height') !== this.height) {
+    if (
+      changedProperties.has('height') &&
+      changedProperties.get('height') !== this.height
+    ) {
       const height = Math.floor(this.height);
       this.style.height = CSS.px ? CSS.px(height).toString() : `${height}px`;
     }
 
-    if (changedProperties.has('width') && changedProperties.get('width') !== this.width) {
+    if (
+      changedProperties.has('width') &&
+      changedProperties.get('width') !== this.width
+    ) {
       const width = Math.floor(this.width);
       this.style.width = CSS.px ? CSS.px(width).toString() : `${width}px`;
     }
   };
 
-  @property({ attribute: false, type: Object }) content: TemplateResult<2> = svg``;
+  @property({ attribute: false, type: Object }) content: TemplateResult<2> =
+    svg``;
 
   @property() fill?: string;
 
@@ -30,13 +37,7 @@ export class Svg extends RootElement {
   @property({ reflect: true, type: Number }) width: number = defaultIconSize;
 
   protected override render(): TemplateResult {
-    const {
-      content,
-      fill,
-      stroke,
-      strokeWidth,
-      viewBox,
-    } = this;
+    const { content, fill, stroke, strokeWidth, viewBox } = this;
     const fillWithDefault = ifDefined(fill || 'currentColor');
     const viewBoxWithDefault = ifDefined(viewBox || '0 0 24 24');
 
@@ -48,7 +49,9 @@ export class Svg extends RootElement {
     >${content}</svg>`;
   }
 
-  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  protected override willUpdate(
+    changedProperties: PropertyValueMap<this>
+  ): void {
     this.#updateSize(changedProperties);
   }
 }

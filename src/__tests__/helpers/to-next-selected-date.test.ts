@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date';
-import type { ToNextSelectedDateInit } from '../../helpers/typings';
+import type { ToNextSelectedDateInit } from '../../helpers/types';
 
 describe(toNextSelectedDate.name, () => {
   const defaultInit: ToNextSelectedDateInit = {
@@ -98,24 +98,32 @@ describe(toNextSelectedDate.name, () => {
     // in leap year, 2020-01-31 to next month to 2020-02-29 from 2020-02-31
     {
       $_value: new Date('2020-02-29'),
-      partialInit: { currentDate: new Date('2020-01-01'), date: new Date('2020-01-31'), key: 'PageDown' },
+      partialInit: {
+        currentDate: new Date('2020-01-01'),
+        date: new Date('2020-01-31'),
+        key: 'PageDown',
+      },
     },
 
     // in leap year, 2020-02-29 to next year to 2021-02-28 from 2021-02-29
     {
       $_value: new Date('2021-02-28'),
-      partialInit: { currentDate: new Date('2020-02-01'), date: new Date('2020-02-29'), hasAltKey: true, key: 'PageDown' },
+      partialInit: {
+        currentDate: new Date('2020-02-01'),
+        date: new Date('2020-02-29'),
+        hasAltKey: true,
+        key: 'PageDown',
+      },
     },
-  ])('returns next selected date (partialInit=$partialInit)', ({
-    $_value,
-    partialInit,
-  }) => {
-    const result = toNextSelectedDate({
-      ...defaultInit,
-      ...partialInit,
-    });
+  ])(
+    'returns next selected date (partialInit=$partialInit)',
+    ({ $_value, partialInit }) => {
+      const result = toNextSelectedDate({
+        ...defaultInit,
+        ...partialInit,
+      });
 
-    expect(result).toEqual($_value);
-  });
-
+      expect(result).toEqual($_value);
+    }
+  );
 });

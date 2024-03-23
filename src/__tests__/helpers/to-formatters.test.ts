@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { toFormatters } from '../../helpers/to-formatters';
-import type { Formatters } from '../../typings';
+import type { Formatters } from '../../types';
 
 describe(toFormatters.name, () => {
   it('returns formatters', () => {
@@ -21,10 +21,8 @@ describe(toFormatters.name, () => {
       'yearFormat',
     ];
 
-    props.forEach(
-      n =>
-        expect(result).toHaveProperty(n)
-    );
+    for (const n of props) {
+      expect(result).toHaveProperty(n);
+    }
   });
-
 });

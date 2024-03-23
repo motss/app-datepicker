@@ -1,9 +1,12 @@
 {
-  "extends": [
-    "./node_modules/@reallyland/tools/browser/lit/.eslintrc.json"
-  ],
+  "extends": ["./node_modules/@reallyland/tools/browser/lit/.eslintrc.json"],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./tsconfig.node.json"]
+  },
   "rules": {
     "import/named": "off",
-    "import/no-duplicates": "off"
+    "import/no-duplicates": "off",
+    "comma-dangle": "off",
+    "@typescript-eslint/comma-dangle": "off"
   }
 }

@@ -1,4 +1,8 @@
-import type { DatePickerProperties, LabelValue, MenuListType } from '../../../typings.js';
+import type {
+  DatePickerProperties,
+  LabelValue,
+  MenuListType,
+} from '../../../types.js';
 
 export interface MenuListItem extends LabelValue<number> {
   disabled: boolean;
@@ -10,7 +14,8 @@ export interface MdListItemDataset extends DOMStringMap {
   value: string;
 }
 
-export interface MenuListProperties extends Partial<Pick<DatePickerProperties, 'locale' | 'value'>> {
+export interface MenuListProperties
+  extends Partial<Pick<DatePickerProperties, 'locale' | 'value'>> {
   menuListType?: MenuListType;
   monthMenuItemTemplate?: string;
   onMenuChange?(init: OnMenuChangeInit): void;

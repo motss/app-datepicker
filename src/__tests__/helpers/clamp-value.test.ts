@@ -33,14 +33,12 @@ describe(clampValue.name, () => {
       min: 100,
       value: 99,
     },
-  ])('clamps value (min=$min, max=$max, value=$value)', ({
-    $_value,
-    max,
-    min,
-    value,
-  }) => {
-    const result = clampValue(min, max, value);
+  ])(
+    'clamps value (min=$min, max=$max, value=$value)',
+    ({ $_value, max, min, value }) => {
+      const result = clampValue(min, max, value);
 
-    expect(result).toBe($_value);
-  });
+      expect(result).toBe($_value);
+    }
+  );
 });

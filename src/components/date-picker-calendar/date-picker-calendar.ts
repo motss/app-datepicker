@@ -3,7 +3,13 @@ import './calendar/app-calendar.js';
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
-import { confirmKeySet, MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../../constants.js';
+import {
+  confirmKeySet,
+  MAX_DATE,
+  MIN_DATE,
+  navigationKeySetGrid,
+  renderNoop,
+} from '../../constants.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
@@ -13,8 +19,8 @@ import { DatePickerMinMaxMixin } from '../../mixins/date-picker-min-max-mixin.js
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { resetShadowRoot } from '../../stylings.js';
-import type { InferredFromSet, SupportedKey } from '../../typings.js';
+import { resetShadowRoot } from '../../styles.js';
+import type { InferredFromSet, SupportedKey } from '../../types.js';
 import type { AppCalendar } from './calendar/app-calendar.js';
 import { renderCalendarDay } from './calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from './calendar/helpers/render-week-day/render-week-day.js';
@@ -24,22 +30,35 @@ import { datePickerCalendarStyles } from './styles.js';
 import type { DatePickerCalendarProperties } from './types.js';
 
 @customElement(datePickerCalendarName)
-export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMaxMixin(DatePickerMixin(RootElement))) implements DatePickerCalendarProperties {
-  static override styles = [
-    resetShadowRoot,
-    datePickerCalendarStyles,
-  ];
+export class DatePickerCalendar
+  extends DatePickerStartViewMixin(
+    DatePickerMinMaxMixin(DatePickerMixin(RootElement))
+  )
+  implements DatePickerCalendarProperties
+{
+  static override styles = [resetShadowRoot, datePickerCalendarStyles];
 
   #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
     this.onDateUpdate?.(this._selectedDate);
   };
 
-  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> = (_ev, node) => {
-    this._focusedDate = this._selectedDate = toResolvedDate(node.dataset.fulldate);
-  };
+  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> =
+    (_ev, node) => {
+      this._focusedDate = this._selectedDate = toResolvedDate(
+        node.dataset.fulldate
+      );
+    };
 
-  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (ev, _node, { disabledDatesSet, disabledDaysSet }) => {
-    if (navigationKeySetGrid.has(ev.key as InferredFromSet<typeof navigationKeySetGrid>)) {
+  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (
+    ev,
+    _node,
+    { disabledDatesSet, disabledDaysSet }
+  ) => {
+    if (
+      navigationKeySetGrid.has(
+        ev.key as InferredFromSet<typeof navigationKeySetGrid>
+      )
+    ) {
       const nextDate = toNextSelectedDate({
         currentDate: this._focusedDate,
         date: this._selectedDate,
@@ -58,14 +77,14 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
       ) {
         this._focusedDate = this._selectedDate = nextDate;
       }
-    } else if (confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)) {
+    } else if (
+      confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
+    ) {
       this.#onCalendarUpdated?.();
     }
   };
 
-  #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({
-    data,
-  }) => {
+  #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
     return renderCalendarDay({
       data,
       selectedDate: this._selectedDate,
@@ -83,8 +102,14 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
   #updateDatesByValue = (changedProperties: PropertyValueMap<this>) => {
     const { value } = this;
 
-    if (changedProperties.has('value') && value !== changedProperties.get('value')) {
-      this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+    if (
+      changedProperties.has('value') &&
+      value !== changedProperties.get('value')
+    ) {
+      this._focusedDate =
+        this._selectedDate =
+        this._tabbableDate =
+          toResolvedDate(value);
     }
   };
 
@@ -101,7 +126,10 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
   };
 
   #updateTabbableDate = () => {
-    const isWithinSameMonth = isSameMonth(this._selectedDate, this._focusedDate);
+    const isWithinSameMonth = isSameMonth(
+      this._selectedDate,
+      this._focusedDate
+    );
 
     if (isWithinSameMonth) {
       this._tabbableDate = this._selectedDate;
@@ -150,7 +178,10 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
 
     this._maxDate = toResolvedDate(max ?? MAX_DATE);
     this._minDate = toResolvedDate(min ?? MIN_DATE);
-    this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+    this._focusedDate =
+      this._selectedDate =
+      this._tabbableDate =
+        toResolvedDate(value);
   }
 
   #notifyDateUpdate(changedProperties: PropertyValueMap<this>): void {
@@ -208,7 +239,9 @@ export class DatePickerCalendar extends DatePickerStartViewMixin(DatePickerMinMa
     return this.updateComplete;
   }
 
-  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  protected override willUpdate(
+    changedProperties: PropertyValueMap<this>
+  ): void {
     this.#updateDatesByValue(changedProperties);
     this.#updateMinMax(changedProperties);
     this.#updateTabbableDate();

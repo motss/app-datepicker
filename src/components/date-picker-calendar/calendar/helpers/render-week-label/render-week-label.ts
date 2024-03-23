@@ -3,10 +3,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 
 import type { RenderWeekLabelInit } from './types';
 
-export function renderWeekLabel({
-  label,
-  value,
-}: RenderWeekLabelInit) {
+export function renderWeekLabel({ label, value }: RenderWeekLabelInit) {
   const maybeLabel = label || undefined;
 
   return html`

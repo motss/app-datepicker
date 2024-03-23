@@ -1,38 +1,39 @@
 import '@material/web/button/text-button.js';
 import '@material/web/iconbutton/icon-button.js';
 
+import { styles as mdTypeScaleStyles } from '@material/web/typography/md-typescale-styles.js';
 import { html, svg, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 
 import { noop } from '../../../constants.js';
 import { RootElement } from '../../../root-element/root-element.js';
-import { baseStyling, resetShadowRoot } from '../../../stylings.js';
-import { defaultSupportingText, modalDatePickerHeaderName } from './constants.js';
-import { modalDatePickerHeader_headerStyle, modalDatePickerHeader_headlineStyle, modalDatePickerHeader_iconButtonStyle, modalDatePickerHeader_supportingTextStyle } from './styles.js';
+import { baseStyling, resetShadowRoot } from '../../../styles.js';
+import {
+  defaultSupportingText,
+  modalDatePickerHeaderName,
+} from './constants.js';
+import { modalDatePickerHeaderStyles } from './styles.js';
 import type { ModalDatePickerHeaderProperties } from './types.js';
 
 @customElement(modalDatePickerHeaderName)
-export class ModalDatePickerHeader extends RootElement implements ModalDatePickerHeaderProperties {
+export class ModalDatePickerHeader
+  extends RootElement
+  implements ModalDatePickerHeaderProperties
+{
   static override styles = [
     resetShadowRoot,
     baseStyling,
-    modalDatePickerHeader_headerStyle,
-    modalDatePickerHeader_headlineStyle,
-    modalDatePickerHeader_iconButtonStyle,
-    modalDatePickerHeader_supportingTextStyle,
+    mdTypeScaleStyles,
+    modalDatePickerHeaderStyles,
   ];
 
-  @state() headline: string = '';
+  @state() headline = '';
   @state() iconButton: TemplateResult<2> = svg``;
   @state() onIconButtonClick: (ev: MouseEvent) => unknown = noop;
   @state() supportingText: string = defaultSupportingText;
 
   override render() {
-    const {
-      headline,
-      iconButton,
-      supportingText,
-    } = this;
+    const { headline, iconButton, supportingText } = this;
 
     const editIcon =
       /** fixme: this require new M3 TextField component to edit date */
@@ -40,8 +41,8 @@ export class ModalDatePickerHeader extends RootElement implements ModalDatePicke
 
     return html`
     <div class=header>
-      <p class=supportingText>${supportingText}</p>
-      <p class=headline>${headline}</p>
+      <p class="supportingText md-typescale-label-large">${supportingText}</p>
+      <p class="headline md-typescale-headline-large">${headline}</p>
       ${editIcon}
     </div>
     `;

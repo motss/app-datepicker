@@ -1,28 +1,42 @@
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
-import { customElement, property, queryAsync, state } from 'lit/decorators.js';
+import { customElement, property, queryAsync } from 'lit/decorators.js';
 
-import { intlDateTimeFormatNoop, MAX_DATE, MIN_DATE, navigationKeySetGrid, selectedYearTemplate, toyearTemplate, yearFormatOptions } from '../../../constants.js';
+import {
+  intlDateTimeFormatNoop,
+  MAX_DATE,
+  MIN_DATE,
+  navigationKeySetGrid,
+  selectedYearTemplate,
+  toyearTemplate,
+  yearFormatOptions,
+} from '../../../constants.js';
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toClosestTarget } from '../../../helpers/to-closest-target.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { toYearList } from '../../../helpers/to-year-list.js';
 import { DatePickerMinMaxMixin } from '../../../mixins/date-picker-min-max-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
-import { resetButton, resetShadowRoot } from '../../../stylings.js';
-import type { InferredFromSet } from '../../../typings.js';
-import { defaultYearGridButtonYearTemplate, defaultYearGridMaxColumn, modalDatePickerYearGridName } from './constants.js';
+import { resetButton, resetShadowRoot } from '../../../styles.js';
+import type { InferredFromSet } from '../../../types.js';
+import {
+  defaultYearGridButtonYearTemplate,
+  defaultYearGridMaxColumn,
+  modalDatePickerYearGridName,
+} from './constants.js';
 import { renderYearGridButton } from './helpers/render-year-grid-button/render-year-grid-button.js';
 import { toNextYear } from './helpers/to-next-year/to-next-year.js';
-import { modalDatePickerYearGrid_yearGridButtonStyle, modalDatePickerYearGrid_yearGridStyle } from './styles.js';
+import { modalDatePickerYearGridStyles } from './styles.js';
 import type { ModalDatePickerYearGridProperties } from './types.js';
 
 @customElement(modalDatePickerYearGridName)
-export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) implements ModalDatePickerYearGridProperties {
-  public static override styles = [
+export class ModalDatePickerYearGrid
+  extends DatePickerMinMaxMixin(RootElement)
+  implements ModalDatePickerYearGridProperties
+{
+  static override styles = [
     resetShadowRoot,
     resetButton,
-    modalDatePickerYearGrid_yearGridStyle,
-    modalDatePickerYearGrid_yearGridButtonStyle,
+    modalDatePickerYearGridStyles,
   ];
 
   #focusingYear: number = toResolvedDate().getUTCFullYear();
@@ -68,7 +82,10 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
         this.requestUpdate();
       }
     } else if (event.type === 'click') {
-      const selectedYearStr = toClosestTarget(event, `[data-year]`)?.getAttribute('data-year');
+      const selectedYearStr = toClosestTarget(
+        event,
+        '[data-year]'
+      )?.getAttribute('data-year');
 
       /** Do nothing when not tapping on the year button */
       if (selectedYearStr) {
@@ -86,7 +103,10 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
   #updateFocusingYear = (changedProperties: PropertyValueMap<this>) => {
     const { value } = this;
 
-    if (changedProperties.has('value') && value !== changedProperties.get('value')) {
+    if (
+      changedProperties.has('value') &&
+      value !== changedProperties.get('value')
+    ) {
       this.#focusingYear = toResolvedDate(value).getUTCFullYear();
     }
   };
@@ -104,12 +124,19 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
   };
 
   #yearFormat: Intl.DateTimeFormat = intlDateTimeFormatNoop;
-  @property() public locale: string = new Intl.DateTimeFormat().resolvedOptions().locale;
-  @state() public onYearUpdate: ModalDatePickerYearGridProperties['onYearUpdate'];
-  @queryAsync('button[data-year][aria-pressed="true"]') selectedYearGridButton!: Promise<HTMLButtonElement | null>;
-  @property() public selectedYearTemplate: string = selectedYearTemplate;
-  @property() public toyearTemplate: string = toyearTemplate;
-  @property() public value: null | string | undefined = '';
+
+  @property() locale: string = new Intl.DateTimeFormat().resolvedOptions()
+    .locale;
+
+  @property({ attribute: false })
+  onYearUpdate: ModalDatePickerYearGridProperties['onYearUpdate'];
+
+  @queryAsync('button[data-year][aria-pressed="true"]')
+  selectedYearGridButton!: Promise<HTMLButtonElement | null>;
+
+  @property() selectedYearTemplate: string = selectedYearTemplate;
+  @property() toyearTemplate: string = toyearTemplate;
+  @property() value: null | string | undefined = '';
 
   @queryAsync('.year-grid') yearGrid!: Promise<HTMLDivElement | null>;
 
@@ -150,12 +177,11 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
       const toyear = this.#todayYear === year;
       const yearLabel = this.#yearFormat.format(new Date(`${year}-01-01`));
 
-      const template =
-        selected ?
-          selectedYearTemplate :
-          toyear
-            ? toyearTemplate
-            : defaultYearGridButtonYearTemplate;
+      const template = selected
+        ? selectedYearTemplate
+        : toyear
+          ? toyearTemplate
+          : defaultYearGridButtonYearTemplate;
       const label = templateReplacer(template, [yearLabel]);
 
       return renderYearGridButton({
@@ -165,8 +191,7 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
         toyear,
         year,
       });
-    })
-      }</div>
+    })}</div>
     `;
   }
 
@@ -174,7 +199,7 @@ export class ModalDatePickerYearGrid extends DatePickerMinMaxMixin(RootElement) 
     this.focusYearWhenNeeded();
   }
 
-  public override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  override willUpdate(changedProperties: PropertyValueMap<this>): void {
     this.#installYearFormat(changedProperties);
     this.#updateFocusingYear(changedProperties);
     this.#updateMinMax(changedProperties);

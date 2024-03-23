@@ -1,13 +1,7 @@
 import { css } from 'lit';
 
-export const modalDatePickerHeader_headerStyle = css`
-:host {
-  --_side: 12px;
-}
-
+export const modalDatePickerHeaderStyles = css`
 .header {
-  --_padding: var(--_side);
-
   display: grid;
   grid-template-areas: 'supportingText .' 'headline iconButton';
   grid-template-columns: minmax(1px, 1fr) 48px;
@@ -15,17 +9,13 @@ export const modalDatePickerHeader_headerStyle = css`
 
   width: 100%;
   height: 120px;
-  padding: 16px var(--_padding) 12px var(--_padding);
+  padding-block: 16px 12px;
+  padding-inline: var(--modal-date-picker-header-padding-inline);
   border: none;
   border-start-start-radius: var(--md-sys-shape-corner-extra-large);
   border-start-end-radius: var(--md-sys-shape-corner-extra-large);
 
   color: var(--md-sys-color-on-surface-variant);
-  font-family: var(--md-sys-typescale-headline-large-font);
-  line-height: var(--md-sys-typescale-headline-large-line-height);
-  font-size: var(--md-sys-typescale-headline-large-size);
-  font-weight: var(--md-sys-typescale-headline-large-weight);
-  letter-spacing: var(--md-sys-typescale-headline-large-tracking);
 }
 
 p {
@@ -36,9 +26,7 @@ p {
 .headline {
   padding-inline: var(--_side) 0;
 }
-`;
 
-export const modalDatePickerHeader_supportingTextStyle = css`
 .supportingText {
   grid-area: supportingText;
 
@@ -49,24 +37,14 @@ export const modalDatePickerHeader_supportingTextStyle = css`
   font-weight: inherit;
   letter-spacing: inherit;
 }
-`;
 
-export const modalDatePickerHeader_headlineStyle = css`
 .headline {
   grid-area: headline;
-
   align-self: end;
 
-  color: inherit;
-  font-family: var(--md-sys-typescale-headline-large-font);
-  line-height: var(--md-sys-typescale-headline-large-line-height);
-  font-size: var(--md-sys-typescale-headline-large-size);
-  font-weight: var(--md-sys-typescale-headline-large-weight);
-  letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+  color: var(--md-sys-color-on-surface);
 }
-`;
 
-export const modalDatePickerHeader_iconButtonStyle = css`
 .iconButton {
   --md-icon-button-state-layer-width: 48px;
   --md-icon-button-state-layer-height: 48px;

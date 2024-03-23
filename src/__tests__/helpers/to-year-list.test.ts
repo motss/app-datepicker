@@ -28,14 +28,9 @@ describe(toYearList.name, () => {
       max: new Date('2020-02-02'),
       min: new Date('2019-02-02'),
     },
-  ])('returns year list (min=$min, max=$max)', ({
-    $_value,
-    max,
-    min,
-  }) => {
+  ])('returns year list (min=$min, max=$max)', ({ $_value, max, min }) => {
     const result = toYearList(min, max);
 
     expect(result).toEqual($_value);
   });
-
 });

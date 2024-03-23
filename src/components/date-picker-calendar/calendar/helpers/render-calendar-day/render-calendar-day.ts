@@ -13,12 +13,7 @@ export function renderCalendarDay({
   tabbableDate,
   todayDate,
 }: RenderCalendarDayInit) {
-  const {
-    disabled,
-    fullDate,
-    label,
-    value,
-  } = data;
+  const { disabled, fullDate, label, value } = data;
 
   if (fullDate) {
     const colTime = fullDate.getTime();
@@ -34,8 +29,8 @@ export function renderCalendarDay({
     const tabindex = tabbable ? 0 : -1;
 
     const content = html`<abbr title=${label}>${value}</abbr>`;
-    const button = selected ?
-      html`
+    const button = selected
+      ? html`
       <md-filled-button
         aria-current=${ifDefined(ariaCurrent)}
         aria-disabled=${ariaDisabled}
@@ -49,8 +44,8 @@ export function renderCalendarDay({
         title=${label}
         type=button
       >${content}</md-filled-button>
-      ` :
-      html`
+      `
+      : html`
       <md-outlined-button
         .fullDate=${fullDate}
         aria-current=${ifDefined(ariaCurrent)}

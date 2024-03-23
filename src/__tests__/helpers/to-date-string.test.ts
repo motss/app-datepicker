@@ -9,5 +9,4 @@ describe(toDateString.name, () => {
 
     expect(result).toBe(testDateStr);
   });
-
 });

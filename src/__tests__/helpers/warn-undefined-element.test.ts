@@ -10,7 +10,10 @@ describe(warnUndefinedElement.name, () => {
   const elementName2 = 'test-element-2' as const;
 
   it('does not warn defined element', () => {
-    globalThis.customElements.define(elementName, class A extends RootElement {});
+    globalThis.customElements.define(
+      elementName,
+      class A extends RootElement {}
+    );
 
     warnUndefinedElement(elementName);
 

@@ -18,14 +18,12 @@ describe(isSameMonth.name, () => {
       source: new Date('2020-03-12'),
       target: new Date('2020-02-02'),
     },
-  ])('returns if $target is current month of $source', ({
-    $_value,
-    source,
-    target,
-  }) => {
-    const result = isSameMonth(target, source);
+  ])(
+    'returns if $target is current month of $source',
+    ({ $_value, source, target }) => {
+      const result = isSameMonth(target, source);
 
-    expect(result).toBe($_value);
-  });
-
+      expect(result).toBe($_value);
+    }
+  );
 });

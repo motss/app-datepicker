@@ -1,6 +1,6 @@
 import { css, unsafeCSS } from 'lit';
 
-import { includeScrollbarStyle } from '../../stylings.js';
+import { includeScrollbarStyles } from '../../styles.js';
 
 export const datePickerCalendarStyles = css`
 :host {
@@ -15,7 +15,7 @@ export const datePickerCalendarStyles = css`
 :host([startview="yearGrid"]) {
   --_o: hidden auto;
 }
-${unsafeCSS(includeScrollbarStyle(':host([startview="yearGrid"])'))}
+${unsafeCSS(includeScrollbarStyles(':host([startview="yearGrid"])'))}
 
 app-calendar {
   --_padding: var(--_p);

@@ -1,1 +1,2 @@
-export const modalDatePickerBodyMenuName = 'modal-date-picker-body-menu' as const;
+export const modalDatePickerBodyMenuName =
+  'modal-date-picker-body-menu' as const;

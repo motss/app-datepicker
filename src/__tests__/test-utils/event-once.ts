@@ -3,16 +3,17 @@ import { promiseTimeout } from '../constants';
 export function eventOnce<
   T extends HTMLElement,
   EventName,
-  ResolvedCustomEvent extends CustomEvent
+  ResolvedCustomEvent extends CustomEvent,
 >(
   node: T,
   eventName: EventName,
   timeout?: number
 ): Promise<ResolvedCustomEvent | undefined> {
   return new Promise<ResolvedCustomEvent | undefined>((resolve) => {
-    const handler: (this: HTMLElement, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => unknown = (
-      ev
-    ) => {
+    const handler: (
+      this: HTMLElement,
+      ev: HTMLElementEventMap[keyof HTMLElementEventMap]
+    ) => unknown = (ev) => {
       /**
        * NOTE: Rewire these properties/ functions because the actual value will be lost due to
        * wrapping inside a Promise:
@@ -26,31 +27,36 @@ export function eventOnce<
       const resolvedEvent = new CustomEvent(eventName as unknown as string, ev);
       const composedPath = ev.composedPath();
 
-      ['composedPath'].forEach((n) => {
-        Object.defineProperty(resolvedEvent, n, {
-          value: () => composedPath,
-        });
+      Object.defineProperty(resolvedEvent, 'composedPath', {
+        value: () => composedPath,
       });
-      ['currentTarget', 'target'].forEach((n) => {
+
+      for (const n of ['currentTarget', 'target']) {
         Object.defineProperty(resolvedEvent, n, {
           value: ev?.[n as keyof typeof ev],
         });
-      });
+      }
 
-      node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
+      node.removeEventListener(
+        eventName as unknown as keyof HTMLElementEventMap,
+        handler
+      );
 
       resolve(resolvedEvent as ResolvedCustomEvent);
     };
 
-    node.addEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
+    node.addEventListener(
+      eventName as unknown as keyof HTMLElementEventMap,
+      handler
+    );
 
     // Race with event listener
-    window.setTimeout(
-      () => {
-        node.removeEventListener(eventName as unknown as keyof HTMLElementEventMap, handler);
-        resolve(undefined);
-      },
-      timeout ?? promiseTimeout
-    );
+    window.setTimeout(() => {
+      node.removeEventListener(
+        eventName as unknown as keyof HTMLElementEventMap,
+        handler
+      );
+      resolve(undefined);
+    }, timeout ?? promiseTimeout);
   });
 }

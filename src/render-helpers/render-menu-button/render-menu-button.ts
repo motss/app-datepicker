@@ -17,21 +17,34 @@ export function renderMenuButton<T extends string>({
   text,
   type,
 }: RenderMenuButtonInit<T>): TemplateResult {
-  const clsObject = className ? Object.fromEntries(className.trim().split(' ').map((cls) => [cls, true])) : undefined;
+  const clsObject = className
+    ? Object.fromEntries(
+        className
+          .trim()
+          .split(' ')
+          .map((cls) => [cls, true])
+      )
+    : undefined;
   const menuIcon = html`<md-svg height=18 width=18 .content=${iconArrowDropdown}></md-svg>`;
 
   return html`
   <md-text-button
-    class=${classMap({ menuButton: true, ...clsObject })}
-    data-type=${ifDefined(type as string)}
-    trailing-icon
+    ?disabled=${disabled}
     @click=${onClick}
     aria-label=${label}
+    class=${classMap({ menuButton: true, ...clsObject })}
+    data-type=${ifDefined(type as string)}
     title=${label}
-    ?disabled=${disabled}
+    trailing-icon
   >
     ${text}
-    ${disabled ? nothing : html`<div class=icon style="--_state:${iconDirection === 'up' ? 180 : 0}deg;" slot=icon>${menuIcon}</div>`}
+    ${
+      disabled
+        ? nothing
+        : html`<div class=icon style="--_state:${
+            iconDirection === 'up' ? 180 : 0
+          }deg;" slot=icon>${menuIcon}</div>`
+    }
   </md-text-button>
   `;
 }

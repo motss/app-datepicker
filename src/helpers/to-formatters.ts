@@ -1,7 +1,7 @@
 import { getFormatter } from '@ipohjs/calendar/get-formatter';
 
 import { DateTimeFormat } from '../constants.js';
-import type { Formatters } from '../typings.js';
+import type { Formatters } from '../types.js';
 
 export function toFormatters(locale: string): Formatters {
   const dateFmt = DateTimeFormat(locale, {
@@ -22,9 +22,18 @@ export function toFormatters(locale: string): Formatters {
     timeZone: 'UTC',
     year: 'numeric',
   });
-  const longWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'long' });
-  const longMonthFmt = DateTimeFormat(locale, { month: 'long', timeZone: 'UTC' });
-  const narrowWeekdayFmt = DateTimeFormat(locale, { timeZone: 'UTC', weekday: 'narrow' });
+  const longWeekdayFmt = DateTimeFormat(locale, {
+    timeZone: 'UTC',
+    weekday: 'long',
+  });
+  const longMonthFmt = DateTimeFormat(locale, {
+    month: 'long',
+    timeZone: 'UTC',
+  });
+  const narrowWeekdayFmt = DateTimeFormat(locale, {
+    timeZone: 'UTC',
+    weekday: 'narrow',
+  });
   const yearFmt = DateTimeFormat(locale, { timeZone: 'UTC', year: 'numeric' });
 
   return {

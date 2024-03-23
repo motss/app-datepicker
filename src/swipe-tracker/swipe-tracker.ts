@@ -1,6 +1,13 @@
 import { supportsPassiveEventListener } from '@material/mwc-base/utils.js';
 
-import type { FirstTouch, PointerHandler, PointerType, ResolvedPointer, SupportedEventKey, TrackerHandlers } from './typings.js';
+import type {
+  FirstTouch,
+  PointerHandler,
+  PointerType,
+  ResolvedPointer,
+  SupportedEventKey,
+  TrackerHandlers,
+} from './types.js';
 
 function toPointer(ev: PointerType): ResolvedPointer {
   const { clientX, clientY, pageX, pageY } = ev as PointerEvent;
@@ -20,22 +27,27 @@ function toPointer(ev: PointerType): ResolvedPointer {
   return { id: id ?? 0, x, y };
 }
 
-function getFirstTouch(oldPointer: ResolvedPointer | null, ev: PointerType): FirstTouch {
+function getFirstTouch(
+  oldPointer: ResolvedPointer | null,
+  ev: PointerType
+): FirstTouch {
   const changedTouches = (ev as TouchEvent).changedTouches;
 
-  if (changedTouches == null) return { newPointer: toPointer(ev), oldPointer };
+  if (changedTouches == null) {
+    return { newPointer: toPointer(ev), oldPointer };
+  }
 
-  const touches = Array.from(changedTouches, n => toPointer(n));
-  const newPointer = touches.find(n => n.id === oldPointer?.id) ?? touches[0];
+  const touches = Array.from(changedTouches, (n) => toPointer(n));
+  const newPointer =
+    touches.find((n) => n.id === oldPointer?.id) ??
+    (touches.at(0) as ResolvedPointer);
 
   return { newPointer, oldPointer };
 }
 
-function addPassiveEventListener<T extends Extract<keyof HTMLElementEventMap, SupportedEventKey>>(
-  node: HTMLElement,
-  event: T,
-  callback: PointerHandler
-): void {
+function addPassiveEventListener<
+  T extends Extract<keyof HTMLElementEventMap, SupportedEventKey>,
+>(node: HTMLElement, event: T, callback: PointerHandler): void {
   node.addEventListener<T>(
     event,
     callback,
@@ -75,13 +87,15 @@ export class SwipeTracker {
         element.removeEventListener('touchmove', onMove);
         element.removeEventListener('touchend', onUp);
       }
-
     };
   }
 
   private _updatePointers(
     type: keyof TrackerHandlers,
-    cb: TrackerHandlers['down'] | TrackerHandlers['move'] | TrackerHandlers['up']
+    cb:
+      | TrackerHandlers['down']
+      | TrackerHandlers['move']
+      | TrackerHandlers['up']
   ): PointerHandler {
     const element = this.#element;
     const isDown = type === 'down';

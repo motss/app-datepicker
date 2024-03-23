@@ -13,7 +13,13 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { dateFormatOptions, labelConfirm, labelDeny, MAX_DATE, MIN_DATE } from '../../constants.js';
+import {
+  dateFormatOptions,
+  labelConfirm,
+  labelDeny,
+  MAX_DATE,
+  MIN_DATE,
+} from '../../constants.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
@@ -24,18 +30,26 @@ import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mi
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { baseStyling, resetShadowRoot } from '../../stylings.js';
+import { baseStyling, resetShadowRoot } from '../../styles.js';
 import type { DatePickerCalendarProperties } from '../date-picker-calendar/types.js';
 import type { ModalDatePickerBodyMenu } from './body-menu/modal-date-picker-body-menu.js';
 import { modalDatePickerName } from './constants.js';
 import type { ModalDatePickerHeaderProperties } from './header/types.js';
 import { modalDatePickerStyles } from './styles.js';
-import type { ModalDatePickerProperties, ModalDatePickerPropertiesReturnValue } from './types.js';
+import type {
+  ModalDatePickerProperties,
+  ModalDatePickerPropertiesReturnValue,
+} from './types.js';
 import type { ModalDatePickerYearGrid } from './year-grid/modal-date-picker-year-grid.js';
 import type { ModalDatePickerYearGridProperties } from './year-grid/types.js';
 
 @customElement(modalDatePickerName)
-export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(DatePickerMinMaxMixin(RootElement))) implements ModalDatePickerProperties {
+export class ModalDatePicker
+  extends DatePickerMixin(
+    DatePickerStartViewMixin(DatePickerMinMaxMixin(RootElement))
+  )
+  implements ModalDatePickerProperties
+{
   static override styles = [
     resetShadowRoot,
     baseStyling,
@@ -47,9 +61,11 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
 
   #dialogRef: Ref<MdDialog> = createRef();
 
-  #didDateUpdate: boolean = false;
+  #didDateUpdate = false;
 
-  #focusSelectedYear = async (changedProperties: PropertyValueMap<this>): Promise<void> => {
+  #focusSelectedYear = async (
+    changedProperties: PropertyValueMap<this>
+  ): Promise<void> => {
     if (changedProperties.has('startView')) {
       const yearGridElement = this.#yearGridRef.value;
 
@@ -60,7 +76,9 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     }
   };
 
-  #onDateUpdate: DatePickerCalendarProperties['onDateUpdate'] = (updatedDate) => {
+  #onDateUpdate: DatePickerCalendarProperties['onDateUpdate'] = (
+    updatedDate
+  ) => {
     this.#selectedDate = updatedDate;
     this.#didDateUpdate = true;
     this.requestUpdate();
@@ -71,7 +89,11 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
 
     const updatedDate = this.#selectedDate;
 
-    if (this.#didDateUpdate && updatedDate && this.#dialogRef.value?.returnValue === 'confirm') {
+    if (
+      this.#didDateUpdate &&
+      updatedDate &&
+      this.#dialogRef.value?.returnValue === 'confirm'
+    ) {
       // todo: add custom formatter
       this.value = updatedDate.toJSON();
       this.#selectedDate = undefined;
@@ -79,7 +101,9 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     }
   };
 
-  #onIconButtonClick: NonNullable<ModalDatePickerHeaderProperties['onIconButtonClick']> = () => {
+  #onIconButtonClick: NonNullable<
+    ModalDatePickerHeaderProperties['onIconButtonClick']
+  > = () => {
     /** fixme: this require new M3 TextField component to edit date */
   };
 
@@ -95,10 +119,16 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     this._focusedDate = toUTCDate(this._focusedDate, { month: -1 });
   };
 
-  #onYearUpdate: NonNullable<ModalDatePickerYearGridProperties['onYearUpdate']> = (year) => {
+  #onYearUpdate: NonNullable<
+    ModalDatePickerYearGridProperties['onYearUpdate']
+  > = (year) => {
     const focusedDate = toResolvedDate(this._focusedDate);
 
-    this._focusedDate = fromPartsToUtcDate(year, focusedDate.getUTCMonth(), focusedDate.getUTCDate());
+    this._focusedDate = fromPartsToUtcDate(
+      year,
+      focusedDate.getUTCMonth(),
+      focusedDate.getUTCDate()
+    );
     this.startView = 'calendar';
   };
 
@@ -113,7 +143,10 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
       const { startView } = this;
 
       if (changedProperties.get('startView') !== startView) {
-        const menuButton = this.#bodyMenuRef.value?.root.querySelector<MdTextButton>('.menuButton');
+        const menuButton =
+          this.#bodyMenuRef.value?.root.querySelector<MdTextButton>(
+            '.menuButton'
+          );
 
         menuButton?.focus();
       }
@@ -125,7 +158,10 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
   };
 
   #updateFocusedDateByValue = (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('value') && this.value !== changedProperties.get('value')) {
+    if (
+      changedProperties.has('value') &&
+      this.value !== changedProperties.get('value')
+    ) {
       this.#updateFocusedDate(toResolvedDate(this.value));
     }
   };
@@ -212,7 +248,9 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     } = this;
 
     const formId = id || 'modalDatePicker';
-    const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(this.#selectedDate);
+    const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(
+      this.#selectedDate
+    );
     const iconButton = iconEdit;
     const supportingText = selectDateLabel;
 
@@ -223,8 +261,10 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
       year: 'numeric',
     }).format;
     const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
-    const showNextButton = isCalendarView && !isSameMonth(_focusedDate, _maxDate);
-    const showPrevButton = isCalendarView && !isSameMonth(_focusedDate, _minDate);
+    const showNextButton =
+      isCalendarView && !isSameMonth(_focusedDate, _maxDate);
+    const showPrevButton =
+      isCalendarView && !isSameMonth(_focusedDate, _minDate);
     const valueValue = toDateString(_focusedDate);
 
     return html`
@@ -241,6 +281,7 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     >
       <form method=dialog slot=content id=${formId}>
         <modal-date-picker-header
+          class=header
           .headline=${headline}
           .iconButton=${iconButton}
           .onIconButtonClick=${this.#onIconButtonClick}
@@ -262,8 +303,8 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
         ></modal-date-picker-body-menu>
 
         <div class=body>${
-          startView === 'calendar' ?
-            html`<date-picker-calendar
+          startView === 'calendar'
+            ? html`<date-picker-calendar
               ?showWeekNumber=${showWeekNumber}
               .max=${max}
               .min=${min}
@@ -286,8 +327,8 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
               weekLabel=${weekLabel}
               weekNumberTemplate=${weekNumberTemplate}
               weekNumberType=${weekNumberType}
-            ></date-picker-calendar>` :
-            html`<modal-date-picker-year-grid
+            ></date-picker-calendar>`
+            : html`<modal-date-picker-year-grid
               ${ref(this.#yearGridRef)}
               .max=${max}
               .min=${min}
@@ -324,7 +365,9 @@ export class ModalDatePicker extends DatePickerMixin(DatePickerStartViewMixin(Da
     this.#updateFocusOnViewChange(changedProperties);
   }
 
-  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  protected override willUpdate(
+    changedProperties: PropertyValueMap<this>
+  ): void {
     this.#updateFocusedDateByValue(changedProperties);
     this.#updateMinMax(changedProperties);
   }

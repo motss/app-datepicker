@@ -1,14 +1,16 @@
 import { clampValue } from '../../../../../helpers/clamp-value.js';
-import { keyArrowDown, keyArrowLeft, keyArrowRight, keyArrowUp, keyEnd, keyHome } from '../../../../../key-values.js';
+import {
+  keyArrowDown,
+  keyArrowLeft,
+  keyArrowRight,
+  keyArrowUp,
+  keyEnd,
+  keyHome,
+} from '../../../../../key-values.js';
 import { defaultYearGridMaxColumn } from '../../constants.js';
 import type { ToNextYearInit } from './types.js';
 
-export function toNextYear({
-  key,
-  max,
-  min,
-  year,
-}: ToNextYearInit): number {
+export function toNextYear({ key, max, min, year }: ToNextYearInit): number {
   let newYear = year;
 
   switch (key) {
@@ -28,8 +30,10 @@ export function toNextYear({
       newYear = year + 1;
       break;
     }
-    case keyEnd: return max.getUTCFullYear();
-    case keyHome: return min.getUTCFullYear();
+    case keyEnd:
+      return max.getUTCFullYear();
+    case keyHome:
+      return min.getUTCFullYear();
     default:
       return year;
   }

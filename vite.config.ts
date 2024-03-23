@@ -1,27 +1,37 @@
-import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
 const { CI } = process.env;
 
-const isCI = (CI || 'false') === 'true';
+const isCi = (CI || 'false') === 'true';
 
+/* eslint-disable import/no-default-export */
+// biome-ignore lint/style/noDefaultExport: <explanation>
 export default defineConfig({
-  plugins: [
-    tsconfigPaths(),
-  ],
+  plugins: [tsconfigPaths()],
   test: {
     browser: {
-      provider: 'playwright',
       enabled: true,
-      headless: isCI,
+      headless: isCi,
       isolate: true,
-      ...(
-        {
-          name: 'chromium', // pw
-          // name: 'chrome', // wdio
-        }
-      ),
+      provider: 'playwright',
+      ...{
+        name: 'chromium', // pw
+        // name: 'chrome', // wdio
+      },
     },
+    clearMocks: true,
+    coverage: {
+      exclude: ['**/*{benchmarks,demo,mocks,tests}*/**', '**/swipe-tracker/**'],
+      provider: 'istanbul',
+      reporter: ['lcov', 'text'],
+      thresholds: {
+        '100': false,
+        autoUpdate: true,
+      },
+    },
+    environment: 'happy-dom',
+    globals: true,
     include: [
       '**/*test*/date-picker/**.test.ts',
       '**/*test*/date-picker-dialog/**.test.ts',
@@ -47,19 +57,7 @@ export default defineConfig({
       '**/*test*/year-grid/**.test.ts',
       '**/*test*/year-grid-button/**.test.ts',
     ],
-    clearMocks: true,
-    coverage: {
-      thresholds: {
-        "100": false,
-        autoUpdate: true,
-      },
-      exclude: ['**/*{benchmarks,demo,mocks,tests}*/**', '**/swipe-tracker/**'],
-      provider: 'istanbul',
-      reporter: ['lcov', 'text'],
-    },
-    environment: 'happy-dom',
-    globals: true,
     setupFiles: ['./src/setup-test.ts'],
-    watch: !isCI,
+    watch: !isCi,
   },
 });

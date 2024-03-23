@@ -1,4 +1,4 @@
-import type { SupportedKey } from '../../../../../typings.js';
+import type { SupportedKey } from '../../../../../types.js';
 
 export interface ToNextYearInit {
   key: SupportedKey;

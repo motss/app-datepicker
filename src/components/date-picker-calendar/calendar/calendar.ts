@@ -1,23 +1,40 @@
 import { calendar } from '@ipohjs/calendar';
-import type { CalendarGrid, CalendarWeekday } from '@ipohjs/calendar/dist/typings.js';
+import type {
+  CalendarGrid,
+  CalendarWeekday,
+} from '@ipohjs/calendar/dist/typings.js';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
-import { MAX_DATE, MIN_DATE, navigationKeySetGrid, renderNoop } from '../../../constants.js';
+import {
+  emptyReadonlyArray,
+  MAX_DATE,
+  MIN_DATE,
+  navigationKeySetGrid,
+  renderNoop,
+} from '../../../constants.js';
 import { splitString } from '../../../helpers/split-string.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { DatePickerMinMaxMixin } from '../../../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../../../mixins/date-picker-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
-import { baseStyling, resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../../../stylings.js';
-import type { InferredFromSet } from '../../../typings.js';
-import { calendar_calendarDayStyle, calendar_tableStyle } from './styles.js';
+import {
+  baseStyling,
+  resetShadowRoot,
+  resetTableStyle,
+  visuallyHiddenStyle,
+} from '../../../styles.js';
+import type { InferredFromSet } from '../../../types.js';
+import { calendarStyles } from './styles.js';
 import type { CalendarDayElement, CalendarProperties } from './types.js';
 
 const defaultDateTimeFormat = new Intl.DateTimeFormat('en');
 
-export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)) implements CalendarProperties {
+export class Calendar
+  extends DatePickerMinMaxMixin(DatePickerMixin(RootElement))
+  implements CalendarProperties
+{
   public static override shadowRootOptions = {
     ...RootElement.shadowRootOptions,
     delegatesFocus: true,
@@ -28,15 +45,14 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     resetTableStyle,
     baseStyling,
     visuallyHiddenStyle,
-    calendar_tableStyle,
-    calendar_calendarDayStyle,
+    calendarStyles,
   ];
 
   #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #findSelectableCalendarDayNode = (ev: UIEvent) => {
     const path = ev.composedPath() as HTMLElement[];
-    const node = path.find(n => {
+    const node = path.find((n) => {
       return (
         n.nodeType === Node.ELEMENT_NODE &&
         n.classList.contains('calendarDayButton') &&
@@ -93,26 +109,32 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
 
   #narrowWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
-  #onClickOrKeyUp = <T extends 'click' | 'key'>(calendarGrid: CalendarGrid) => (ev: T extends 'click' ? MouseEvent : KeyboardEvent) => {
-    const node = this.#findSelectableCalendarDayNode(ev);
+  #onClickOrKeyUp =
+    <T extends 'click' | 'key'>(calendarGrid: CalendarGrid) =>
+    (ev: T extends 'click' ? MouseEvent : KeyboardEvent) => {
+      const node = this.#findSelectableCalendarDayNode(ev);
 
-    if (node) {
-      const typedEvent = ev as KeyboardEvent & { type: `key${string}`} | MouseEvent & { type: 'click' };
+      if (node) {
+        const typedEvent = ev as
+          | (KeyboardEvent & { type: `key${string}` })
+          | (MouseEvent & { type: 'click' });
 
-      if (typedEvent.type === 'click') {
-        this.onDateUpdateByClick?.(typedEvent, node, calendarGrid);
+        if (typedEvent.type === 'click') {
+          this.onDateUpdateByClick?.(typedEvent, node, calendarGrid);
+        }
+
+        if (typedEvent.type === 'keyup') {
+          this.onDateUpdateByKey?.(typedEvent, node, calendarGrid);
+        }
       }
-
-      if (typedEvent.type === 'keyup') {
-        this.onDateUpdateByKey?.(typedEvent, node, calendarGrid);
-      }
-    }
-  };
+    };
 
   #onKeyDown = (ev: KeyboardEvent) => {
     const { key } = ev;
 
-    const isNavigationKey = navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>);
+    const isNavigationKey = navigationKeySetGrid.has(
+      key as InferredFromSet<typeof navigationKeySetGrid>
+    );
 
     if (isNavigationKey) {
       /**
@@ -297,7 +319,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     });
     const [weekNumber, ...weekdays] = [
       ...(showWeekNumber
-        ? []
+        ? (emptyReadonlyArray as CalendarWeekday[])
         : ([{ label: '', value: '' }] as [CalendarWeekday])),
       ...maybeWeekdaysWithWeekLabel,
     ];
@@ -318,44 +340,44 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
       <!-- february 2020 -->
       <caption class="sr-only">${caption}</caption>
 
-      <colgroup>${weekNumber.value ? html`<col />` : nothing}
+      <colgroup>${weekNumber?.value ? html`<col />` : nothing}
         ${weekdays.map(() => html`<col />`)}
       </colgroup>
 
       <!-- Wk | S M T W T F S -->
       <thead>
         <tr>
-          ${weekNumber.value ? (renderWeekLabel ?? renderNoop)({ label: weekLabel, value: shortWeekLabel }) : nothing}
           ${
-            weekdays.map((weekday, ri) => {
-              return (renderWeekDay ?? renderNoop)({ ri, weekday });
-            })
+            weekNumber?.value
+              ? (renderWeekLabel ?? renderNoop)({
+                  label: weekLabel,
+                  value: shortWeekLabel,
+                })
+              : nothing
           }
+          ${weekdays.map((weekday, ri) => {
+            return (renderWeekDay ?? renderNoop)({ ri, weekday });
+          })}
         </tr>
       </thead>
 
       <!-- 1 | x x x 1 2  3  4 -->
       <!-- 2 | 5 6 7 8 9 10 11 -->
       <tbody>
-        ${
-          datesGrid.map((row, ri) => {
-            return html`
+        ${datesGrid.map((row, ri) => {
+          return html`
             <tr>
-              ${
-                row.columns.map((data, ci) => {
-                  const isWeekNumber = ci === 0 && showWeekNumber;
+              ${row.columns.map((data, ci) => {
+                const isWeekNumber = ci === 0 && showWeekNumber;
 
-                  return (
-                    (
-                      isWeekNumber ? renderWeekNumber : renderCalendarDay
-                    ) ?? renderNoop
-                  )({ ci, data, ri });
-                })
-              }
+                return (
+                  (isWeekNumber ? renderWeekNumber : renderCalendarDay) ??
+                  renderNoop
+                )({ ci, data, ri });
+              })}
             </tr>
             `;
-          })
-        }
+        })}
       </tbody>
 
       <tfoot>${(renderFooter ?? renderNoop)()}</tfoot>
@@ -363,7 +385,7 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     `;
   };
 
-  #shouldFocusDate: boolean = false;
+  #shouldFocusDate = false;
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
   onUpdated?: CalendarProperties['onUpdated'];
@@ -474,11 +496,15 @@ export class Calendar extends DatePickerMinMaxMixin(DatePickerMixin(RootElement)
     return this.#renderCalendar();
   }
 
-  protected override async updated(changedProperties: PropertyValueMap<this>): Promise<void> {
+  protected override async updated(
+    changedProperties: PropertyValueMap<this>
+  ): Promise<void> {
     await this.#focusDateWhenNeeded(changedProperties);
   }
 
-  protected override willUpdate(changedProperties: PropertyValueMap<this>): void {
+  protected override willUpdate(
+    changedProperties: PropertyValueMap<this>
+  ): void {
     this.#installFormatters(changedProperties);
   }
 }

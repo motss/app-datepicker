@@ -4,23 +4,32 @@ import '../components/date-picker-calendar/date-picker-calendar.js';
 import '../components/docked-date-picker/docked-date-picker.js';
 import '../components/modal-date-picker/modal-date-picker.js';
 
-import { styles as MdTypeScaleStyles } from '@material/web/typography/md-typescale-styles.js';
 import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import type { ModalDatePicker } from '../components/modal-date-picker/modal-date-picker.js';
-import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelShortWeek, labelToday, labelWeek, selectedYearTemplate, toyearTemplate, weekNumberTemplate } from '../constants.js';
+import {
+  labelChooseMonth,
+  labelChooseYear,
+  labelNextMonth,
+  labelPreviousMonth,
+  labelSelectDate,
+  labelSelectedDate,
+  labelShortWeek,
+  labelToday,
+  labelWeek,
+  selectedYearTemplate,
+  toyearTemplate,
+  weekNumberTemplate,
+} from '../constants.js';
 import { toDateString } from '../helpers/to-date-string.js';
-import { toFormatters } from '../helpers/to-formatters.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
-import { iconEdit } from '../icons.js';
 import { RootElement } from '../root-element/root-element.js';
 
 @customElement('demo-app')
 export class DemoApp extends RootElement {
   public static override styles = [
-    MdTypeScaleStyles,
     css`
     :host {
       display: block;
@@ -70,7 +79,7 @@ export class DemoApp extends RootElement {
     console.debug('debug:custom-event', ev);
   };
 
-  #selectedDate_modalDatePicker: string = '';
+  #selectedDateModalDatePicker = '';
 
   @state() _datePickerCalendarFocusedDate: Date = toResolvedDate();
   @state() _datePickerCalendarValue: string = toDateString(toResolvedDate());
@@ -79,9 +88,11 @@ export class DemoApp extends RootElement {
 
   @state() _outlined = false;
 
-  locale: string = 'en-US';
+  locale = 'en-US';
 
-  protected override firstUpdated(_changedProperties: Map<number | string | symbol, unknown>): void {
+  protected override firstUpdated(
+    _changedProperties: Map<number | string | symbol, unknown>
+  ): void {
     Object.defineProperty(globalThis, '__demoApp', {
       value: {
         datePicker1: this.query('#datePicker1'),
@@ -93,44 +104,21 @@ export class DemoApp extends RootElement {
   }
 
   protected override render() {
-    const date = new Date();
-    const formatters = toFormatters(this.locale);
-    const { longMonthYearFormat } = formatters;
-    // const showWeekNumber = false;
-    // const dayFormat = new Intl.DateTimeFormat(this.locale, { day: 'numeric' });
-    // const fullDateFormat = new Intl.DateTimeFormat(this.locale, {
-    //   day: 'numeric',
-    //   month: 'short',
-    //   weekday: 'short',
-    //   year: 'numeric',
-    // });
-    // const {
-    //   datesGrid,
-    // } = calendar({
-    //   date,
-    //   dayFormat,
-    //   disabledDates: splitString('', toResolvedDate),
-    //   disabledDays: splitString('', Number),
-    //   firstDayOfWeek: 0,
-    //   fullDateFormat,
-    //   locale: this.locale,
-    //   max: undefined,
-    //   min: undefined,
-    //   showWeekNumber,
-    //   weekNumberTemplate: 'Week %s',
-    //   weekNumberType: undefined,
-    // });
-
     return html`
     <div>
       <section>
         <div class=io>
           <label for=modalDatePicker>Selected date:</label>
-          <input id=modalDatePicker type=text value=${this.#selectedDate_modalDatePicker} placeholder="Select a date" />
+          <input
+            id=modalDatePicker
+            type=text
+            value=${this.#selectedDateModalDatePicker}
+            placeholder="Select a date"
+          />
           <md-outlined-button @click=${async () => {
-        await this.#datePickerRef.value?.reset();
-        await this.#datePickerRef.value?.show();
-      }}>Show ModalDatePicker</md-outlined-button>
+            await this.#datePickerRef.value?.reset();
+            await this.#datePickerRef.value?.show();
+          }}>Show ModalDatePicker</md-outlined-button>
         </div>
 
         <div class=comp>
@@ -159,10 +147,10 @@ export class DemoApp extends RootElement {
             .weekNumberTemplate=${weekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
             .onDateUpdate=${(d: Date) => {
-        this.#selectedDate_modalDatePicker = toDateString(d);
-        this.requestUpdate();
-        console.debug('ondateupdate', d);
-      }}
+              this.#selectedDateModalDatePicker = toDateString(d);
+              this.requestUpdate();
+              console.debug('ondateupdate', d);
+            }}
             @cancel=${this.#debugCustomEvent}
             @close=${this.#debugCustomEvent}
             @closed=${this.#debugCustomEvent}
@@ -196,10 +184,14 @@ export class DemoApp extends RootElement {
       <section>
         <div class=io>
           <label for=modalDatePicker>Selected date:</label>
-          <input id=modalDatePicker type=text readonly value=${this._datePickerCalendarValue} />
+          <input id=modalDatePicker type=text readonly value=${
+            this._datePickerCalendarValue
+          } />
           <hr />
           <label for=modalDatePicker>Focused date:</label>
-          <input id=modalDatePicker type=text readonly value=${toDateString(this._datePickerCalendarFocusedDate)} />
+          <input id=modalDatePicker type=text readonly value=${toDateString(
+            this._datePickerCalendarFocusedDate
+          )} />
         </div>
 
         <div class=comp>
@@ -227,50 +219,19 @@ export class DemoApp extends RootElement {
             .weekNumberTemplate=${weekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
             .onDateUpdate=${(d: Date) => {
-        console.debug('datePickerCalendar:onDateUpdate', d);
-        this._datePickerCalendarValue = toDateString(d);
-      }}
+              console.debug('datePickerCalendar:onDateUpdate', d);
+              this._datePickerCalendarValue = toDateString(d);
+            }}
             .onFocusedDateUpdate=${(d: Date) => {
-        console.debug('datePickerCalendar:onFocusedDateUpdate', d);
-        this._datePickerCalendarFocusedDate = d;
-      }}
+              console.debug('datePickerCalendar:onFocusedDateUpdate', d);
+              this._datePickerCalendarFocusedDate = d;
+            }}
           >
             modal date picker
           </date-picker-calendar>
         </div>
       </section>
     </div>
-${'' && `
-<hr />
-
-<modal-date-picker-header
-  .headline=${new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', weekday: 'short' }).format(new Date())}
-  .iconButton=${iconEdit}
-  .onHeadlineClick=${(ev: MouseEvent) => console.debug('headline:click', ev)}
-  .onIconButtonClick=${(ev: MouseEvent) => console.debug('iconButton:click', ev)}
-></modal-date-picker-header>
-<modal-date-picker-body-menu
-  .menuText=${longMonthYearFormat(date)}
-  .onMenuButtonClick=${(ev: MouseEvent) => console.debug('menubutton:click', ev)}
-  .onNextIconButtonClick=${(ev: MouseEvent) => console.debug('nexticonbutton:click', ev)}
-  .onPrevIconButtonClick=${(ev: MouseEvent) => console.debug('previconbutton:click', ev)}
-></modal-date-picker-body-menu>
-
-<hr />
-
-<div style="max-height:300px;overflow:auto;">
-  <year-grid
-    locale=${'en-US'}
-    max=${''}
-    min=${''}
-    value=${new Date().toISOString()}
-  ></year-grid>
-</div>
-
-<modal-date-picker-input>
-  <p>loading...</p>
-</modal-date-picker-input>
-`}
     `;
   }
 }

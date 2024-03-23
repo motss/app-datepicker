@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-import { includeScrollbarStyle } from '../../stylings.js';
+import { includeScrollbarStyles, includeSeparatorStyles } from '../../styles.js';
 
 export const dockedDatePickerStyles = css`
 :host {
@@ -25,15 +25,7 @@ export const dockedDatePickerStyles = css`
 
   --md-menu-surface-items-overflow: initial;
 }
-:host(:is([startview="monthMenu"],[startview="yearMenu"])) .header::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background-color: var(--md-sys-color-outline-variant);
-}
+${includeSeparatorStyles(':host(:is([startview="monthMenu"],[startview="yearMenu"])) .header', 'end')}
 
 .header {
   --_padding-block: var(--_b_hpb);
@@ -54,7 +46,7 @@ export const dockedDatePickerStyles = css`
   overscroll-behavior: contain;
 }
 
-${includeScrollbarStyle(':is(.monthMenu,.yearMenu) > .body')}
+${includeScrollbarStyles(':is(.monthMenu,.yearMenu) > .body')}
 
 .appCalendar {
   --_padding: var(--_p);

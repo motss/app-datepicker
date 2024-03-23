@@ -19,42 +19,38 @@ describe(toClosestTarget.name, () => {
       $_textContent: undefined,
       selector: 'input',
     },
-  ])('returns closest target (selector=$selector)', async ({
-    $_elementNode,
-    $_textContent,
-    selector,
-  }) => {
-    // todo: refactor with Promise.withResolvers
-    let resolver: NonNullable<Parameters<PromiseConstructor['prototype']['then']>['0']>;
-    const task = new Promise<HTMLButtonElement | null>(
-      (resolve) => resolver = resolve
-    );
-    const onClick: EventListenerObject = {
-      handleEvent(ev) {
-        const closest = toClosestTarget(ev, selector);
+  ])(
+    'returns closest target (selector=$selector)',
+    async ({ $_elementNode, $_textContent, selector }) => {
+      const { promise, resolve } = Promise.withResolvers<
+        HTMLButtonElement | undefined
+      >();
+      const onClick: EventListenerObject = {
+        handleEvent(ev) {
+          const closest = toClosestTarget<HTMLButtonElement>(ev, selector);
 
-        resolver(closest);
-      },
-    };
-    const el = await fixture(
-      html`
+          resolve(closest);
+        },
+      };
+      const el = await fixture(
+        html`
         <div @click=${onClick} @keyup=${onClick}>
           <button>${$_textContent}</button>
         </div>
       `
-    );
+      );
 
-    const buttonEl = el.querySelector<HTMLButtonElement>('button');
+      const buttonEl = el.querySelector<HTMLButtonElement>('button');
 
-    buttonEl?.click();
+      buttonEl?.click();
 
-    const closest = await task;
+      const closest = await promise;
 
-    $_elementNode ?
-      expect(closest).instanceOf($_elementNode) :
-      expect(closest).toEqual($_elementNode);
+      $_elementNode
+        ? expect(closest).instanceOf($_elementNode)
+        : expect(closest).toEqual($_elementNode);
 
-    expect(closest?.textContent).toEqual($_textContent);
-  });
-
+      expect(closest?.textContent).toEqual($_textContent);
+    }
+  );
 });

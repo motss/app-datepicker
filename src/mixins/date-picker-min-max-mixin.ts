@@ -1,25 +1,34 @@
 import { property } from 'lit/decorators.js';
 
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
-import type { LitConstructor } from '../typings.js';
-import type { DatePickerMinMaxProperties, MixinReturnType } from './typings.js';
+import type { LitConstructor } from '../types.js';
+import type { DatePickerMinMaxProperties, MixinReturnType } from './types.js';
 
 export const DatePickerMinMaxMixin = <BaseConstructor extends LitConstructor>(
-  SuperClass: BaseConstructor
+  superClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, DatePickerMinMaxProperties> => {
-  class DatePickerMinMaxClass extends SuperClass implements DatePickerMinMaxProperties {
+  class DatePickerMinMaxClass
+    extends superClass
+    implements DatePickerMinMaxProperties
+  {
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to MAX_DATE,
      * set `max` undefined.
      */
-    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true })
+    @property({
+      converter: { toAttribute: nullishAttributeConverter },
+      reflect: true,
+    })
     public max?: string;
 
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
      * today's date, set `min` undefined.
      */
-    @property({ converter: { toAttribute: nullishAttributeConverter }, reflect: true })
+    @property({
+      converter: { toAttribute: nullishAttributeConverter },
+      reflect: true,
+    })
     public min?: string;
   }
 

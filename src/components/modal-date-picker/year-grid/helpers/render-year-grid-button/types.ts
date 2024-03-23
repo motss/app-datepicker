@@ -1,4 +1,5 @@
-export interface RenderYearGridButtonInit extends Pick<HTMLButtonElement, 'tabIndex'> {
+export interface RenderYearGridButtonInit
+  extends Pick<HTMLButtonElement, 'tabIndex'> {
   label: string;
   selected: boolean;
   toyear: boolean;

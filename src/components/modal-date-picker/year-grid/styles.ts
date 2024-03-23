@@ -1,13 +1,14 @@
 import { css } from 'lit';
 
-export const modalDatePickerYearGrid_yearGridStyle = css`
+export const modalDatePickerYearGridStyles = css`
 .yearGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(72px, auto));
-  grid-template-rows: repeat(var(--_rows, auto-fill), 48px);
+  grid-template-columns: repeat(3, minmax(1px, calc(312px / 3)));
+  grid-template-rows: repeat(var(--_rows, auto-fill), 52px);
   place-items: center;
 
-  padding-inline: 12px;
+  padding-inline: 13px; /** note: scrollbar's width is 11px when scrollbar-width: thin; is set */
+  padding-block: 8px;
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
   font-family: var(--md-sys-typescale-body-large-font);
@@ -15,9 +16,7 @@ export const modalDatePickerYearGrid_yearGridStyle = css`
   font-weight: var(--md-sys-typescale-body-large-weight);
   letter-spacing: var(--md-sys-typescale-body-large-tracking);
 }
-`;
 
-export const modalDatePickerYearGrid_yearGridButtonStyle = css`
 .yearGridButton {
   --_outlineColor: rgba(0 0 0 / 0);
   --_labelColor: var(--md-sys-color-on-surface);

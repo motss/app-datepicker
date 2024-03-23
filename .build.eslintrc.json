@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "./.eslintrc.json"
-  ],
+  "extends": ["./.eslintrc.json"],
   "rules": {
     "import/named": "off"
   }

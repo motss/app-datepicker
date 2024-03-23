@@ -23,13 +23,12 @@ describe(nullishAttributeConverter.name, () => {
       $_value: 'test',
       value: 'test',
     },
-  ])('returns normalized attribute value (value=$value)', ({
-    $_value,
-    value,
-  }) => {
-    const result = nullishAttributeConverter(value);
+  ])(
+    'returns normalized attribute value (value=$value)',
+    ({ $_value, value }) => {
+      const result = nullishAttributeConverter(value);
 
-    expect(result).toBe($_value);
-  });
-
+      expect(result).toBe($_value);
+    }
+  );
 });

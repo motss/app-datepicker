@@ -8,7 +8,7 @@ export type PointerHandler = (ev: PointerType) => void;
 export type PointerType = MouseEvent | PointerEvent | TouchEvent | TouchInit;
 
 export interface ResolvedPointer {
-  id: PointerEvent['pageY']  ;
+  id: PointerEvent['pageY'];
   x: PointerEvent['pageX'];
   y: PointerEvent['pageY'];
 }
@@ -24,6 +24,14 @@ export type SupportedEventKey =
 
 export interface TrackerHandlers {
   down(startPointer: ResolvedPointer, ev: PointerType): void;
-  move(startPointer: ResolvedPointer, oldPointer: ResolvedPointer | null, ev: PointerType): void;
-  up(startPointer: ResolvedPointer, oldPointer: ResolvedPointer | null, ev: PointerType): void;
+  move(
+    startPointer: ResolvedPointer,
+    oldPointer: ResolvedPointer | null,
+    ev: PointerType
+  ): void;
+  up(
+    startPointer: ResolvedPointer,
+    oldPointer: ResolvedPointer | null,
+    ev: PointerType
+  ): void;
 }

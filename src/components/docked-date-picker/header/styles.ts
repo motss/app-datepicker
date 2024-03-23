@@ -2,10 +2,19 @@ import { css, type CSSResult, unsafeCSS } from 'lit';
 
 import { renderMenuButtonStyle } from '../../../render-helpers/render-menu-button/styles.js';
 
-const areas = ['prevMonth', 'month', 'nextMonth', 'prevYear', 'year', 'nextYear'] as const;
+const areas = [
+  'prevMonth',
+  'month',
+  'nextMonth',
+  'prevYear',
+  'year',
+  'nextYear',
+] as const;
 
 const gridTemplateAreas: CSSResult = unsafeCSS(areas.join(' '));
-const buttons = unsafeCSS(areas.map((area) => `.${area} { grid-area: ${area} }`).join('\n'));
+const buttons = unsafeCSS(
+  areas.map((area) => `.${area} { grid-area: ${area} }`).join('\n')
+);
 
 export const dockedDatePickerHeaderStyles = css`
 ${renderMenuButtonStyle}
