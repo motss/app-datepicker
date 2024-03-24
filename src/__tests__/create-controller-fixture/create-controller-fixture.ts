@@ -20,24 +20,27 @@ type Result<T extends RootElement, H extends InputHelpers<T>> = {
 export function createControllerFixture<
   T extends RootElement = RootElement,
   H extends InputHelpers<T> = InputHelpers<T>,
->(templateFn: () => Constructor<T>, maybHelpers?: H): () => Promise<Result<T, H>> {
+>(
+  templateFn: () => Constructor<T>,
+  maybHelpers?: H
+): () => Promise<Result<T, H>> {
   let registered = false;
   let testComponentName = '';
 
   async function render(): Promise<Result<T, H>> {
     if (!registered) {
       registered = true;
-      const TestComponent = templateFn();
-      testComponentName = defineCE(TestComponent);
+      const testComponent = templateFn();
+      testComponentName = defineCE(testComponent);
     }
 
-    const element = await fixture<T>(`<${testComponentName}></${testComponentName}>`);
+    const element = await fixture<T>(
+      `<${testComponentName}></${testComponentName}>`
+    );
     const helpers = Object.fromEntries(
-      Object.entries(maybHelpers ?? {}).map(
-        ([k, v]) => {
-          return [k, () => v(element)];
-        }
-      )
+      Object.entries(maybHelpers ?? {}).map(([k, v]) => {
+        return [k, () => v(element)];
+      })
     ) as OutputHelpers<H>;
 
     const result: Result<T, H> = {

@@ -76,7 +76,12 @@
       },
       "style": {
         "all": true,
-        "useNamingConvention": "off"
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false
+          }
+        }
       },
       "suspicious": {
         "all": true,

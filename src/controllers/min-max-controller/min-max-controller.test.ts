@@ -19,7 +19,7 @@ class TestComponent extends RootElement implements TestComponentProperties {
   @property() min?: string;
 
   protected override render(): TemplateResult {
-    const {maxDate, minDate } = this.#minMax_;
+    const { maxDate, minDate } = this.#minMax_;
 
     return html`<div>
       <input id=max value=${maxDate?.toJSON()} readonly />
@@ -29,17 +29,14 @@ class TestComponent extends RootElement implements TestComponentProperties {
 }
 
 describe(MinMaxController.name, () => {
-  const render = createControllerFixture(
-    () => TestComponent,
-    {
-      getMax(el) {
-        return el.root.querySelector<HTMLInputElement>('input#max');
-      },
-      getMin(el) {
-        return el.root.querySelector<HTMLInputElement>('input#min');
-      },
-    }
-  );
+  const render = createControllerFixture(() => TestComponent, {
+    getMax(el) {
+      return el.root.querySelector<HTMLInputElement>('input#max');
+    },
+    getMin(el) {
+      return el.root.querySelector<HTMLInputElement>('input#min');
+    },
+  });
 
   it('returns min & max correctly', async () => {
     const { getMax, getMin } = await render();
@@ -82,5 +79,4 @@ describe(MinMaxController.name, () => {
     expect(getMin()).toHaveValue(new Date(min).toJSON());
     expect(getMax()).toHaveValue(new Date(max).toJSON());
   });
-
 });

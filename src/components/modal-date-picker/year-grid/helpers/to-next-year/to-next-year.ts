@@ -10,7 +10,12 @@ import {
 import { defaultYearGridMaxColumn } from '../../constants.js';
 import type { ToNextYearInit } from './types.js';
 
-export function toNextYear({ key, maxDate, minDate, year }: ToNextYearInit): number {
+export function toNextYear({
+  key,
+  maxDate,
+  minDate,
+  year,
+}: ToNextYearInit): number {
   let newYear = year;
 
   switch (key) {
