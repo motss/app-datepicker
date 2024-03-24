@@ -29,11 +29,10 @@ import {
   labelShowCalendar,
   labelSupportingText,
   labelYearMenuItemTemplate,
-  MAX_DATE,
-  MIN_DATE,
   navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
+import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toDateString } from '../../helpers/to-date-string.js';
@@ -110,6 +109,8 @@ export class DockedDatePicker
 
   #menuListRef = createRef<DockedDatePickerMenuList>();
 
+  #minMax_ = new MinMaxController(this);
+
   #onClosed = () => {
     const { _selectedDate, value } = this;
 
@@ -155,8 +156,8 @@ export class DockedDatePicker
         disabledDaysSet,
         hasAltKey: ev.altKey,
         key: ev.key as SupportedKey,
-        maxTime: toResolvedDate(this.max).getTime(),
-        minTime: toResolvedDate(this.min).getTime(),
+        maxTime: this.#minMax_.maxDate.getTime(),
+        minTime: this.#minMax_.maxDate.getTime(),
       });
       const nextDateTime = nextDate.getTime();
 
@@ -292,18 +293,6 @@ export class DockedDatePicker
     }
   };
 
-  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
-    const { max, min } = this;
-
-    if (changedProperties.has('max') && changedProperties.get('max') !== max) {
-      this._maxDate = toResolvedDate(max || MAX_DATE);
-    }
-
-    if (changedProperties.has('min') && changedProperties.get('min') !== min) {
-      this._minDate = toResolvedDate(min || MIN_DATE);
-    }
-  };
-
   #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (
     init
   ) => {
@@ -351,6 +340,7 @@ export class DockedDatePicker
          */
         const disabledDateList = splitString(disabledDates, toResolvedDate);
         const disabledDayList = splitString(disabledDays, Number);
+        const { maxDate, minDate } = this.#minMax_;
 
         this._tabbableDate = toNextSelectedDate({
           currentDate: this._focusedDate,
@@ -359,8 +349,8 @@ export class DockedDatePicker
           disabledDaysSet: new Set(disabledDayList),
           hasAltKey: false,
           key: keyHome,
-          maxTime: this._maxDate.getTime(),
-          minTime: this._minDate.getTime(),
+          maxTime: maxDate.getTime(),
+          minTime: minDate.getTime(),
         });
       }
     }
@@ -382,10 +372,6 @@ export class DockedDatePicker
   };
 
   @state() _focusedDate: Date = defaultDate;
-
-  @state() _maxDate!: Date;
-
-  @state() _minDate!: Date;
 
   @state() _selectedDate: Date = defaultDate;
 
@@ -414,10 +400,8 @@ export class DockedDatePicker
   constructor() {
     super();
 
-    const { max, min, value } = this;
+    const { value } = this;
 
-    this._maxDate = toResolvedDate(max ?? MAX_DATE);
-    this._minDate = toResolvedDate(min ?? MIN_DATE);
     this._focusedDate =
       this._selectedDate =
       this._tabbableDate =
@@ -582,7 +566,6 @@ export class DockedDatePicker
     changedProperties: PropertyValueMap<this>
   ): void {
     this.#updateDatesByValue(changedProperties);
-    this.#updateMinMax(changedProperties);
     this.#updateTabbableDate(changedProperties);
   }
 }

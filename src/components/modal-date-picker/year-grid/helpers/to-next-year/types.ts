@@ -2,7 +2,7 @@ import type { SupportedKey } from '../../../../../types.js';
 
 export interface ToNextYearInit {
   key: SupportedKey;
-  max: Date;
-  min: Date;
+  maxDate: Date;
+  minDate: Date;
   year: number;
 }

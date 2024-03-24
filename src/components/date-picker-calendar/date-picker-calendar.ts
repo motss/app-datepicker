@@ -5,11 +5,10 @@ import { customElement, state } from 'lit/decorators.js';
 
 import {
   confirmKeySet,
-  MAX_DATE,
-  MIN_DATE,
   navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
+import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
@@ -37,6 +36,8 @@ export class DatePickerCalendar
   implements DatePickerCalendarProperties
 {
   static override styles = [resetShadowRoot, datePickerCalendarStyles];
+
+  #minMax_ = new MinMaxController(this);
 
   #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
     this.onDateUpdate?.(this._selectedDate);
@@ -66,8 +67,8 @@ export class DatePickerCalendar
         disabledDaysSet,
         hasAltKey: ev.altKey,
         key: ev.key as SupportedKey,
-        maxTime: toResolvedDate(this.max).getTime(),
-        minTime: toResolvedDate(this.min).getTime(),
+        maxTime: this.#minMax_.maxDate.getTime(),
+        minTime: this.#minMax_.minDate.getTime(),
       });
       const nextDateTime = nextDate.getTime();
 
@@ -113,18 +114,6 @@ export class DatePickerCalendar
     }
   };
 
-  #updateMinMax = (changedProperties: PropertyValueMap<this>) => {
-    const { max, min } = this;
-
-    if (changedProperties.has('max') && max !== changedProperties.get('max')) {
-      this._maxDate = toResolvedDate(max);
-    }
-
-    if (changedProperties.has('min') && min !== changedProperties.get('min')) {
-      this._minDate = toResolvedDate(min);
-    }
-  };
-
   #updateTabbableDate = () => {
     const isWithinSameMonth = isSameMonth(
       this._selectedDate,
@@ -134,7 +123,8 @@ export class DatePickerCalendar
     if (isWithinSameMonth) {
       this._tabbableDate = this._selectedDate;
     } else {
-      const { _maxDate, _minDate, disabledDates, disabledDays } = this;
+      const { disabledDates, disabledDays } = this;
+      const { maxDate, minDate } = this.#minMax_;
 
       /**
        * NOTE: This reset tabindex of a tab-able calendar day to
@@ -151,17 +141,13 @@ export class DatePickerCalendar
         disabledDaysSet: new Set(disabledDayList),
         hasAltKey: false,
         key: keyHome,
-        maxTime: _maxDate.getTime(),
-        minTime: _minDate.getTime(),
+        maxTime: maxDate.getTime(),
+        minTime: minDate.getTime(),
       });
     }
   };
 
   @state() _focusedDate: Date;
-
-  @state() _maxDate: Date;
-
-  @state() _minDate: Date;
 
   @state() _selectedDate: Date;
 
@@ -174,10 +160,8 @@ export class DatePickerCalendar
   constructor() {
     super();
 
-    const { max, min, value } = this;
+    const { value } = this;
 
-    this._maxDate = toResolvedDate(max ?? MAX_DATE);
-    this._minDate = toResolvedDate(min ?? MIN_DATE);
     this._focusedDate =
       this._selectedDate =
       this._tabbableDate =
@@ -243,7 +227,6 @@ export class DatePickerCalendar
     changedProperties: PropertyValueMap<this>
   ): void {
     this.#updateDatesByValue(changedProperties);
-    this.#updateMinMax(changedProperties);
     this.#updateTabbableDate();
     this.#notifyDateUpdate(changedProperties);
   }

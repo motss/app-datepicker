@@ -96,12 +96,12 @@ jobs:
       - name: Test
         if: env.IS_UBUNTU == 'false'
         run: |
-          pnpm test:pw --no-coverage
+          pnpm test --no-coverage
 
       - name: Test with coverage
         if: env.IS_UBUNTU != 'false'
         run: |
-          pnpm test:pw --color
+          pnpm test --color
 
       - name: Upload coverage to codecov
         if: env.IS_UBUNTU != 'false' && success()

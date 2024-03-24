@@ -10,7 +10,7 @@ import {
 import { defaultYearGridMaxColumn } from '../../constants.js';
 import type { ToNextYearInit } from './types.js';
 
-export function toNextYear({ key, max, min, year }: ToNextYearInit): number {
+export function toNextYear({ key, maxDate, minDate, year }: ToNextYearInit): number {
   let newYear = year;
 
   switch (key) {
@@ -31,12 +31,12 @@ export function toNextYear({ key, max, min, year }: ToNextYearInit): number {
       break;
     }
     case keyEnd:
-      return max.getUTCFullYear();
+      return maxDate.getUTCFullYear();
     case keyHome:
-      return min.getUTCFullYear();
+      return minDate.getUTCFullYear();
     default:
       return year;
   }
 
-  return clampValue(min.getUTCFullYear(), max.getFullYear(), newYear);
+  return clampValue(minDate.getUTCFullYear(), maxDate.getFullYear(), newYear);
 }
