@@ -1,16 +1,28 @@
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 
+import { MinMaxController } from '../controllers/min-max-controller/min-max-controller.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
 import type { LitConstructor } from '../types.js';
-import type { DatePickerMinMaxProperties, MixinReturnType } from './types.js';
+import type { MinMaxMixinProperties, MixinReturnType } from './types.js';
 
-export const DatePickerMinMaxMixin = <BaseConstructor extends LitConstructor>(
+export const MinMaxMixin = <BaseConstructor extends LitConstructor>(
   superClass: BaseConstructor
-): MixinReturnType<BaseConstructor, DatePickerMinMaxProperties> => {
-  class DatePickerMinMaxClass
+): MixinReturnType<BaseConstructor, MinMaxMixinProperties> => {
+  class MinMaxClass
     extends superClass
-    implements DatePickerMinMaxProperties
+    implements MinMaxMixinProperties
   {
+    #minMax_ = new MinMaxController(this, {
+      onChange: ({ maxDate, minDate }) => {
+        this._maxDate = maxDate;
+        this._minDate = minDate;
+      }
+    });
+
+    @state() _maxDate: Date = this.#minMax_.maxDate;
+
+    @state() _minDate: Date = this.#minMax_.minDate;
+
     /**
      * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to MAX_DATE,
      * set `max` undefined.
@@ -32,8 +44,8 @@ export const DatePickerMinMaxMixin = <BaseConstructor extends LitConstructor>(
     public min?: string;
   }
 
-  return DatePickerMinMaxClass as unknown as MixinReturnType<
+  return MinMaxClass as unknown as MixinReturnType<
     BaseConstructor,
-    DatePickerMinMaxProperties
+    MinMaxMixinProperties
   >;
 };

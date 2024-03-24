@@ -3,9 +3,14 @@ import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
 import type { CustomEventAction, LitConstructor, StartView } from '../types.js';
 import type { Constructor } from '../utility.types.js';
 
-export interface DatePickerMinMaxProperties {
+export interface MinMaxProperties {
   max?: string;
   min?: string;
+}
+
+export interface MinMaxMixinProperties extends MinMaxProperties {
+  _maxDate: Date;
+  _minDate: Date;
 }
 
 export interface DatePickerMixinProperties {

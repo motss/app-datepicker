@@ -1,16 +1,15 @@
-import { elementUpdated, html } from '@open-wc/testing-helpers';
-import type { TemplateResult } from 'lit';
+import { elementUpdated } from '@open-wc/testing-helpers';
+import { html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { describe, expect, it } from 'vitest';
 
-import { createControllerFixture } from '../../__tests__/create-controller-fixture/create-controller-fixture.js';
+import { MAX_DATE, MIN_DATE } from '../../constants.js';
+import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
+import type { MinMaxProperties } from '../../mixins/types.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { MinMaxController } from './min-max-controller.js';
+import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 
-interface TestComponentProperties extends RootElement {
-  max?: string;
-  min?: string;
-}
+interface TestComponentProperties extends RootElement, MinMaxProperties {}
 
 class TestComponent extends RootElement implements TestComponentProperties {
   #minMax_ = new MinMaxController(this);
@@ -29,7 +28,9 @@ class TestComponent extends RootElement implements TestComponentProperties {
 }
 
 describe(MinMaxController.name, () => {
-  const render = createControllerFixture(() => TestComponent, {
+  const maxJson = new Date(MAX_DATE).toJSON();
+  const minJson = new Date(MIN_DATE).toJSON();
+  const render = createFixture(() => TestComponent, {
     getMax(el) {
       return el.root.querySelector<HTMLInputElement>('input#max');
     },
@@ -41,8 +42,8 @@ describe(MinMaxController.name, () => {
   it('returns min & max correctly', async () => {
     const { getMax, getMin } = await render();
 
-    expect(getMax()).toHaveValue('');
-    expect(getMin()).toHaveValue('');
+    expect(getMax()).toHaveValue(maxJson);
+    expect(getMin()).toHaveValue(minJson);
   });
 
   it('returns max correctly when max is defined', async () => {
@@ -52,8 +53,8 @@ describe(MinMaxController.name, () => {
     element.max = max;
     await elementUpdated(element);
 
-    expect(getMin()).toHaveValue('');
     expect(getMax()).toHaveValue(new Date(max).toJSON());
+    expect(getMin()).toHaveValue(minJson);
   });
 
   it('returns min correctly when min is defined', async () => {
@@ -63,8 +64,8 @@ describe(MinMaxController.name, () => {
     element.max = max;
     await elementUpdated(element);
 
-    expect(getMin()).toHaveValue('');
     expect(getMax()).toHaveValue(new Date(max).toJSON());
+    expect(getMin()).toHaveValue(minJson);
   });
 
   it('returns min & max correctly when min & max are defined', async () => {
@@ -76,7 +77,7 @@ describe(MinMaxController.name, () => {
     element.min = min;
     await elementUpdated(element);
 
-    expect(getMin()).toHaveValue(new Date(min).toJSON());
     expect(getMax()).toHaveValue(new Date(max).toJSON());
+    expect(getMin()).toHaveValue(new Date(min).toJSON());
   });
 });

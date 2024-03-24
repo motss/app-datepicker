@@ -2,21 +2,31 @@ import type { ReactiveController, ReactiveControllerHost } from 'lit';
 
 import { MAX_DATE, MIN_DATE } from '../../constants.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
-import type { DatePickerMinMaxProperties } from '../../mixins/types.js';
+import type { MinMaxProperties } from '../../mixins/types.js';
+import type { MinMaxControllerProperties } from './types.js';
 
-export class MinMaxController<T extends DatePickerMinMaxProperties>
-  implements ReactiveController
+interface Init {
+  onChange(data: Pick<MinMaxControllerProperties, 'maxDate' | 'minDate'>): void;
+}
+
+export class MinMaxController<T extends Pick<MinMaxProperties, 'max' | 'min'>>
+  implements MinMaxControllerProperties, ReactiveController
 {
   #host: ReactiveControllerHost & T;
   #max?: string;
   #min?: string;
+
+  #onChange?: Init['onChange'];
 
   #update = () => {
     const didMaxChange = this.#updateMax();
     const didMinChange = this.#updateMin();
 
     if (didMaxChange || didMinChange) {
-      this.#host.requestUpdate();
+      this.#onChange?.({
+        maxDate: this.maxDate,
+        minDate: this.minDate,
+      });
     }
   };
 
@@ -46,13 +56,13 @@ export class MinMaxController<T extends DatePickerMinMaxProperties>
     return false;
   };
 
-  maxDate!: Date;
+  maxDate: Date = toResolvedDate(MAX_DATE);
 
-  minDate!: Date;
+  minDate: Date = toResolvedDate(MIN_DATE);
 
-  constructor(host: ReactiveControllerHost & T) {
+  constructor(host: ReactiveControllerHost & T, init?: Init) {
     this.#host = host;
-    this.#update();
+    this.#onChange = init?.onChange;
 
     host.addController(this);
   }

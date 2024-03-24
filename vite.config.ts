@@ -38,6 +38,7 @@ export default defineConfig({
     globals: true,
     include: [
       '**/controllers/**/**.test.ts',
+      '**/mixins/**/**.test.ts',
       // '**/*test*/date-picker/**.test.ts',
       // '**/*test*/date-picker-dialog/**.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',

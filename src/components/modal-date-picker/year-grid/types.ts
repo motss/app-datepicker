@@ -1,6 +1,6 @@
 import type {
-  DatePickerMinMaxProperties,
   DatePickerMixinProperties,
+  MinMaxMixinProperties,
 } from '../../../mixins/types.js';
 
 export interface ModalDatePickerYearGridProperties
@@ -8,7 +8,7 @@ export interface ModalDatePickerYearGridProperties
       DatePickerMixinProperties,
       'locale' | 'selectedYearTemplate' | 'toyearTemplate' | 'value'
     >,
-    DatePickerMinMaxProperties {
+    MinMaxMixinProperties {
   focusYearWhenNeeded(): void;
   onYearUpdate?(year: number): void;
 }

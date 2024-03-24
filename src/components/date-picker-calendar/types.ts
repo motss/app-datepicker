@@ -1,3 +1,4 @@
+import type { MinMaxMixinProperties } from '../../mixins/types.js';
 import type { DatePickerProperties } from '../../types.js';
 
 type PickDatePickerProperties = Pick<
@@ -6,8 +7,6 @@ type PickDatePickerProperties = Pick<
   | 'disabledDays'
   | 'firstDayOfWeek'
   | 'locale'
-  | 'max'
-  | 'min'
   | 'shortWeekLabel'
   | 'showWeekNumber'
   | 'weekLabel'
@@ -15,7 +14,9 @@ type PickDatePickerProperties = Pick<
   | 'weekNumberType'
 >;
 
-export interface DatePickerCalendarProperties extends PickDatePickerProperties {
+export interface DatePickerCalendarProperties extends
+  PickDatePickerProperties,
+  MinMaxMixinProperties {
   onDateChange?(focusedDate: Date): void;
   onDateUpdate?(selectedDate: Date): void;
   reset(): Promise<boolean>;

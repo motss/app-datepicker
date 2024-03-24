@@ -9,15 +9,13 @@ import { state } from 'lit/decorators.js';
 
 import {
   emptyReadonlyArray,
-  MAX_DATE,
-  MIN_DATE,
   navigationKeySetGrid,
   renderNoop,
 } from '../../../constants.js';
 import { splitString } from '../../../helpers/split-string.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
-import { DatePickerMinMaxMixin } from '../../../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../../../mixins/date-picker-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import {
   baseStyling,
@@ -32,7 +30,7 @@ import type { CalendarDayElement, CalendarProperties } from './types.js';
 const defaultDateTimeFormat = new Intl.DateTimeFormat('en');
 
 export class Calendar
-  extends DatePickerMinMaxMixin(DatePickerMixin(RootElement))
+  extends MinMaxMixin(DatePickerMixin(RootElement))
   implements CalendarProperties
 {
   public static override shadowRootOptions = {
@@ -160,125 +158,13 @@ export class Calendar
   };
 
   #renderCalendar = (): TemplateResult => {
-    /**
-     * NOTE(motss): Tabbable date is the date to be tabbed when switching between months.
-     * When there is a selected date in the current month, tab to focus on selected date.
-     * Otherwise, set the first day of month tabbable so that tapping on Tab focuses that.
-     */
-    // const tabbableDate = isInCurrentMonth(date, currentDate) ?
-    //   date :
-    //   toNextSelectedDate({
-    //     currentDate,
-    //     date,
-    //     disabledDatesSet,
-    //     disabledDaysSet,
-    //     hasAltKey: false,
-    //     key: keyHome,
-    //     maxTime: +max,
-    //     minTime: +min,
-    //   });
-
-    // const calendarContent = html`
-    // <table
-    //   @click=${this.onClick}
-    //   @keydown=${this.onKeydown}
-    //   @keyup=${this.onKeyup}
-    //   class=calendar-table
-    //   part=table
-    //   role=grid
-    //   tabindex=-1
-    // >
-    //   <caption class=sr-only>${captionText}</caption>
-
-    //   <thead>
-    //     <tr class=weekdays part=weekdays role=row>${
-    //       // fixme: renderWeekLabel()
-    //       weekdays.map(
-    //         ({ label, value }, weekdayIdx) => {
-    //           // fixme: renderWeekday()
-    //         }
-    //         // html`
-    //         // <th
-    //         //   aria-label=${label}
-    //         //   class=${`weekday ${showWeekNumber && weekdayIdx < 1 ? ' week-number' : ''}`}
-    //         //   part=weekday
-    //         //   role=columnheader
-    //         //   title=${label}
-    //         // >
-    //         //   <p>${value}</p>
-    //         // </th>
-    //         // `
-    //       )
-    //     }</tr>
-    //   </thead>
-
-    //   <tbody>${
-    //     calendar.map((calendarRow) => {
-    //       return html`
-    //       <tr role=row>
-    //         ${calendarRow.map((calendarCol, i) => {
-    //           const { disabled, fullDate, label, value } = calendarCol;
-
-    //           /** Week label, if any */
-    //           if (!fullDate && value && showWeekNumber && i < 1) {
-    //             return html`<th
-    //               abbr=${label}
-    //               aria-label=${label}
-    //               aria-disabled=true
-    //               class="calendarDay weekNumber"
-    //               part=week-number
-    //               role=rowheader
-    //               scope=row
-    //               title=${label}
-    //             >${value}</th>`;
-    //           }
-
-    //           /** Empty day */
-    //           if (!value || !fullDate) {
-    //             return html`<td class="calendar-day day--empty" aria-hidden="true" part=calendar-day></td>`;
-    //           }
-
-    //           // const curTime = +new Date(fullDate);
-    //           // const shouldTab = tabbableDate.getUTCDate() === Number(value);
-    //           // const isSelected = +date === curTime;
-    //           // const isToday = +todayDate === curTime;
-    //           // const title = isSelected ?
-    //           //   selectedDateLabel :
-    //           //   isToday ?
-    //           //     todayLabel :
-    //           //     label;
-
-    //           return html`
-    //           <td
-    //             .fullDate=${fullDate}
-    //             aria-disabled=${String(disabled) as 'false' | 'true'}
-    //             aria-label=${label as string}
-    //             aria-selected=${String(isSelected) as 'false' | 'true'}
-    //             class="calendarDay ${isToday ? 'day--today' : ''}"
-    //             data-day=${value}
-    //             part=${`calendar-day${isToday ? ' today' : ''}`}
-    //             role=gridcell
-    //             tabindex=${shouldTab ? 0 : -1}
-    //             aria-current=${isToday}
-    //             title=${title}
-    //           >
-    //             <p>${value}</p>
-    //           </td>
-    //           `;
-    //         })
-    //       }</tr>`;
-    //     })
-    //   }</tbody>
-    // </table>
-    // `;
-
     const {
+      _maxDate,
+      _minDate,
       disabledDates,
       disabledDays,
       firstDayOfWeek,
       locale,
-      max,
-      min,
       renderCalendarDay,
       renderFooter,
       renderWeekDay,
@@ -289,7 +175,7 @@ export class Calendar
       value,
       weekLabel,
       weekNumberTemplate,
-      weekNumberType,
+      weekNumberType
     } = this;
 
     const date = toResolvedDate(value);
@@ -302,8 +188,8 @@ export class Calendar
       firstDayOfWeek,
       fullDateFormat: this.#fullDateFormat,
       locale,
-      max: max ? toResolvedDate(max) : MAX_DATE,
-      min: min ? toResolvedDate(min) : MIN_DATE,
+      max: _maxDate,
+      min: _minDate,
       showWeekNumber,
       weekNumberTemplate,
       weekNumberType,

@@ -8,15 +8,14 @@ import {
   navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
-import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { keyHome } from '../../key-values.js';
-import { DatePickerMinMaxMixin } from '../../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
+import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { resetShadowRoot } from '../../styles.js';
 import type { InferredFromSet, SupportedKey } from '../../types.js';
@@ -31,13 +30,11 @@ import type { DatePickerCalendarProperties } from './types.js';
 @customElement(datePickerCalendarName)
 export class DatePickerCalendar
   extends DatePickerStartViewMixin(
-    DatePickerMinMaxMixin(DatePickerMixin(RootElement))
+    MinMaxMixin(DatePickerMixin(RootElement))
   )
   implements DatePickerCalendarProperties
 {
   static override styles = [resetShadowRoot, datePickerCalendarStyles];
-
-  #minMax_ = new MinMaxController(this);
 
   #onCalendarUpdated: AppCalendar['onUpdated'] = async () => {
     this.onDateUpdate?.(this._selectedDate);
@@ -60,21 +57,28 @@ export class DatePickerCalendar
         ev.key as InferredFromSet<typeof navigationKeySetGrid>
       )
     ) {
+      const {
+        _focusedDate,
+        _maxDate,
+        _minDate,
+        _selectedDate
+      } = this;
+
       const nextDate = toNextSelectedDate({
-        currentDate: this._focusedDate,
-        date: this._selectedDate,
+        currentDate: _focusedDate,
+        date: _selectedDate,
         disabledDatesSet,
         disabledDaysSet,
         hasAltKey: ev.altKey,
         key: ev.key as SupportedKey,
-        maxTime: this.#minMax_.maxDate.getTime(),
-        minTime: this.#minMax_.minDate.getTime(),
+        maxTime: _maxDate.getTime(),
+        minTime: _minDate.getTime(),
       });
       const nextDateTime = nextDate.getTime();
 
       if (
-        nextDateTime !== this._focusedDate.getTime() ||
-        nextDateTime !== this._selectedDate.getTime()
+        nextDateTime !== _focusedDate.getTime() ||
+        nextDateTime !== _selectedDate.getTime()
       ) {
         this._focusedDate = this._selectedDate = nextDate;
       }
@@ -123,8 +127,7 @@ export class DatePickerCalendar
     if (isWithinSameMonth) {
       this._tabbableDate = this._selectedDate;
     } else {
-      const { disabledDates, disabledDays } = this;
-      const { maxDate, minDate } = this.#minMax_;
+      const { _maxDate, _minDate, disabledDates, disabledDays } = this;
 
       /**
        * NOTE: This reset tabindex of a tab-able calendar day to
@@ -141,8 +144,8 @@ export class DatePickerCalendar
         disabledDaysSet: new Set(disabledDayList),
         hasAltKey: false,
         key: keyHome,
-        maxTime: maxDate.getTime(),
-        minTime: minDate.getTime(),
+        maxTime: _maxDate.getTime(),
+        minTime: _minDate.getTime(),
       });
     }
   };

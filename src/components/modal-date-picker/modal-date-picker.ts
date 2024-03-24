@@ -14,14 +14,13 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import { dateFormatOptions, labelConfirm, labelDeny } from '../../constants.js';
-import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconEdit } from '../../icons.js';
-import { DatePickerMinMaxMixin } from '../../mixins/date-picker-min-max-mixin.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
+import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
@@ -41,7 +40,7 @@ import type { ModalDatePickerYearGridProperties } from './year-grid/types.js';
 @customElement(modalDatePickerName)
 export class ModalDatePicker
   extends DatePickerMixin(
-    DatePickerStartViewMixin(DatePickerMinMaxMixin(RootElement))
+    DatePickerStartViewMixin(MinMaxMixin(RootElement))
   )
   implements ModalDatePickerProperties
 {
@@ -70,8 +69,6 @@ export class ModalDatePicker
       }
     }
   };
-
-  #minMax_ = new MinMaxController(this);
 
   #onDateUpdate: DatePickerCalendarProperties['onDateUpdate'] = (
     updatedDate
@@ -196,6 +193,8 @@ export class ModalDatePicker
     // fixme: move logics from body to here!
     const {
       _focusedDate,
+      _maxDate,
+      _minDate,
       chooseMonthLabel,
       chooseYearLabel,
       confirmText,
@@ -220,10 +219,8 @@ export class ModalDatePicker
       toyearTemplate,
       type,
       weekLabel,
-      weekNumberTemplate,
-      weekNumberType,
+      weekNumberTemplate, weekNumberType
     } = this;
-    const { maxDate, minDate } = this.#minMax_;
 
     const formId = id || 'modalDatePicker';
     const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(
@@ -240,9 +237,9 @@ export class ModalDatePicker
     }).format;
     const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
     const showNextButton =
-      isCalendarView && !isSameMonth(_focusedDate, maxDate);
+      isCalendarView && !isSameMonth(_focusedDate, _maxDate);
     const showPrevButton =
-      isCalendarView && !isSameMonth(_focusedDate, minDate);
+      isCalendarView && !isSameMonth(_focusedDate, _minDate);
     const valueValue = toDateString(_focusedDate);
 
     return html`

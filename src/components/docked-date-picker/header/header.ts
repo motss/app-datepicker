@@ -9,13 +9,12 @@ import {
   labelNextYear,
   labelPreviousMonth,
   labelPreviousYear,
-  MAX_DATE,
-  MIN_DATE,
   shortMonthFormatOptions,
   yearFormatOptions,
 } from '../../../constants.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconChevronLeft, iconChevronRight } from '../../../icons.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
 import { renderMenuButton } from '../../../render-helpers/render-menu-button/render-menu-button.js';
 import type { RenderMenuButtonInit } from '../../../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../../../root-element/root-element.js';
@@ -31,9 +30,7 @@ const offsetByType = {
   yearMenu: 0,
 } as const;
 
-export class Header extends RootElement implements HeaderProperties {
-  #maxDate!: Date;
-  #minDate!: Date;
+export class Header extends MinMaxMixin(RootElement) implements HeaderProperties {
   #monthFormat!: Intl.DateTimeFormat['format'];
 
   #onMenuButtonClick: RenderMenuButtonInit['onClick'] = (ev) => {
@@ -67,22 +64,6 @@ export class Header extends RootElement implements HeaderProperties {
 
   #updateDates = (changedProperties: PropertyValueMap<this>): void => {
     if (
-      changedProperties.has('max') &&
-      changedProperties.get('max') !== this.max
-    ) {
-      this.#maxDate = toResolvedDate(this.max);
-      this.requestUpdate();
-    }
-
-    if (
-      changedProperties.has('min') &&
-      changedProperties.get('min') !== this.min
-    ) {
-      this.#minDate = toResolvedDate(this.min);
-      this.requestUpdate();
-    }
-
-    if (
       changedProperties.has('value') &&
       changedProperties.get('value') !== this.value
     ) {
@@ -114,8 +95,6 @@ export class Header extends RootElement implements HeaderProperties {
   #yearFormat!: Intl.DateTimeFormat['format'];
 
   @property() locale: string = Intl.DateTimeFormat().resolvedOptions().locale;
-  @property() max?: string;
-  @property() min?: string;
   @property() nextMonthButtonLabel: string = labelNextMonth;
   @property() nextYearButtonLabel: string = labelNextYear;
 
@@ -134,10 +113,8 @@ export class Header extends RootElement implements HeaderProperties {
   constructor() {
     super();
 
-    const { max, min, value } = this;
+    const { value } = this;
 
-    this.#maxDate = toResolvedDate(max ?? MAX_DATE);
-    this.#minDate = toResolvedDate(min ?? MIN_DATE);
     this.#valueDate = toResolvedDate(value);
   }
 
@@ -148,16 +125,15 @@ export class Header extends RootElement implements HeaderProperties {
 
   protected override render(): TemplateResult {
     const {
+      _maxDate,
+      _minDate,
       nextMonthButtonLabel,
       nextYearButtonLabel,
       prevMonthButtonLabel,
-      prevYearButtonLabel,
-      startView,
+      prevYearButtonLabel, startView
     } = this;
 
     const date = this.#valueDate;
-    const min = this.#minDate;
-    const max = this.#maxDate;
     const monthLabel = this.#monthFormat(date);
     const yearLabel = this.#yearFormat(date);
     const isViewCalendar = startView === 'calendar';
@@ -165,13 +141,13 @@ export class Header extends RootElement implements HeaderProperties {
     const isViewYearMenu = startView === 'yearMenu';
 
     const mit = fromPartsToUtcDate(
-      min.getUTCFullYear(),
-      min.getUTCMonth(),
+      _minDate.getUTCFullYear(),
+      _minDate.getUTCMonth(),
       1
     ).getTime();
     const mat = fromPartsToUtcDate(
-      max.getUTCFullYear(),
-      max.getUTCMonth(),
+      _maxDate.getUTCFullYear(),
+      _maxDate.getUTCMonth(),
       1
     ).getTime();
 

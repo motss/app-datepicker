@@ -1,7 +1,7 @@
 import { defineCE, fixture } from '@open-wc/testing-helpers';
 
-import type { RootElement } from '../../root-element/root-element.js';
-import type { Constructor } from '../../utility.types.js';
+import type { RootElement } from '../../../root-element/root-element.js';
+import type { Constructor } from '../../../utility.types.js';
 
 type GetFnTemplate = `get${Capitalize<string>}${string}`;
 
@@ -17,7 +17,7 @@ type Result<T extends RootElement, H extends InputHelpers<T>> = {
   readonly element: T;
 } & OutputHelpers<H>;
 
-export function createControllerFixture<
+export function createFixture<
   T extends RootElement = RootElement,
   H extends InputHelpers<T> = InputHelpers<T>,
 >(

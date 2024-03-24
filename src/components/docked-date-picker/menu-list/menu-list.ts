@@ -23,7 +23,7 @@ import {
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconCheck } from '../../../icons.js';
-import { DatePickerMinMaxMixin } from '../../../mixins/date-picker-min-max-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import type { MenuListType } from '../../../types.js';
 import type {
@@ -42,7 +42,7 @@ const findFirstMdListItem = (node: EventTarget): node is MdListItem => {
 };
 
 export class MenuList
-  extends DatePickerMinMaxMixin(RootElement)
+  extends MinMaxMixin(RootElement)
   implements MenuListProperties
 {
   #listRef = createRef<MdList>();

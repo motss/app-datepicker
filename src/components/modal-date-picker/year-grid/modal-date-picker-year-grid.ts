@@ -8,12 +8,11 @@ import {
   toyearTemplate,
   yearFormatOptions,
 } from '../../../constants.js';
-import { MinMaxController } from '../../../controllers/min-max-controller/min-max-controller.js';
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toClosestTarget } from '../../../helpers/to-closest-target.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { toYearList } from '../../../helpers/to-year-list.js';
-import { DatePickerMinMaxMixin } from '../../../mixins/date-picker-min-max-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import { resetButton, resetShadowRoot } from '../../../styles.js';
 import type { InferredFromSet } from '../../../types.js';
@@ -29,7 +28,7 @@ import type { ModalDatePickerYearGridProperties } from './types.js';
 
 @customElement(modalDatePickerYearGridName)
 export class ModalDatePickerYearGrid
-  extends DatePickerMinMaxMixin(RootElement)
+  extends MinMaxMixin(RootElement)
   implements ModalDatePickerYearGridProperties
 {
   static override styles = [
@@ -50,8 +49,6 @@ export class ModalDatePickerYearGrid
     }
   };
 
-  #minMax_ = new MinMaxController(this);
-
   #onYearChange = (event: KeyboardEvent): void => {
     if (event.type === 'keydown') {
       /**
@@ -67,11 +64,13 @@ export class ModalDatePickerYearGrid
         /** Stop scrolling with arrow keys */
         event.preventDefault();
 
+        const { _maxDate, _minDate } = this;
+
         /** Focus new year with Home, End, and arrow keys */
         const focusingYear = toNextYear({
           key,
-          maxDate: this.#minMax_.maxDate,
-          minDate: this.#minMax_.minDate,
+          maxDate: _maxDate,
+          minDate: _minDate,
           year: this.#focusingYear,
         });
 
@@ -132,7 +131,7 @@ export class ModalDatePickerYearGrid
      * the selected year and updates the `.scrollTop`.
      */
     const focusingYear = this.#focusingYear;
-    const diffInYears = focusingYear - this.#minMax_.minDate.getUTCFullYear();
+    const diffInYears = focusingYear - this._minDate.getUTCFullYear();
     const whichRow = Math.floor(diffInYears / defaultYearGridMaxColumn);
     const whichRowThatCentered = whichRow - defaultYearGridMaxColumn;
     const buttonHeight = 48;
@@ -142,9 +141,9 @@ export class ModalDatePickerYearGrid
   }
 
   protected override render(): TemplateResult {
-    const { selectedYearTemplate, toyearTemplate, value } = this;
+    const { _maxDate, _minDate, selectedYearTemplate, toyearTemplate, value } = this;
 
-    const yearList = toYearList(this.#minMax_.minDate, this.#minMax_.maxDate);
+    const yearList = toYearList(_minDate, _maxDate);
     const selectedDateYear = toResolvedDate(value).getUTCFullYear();
     const rows = Math.ceil(yearList.length / 3);
 

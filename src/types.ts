@@ -16,10 +16,10 @@ import type {
   keyTab,
 } from './key-values.js';
 import type {
-  DatePickerMinMaxProperties,
   DatePickerMixinProperties,
   DatePickerStartViewProperties,
   ElementMixinProperties,
+  MinMaxMixinProperties,
 } from './mixins/types.js';
 import type { Constructor } from './utility.types.js';
 
@@ -61,7 +61,7 @@ interface CustomEventDetailYearUpdated {
 
 export interface DatePickerProperties
   extends ElementMixinProperties,
-    DatePickerMinMaxProperties,
+    MinMaxMixinProperties,
     DatePickerMixinProperties,
     DatePickerStartViewProperties {}
 
