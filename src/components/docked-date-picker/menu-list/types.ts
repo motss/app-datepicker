@@ -14,14 +14,24 @@ export interface MdListItemDataset extends DOMStringMap {
   value: string;
 }
 
+interface MenuListFormatters {
+  longMonthFormat: Intl.DateTimeFormat;
+  yearFormat: Intl.DateTimeFormat;
+}
+
 export interface MenuListProperties
-  extends Partial<Pick<DatePickerProperties, 'locale' | 'value'>> {
+  extends MenuListStates,
+    Partial<Pick<DatePickerProperties, 'locale' | 'value'>> {
   menuListType?: MenuListType;
   monthMenuItemTemplate?: string;
   onMenuChange?(init: OnMenuChangeInit): void;
   selectedMonthMenuItemTemplate?: string;
   selectedYearMenuItemTemplate?: string;
   yearMenuItemTemplate?: string;
+}
+
+interface MenuListStates {
+  _formatters: MenuListFormatters;
 }
 
 export interface OnMenuChangeInit {

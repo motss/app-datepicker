@@ -17,6 +17,7 @@ import { keyHome } from '../../key-values.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { resetShadowRoot } from '../../styles.js';
 import type { InferredFromSet, SupportedKey } from '../../types.js';
@@ -30,7 +31,9 @@ import type { DatePickerCalendarProperties } from './types.js';
 
 @customElement(datePickerCalendarName)
 export class DatePickerCalendar
-  extends DatePickerStartViewMixin(MinMaxMixin(DatePickerMixin(RootElement)))
+  extends DatePickerMixin(
+    DatePickerStartViewMixin(MinMaxMixin(ValueMixin(RootElement)))
+  )
   implements DatePickerCalendarProperties
 {
   static override styles = [resetShadowRoot, datePickerCalendarStyles];

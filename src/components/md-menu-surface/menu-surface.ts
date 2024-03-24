@@ -20,6 +20,7 @@ import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 import { emptyReadonlyArray } from '../../constants.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 
 // export { Corner } from '@material/web/menu/internal/controllers/surfacePositionController.js';
 
@@ -69,8 +70,8 @@ export abstract class MenuSurface extends LitElement {
       console.error('beforeClose', error);
     }
   };
-  private currentAnchorElement: HTMLElement | null = null;
 
+  private currentAnchorElement: HTMLElement | null = null;
   private readonly handleFocusout = async (event: FocusEvent) => {
     const anchorEl = this.anchorElement;
 
@@ -115,6 +116,7 @@ export abstract class MenuSurface extends LitElement {
   private readonly internals =
     // Cast needed for closure
     (this as HTMLElement).attachInternals();
+
   /**
    * Whether or not the menu is repositoining due to window / document resize
    */
@@ -124,7 +126,6 @@ export abstract class MenuSurface extends LitElement {
    * The element that was focused before the menu opened.
    */
   private lastFocusedElement: HTMLElement | null = null;
-
   /**
    * Handles positioning the surface and aligning it to the anchor as well as
    * keeping it in the viewport.
@@ -248,6 +249,7 @@ export abstract class MenuSurface extends LitElement {
    * The event path of the last window pointerdown event.
    */
   private pointerPath: EventTarget[] = emptyReadonlyArray as EventTarget[];
+
   @query('slot') private readonly slotEl!: HTMLSlotElement | null;
 
   @query('.menu') private readonly surfaceEl!: HTMLElement | null;
@@ -270,7 +272,6 @@ export abstract class MenuSurface extends LitElement {
    */
   @property({ attribute: 'anchor-corner' })
   anchorCorner: Corner = Corner.END_START;
-
   /**
    * The element that should be focused by default once opened.
    *
@@ -280,6 +281,7 @@ export abstract class MenuSurface extends LitElement {
    */
   @property({ attribute: 'default-focus' })
   defaultFocus: FocusState = FocusState.FIRST_ITEM;
+
   /**
    * Displays overflow content like a submenu. Not required in most cases when
    * using `positioning="popover"`.
@@ -410,13 +412,25 @@ export abstract class MenuSurface extends LitElement {
 
   constructor() {
     super();
+
     if (!isServer) {
       this.internals.role = 'menu';
       // Capture so that we can grab the event before it reaches the menu item
-      // istelf. Specifically useful for the case where typeahead encounters a
+      // itself. Specifically useful for the case where typeahead encounters a
       // space and we don't want the menu item to close the menu.
       this.addEventListener('keydown', this.captureKeydown, { capture: true });
       this.addEventListener('focusout', this.handleFocusout);
+
+      new PropertyChangeController(this, {
+        onChange: (_, open) => {
+          if (open) {
+            this.removeAttribute('aria-hidden');
+          } else {
+            this.setAttribute('aria-hidden', 'true');
+          }
+        },
+        property: 'open',
+      });
     }
   }
 
@@ -800,19 +814,6 @@ export abstract class MenuSurface extends LitElement {
     }
 
     super.update(changed);
-  }
-
-  protected override willUpdate(changed: PropertyValues<this>) {
-    if (!changed.has('open')) {
-      return;
-    }
-
-    if (this.open) {
-      this.removeAttribute('aria-hidden');
-      return;
-    }
-
-    this.setAttribute('aria-hidden', 'true');
   }
 
   /**

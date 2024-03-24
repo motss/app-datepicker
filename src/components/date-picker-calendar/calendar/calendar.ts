@@ -21,6 +21,7 @@ import { splitString } from '../../../helpers/split-string.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { DatePickerMixin } from '../../../mixins/date-picker-mixin.js';
 import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import {
   baseStyling,
@@ -33,7 +34,7 @@ import { calendarStyles } from './styles.js';
 import type { CalendarDayElement, CalendarProperties } from './types.js';
 
 export class Calendar
-  extends MinMaxMixin(DatePickerMixin(RootElement))
+  extends DatePickerMixin(MinMaxMixin(ValueMixin(RootElement)))
   implements CalendarProperties
 {
   public static override shadowRootOptions = {

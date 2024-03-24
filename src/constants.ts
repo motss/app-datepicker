@@ -61,7 +61,6 @@ export const noop = () => {
   /** no-op */
 };
 export const renderNoop: () => typeof nothing = () => nothing;
-export const intlDateTimeFormatNoop = Intl.DateTimeFormat();
 
 export const dateFormatOptions: Intl.DateTimeFormatOptions = {
   day: 'numeric',

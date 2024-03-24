@@ -20,6 +20,7 @@ import {
   MIN_DATE,
   yearFormatOptions,
 } from '../../../constants.js';
+import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconCheck } from '../../../icons.js';
@@ -50,8 +51,6 @@ export class MenuList
 
   #menuItemTemplateFn!: (arg: number) => string;
 
-  #monthFormat!: Intl.DateTimeFormat['format'];
-
   #onMenuItemClick = (ev: MouseEvent) => {
     const listItem = ev.composedPath().find(findFirstMdListItem);
 
@@ -63,23 +62,6 @@ export class MenuList
   };
 
   #selectedMenuItemTemplateFn!: (arg: number) => string;
-
-  #updateFormatter = (changedProperties: PropertyValueMap<this>) => {
-    if (
-      changedProperties.has('locale') &&
-      changedProperties.get('locale') !== this.locale
-    ) {
-      this.#monthFormat = new Intl.DateTimeFormat(
-        this.locale,
-        longMonthFormatOptions
-      ).format;
-      this.#yearFormat = new Intl.DateTimeFormat(
-        this.locale,
-        yearFormatOptions
-      ).format;
-      this.requestUpdate();
-    }
-  };
 
   #updateMenuItemTemplates = (changedProperties: PropertyValueMap<this>) => {
     if (
@@ -123,6 +105,7 @@ export class MenuList
   };
 
   #updateMenuList = (changedProperties: PropertyValueMap<this>) => {
+    // fixme: refactor this!
     if (
       (changedProperties.has('menuListType') &&
         changedProperties.get('menuListType') !== this.menuListType) ||
@@ -133,7 +116,7 @@ export class MenuList
       (changedProperties.has('value') &&
         changedProperties.get('value') !== this.value)
     ) {
-      const { max, menuListType, min, value } = this;
+      const { _formatters, max, menuListType, min, value } = this;
 
       const minDate = toResolvedDate(min ?? MIN_DATE);
       const maxDate = toResolvedDate(max ?? MAX_DATE);
@@ -150,7 +133,9 @@ export class MenuList
 
           list = monthList.map<MenuListItem>((_, i) => {
             const disabled = valueTime < minTime || valueTime > maxTime;
-            const label = this.#monthFormat(Date.UTC(year, i, 1));
+            const label = _formatters.longMonthFormat.format(
+              Date.UTC(year, i, 1)
+            );
             const selected = valueDate.getUTCMonth() === i;
 
             return { disabled, label, selected, value: i };
@@ -168,7 +153,7 @@ export class MenuList
             (_, i) => {
               const year = i + minYear;
 
-              const label = this.#yearFormat(Date.UTC(year, 1, 1));
+              const label = _formatters.yearFormat.format(Date.UTC(year, 1, 1));
               const selected = year === valueDate.getUTCFullYear();
 
               return { disabled: false, label, selected, value: year };
@@ -181,12 +166,15 @@ export class MenuList
     }
   };
 
-  #yearFormat!: Intl.DateTimeFormat['format'];
+  @state() _formatters!: MenuListProperties['_formatters'];
   @state() _menuList: MenuListItem[] = emptyReadonlyArray as MenuListItem[];
+
   @property() locale: string = Intl.DateTimeFormat().resolvedOptions().locale;
   @property() menuListType: MenuListType = 'monthMenu';
+
   @property() monthMenuItemTemplate: string = labelMonthMenuItemTemplate;
 
+  @property({ attribute: false })
   @property({ attribute: false })
   onMenuChange?: MenuListProperties['onMenuChange'];
 
@@ -195,8 +183,24 @@ export class MenuList
 
   @property() selectedYearMenuItemTemplate: string =
     labelSelectedYearMenuItemTemplate;
-
   @property() yearMenuItemTemplate: string = labelYearMenuItemTemplate;
+
+  constructor() {
+    super();
+
+    new PropertyChangeController(this, {
+      onChange: (_, locale) => {
+        this._formatters = {
+          longMonthFormat: new Intl.DateTimeFormat(
+            locale,
+            longMonthFormatOptions
+          ),
+          yearFormat: new Intl.DateTimeFormat(locale, yearFormatOptions),
+        };
+      },
+      property: 'locale',
+    });
+  }
 
   async getListItems(): Promise<ListItem[] | undefined> {
     await this.updateComplete;
@@ -243,7 +247,6 @@ export class MenuList
   protected override willUpdate(
     changedProperties: PropertyValueMap<this>
   ): void {
-    this.#updateFormatter(changedProperties);
     this.#updateMenuList(changedProperties);
     this.#updateMenuItemTemplates(changedProperties);
   }
