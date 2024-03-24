@@ -1,3 +1,4 @@
+import type { ValueMixinProperties } from '../../../mixins/value-mixin/types.js';
 import type { DatePickerProperties, MenuListType } from '../../../types.js';
 
 export interface HeaderDataset extends DOMStringMap {
@@ -15,7 +16,8 @@ export type HeaderMenuType =
 
 export interface HeaderProperties
   extends HeaderStates,
-    Partial<Pick<DatePickerProperties, 'locale' | 'max' | 'min' | 'value'>> {
+    Partial<Pick<DatePickerProperties, 'locale' | 'max' | 'min' | 'value'>>,
+    ValueMixinProperties {
   nextMonthButtonLabel?: string;
   nextYearButtonLabel?: string;
   onMonthMenuClick?(init: HeaderPropertiesMenuClickFnInit): void;

@@ -43,6 +43,7 @@ import { keyHome } from '../../key-values.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../../mixins/element-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
@@ -69,7 +70,7 @@ const yOffset = 7;
 
 @customElement(dockedDatePickerName)
 export class DockedDatePicker
-  extends DatePickerMixin(MinMaxMixin(ElementMixin(RootElement)))
+  extends DatePickerMixin(ElementMixin(MinMaxMixin(ValueMixin(RootElement))))
   implements DockedDatePickerProperties
 {
   // close(returnValue: DockedDatePickerPropertiesReturnValue): Promise<void> {

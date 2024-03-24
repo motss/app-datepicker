@@ -1,7 +1,7 @@
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import type { MdTextButton } from '@material/web/button/text-button.js';
-import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
 
 import {
@@ -13,9 +13,9 @@ import {
   yearFormatOptions,
 } from '../../../constants.js';
 import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
-import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconChevronLeft, iconChevronRight } from '../../../icons.js';
 import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { renderMenuButton } from '../../../render-helpers/render-menu-button/render-menu-button.js';
 import type { RenderMenuButtonInit } from '../../../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../../../root-element/root-element.js';
@@ -32,14 +32,14 @@ const offsetByType = {
 } as const;
 
 export class Header
-  extends MinMaxMixin(RootElement)
+  extends MinMaxMixin(ValueMixin(RootElement))
   implements HeaderProperties
 {
   #onMenuButtonClick: RenderMenuButtonInit['onClick'] = (ev) => {
     const { type } = (ev.currentTarget as HTMLButtonElement)
       .dataset as HeaderDataset;
     const offset = offsetByType[type];
-    const date = this.#valueDate;
+    const date = this._valueDate;
 
     switch (type) {
       case 'monthDec':
@@ -64,18 +64,6 @@ export class Header
     }
   };
 
-  #updateDates = (changedProperties: PropertyValueMap<this>): void => {
-    if (
-      changedProperties.has('value') &&
-      changedProperties.get('value') !== this.value
-    ) {
-      this.#valueDate = toResolvedDate(this.value);
-      this.requestUpdate();
-    }
-  };
-
-  #valueDate!: Date;
-
   @state() _formatters!: HeaderProperties['_formatters'];
 
   @property() locale: string = Intl.DateTimeFormat().resolvedOptions().locale;
@@ -94,14 +82,8 @@ export class Header
   @property({ reflect: true }) startView: 'calendar' | MenuListType =
     'calendar';
 
-  @property() value?: string;
-
   constructor() {
     super();
-
-    const { value } = this;
-
-    this.#valueDate = toResolvedDate(value);
 
     new PropertyChangeController(this, {
       onChange: (_, locale) => {
@@ -127,6 +109,7 @@ export class Header
       _formatters: { shortMonthFormat, yearFormat },
       _maxDate,
       _minDate,
+      _valueDate,
       nextMonthButtonLabel,
       nextYearButtonLabel,
       prevMonthButtonLabel,
@@ -134,9 +117,8 @@ export class Header
       startView,
     } = this;
 
-    const date = this.#valueDate;
-    const monthLabel = shortMonthFormat.format(date);
-    const yearLabel = yearFormat.format(date);
+    const monthLabel = shortMonthFormat.format(_valueDate);
+    const yearLabel = yearFormat.format(_valueDate);
     const isViewCalendar = startView === 'calendar';
     const isViewMonthMenu = startView === 'monthMenu';
     const isViewYearMenu = startView === 'yearMenu';
@@ -152,10 +134,10 @@ export class Header
       1
     ).getTime();
 
-    const dtPm = toUTCDate(date, { month: -1 }).getTime();
-    const dtNm = toUTCDate(date, { month: 1 }).getTime();
-    const dtPy = toUTCDate(date, { year: -1 }).getTime();
-    const dtNy = toUTCDate(date, { year: 1 }).getTime();
+    const dtPm = toUTCDate(_valueDate, { month: -1 }).getTime();
+    const dtNm = toUTCDate(_valueDate, { month: 1 }).getTime();
+    const dtPy = toUTCDate(_valueDate, { year: -1 }).getTime();
+    const dtNy = toUTCDate(_valueDate, { year: 1 }).getTime();
 
     const showPrevMonthButton = isViewCalendar && dtPm > mit;
     const showNextMonthButton = isViewCalendar && dtNm > mit && dtNm < mat;
@@ -205,11 +187,5 @@ export class Header
       }
     </div>
     `;
-  }
-
-  protected override willUpdate(
-    changedProperties: PropertyValueMap<this>
-  ): void {
-    this.#updateDates(changedProperties);
   }
 }

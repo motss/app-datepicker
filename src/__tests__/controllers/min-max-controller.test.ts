@@ -39,10 +39,12 @@ describe(MinMaxController.name, () => {
   });
 
   it('returns min & max correctly', async () => {
-    const { getMax, getMin } = await render();
+    const { element, getMax, getMin } = await render();
 
     expect(getMax()).toHaveValue(maxJson);
     expect(getMin()).toHaveValue(minJson);
+    expect(element.max).toBeUndefined();
+    expect(element.min).toBeUndefined();
   });
 
   it('returns max correctly when max is defined', async () => {

@@ -22,6 +22,7 @@ import { iconEdit } from '../../icons.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
@@ -40,7 +41,9 @@ import type { ModalDatePickerYearGridProperties } from './year-grid/types.js';
 
 @customElement(modalDatePickerName)
 export class ModalDatePicker
-  extends DatePickerMixin(DatePickerStartViewMixin(MinMaxMixin(RootElement)))
+  extends DatePickerMixin(
+    DatePickerStartViewMixin(MinMaxMixin(ValueMixin(RootElement)))
+  )
   implements ModalDatePickerProperties
 {
   static override styles = [

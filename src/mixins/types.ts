@@ -29,7 +29,6 @@ export interface DatePickerMixinProperties {
   showWeekNumber: boolean;
   todayLabel: string;
   toyearTemplate: string;
-  value?: null | string;
   weekLabel: string;
   weekNumberTemplate: string;
   weekNumberType: WeekNumberType;

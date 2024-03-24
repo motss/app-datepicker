@@ -20,6 +20,7 @@ import type {
   ElementMixinProperties,
   MinMaxMixinProperties,
 } from './mixins/types.js';
+import type { ValueMixinProperties } from './mixins/value-mixin/types.js';
 import type { Constructor } from './utility.types.js';
 
 export type ChangedProperties<T = Record<string, unknown>> = PropertyValues &
@@ -60,6 +61,7 @@ interface CustomEventDetailYearUpdated {
 
 export interface DatePickerProperties
   extends ElementMixinProperties,
+    ValueMixinProperties,
     MinMaxMixinProperties,
     DatePickerMixinProperties,
     DatePickerStartViewProperties {}

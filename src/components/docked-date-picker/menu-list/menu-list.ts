@@ -24,6 +24,7 @@ import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconCheck } from '../../../icons.js';
 import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import type { MenuListType } from '../../../types.js';
 import type {
@@ -42,7 +43,7 @@ const findFirstMdListItem = (node: EventTarget): node is MdListItem => {
 };
 
 export class MenuList
-  extends MinMaxMixin(RootElement)
+  extends MinMaxMixin(ValueMixin(RootElement))
   implements MenuListProperties
 {
   #listRef = createRef<MdList>();
@@ -126,11 +127,11 @@ export class MenuList
       (changedProperties.has('menuListType') &&
         changedProperties.get('menuListType') !== this.menuListType) ||
       (changedProperties.has('min') &&
-        changedProperties.get('min') !== this.menuListType) ||
+        changedProperties.get('min') !== this.min) ||
       (changedProperties.has('max') &&
-        changedProperties.get('max') !== this.menuListType) ||
+        changedProperties.get('max') !== this.max) ||
       (changedProperties.has('value') &&
-        changedProperties.get('value') !== this.menuListType)
+        changedProperties.get('value') !== this.value)
     ) {
       const { max, menuListType, min, value } = this;
 
@@ -195,7 +196,6 @@ export class MenuList
   @property() selectedYearMenuItemTemplate: string =
     labelSelectedYearMenuItemTemplate;
 
-  @property() value = '';
   @property() yearMenuItemTemplate: string = labelYearMenuItemTemplate;
 
   async getListItems(): Promise<ListItem[] | undefined> {
