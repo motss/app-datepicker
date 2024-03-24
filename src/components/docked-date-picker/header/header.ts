@@ -2,7 +2,7 @@ import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import type { MdTextButton } from '@material/web/button/text-button.js';
 import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 
 import {
   labelNextMonth,
@@ -12,6 +12,7 @@ import {
   shortMonthFormatOptions,
   yearFormatOptions,
 } from '../../../constants.js';
+import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconChevronLeft, iconChevronRight } from '../../../icons.js';
 import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
@@ -30,9 +31,10 @@ const offsetByType = {
   yearMenu: 0,
 } as const;
 
-export class Header extends MinMaxMixin(RootElement) implements HeaderProperties {
-  #monthFormat!: Intl.DateTimeFormat['format'];
-
+export class Header
+  extends MinMaxMixin(RootElement)
+  implements HeaderProperties
+{
   #onMenuButtonClick: RenderMenuButtonInit['onClick'] = (ev) => {
     const { type } = (ev.currentTarget as HTMLButtonElement)
       .dataset as HeaderDataset;
@@ -72,30 +74,13 @@ export class Header extends MinMaxMixin(RootElement) implements HeaderProperties
     }
   };
 
-  #updateFormatters = (changedProperties: PropertyValueMap<this>) => {
-    if (
-      changedProperties.has('locale') &&
-      changedProperties.get('locale') !== this.locale
-    ) {
-      const { locale } = this;
-
-      this.#monthFormat = new Intl.DateTimeFormat(
-        locale,
-        shortMonthFormatOptions
-      ).format;
-      this.#yearFormat = new Intl.DateTimeFormat(
-        locale,
-        yearFormatOptions
-      ).format;
-      this.requestUpdate();
-    }
-  };
-
   #valueDate!: Date;
-  #yearFormat!: Intl.DateTimeFormat['format'];
+
+  @state() _formatters!: HeaderProperties['_formatters'];
 
   @property() locale: string = Intl.DateTimeFormat().resolvedOptions().locale;
   @property() nextMonthButtonLabel: string = labelNextMonth;
+
   @property() nextYearButtonLabel: string = labelNextYear;
 
   @property({ attribute: false })
@@ -103,11 +88,12 @@ export class Header extends MinMaxMixin(RootElement) implements HeaderProperties
 
   @property({ attribute: false })
   onYearMenuClick?: HeaderProperties['onYearMenuClick'];
-
   @property() prevMonthButtonLabel: string = labelPreviousMonth;
   @property() prevYearButtonLabel: string = labelPreviousYear;
+
   @property({ reflect: true }) startView: 'calendar' | MenuListType =
     'calendar';
+
   @property() value?: string;
 
   constructor() {
@@ -116,6 +102,19 @@ export class Header extends MinMaxMixin(RootElement) implements HeaderProperties
     const { value } = this;
 
     this.#valueDate = toResolvedDate(value);
+
+    new PropertyChangeController(this, {
+      onChange: (_, locale) => {
+        this._formatters = {
+          shortMonthFormat: new Intl.DateTimeFormat(
+            locale,
+            shortMonthFormatOptions
+          ),
+          yearFormat: new Intl.DateTimeFormat(locale, yearFormatOptions),
+        };
+      },
+      property: 'locale',
+    });
   }
 
   async getMonthMenuButton(): Promise<MdTextButton | null> {
@@ -125,17 +124,19 @@ export class Header extends MinMaxMixin(RootElement) implements HeaderProperties
 
   protected override render(): TemplateResult {
     const {
+      _formatters: { shortMonthFormat, yearFormat },
       _maxDate,
       _minDate,
       nextMonthButtonLabel,
       nextYearButtonLabel,
       prevMonthButtonLabel,
-      prevYearButtonLabel, startView
+      prevYearButtonLabel,
+      startView,
     } = this;
 
     const date = this.#valueDate;
-    const monthLabel = this.#monthFormat(date);
-    const yearLabel = this.#yearFormat(date);
+    const monthLabel = shortMonthFormat.format(date);
+    const yearLabel = yearFormat.format(date);
     const isViewCalendar = startView === 'calendar';
     const isViewMonthMenu = startView === 'monthMenu';
     const isViewYearMenu = startView === 'yearMenu';
@@ -209,7 +210,6 @@ export class Header extends MinMaxMixin(RootElement) implements HeaderProperties
   protected override willUpdate(
     changedProperties: PropertyValueMap<this>
   ): void {
-    this.#updateFormatters(changedProperties);
     this.#updateDates(changedProperties);
   }
 }

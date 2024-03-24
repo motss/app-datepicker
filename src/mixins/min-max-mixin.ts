@@ -8,15 +8,12 @@ import type { MinMaxMixinProperties, MixinReturnType } from './types.js';
 export const MinMaxMixin = <BaseConstructor extends LitConstructor>(
   superClass: BaseConstructor
 ): MixinReturnType<BaseConstructor, MinMaxMixinProperties> => {
-  class MinMaxClass
-    extends superClass
-    implements MinMaxMixinProperties
-  {
+  class MinMaxClass extends superClass implements MinMaxMixinProperties {
     #minMax_ = new MinMaxController(this, {
       onChange: ({ maxDate, minDate }) => {
         this._maxDate = maxDate;
         this._minDate = minDate;
-      }
+      },
     });
 
     @state() _maxDate: Date = this.#minMax_.maxDate;

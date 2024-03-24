@@ -8,10 +8,15 @@ import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
 import {
+  dayFormatOptions,
   emptyReadonlyArray,
+  fullDateFormatOptions,
+  longWeekDayFormatOptions,
+  narrowWeekDayFormatOptions,
   navigationKeySetGrid,
   renderNoop,
 } from '../../../constants.js';
+import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
 import { splitString } from '../../../helpers/split-string.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { DatePickerMixin } from '../../../mixins/date-picker-mixin.js';
@@ -26,8 +31,6 @@ import {
 import type { InferredFromSet } from '../../../types.js';
 import { calendarStyles } from './styles.js';
 import type { CalendarDayElement, CalendarProperties } from './types.js';
-
-const defaultDateTimeFormat = new Intl.DateTimeFormat('en');
 
 export class Calendar
   extends MinMaxMixin(DatePickerMixin(RootElement))
@@ -45,8 +48,6 @@ export class Calendar
     visuallyHiddenStyle,
     calendarStyles,
   ];
-
-  #dayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #findSelectableCalendarDayNode = (ev: UIEvent) => {
     const path = ev.composedPath() as HTMLElement[];
@@ -78,34 +79,6 @@ export class Calendar
       this.onUpdated?.();
     }
   };
-
-  #fullDateFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
-
-  #installFormatters = (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('locale')) {
-      const { locale } = this;
-
-      if (changedProperties.get('locale') !== locale) {
-        this.#dayFormat = new Intl.DateTimeFormat(locale, { day: 'numeric' });
-        this.#fullDateFormat = new Intl.DateTimeFormat(locale, {
-          day: 'numeric',
-          month: 'short',
-          weekday: 'short',
-          year: 'numeric',
-        });
-        this.#longWeekdayFormat = new Intl.DateTimeFormat(locale, {
-          weekday: 'long',
-        });
-        this.#narrowWeekdayFormat = new Intl.DateTimeFormat(locale, {
-          weekday: 'narrow',
-        });
-      }
-    }
-  };
-
-  #longWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
-
-  #narrowWeekdayFormat: Intl.DateTimeFormat = defaultDateTimeFormat;
 
   #onClickOrKeyUp =
     <T extends 'click' | 'key'>(calendarGrid: CalendarGrid) =>
@@ -159,6 +132,12 @@ export class Calendar
 
   #renderCalendar = (): TemplateResult => {
     const {
+      _formatters: {
+        dayFormat,
+        fullDateFormat,
+        longWeekdayFormat,
+        narrowWeekdayFormat,
+      },
       _maxDate,
       _minDate,
       disabledDates,
@@ -175,18 +154,18 @@ export class Calendar
       value,
       weekLabel,
       weekNumberTemplate,
-      weekNumberType
+      weekNumberType,
     } = this;
 
     const date = toResolvedDate(value);
 
     const calendarGrid = calendar({
       date,
-      dayFormat: this.#dayFormat,
+      dayFormat,
       disabledDates: splitString(disabledDates, toResolvedDate),
       disabledDays: splitString(disabledDays, Number),
       firstDayOfWeek,
-      fullDateFormat: this.#fullDateFormat,
+      fullDateFormat,
       locale,
       max: _maxDate,
       min: _minDate,
@@ -197,8 +176,8 @@ export class Calendar
     const { datesGrid } = calendarGrid;
     const maybeWeekdaysWithWeekLabel = getWeekdays({
       firstDayOfWeek,
-      longWeekdayFormat: this.#longWeekdayFormat,
-      narrowWeekdayFormat: this.#narrowWeekdayFormat,
+      longWeekdayFormat,
+      narrowWeekdayFormat,
       shortWeekLabel,
       showWeekNumber,
       weekLabel,
@@ -210,7 +189,7 @@ export class Calendar
       ...maybeWeekdaysWithWeekLabel,
     ];
 
-    const caption = this.#fullDateFormat.format(date);
+    const caption = fullDateFormat.format(date);
 
     return html`
     <table
@@ -272,111 +251,41 @@ export class Calendar
   };
 
   #shouldFocusDate = false;
+
+  @state() _formatters!: CalendarProperties['_formatters'];
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
   onUpdated?: CalendarProperties['onUpdated'];
   @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
   @state() renderFooter: CalendarProperties['renderFooter'];
   @state() renderWeekDay: CalendarProperties['renderWeekDay'];
-
-  // #updateSelectedDate = (event: KeyboardEvent): void => {
-  //   const key = event.key as SupportedKey;
-  //   const type = event.type as 'click' | 'keydown' | 'keyup';
-
-  //   if (type === 'keydown') {
-  //     /**
-  //      * NOTE: `@material/base/dialog captures Enter keyboard event then closes the dialog.
-  //      * This is not what `month-calendar` expects so here stops all event propagation immediately for
-  //      * all key events.
-  //      */
-  //     event.stopImmediatePropagation();
-
-  //     const isConfirmKey = confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>);
-
-  //     if (
-  //       !navigationKeySetGrid.has(key as InferredFromSet<typeof navigationKeySetGrid>) &&
-  //       !isConfirmKey
-  //     ) return;
-
-  //     // Prevent scrolling with arrow keys or Space key
-  //     event.preventDefault();
-
-  //     // Bail out for Enter/ Space key as they should go to keyup handler.
-  //     if (isConfirmKey) return;
-
-  //     const {
-  //       currentDate,
-  //       date,
-  //       disabledDatesSet,
-  //       disabledDaysSet,
-  //       max,
-  //       min,
-  //     } = this.data as CalendarData;
-
-  //     this.#selectedDate = toNextSelectedDate({
-  //       currentDate,
-  //       date,
-  //       disabledDatesSet,
-  //       disabledDaysSet,
-  //       hasAltKey: event.altKey,
-  //       key,
-  //       maxTime: +max,
-  //       minTime: +min,
-  //     });
-  //     this.#shouldFocusSelectedDate = true;
-  //   } else if (
-  //     type === 'click' ||
-  //     (
-  //       type === 'keyup' &&
-  //       confirmKeySet.has(key as InferredFromSet<typeof confirmKeySet>)
-  //     )
-  //   ) {
-  //     const selectedCalendarDay =
-  //       toClosestTarget<HTMLTableCellElement>(event, '.calendar-day');
-
-  //     /** NOTE: Required condition check else these will trigger unwanted re-rendering */
-  //     if (
-  //       selectedCalendarDay == null ||
-  //       [
-  //         'aria-disabled',
-  //         'aria-hidden',
-  //       ].some(
-  //         attrName =>
-  //           selectedCalendarDay.getAttribute(attrName) === 'true'
-  //       )
-  //     ) {
-  //       return;
-  //     }
-
-  //     this.#selectedDate = selectedCalendarDay.fullDate;
-  //   }
-
-  //   const selectedDate = this.#selectedDate;
-
-  //   if (selectedDate == null) return;
-
-  //   const isKeypress = Boolean(key);
-  //   const newSelectedDate = new Date(selectedDate);
-
-  //   this.onDateUpdate({
-  //     isKeypress,
-  //     value: toDateString(newSelectedDate),
-  //     valueAsDate: newSelectedDate,
-  //     valueAsNumber: +newSelectedDate,
-  //     ...(isKeypress && { key }),
-  //   });
-
-  //   /**
-  //    * Reset `#selectedDate` after click or keyup event
-  //    */
-  //   this.#selectedDate = undefined;
-  // };
-
-  // @queryAsync('.calendar-day[aria-selected="true"]') public selectedCalendarDay!: Promise<HTMLTableCellElement | null>;
-
   @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
-
   @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
+
+  constructor() {
+    super();
+
+    new PropertyChangeController(this, {
+      onChange: (_, locale) => {
+        this._formatters = {
+          dayFormat: new Intl.DateTimeFormat(locale, dayFormatOptions),
+          fullDateFormat: new Intl.DateTimeFormat(
+            locale,
+            fullDateFormatOptions
+          ),
+          longWeekdayFormat: new Intl.DateTimeFormat(
+            locale,
+            longWeekDayFormatOptions
+          ),
+          narrowWeekdayFormat: new Intl.DateTimeFormat(
+            locale,
+            narrowWeekDayFormatOptions
+          ),
+        };
+      },
+      property: 'locale',
+    });
+  }
 
   protected override render(): TemplateResult | typeof nothing {
     return this.#renderCalendar();
@@ -386,11 +295,5 @@ export class Calendar
     changedProperties: PropertyValueMap<this>
   ): Promise<void> {
     await this.#focusDateWhenNeeded(changedProperties);
-  }
-
-  protected override willUpdate(
-    changedProperties: PropertyValueMap<this>
-  ): void {
-    this.#installFormatters(changedProperties);
   }
 }

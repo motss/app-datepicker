@@ -20,23 +20,17 @@ class TestComponent extends MinMaxMixin(RootElement) {
 describe(MinMaxMixin.name, () => {
   const maxJson = new Date(MAX_DATE).toJSON();
   const minJson = new Date(MIN_DATE).toJSON();
-  const render = createFixture(
-    () => TestComponent,
-    {
-       getMax(n) {
-        return n.root.querySelector<HTMLInputElement>('input#max');
-       },
-       getMin(n) {
-        return n.root.querySelector<HTMLInputElement>('input#min');
-       },
-    }
-  );
+  const render = createFixture(() => TestComponent, {
+    getMax(n) {
+      return n.root.querySelector<HTMLInputElement>('input#max');
+    },
+    getMin(n) {
+      return n.root.querySelector<HTMLInputElement>('input#min');
+    },
+  });
 
   it('mixes with a superclass correctly', async () => {
-    const {
-      getMax,
-      getMin,
-    } = await render();
+    const { getMax, getMin } = await render();
 
     expect(getMax()).toHaveValue(maxJson);
     expect(getMin()).toHaveValue(minJson);
@@ -45,12 +39,7 @@ describe(MinMaxMixin.name, () => {
   it('updates max correctly', async () => {
     const max = '2020-02-02';
 
-    const {
-      element,
-      getMax,
-      getMin,
-      updated,
-    } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.max = max;
     await updated();
@@ -62,12 +51,7 @@ describe(MinMaxMixin.name, () => {
   it('updates min correctly', async () => {
     const min = '2020-02-02';
 
-    const {
-      element,
-      getMax,
-      getMin,
-      updated,
-    } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.min = min;
     await updated();
@@ -80,12 +64,7 @@ describe(MinMaxMixin.name, () => {
     const max = '2023-02-02';
     const min = '2020-02-02';
 
-    const {
-      element,
-      getMax,
-      getMin,
-      updated,
-    } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.max = max;
     element.min = min;
@@ -94,5 +73,4 @@ describe(MinMaxMixin.name, () => {
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(new Date(min).toJSON());
   });
-
 });

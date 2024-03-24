@@ -306,7 +306,14 @@ export class DockedDatePicker
   };
 
   #updateTabbableDate = (changedProperties: PropertyValueMap<this>) => {
-    const { _focusedDate, _maxDate, _minDate, _selectedDate, disabledDates, disabledDays } = this;
+    const {
+      _focusedDate,
+      _maxDate,
+      _minDate,
+      _selectedDate,
+      disabledDates,
+      disabledDays,
+    } = this;
 
     if (
       (changedProperties.has('_focusedDate') &&
@@ -360,7 +367,7 @@ export class DockedDatePicker
 
   @state() _selectedDate: Date = defaultDate;
 
-  @state() private _tabbableDate: Date = defaultDate;
+  @state() _tabbableDate: Date = defaultDate;
 
   @property() calendarIconLabel: string = labelShowCalendar;
 
@@ -395,9 +402,9 @@ export class DockedDatePicker
     new PropertyChangeController(this, {
       onChange: (_, newValue) => {
         this._focusedDate =
-              this._selectedDate =
-              this._tabbableDate =
-                toResolvedDate(newValue);
+          this._selectedDate =
+          this._tabbableDate =
+            toResolvedDate(newValue);
       },
       property: 'value',
     });

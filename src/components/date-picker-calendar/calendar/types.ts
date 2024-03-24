@@ -7,52 +7,31 @@ import type { nothing, TemplateResult } from 'lit';
 
 import type { DatePickerProperties } from '../../../types.js';
 
-// import type { DatePickerProperties, Formatters } from '../typings.js';
-
-// export interface CalendarData extends PickDatePickerProperties {
-//   calendar: Calendar['calendar'];
-//   currentDate: Date;
-//   date: Date;
-//   disabledDatesSet: Set<number>;
-//   disabledDaysSet: Set<number>;
-//   formatters?: Formatters;
-//   max: Date;
-//   min: Date;
-//   todayDate: Date;
-//   weekdays: CalendarWeekday[];
-// }
-
-// export interface CalendarProperties {
-//   data?: CalendarData;
-// }
-
-// type PickDatePickerProperties = Pick<
-//   DatePickerProperties,
-//   | 'selectedDateLabel'
-//   | 'showWeekNumber'
-//   | 'todayLabel'
-// >;
-
 export interface CalendarDayElement extends Omit<HTMLButtonElement, 'dataset'> {
   dataset: Record<'day' | 'fulldate', string>;
 }
 
+interface CalendarStates {
+  _formatters: CalendarFormatters;
+}
+
 export interface CalendarProperties
-  extends Pick<
-    DatePickerProperties,
-    | 'disabledDates'
-    | 'disabledDays'
-    | 'firstDayOfWeek'
-    | 'locale'
-    | 'max'
-    | 'min'
-    | 'shortWeekLabel'
-    | 'showWeekNumber'
-    | 'value'
-    | 'weekLabel'
-    | 'weekNumberTemplate'
-    | 'weekNumberType'
-  > {
+  extends CalendarStates,
+    Pick<
+      DatePickerProperties,
+      | 'disabledDates'
+      | 'disabledDays'
+      | 'firstDayOfWeek'
+      | 'locale'
+      | 'max'
+      | 'min'
+      | 'shortWeekLabel'
+      | 'showWeekNumber'
+      | 'value'
+      | 'weekLabel'
+      | 'weekNumberTemplate'
+      | 'weekNumberType'
+    > {
   onDateUpdateByClick?(
     ev: MouseEvent,
     node: CalendarDayElement,
@@ -73,6 +52,13 @@ export interface CalendarProperties
   renderWeekNumber?(
     init: RenderWeekNumberInit
   ): TemplateResult | typeof nothing;
+}
+
+interface CalendarFormatters {
+  dayFormat: Intl.DateTimeFormat;
+  fullDateFormat: Intl.DateTimeFormat;
+  longWeekdayFormat: Intl.DateTimeFormat;
+  narrowWeekdayFormat: Intl.DateTimeFormat;
 }
 
 export interface RenderCalendarDayInit extends GridIndices {

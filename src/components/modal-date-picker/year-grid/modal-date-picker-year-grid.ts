@@ -143,7 +143,8 @@ export class ModalDatePickerYearGrid
   }
 
   protected override render(): TemplateResult {
-    const { _maxDate, _minDate, selectedYearTemplate, toyearTemplate, value } = this;
+    const { _maxDate, _minDate, selectedYearTemplate, toyearTemplate, value } =
+      this;
 
     const yearList = toYearList(_minDate, _maxDate);
     const selectedDateYear = toResolvedDate(value).getUTCFullYear();

@@ -1,4 +1,3 @@
-import type { DateTimeFormatter } from '@ipohjs/calendar/dist/typings.js';
 import type { LitElement, PropertyValues } from 'lit';
 
 import type { startViews } from './constants.js';
@@ -66,17 +65,6 @@ export interface DatePickerProperties
     DatePickerStartViewProperties {}
 
 type DatePickerValues = Required<Pick<DatePickerProperties, 'value'>>;
-
-export interface Formatters extends Pick<DatePickerProperties, 'locale'> {
-  dateFormat: DateTimeFormatter;
-  dayFormat: DateTimeFormatter;
-  fullDateFormat: DateTimeFormatter;
-  longMonthFormat: DateTimeFormatter;
-  longMonthYearFormat: DateTimeFormatter;
-  longWeekdayFormat: DateTimeFormatter;
-  narrowWeekdayFormat: DateTimeFormatter;
-  yearFormat: DateTimeFormatter;
-}
 
 export type InferredFromSet<SetType> = SetType extends Set<infer T> ? T : never;
 

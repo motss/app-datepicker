@@ -40,9 +40,7 @@ import type { ModalDatePickerYearGridProperties } from './year-grid/types.js';
 
 @customElement(modalDatePickerName)
 export class ModalDatePicker
-  extends DatePickerMixin(
-    DatePickerStartViewMixin(MinMaxMixin(RootElement))
-  )
+  extends DatePickerMixin(DatePickerStartViewMixin(MinMaxMixin(RootElement)))
   implements ModalDatePickerProperties
 {
   static override styles = [
@@ -133,21 +131,6 @@ export class ModalDatePicker
 
   #selectedDate?: Date;
 
-  #updateFocusOnViewChange = (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('startView')) {
-      const { startView } = this;
-
-      if (changedProperties.get('startView') !== startView) {
-        const menuButton =
-          this.#bodyMenuRef.value?.root.querySelector<MdTextButton>(
-            '.menuButton'
-          );
-
-        menuButton?.focus();
-      }
-    }
-  };
-
   #updateFocusedDate = (date: Date) => {
     this._focusedDate = toResolvedDate(date);
   };
@@ -181,6 +164,17 @@ export class ModalDatePicker
         this.#updateFocusedDate(toResolvedDate(newValue));
       },
       property: 'value',
+    });
+    new PropertyChangeController(this, {
+      onChange: () => {
+        const menuButton =
+          this.#bodyMenuRef.value?.root.querySelector<MdTextButton>(
+            '.menuButton'
+          );
+
+        menuButton?.focus();
+      },
+      property: 'startView',
     });
   }
 
@@ -218,7 +212,8 @@ export class ModalDatePicker
       toyearTemplate,
       type,
       weekLabel,
-      weekNumberTemplate, weekNumberType
+      weekNumberTemplate,
+      weekNumberType,
     } = this;
 
     const formId = id || 'modalDatePicker';
@@ -336,7 +331,6 @@ export class ModalDatePicker
 
   protected override updated(changedProperties: PropertyValueMap<this>): void {
     this.#focusSelectedYear(changedProperties);
-    this.#updateFocusOnViewChange(changedProperties);
   }
 
   get returnValue(): ModalDatePickerProperties['returnValue'] {

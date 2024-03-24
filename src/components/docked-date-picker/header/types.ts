@@ -4,14 +4,18 @@ export interface HeaderDataset extends DOMStringMap {
   type: HeaderMenuType;
 }
 
+interface HeaderFormatters {
+  shortMonthFormat: Intl.DateTimeFormat;
+  yearFormat: Intl.DateTimeFormat;
+}
+
 export type HeaderMenuType =
   | `${'month' | 'year'}${'Dec' | 'Inc'}`
   | MenuListType;
 
 export interface HeaderProperties
-  extends Partial<
-    Pick<DatePickerProperties, 'locale' | 'max' | 'min' | 'value'>
-  > {
+  extends HeaderStates,
+    Partial<Pick<DatePickerProperties, 'locale' | 'max' | 'min' | 'value'>> {
   nextMonthButtonLabel?: string;
   nextYearButtonLabel?: string;
   onMonthMenuClick?(init: HeaderPropertiesMenuClickFnInit): void;
@@ -24,4 +28,8 @@ export interface HeaderProperties
 export interface HeaderPropertiesMenuClickFnInit {
   date: Date;
   type: HeaderMenuType;
+}
+
+interface HeaderStates {
+  _formatters: HeaderFormatters;
 }

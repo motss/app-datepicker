@@ -30,9 +30,7 @@ import type { DatePickerCalendarProperties } from './types.js';
 
 @customElement(datePickerCalendarName)
 export class DatePickerCalendar
-  extends DatePickerStartViewMixin(
-    MinMaxMixin(DatePickerMixin(RootElement))
-  )
+  extends DatePickerStartViewMixin(MinMaxMixin(DatePickerMixin(RootElement)))
   implements DatePickerCalendarProperties
 {
   static override styles = [resetShadowRoot, datePickerCalendarStyles];
@@ -58,12 +56,7 @@ export class DatePickerCalendar
         ev.key as InferredFromSet<typeof navigationKeySetGrid>
       )
     ) {
-      const {
-        _focusedDate,
-        _maxDate,
-        _minDate,
-        _selectedDate
-      } = this;
+      const { _focusedDate, _maxDate, _minDate, _selectedDate } = this;
 
       const nextDate = toNextSelectedDate({
         currentDate: _focusedDate,
@@ -159,9 +152,12 @@ export class DatePickerCalendar
 
     new PropertyChangeController(this, {
       onChange: (_, newValue) => {
-        this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(newValue);
+        this._focusedDate =
+          this._selectedDate =
+          this._tabbableDate =
+            toResolvedDate(newValue);
       },
-      property: 'value'
+      property: 'value',
     });
   }
 
