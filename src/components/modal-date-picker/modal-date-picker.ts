@@ -14,6 +14,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import { dateFormatOptions, labelConfirm, labelDeny } from '../../constants.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
@@ -151,15 +152,6 @@ export class ModalDatePicker
     this._focusedDate = toResolvedDate(date);
   };
 
-  #updateFocusedDateByValue = (changedProperties: PropertyValueMap<this>) => {
-    if (
-      changedProperties.has('value') &&
-      this.value !== changedProperties.get('value')
-    ) {
-      this.#updateFocusedDate(toResolvedDate(this.value));
-    }
-  };
-
   #updateStartView = () => {
     this.startView = 'calendar';
   };
@@ -183,6 +175,13 @@ export class ModalDatePicker
 
     this._focusedDate = toResolvedDate(value);
     // this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
+
+    new PropertyChangeController(this, {
+      onChange: (_, newValue) => {
+        this.#updateFocusedDate(toResolvedDate(newValue));
+      },
+      property: 'value',
+    });
   }
 
   close(returnValue: ModalDatePickerPropertiesReturnValue) {
@@ -338,12 +337,6 @@ export class ModalDatePicker
   protected override updated(changedProperties: PropertyValueMap<this>): void {
     this.#focusSelectedYear(changedProperties);
     this.#updateFocusOnViewChange(changedProperties);
-  }
-
-  protected override willUpdate(
-    changedProperties: PropertyValueMap<this>
-  ): void {
-    this.#updateFocusedDateByValue(changedProperties);
   }
 
   get returnValue(): ModalDatePickerProperties['returnValue'] {

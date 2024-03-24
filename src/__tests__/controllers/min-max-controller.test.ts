@@ -1,4 +1,3 @@
-import { elementUpdated } from '@open-wc/testing-helpers';
 import { html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
 import { describe, expect, it } from 'vitest';
@@ -48,10 +47,10 @@ describe(MinMaxController.name, () => {
 
   it('returns max correctly when max is defined', async () => {
     const max = '2023-02-02';
-    const { element, getMax, getMin } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.max = max;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(minJson);
@@ -59,10 +58,10 @@ describe(MinMaxController.name, () => {
 
   it('returns min correctly when min is defined', async () => {
     const max = '2023-02-02';
-    const { element, getMax, getMin } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.max = max;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(minJson);
@@ -71,11 +70,11 @@ describe(MinMaxController.name, () => {
   it('returns min & max correctly when min & max are defined', async () => {
     const max = '2023-02-02';
     const min = '2020-02-02';
-    const { element, getMax, getMin } = await render();
+    const { element, getMax, getMin, updated } = await render();
 
     element.max = max;
     element.min = min;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(new Date(min).toJSON());

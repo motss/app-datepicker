@@ -32,6 +32,7 @@ import {
   navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toDateString } from '../../helpers/to-date-string.js';
@@ -278,20 +279,6 @@ export class DockedDatePicker
     }
   };
 
-  #updateDatesByValue = (changedProperties: PropertyValueMap<this>): void => {
-    const { value } = this;
-
-    if (
-      changedProperties.has('value') &&
-      value !== changedProperties.get('value')
-    ) {
-      this._focusedDate =
-        this._selectedDate =
-        this._tabbableDate =
-          toResolvedDate(value);
-    }
-  };
-
   #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (
     init
   ) => {
@@ -404,6 +391,16 @@ export class DockedDatePicker
       this._selectedDate =
       this._tabbableDate =
         toResolvedDate(value);
+
+    new PropertyChangeController(this, {
+      onChange: (_, newValue) => {
+        this._focusedDate =
+              this._selectedDate =
+              this._tabbableDate =
+                toResolvedDate(newValue);
+      },
+      property: 'value',
+    });
   }
 
   protected override render(): TemplateResult {
@@ -563,7 +560,6 @@ export class DockedDatePicker
   protected override willUpdate(
     changedProperties: PropertyValueMap<this>
   ): void {
-    this.#updateDatesByValue(changedProperties);
     this.#updateTabbableDate(changedProperties);
   }
 }

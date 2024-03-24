@@ -1,4 +1,4 @@
-import { defineCE, fixture } from '@open-wc/testing-helpers';
+import { defineCE, elementUpdated, fixture } from '@open-wc/testing-helpers';
 
 import type { RootElement } from '../../../root-element/root-element.js';
 import type { Constructor } from '../../../utility.types.js';
@@ -15,6 +15,7 @@ type OutputHelpers<H> = {
 
 type Result<T extends RootElement, H extends InputHelpers<T>> = {
   readonly element: T;
+  updated(): Promise<void>;
 } & OutputHelpers<H>;
 
 export function createFixture<
@@ -45,6 +46,9 @@ export function createFixture<
 
     const result: Result<T, H> = {
       element,
+      async updated() {
+        await elementUpdated(element);
+      },
       ...helpers,
     };
 

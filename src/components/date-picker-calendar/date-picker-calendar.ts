@@ -8,6 +8,7 @@ import {
   navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
@@ -104,20 +105,6 @@ export class DatePickerCalendar
 
   readonly #todayDate: Date = toResolvedDate();
 
-  #updateDatesByValue = (changedProperties: PropertyValueMap<this>) => {
-    const { value } = this;
-
-    if (
-      changedProperties.has('value') &&
-      value !== changedProperties.get('value')
-    ) {
-      this._focusedDate =
-        this._selectedDate =
-        this._tabbableDate =
-          toResolvedDate(value);
-    }
-  };
-
   #updateTabbableDate = () => {
     const isWithinSameMonth = isSameMonth(
       this._selectedDate,
@@ -169,6 +156,13 @@ export class DatePickerCalendar
       this._selectedDate =
       this._tabbableDate =
         toResolvedDate(value);
+
+    new PropertyChangeController(this, {
+      onChange: (_, newValue) => {
+        this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(newValue);
+      },
+      property: 'value'
+    });
   }
 
   #notifyDateUpdate(changedProperties: PropertyValueMap<this>): void {
@@ -229,7 +223,6 @@ export class DatePickerCalendar
   protected override willUpdate(
     changedProperties: PropertyValueMap<this>
   ): void {
-    this.#updateDatesByValue(changedProperties);
     this.#updateTabbableDate();
     this.#notifyDateUpdate(changedProperties);
   }

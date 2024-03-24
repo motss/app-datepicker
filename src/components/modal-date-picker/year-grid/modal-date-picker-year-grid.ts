@@ -8,6 +8,7 @@ import {
   toyearTemplate,
   yearFormatOptions,
 } from '../../../constants.js';
+import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toClosestTarget } from '../../../helpers/to-closest-target.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
@@ -96,17 +97,6 @@ export class ModalDatePickerYearGrid
 
   #todayYear: number = toResolvedDate().getUTCFullYear();
 
-  #updateFocusingYear = (changedProperties: PropertyValueMap<this>) => {
-    const { value } = this;
-
-    if (
-      changedProperties.has('value') &&
-      value !== changedProperties.get('value')
-    ) {
-      this.#focusingYear = toResolvedDate(value).getUTCFullYear();
-    }
-  };
-
   #yearFormat: Intl.DateTimeFormat = intlDateTimeFormatNoop;
 
   @property() locale: string = new Intl.DateTimeFormat().resolvedOptions()
@@ -123,6 +113,18 @@ export class ModalDatePickerYearGrid
   @property() value: null | string | undefined = '';
 
   @queryAsync('.year-grid') yearGrid!: Promise<HTMLDivElement | null>;
+
+  constructor() {
+    super();
+
+    new PropertyChangeController(this, {
+      onChange: (_, newValue) => {
+        this.#focusingYear = toResolvedDate(newValue).getUTCFullYear();
+        this.requestUpdate();
+      },
+      property: 'value',
+    });
+  }
 
   focusYearWhenNeeded() {
     /**
@@ -185,7 +187,6 @@ export class ModalDatePickerYearGrid
 
   override willUpdate(changedProperties: PropertyValueMap<this>): void {
     this.#installYearFormat(changedProperties);
-    this.#updateFocusingYear(changedProperties);
   }
 }
 

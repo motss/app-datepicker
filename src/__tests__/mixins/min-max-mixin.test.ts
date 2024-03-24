@@ -1,4 +1,3 @@
-import { elementUpdated } from '@open-wc/testing-helpers';
 import { html } from 'lit';
 import { describe, expect, it } from 'vitest';
 
@@ -50,10 +49,11 @@ describe(MinMaxMixin.name, () => {
       element,
       getMax,
       getMin,
+      updated,
     } = await render();
 
     element.max = max;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(minJson);
@@ -66,10 +66,11 @@ describe(MinMaxMixin.name, () => {
       element,
       getMax,
       getMin,
+      updated,
     } = await render();
 
     element.min = min;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(maxJson);
     expect(getMin()).toHaveValue(new Date(min).toJSON());
@@ -83,11 +84,12 @@ describe(MinMaxMixin.name, () => {
       element,
       getMax,
       getMin,
+      updated,
     } = await render();
 
     element.max = max;
     element.min = min;
-    await elementUpdated(element);
+    await updated();
 
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(new Date(min).toJSON());
