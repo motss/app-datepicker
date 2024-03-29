@@ -1,9 +1,10 @@
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
-const { CI } = process.env;
+const { CI, DEBUG } = process.env;
 
 const isCi = (CI || 'false') === 'true';
+const isDebug = DEBUG === '1';
 
 /* eslint-disable import/no-default-export */
 // biome-ignore lint/style/noDefaultExport: <explanation>
@@ -13,7 +14,7 @@ export default defineConfig({
     browser: {
       enabled: true,
       fileParallelism: true,
-      headless: isCi,
+      headless: isDebug || true,
       isolate: true,
       name: 'chromium', // pw
       provider: 'playwright',
