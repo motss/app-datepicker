@@ -19,7 +19,6 @@ import { property, query, queryAssignedElements } from 'lit/decorators.js';
 import { type ClassInfo, classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
-import { emptyReadonlyArray } from '../../constants.js';
 import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 
 // export { Corner } from '@material/web/menu/internal/controllers/surfacePositionController.js';
@@ -231,6 +230,7 @@ export abstract class MenuSurface extends LitElement {
   private readonly onWindowPointerdown = (event: PointerEvent) => {
     this.pointerPath = event.composedPath();
   };
+
   private readonly onWindowResize = () => {
     if (
       this.isRepositioning ||
@@ -244,11 +244,12 @@ export abstract class MenuSurface extends LitElement {
     this.reposition();
     this.isRepositioning = false;
   };
+
   private readonly openCloseAnimationSignal = createAnimationSignal();
   /**
    * The event path of the last window pointerdown event.
    */
-  private pointerPath: EventTarget[] = emptyReadonlyArray as EventTarget[];
+  private pointerPath: EventTarget[] = [];
 
   @query('slot') private readonly slotEl!: HTMLSlotElement | null;
 
@@ -505,7 +506,7 @@ export abstract class MenuSurface extends LitElement {
     );
 
     const childrenAnimations: [HTMLElement, Animation][] =
-      emptyReadonlyArray as [HTMLElement, Animation][];
+      [];
 
     for (let i = 0; i < children.length; i++) {
       // If the animation is closing upwards, then reverse the list of
@@ -614,7 +615,7 @@ export abstract class MenuSurface extends LitElement {
     );
 
     const childrenAnimations: [HTMLElement, Animation][] =
-      emptyReadonlyArray as [HTMLElement, Animation][];
+      [];
 
     for (let i = 0; i < children.length; i++) {
       // If we are animating upwards, then reverse the children list.

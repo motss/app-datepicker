@@ -185,7 +185,7 @@ export class Calendar
     });
     const [weekNumber, ...weekdays] = [
       ...(showWeekNumber
-        ? (emptyReadonlyArray as CalendarWeekday[])
+        ? (emptyReadonlyArray as readonly CalendarWeekday[])
         : ([{ label: '', value: '' }] as [CalendarWeekday])),
       ...maybeWeekdaysWithWeekLabel,
     ];

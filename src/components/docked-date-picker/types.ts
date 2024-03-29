@@ -4,7 +4,7 @@ import type { DatePickerProperties, MenuListType } from '../../types.js';
 import type { OmitKey } from '../../utility.types.js';
 
 export interface DockedDatePickerProperties
-  extends DockedDatePickerStates,
+  extends
     OmitKey<DatePickerProperties, 'startView'>,
     Partial<PickMdOutlinedTextField> {
   open?: boolean;
@@ -12,11 +12,5 @@ export interface DockedDatePickerProperties
 }
 
 export type DockedDatePickerPropertiesReturnValue = 'confirm' | 'deny';
-
-interface DockedDatePickerStates {
-  _focusedDate: Date;
-  _selectedDate: Date;
-  _tabbableDate: Date;
-}
 
 type PickMdOutlinedTextField = Pick<MdOutlinedTextField, 'supportingText'>;

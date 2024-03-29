@@ -1,9 +1,9 @@
 import { emptyReadonlyArray } from '../constants.js';
 import { toDayDiffInclusive } from './to-day-diff-inclusive.js';
 
-export function toYearList(min: Date, max: Date): number[] {
+export function toYearList(min: Date, max: Date): readonly number[] {
   if (toDayDiffInclusive(min, max) < 1) {
-    return emptyReadonlyArray as number[];
+    return emptyReadonlyArray;
   }
 
   const fy = min.getUTCFullYear();

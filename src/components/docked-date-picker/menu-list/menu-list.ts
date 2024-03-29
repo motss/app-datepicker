@@ -10,7 +10,6 @@ import { map } from 'lit/directives/map.js';
 import { createRef, ref } from 'lit/directives/ref.js';
 
 import {
-  emptyReadonlyArray,
   labelMonthMenuItemTemplate,
   labelSelectedMonthMenuItemTemplate,
   labelSelectedYearMenuItemTemplate,
@@ -122,7 +121,7 @@ export class MenuList
       const maxDate = toResolvedDate(max ?? MAX_DATE);
       const valueDate = toResolvedDate(value);
 
-      let list: MenuListItem[] = emptyReadonlyArray as MenuListItem[];
+      let list: MenuListItem[] = [];
 
       switch (menuListType) {
         case 'monthMenu': {
@@ -167,7 +166,7 @@ export class MenuList
   };
 
   @state() _formatters!: MenuListProperties['_formatters'];
-  @state() _menuList: MenuListItem[] = emptyReadonlyArray as MenuListItem[];
+  @state() _menuList: MenuListItem[] = [];
 
   @property() locale: string = Intl.DateTimeFormat().resolvedOptions().locale;
   @property() menuListType: MenuListType = 'monthMenu';

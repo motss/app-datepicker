@@ -6,17 +6,14 @@ import './menu-list/docked-date-picker-menu-list.js';
 import '../md-menu-surface/md-menu-surface.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
-import type { ListItem } from '@material/web/menu/menu.js';
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
 import { html, type PropertyValueMap, type TemplateResult } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
 import {
-  confirmKeySet,
-  emptyReadonlyArray,
   labelConfirm,
   labelDeny,
   labelMonthMenuItemTemplate,
@@ -29,17 +26,12 @@ import {
   labelShowCalendar,
   labelSupportingText,
   labelYearMenuItemTemplate,
-  navigationKeySetGrid,
   renderNoop,
 } from '../../constants.js';
-import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
-import { isSameMonth } from '../../helpers/is-same-month.js';
-import { splitString } from '../../helpers/split-string.js';
+import { DatesController } from '../../controllers/dates-controller/dates-controller.js';
 import { toDateString } from '../../helpers/to-date-string.js';
-import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconCalendar } from '../../icons.js';
-import { keyHome } from '../../key-values.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { ElementMixin } from '../../mixins/element-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
@@ -49,14 +41,11 @@ import { renderActionsStyle } from '../../render-helpers/render-actions/styles.j
 import { RootElement } from '../../root-element/root-element.js';
 import { resetShadowRoot } from '../../styles.js';
 import type {
-  InferredFromSet,
   MenuListType,
-  SupportedKey,
 } from '../../types.js';
 import { renderCalendarDay } from '../date-picker-calendar/calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../date-picker-calendar/calendar/helpers/render-week-day/render-week-day.js';
 import type {
-  CalendarDayElement,
   CalendarProperties,
 } from '../date-picker-calendar/calendar/types.js';
 import { dockedDatePickerName } from './constants.js';
@@ -65,7 +54,6 @@ import type { DockedDatePickerMenuList } from './menu-list/docked-date-picker-me
 import { dockedDatePickerStyles } from './styles.js';
 import type { DockedDatePickerProperties } from './types.js';
 
-const defaultDate = toResolvedDate();
 const yOffset = 7;
 
 @customElement(dockedDatePickerName)
@@ -97,27 +85,26 @@ export class DockedDatePicker
 
   #bodyRef = createRef<HTMLDivElement>();
 
-  #confirmSelectedDate = (node: CalendarDayElement) => {
-    this._focusedDate = this._selectedDate = toResolvedDate(
-      node.dataset.fulldate
-    );
-  };
-
   #didConfirm = false;
-  #headerRef = createRef<DockedDatePickerHeader>();
 
+  #headerRef = createRef<DockedDatePickerHeader>();
   #hostRef: Ref<this> = createRef();
 
   #menuListRef = createRef<DockedDatePickerMenuList>();
 
   #onClosed = () => {
-    const { _selectedDate, value } = this;
+    const { $datesController_, value } = this;
 
     if (this.#didConfirm) {
-      this.value = toDateString(_selectedDate);
+      this.value = toDateString($datesController_.selectedDate);
       this.#didConfirm = false;
     } else {
-      this._focusedDate = this._selectedDate = toResolvedDate(value);
+      const newDate = toResolvedDate(value);
+
+      this.$datesController_.updateBy({
+        focusedDate: newDate,
+        selectedDate: newDate,
+      });
     }
 
     this.startView = 'calendar';
@@ -133,48 +120,6 @@ export class DockedDatePicker
     this.#onClosing();
   };
 
-  #onDateUpdateByClick: NonNullable<CalendarProperties['onDateUpdateByClick']> =
-    (_ev, node) => {
-      this.#confirmSelectedDate(node);
-    };
-
-  #onDateUpdateByKey: NonNullable<CalendarProperties['onDateUpdateByKey']> = (
-    ev,
-    _node,
-    { disabledDatesSet, disabledDaysSet }
-  ) => {
-    if (
-      navigationKeySetGrid.has(
-        ev.key as InferredFromSet<typeof navigationKeySetGrid>
-      )
-    ) {
-      const { _focusedDate, _maxDate, _minDate, _selectedDate } = this;
-
-      const nextDate = toNextSelectedDate({
-        currentDate: _focusedDate,
-        date: _selectedDate,
-        disabledDatesSet,
-        disabledDaysSet,
-        hasAltKey: ev.altKey,
-        key: ev.key as SupportedKey,
-        maxTime: _maxDate.getTime(),
-        minTime: _minDate.getTime(),
-      });
-      const nextDateTime = nextDate.getTime();
-
-      if (
-        nextDateTime !== _focusedDate.getTime() ||
-        nextDateTime !== _selectedDate.getTime()
-      ) {
-        this._focusedDate = this._selectedDate = nextDate;
-      }
-    } else if (
-      confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
-    ) {
-      this.#onConfirm();
-    }
-  };
-
   #onDeny = () => {
     this.#onClosing();
   };
@@ -183,16 +128,18 @@ export class DockedDatePicker
     type,
     value,
   }) => {
-    const { _focusedDate } = this;
-    const y = _focusedDate.getUTCFullYear();
-    const m = _focusedDate.getUTCMonth();
-    const d = _focusedDate.getUTCDate();
+    const { $datesController_ } = this;
+    const y = $datesController_.focusedDate.getUTCFullYear();
+    const m = $datesController_.focusedDate.getUTCMonth();
+    const d = $datesController_.focusedDate.getUTCDate();
 
-    this._focusedDate = fromPartsToUtcDate(
+    this.$datesController_.updateBy({
+      focusedDate: fromPartsToUtcDate(
       type === 'yearMenu' ? value : y,
       type === 'monthMenu' ? value : m,
       d
-    );
+      ),
+    });
     this.startView = 'calendar';
   };
 
@@ -222,10 +169,12 @@ export class DockedDatePicker
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
+    const { $datesController_ } = this;
+
     return renderCalendarDay({
       data,
-      selectedDate: this._selectedDate,
-      tabbableDate: this._tabbableDate,
+      selectedDate: $datesController_.selectedDate,
+      tabbableDate: $datesController_.tabbableDate,
       todayDate: this.#todayDate,
     });
   };
@@ -246,7 +195,7 @@ export class DockedDatePicker
       const body = this.#bodyRef.value;
       const listItems =
         (await this.#menuListRef.value?.getListItems()) ??
-        (emptyReadonlyArray as ListItem[]);
+        [];
       const selectedListItemIdx = listItems.findIndex(
         (n) => !n.disabled && n.tabIndex > -1
       );
@@ -288,7 +237,7 @@ export class DockedDatePicker
       case 'monthInc':
       case 'yearDec':
       case 'yearInc': {
-        this._focusedDate = init.date;
+        this.$datesController_.updateBy({ focusedDate: init.date });
         break;
       }
       case 'monthMenu':
@@ -303,49 +252,6 @@ export class DockedDatePicker
         break;
       }
       default:
-    }
-  };
-
-  #updateTabbableDate = (changedProperties: PropertyValueMap<this>) => {
-    const {
-      _focusedDate,
-      _maxDate,
-      _minDate,
-      _selectedDate,
-      disabledDates,
-      disabledDays,
-    } = this;
-
-    if (
-      (changedProperties.has('_focusedDate') &&
-        changedProperties.get('_focusedDate') !== _focusedDate) ||
-      (changedProperties.has('_selectedDate') &&
-        changedProperties.get('_selectedDate') !== _selectedDate)
-    ) {
-      const isWithinSameMonth = isSameMonth(_selectedDate, _focusedDate);
-
-      if (isWithinSameMonth) {
-        this._tabbableDate = _selectedDate;
-      } else {
-        /**
-         * NOTE: This reset tabindex of a tab-able calendar day to
-         * the first day of month when navigating away from the current month
-         * where the focused/ selected date is no longer in the new current month.
-         */
-        const disabledDateList = splitString(disabledDates, toResolvedDate);
-        const disabledDayList = splitString(disabledDays, Number);
-
-        this._tabbableDate = toNextSelectedDate({
-          currentDate: this._focusedDate,
-          date: this._selectedDate,
-          disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
-          disabledDaysSet: new Set(disabledDayList),
-          hasAltKey: false,
-          key: keyHome,
-          maxTime: _maxDate.getTime(),
-          minTime: _minDate.getTime(),
-        });
-      }
     }
   };
 
@@ -364,11 +270,9 @@ export class DockedDatePicker
     ).focused = focused;
   };
 
-  @state() _focusedDate: Date = defaultDate;
-
-  @state() _selectedDate: Date = defaultDate;
-
-  @state() _tabbableDate: Date = defaultDate;
+  $datesController_ = new DatesController(this, {
+    onConfirm: this.#onConfirm,
+  });
 
   @property() calendarIconLabel: string = labelShowCalendar;
 
@@ -390,30 +294,9 @@ export class DockedDatePicker
 
   @property({ reflect: true }) supportingText: string = labelSupportingText;
 
-  constructor() {
-    super();
-
-    const { value } = this;
-
-    this._focusedDate =
-      this._selectedDate =
-      this._tabbableDate =
-        toResolvedDate(value);
-
-    new PropertyChangeController(this, {
-      onChange: (_, newValue) => {
-        this._focusedDate =
-          this._selectedDate =
-          this._tabbableDate =
-            toResolvedDate(newValue);
-      },
-      property: 'value',
-    });
-  }
-
   protected override render(): TemplateResult {
     const {
-      _focusedDate,
+      $datesController_,
       calendarIconLabel,
       confirmText,
       denyText,
@@ -439,7 +322,7 @@ export class DockedDatePicker
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
-    const focusedValue = toDateString(_focusedDate);
+    const focusedValue = toDateString($datesController_.focusedDate);
     const valueValue = toDateString(toResolvedDate(value));
 
     return html`
@@ -501,8 +384,8 @@ export class DockedDatePicker
                 ? html`
               <app-calendar
                 ?showWeekNumber=${showWeekNumber}
-                .onDateUpdateByClick=${this.#onDateUpdateByClick}
-                .onDateUpdateByKey=${this.#onDateUpdateByKey}
+                .onDateUpdateByClick=${$datesController_.onDateUpdateByClick}
+                .onDateUpdateByKey=${$datesController_.onDateUpdateByKey}
                 .onUpdated=${() => {
                   /** todo: */
                 }}
@@ -563,12 +446,6 @@ export class DockedDatePicker
     changedProperties: PropertyValueMap<this>
   ): Promise<void> {
     this.#scrollIntoViewWhenNeeded(changedProperties);
-  }
-
-  protected override willUpdate(
-    changedProperties: PropertyValueMap<this>
-  ): void {
-    this.#updateTabbableDate(changedProperties);
   }
 }
 
