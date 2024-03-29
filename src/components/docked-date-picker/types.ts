@@ -4,8 +4,7 @@ import type { DatePickerProperties, MenuListType } from '../../types.js';
 import type { OmitKey } from '../../utility.types.js';
 
 export interface DockedDatePickerProperties
-  extends
-    OmitKey<DatePickerProperties, 'startView'>,
+  extends OmitKey<DatePickerProperties, 'startView'>,
     Partial<PickMdOutlinedTextField> {
   open?: boolean;
   startView?: MenuListType | NonNullable<DatePickerProperties['startView']>;

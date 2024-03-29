@@ -4,9 +4,15 @@ import type {
   ReactiveControllerHost,
 } from 'lit';
 
+import type { OmitKey } from '../../utility.types.js';
+
 type ExecuteOrder = 'update' | 'updated';
 
-interface Init<T extends LitElement, Property extends keyof T, Order extends ExecuteOrder> {
+interface Init<
+  T extends LitElement,
+  Property extends keyof T,
+  Order extends ExecuteOrder,
+> {
   compare?: boolean;
   onUpdate?(oldValue: T[Property] | undefined, newValue: T[Property]): void;
   onUpdated?(oldValue: T[Property] | undefined, newValue: T[Property]): void;
@@ -36,12 +42,14 @@ export class PropertyChangeController<
 
     if (property && shouldRunAfterOrderCheck) {
       const newValue = this.#host[property];
-      const shouldRunAfterCompareCheck = !this.#compare || this.#oldValue !== newValue;
+      const shouldRunAfterCompareCheck =
+        !this.#compare || this.#oldValue !== newValue;
 
       if (shouldRunAfterCompareCheck) {
-        (
-          order === 'updated' ? this.#onUpdated : this.#onUpdate
-        )?.(this.#oldValue, newValue);
+        (order === 'updated' ? this.#onUpdated : this.#onUpdate)?.(
+          this.#oldValue,
+          newValue
+        );
         this.#oldValue = newValue;
       }
     }
@@ -49,7 +57,9 @@ export class PropertyChangeController<
 
   constructor(
     host: ReactiveControllerHost & T,
-    init: Order extends 'updated' ? Omit<Init<T, Property, Order>, 'onUpdate'> : Omit<Init<T, Property, Order>, 'onUpdated'>
+    init: Order extends 'updated'
+      ? OmitKey<Init<T, Property, Order>, 'onUpdate'>
+      : OmitKey<Init<T, Property, Order>, 'onUpdated'>
   ) {
     this.#compare = init?.compare ?? true;
     this.#host = host;

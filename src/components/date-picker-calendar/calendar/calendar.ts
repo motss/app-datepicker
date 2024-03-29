@@ -4,7 +4,7 @@ import type {
   CalendarWeekday,
 } from '@ipohjs/calendar/dist/typings.js';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
-import { html, nothing, type PropertyValueMap, type TemplateResult } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 
 import {

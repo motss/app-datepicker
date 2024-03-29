@@ -41,14 +41,10 @@ import { renderActions } from '../../render-helpers/render-actions/render-action
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { resetShadowRoot } from '../../styles.js';
-import type {
-  MenuListType,
-} from '../../types.js';
+import type { MenuListType } from '../../types.js';
 import { renderCalendarDay } from '../date-picker-calendar/calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../date-picker-calendar/calendar/helpers/render-week-day/render-week-day.js';
-import type {
-  CalendarProperties,
-} from '../date-picker-calendar/calendar/types.js';
+import type { CalendarProperties } from '../date-picker-calendar/calendar/types.js';
 import { dockedDatePickerName } from './constants.js';
 import type { DockedDatePickerHeader } from './header/docked-date-picker-header.js';
 import type { DockedDatePickerMenuList } from './menu-list/docked-date-picker-menu-list.js';
@@ -136,9 +132,9 @@ export class DockedDatePicker
 
     this.$datesController_.updateBy({
       focusedDate: fromPartsToUtcDate(
-      type === 'yearMenu' ? value : y,
-      type === 'monthMenu' ? value : m,
-      d
+        type === 'yearMenu' ? value : y,
+        type === 'monthMenu' ? value : m,
+        d
       ),
     });
     this.startView = 'calendar';
@@ -184,12 +180,9 @@ export class DockedDatePicker
     return renderWeekDay(weekday);
   };
 
-  #scrollSelectedMenuListItemIntoView = async (
-  ) => {
+  #scrollSelectedMenuListItemIntoView = async () => {
     const body = this.#bodyRef.value;
-    const listItems =
-      (await this.#menuListRef.value?.getListItems()) ??
-      [];
+    const listItems = (await this.#menuListRef.value?.getListItems()) ?? [];
     const selectedListItemIdx = listItems.findIndex(
       (n) => !n.disabled && n.tabIndex > -1
     );

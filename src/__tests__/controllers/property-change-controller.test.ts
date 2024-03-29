@@ -6,7 +6,10 @@ import { PropertyChangeController } from '../../controllers/property-change-cont
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 
-type ToTestComponentInit = Pick<ConstructorParameters<typeof PropertyChangeController>[1], 'compare' | 'order'>;
+type ToTestComponentInit = Pick<
+  ConstructorParameters<typeof PropertyChangeController>[1],
+  'compare' | 'order'
+>;
 
 describe(PropertyChangeController.name, () => {
   const onUpdate = vi.fn();
@@ -53,7 +56,10 @@ describe(PropertyChangeController.name, () => {
   } satisfies Parameters<typeof createFixture>[1];
 
   it('calls onUpdate correctly', async () => {
-    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
+    const { element, getValue, updated } = await createFixture(
+      toTestComponent,
+      helpers
+    )();
 
     await updated();
 
@@ -68,7 +74,10 @@ describe(PropertyChangeController.name, () => {
   it('calls onUpdate correctly when value changes', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
+    const { element, getValue, updated } = await createFixture(
+      toTestComponent,
+      helpers
+    )();
 
     element.value = value;
     await updated();
@@ -83,7 +92,10 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdate correctly when value changes to null', async () => {
-    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
+    const { element, getValue, updated } = await createFixture(
+      toTestComponent,
+      helpers
+    )();
 
     // @ts-expect-error Test null
     element.value = null;
@@ -101,7 +113,10 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdate correctly when value changes to undefined', async () => {
-    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
+    const { element, getValue, updated } = await createFixture(
+      toTestComponent,
+      helpers
+    )();
 
     // @ts-expect-error Test undefined
     element.value = undefined;
@@ -210,10 +225,11 @@ describe(PropertyChangeController.name, () => {
     const value = 'abc';
 
     const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({
-        compare: false,
-        order: 'updated',
-      }),
+      () =>
+        toTestComponent({
+          compare: false,
+          order: 'updated',
+        }),
       helpers
     )();
 

@@ -1,19 +1,39 @@
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
 
-import { confirmKeySet, MAX_DATE, MIN_DATE, navigationKeySetGrid } from '../../constants.js';
+import {
+  confirmKeySet,
+  MAX_DATE,
+  MIN_DATE,
+  navigationKeySetGrid,
+} from '../../constants.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { keyHome } from '../../key-values.js';
-import type { DatePickerProperties, InferredFromSet, SupportedKey } from '../../types.js';
+import type {
+  DatePickerProperties,
+  InferredFromSet,
+  SupportedKey,
+} from '../../types.js';
 import type { DatesControllerProperties } from './types.js';
 
 interface Init {
-  onConfirm?(data: Pick<DatesControllerProperties, 'focusedDate' | 'selectedDate' | 'tabbableDate'>): void;
+  onConfirm?(
+    data: Pick<
+      DatesControllerProperties,
+      'focusedDate' | 'selectedDate' | 'tabbableDate'
+    >
+  ): void;
 }
 
-export class DatesController<T extends Pick<DatePickerProperties, 'disabledDates' | 'disabledDays' | 'max' | 'min' | 'value'>> implements DatesControllerProperties, ReactiveController {
+export class DatesController<
+  T extends Pick<
+    DatePickerProperties,
+    'disabledDates' | 'disabledDays' | 'max' | 'min' | 'value'
+  >,
+> implements DatesControllerProperties, ReactiveController
+{
   #host: ReactiveControllerHost & T;
   #max?: string;
   #maxDate: Date = toResolvedDate(MAX_DATE);
@@ -85,16 +105,22 @@ export class DatesController<T extends Pick<DatePickerProperties, 'disabledDates
 
   focusedDate: Date = toResolvedDate();
 
-  onDateUpdateByClick: DatesControllerProperties['onDateUpdateByClick'] = (_ev, node) => {
+  onDateUpdateByClick: DatesControllerProperties['onDateUpdateByClick'] = (
+    _ev,
+    node
+  ) => {
     console.debug({ fulldate: node.dataset.fulldate });
-    this.focusedDate = this.selectedDate = toResolvedDate(node.dataset.fulldate);
+    this.focusedDate = this.selectedDate = toResolvedDate(
+      node.dataset.fulldate
+    );
     this.#requestHostUpdate();
   };
 
-  onDateUpdateByKey: DatesControllerProperties['onDateUpdateByKey'] = (ev, _node, {
-    disabledDatesSet,
-    disabledDaysSet
-  }) => {
+  onDateUpdateByKey: DatesControllerProperties['onDateUpdateByKey'] = (
+    ev,
+    _node,
+    { disabledDatesSet, disabledDaysSet }
+  ) => {
     if (
       navigationKeySetGrid.has(
         ev.key as InferredFromSet<typeof navigationKeySetGrid>
@@ -134,7 +160,7 @@ export class DatesController<T extends Pick<DatePickerProperties, 'disabledDates
 
   updateBy: DatesControllerProperties['updateBy'] = ({
     focusedDate,
-    selectedDate
+    selectedDate,
   }) => {
     let didUpdate = 0;
 

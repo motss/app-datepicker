@@ -506,8 +506,7 @@ export abstract class MenuSurface extends LitElement {
       { delay: surfaceOpacityDelay, duration: surfaceOpacityDuration }
     );
 
-    const childrenAnimations: [HTMLElement, Animation][] =
-      [];
+    const childrenAnimations: [HTMLElement, Animation][] = [];
 
     for (let i = 0; i < children.length; i++) {
       // If the animation is closing upwards, then reverse the list of
@@ -615,8 +614,7 @@ export abstract class MenuSurface extends LitElement {
       surfaceOpacityDuration
     );
 
-    const childrenAnimations: [HTMLElement, Animation][] =
-      [];
+    const childrenAnimations: [HTMLElement, Animation][] = [];
 
     for (let i = 0; i < children.length; i++) {
       // If we are animating upwards, then reverse the children list.
