@@ -6,9 +6,12 @@ import { PropertyChangeController } from '../../controllers/property-change-cont
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 
+type ToTestComponentInit = Pick<ConstructorParameters<typeof PropertyChangeController>[1], 'compare' | 'order'>;
+
 describe(PropertyChangeController.name, () => {
-  const onChange = vi.fn();
-  const toTestComponent = (compare = true) => {
+  const onUpdate = vi.fn();
+  const onUpdated = vi.fn();
+  const toTestComponent = (init?: ToTestComponentInit) => {
     class TestComponent extends RootElement {
       #handleInput: HTMLInputElement['oninput'] = (ev) => {
         const target = ev.currentTarget as HTMLInputElement;
@@ -22,10 +25,14 @@ describe(PropertyChangeController.name, () => {
         super();
 
         new PropertyChangeController(this, {
-          compare,
-          onChange: (_, value) => {
-            onChange(_, value);
+          compare: init?.compare,
+          onUpdate: (_, value) => {
+            onUpdate(_, value);
           },
+          onUpdated: (_, value) => {
+            onUpdated(_, value);
+          },
+          order: init?.order ?? 'update',
           property: 'value',
         });
       }
@@ -44,24 +51,24 @@ describe(PropertyChangeController.name, () => {
       return n.root.querySelector<HTMLInputElement>('input#value');
     },
   } satisfies Parameters<typeof createFixture>[1];
-  const render = createFixture(toTestComponent, helpers);
 
-  it('calls onChange correctly', async () => {
-    const { element, getValue, updated } = await render();
+  it('calls onUpdate correctly', async () => {
+    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
 
     await updated();
 
     expect(getValue()).toHaveValue('');
     expect(element.value).toBe('');
 
-    expect(onChange).toBeCalledTimes(1);
-    expect(onChange).toBeCalledWith(undefined, '');
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledTimes(1);
+    expect(onUpdate).toBeCalledWith(undefined, '');
   });
 
-  it('calls onChange correctly when value changes', async () => {
+  it('calls onUpdate correctly when value changes', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await render();
+    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
 
     element.value = value;
     await updated();
@@ -69,13 +76,14 @@ describe(PropertyChangeController.name, () => {
     expect(getValue()).toHaveValue(value);
     expect(element.value).toBe(value);
 
-    expect(onChange).toBeCalledTimes(2);
-    expect(onChange).toBeCalledWith(undefined, '');
-    expect(onChange).toBeCalledWith('', value);
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledTimes(2);
+    expect(onUpdate).toBeCalledWith(undefined, '');
+    expect(onUpdate).toBeCalledWith('', value);
   });
 
-  it('calls onChange correctly when value changes to null', async () => {
-    const { element, getValue, updated } = await render();
+  it('calls onUpdate correctly when value changes to null', async () => {
+    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
 
     // @ts-expect-error Test null
     element.value = null;
@@ -87,12 +95,13 @@ describe(PropertyChangeController.name, () => {
       ''
     ); /** note: in chrome, value becomes '' when .value = undefined */
 
-    expect(onChange).toBeCalledWith(undefined, '');
-    expect(onChange).toBeCalledWith('', null);
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledWith(undefined, '');
+    expect(onUpdate).toBeCalledWith('', null);
   });
 
-  it('calls onChange correctly when value changes to undefined', async () => {
-    const { element, getValue, updated } = await render();
+  it('calls onUpdate correctly when value changes to undefined', async () => {
+    const { element, getValue, updated } = await createFixture(toTestComponent, helpers)();
 
     // @ts-expect-error Test undefined
     element.value = undefined;
@@ -104,13 +113,14 @@ describe(PropertyChangeController.name, () => {
       'undefined'
     ); /** note: in chrome, value becomes 'undefined' when .value = undefined */
 
-    expect(onChange).toBeCalledWith(undefined, '');
-    expect(onChange).toBeCalledWith('', undefined);
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledWith(undefined, '');
+    expect(onUpdate).toBeCalledWith('', undefined);
   });
 
-  it('calls onChange correctly without comparing old value', async () => {
+  it('calls onUpdate correctly without comparing old value', async () => {
     const { element, getValue, updated } = await createFixture(
-      () => toTestComponent(false),
+      () => toTestComponent({ compare: false, order: 'update' }),
       helpers
     )();
 
@@ -119,15 +129,16 @@ describe(PropertyChangeController.name, () => {
     expect(getValue()).toHaveValue('');
     expect(element.value).toBe('');
 
-    expect(onChange).toBeCalledTimes(2);
-    expect(onChange).toBeCalledWith(undefined, '');
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledTimes(2);
+    expect(onUpdate).toBeCalledWith(undefined, '');
   });
 
-  it('calls onChange correctly without comparing old value', async () => {
+  it('calls onUpdate correctly without comparing old value when value gets updated', async () => {
     const value = 'abc';
 
     const { element, getValue, updated } = await createFixture(
-      () => toTestComponent(false),
+      () => toTestComponent({ compare: false, order: 'update' }),
       helpers
     )();
 
@@ -137,8 +148,84 @@ describe(PropertyChangeController.name, () => {
     expect(getValue()).toHaveValue(value);
     expect(element.value).toBe(value);
 
-    expect(onChange).toBeCalledTimes(3);
-    expect(onChange).toBeCalledWith(undefined, '');
-    expect(onChange).toBeCalledWith('', value);
+    expect(onUpdated).toBeCalledTimes(0);
+    expect(onUpdate).toBeCalledTimes(3);
+    expect(onUpdate).toBeCalledWith(undefined, '');
+    expect(onUpdate).toBeCalledWith('', value);
+  });
+
+  it('calls onUpdated correctly during <host>.updated phase', async () => {
+    const { element, getValue, updated } = await createFixture(
+      () => toTestComponent({ order: 'updated' }),
+      helpers
+    )();
+
+    await updated();
+
+    expect(getValue()).toHaveValue('');
+    expect(element.value).toBe('');
+
+    expect(onUpdate).toBeCalledTimes(0);
+    expect(onUpdated).toBeCalledTimes(1);
+    expect(onUpdated).toBeCalledWith(undefined, '');
+  });
+
+  it('calls onUpdated correctly during <host>.updated phase without comparing old value', async () => {
+    const { element, getValue, updated } = await createFixture(
+      () => toTestComponent({ compare: false, order: 'updated' }),
+      helpers
+    )();
+
+    await updated();
+
+    expect(getValue()).toHaveValue('');
+    expect(element.value).toBe('');
+
+    expect(onUpdate).toBeCalledTimes(0);
+    expect(onUpdated).toBeCalledTimes(2);
+    expect(onUpdated).toBeCalledWith(undefined, '');
+  });
+
+  it('calls onUpdated correctly during <host>.updated phase with value updated', async () => {
+    const value = 'abc';
+
+    const { element, getValue, updated } = await createFixture(
+      () => toTestComponent({ order: 'updated' }),
+      helpers
+    )();
+
+    element.value = value;
+    await updated();
+
+    expect(getValue()).toHaveValue(value);
+    expect(element.value).toBe(value);
+
+    expect(onUpdate).toBeCalledTimes(0);
+    expect(onUpdated).toBeCalledTimes(2);
+    expect(onUpdated).toBeCalledWith(undefined, '');
+    expect(onUpdated).toBeCalledWith('', value);
+  });
+
+  it('calls onUpdated correctly during <host>.updated phase without comparing old value', async () => {
+    const value = 'abc';
+
+    const { element, getValue, updated } = await createFixture(
+      () => toTestComponent({
+        compare: false,
+        order: 'updated',
+      }),
+      helpers
+    )();
+
+    element.value = value;
+    await updated();
+
+    expect(getValue()).toHaveValue(value);
+    expect(element.value).toBe(value);
+
+    expect(onUpdate).toBeCalledTimes(0);
+    expect(onUpdated).toBeCalledTimes(3);
+    expect(onUpdated).toBeCalledWith(undefined, '');
+    expect(onUpdated).toBeCalledWith('', value);
   });
 });

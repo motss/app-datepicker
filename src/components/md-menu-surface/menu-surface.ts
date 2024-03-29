@@ -423,13 +423,14 @@ export abstract class MenuSurface extends LitElement {
       this.addEventListener('focusout', this.handleFocusout);
 
       new PropertyChangeController(this, {
-        onChange: (_, open) => {
+        onUpdate: (_, open) => {
           if (open) {
             this.removeAttribute('aria-hidden');
           } else {
             this.setAttribute('aria-hidden', 'true');
           }
         },
+        order: 'update',
         property: 'open',
       });
     }

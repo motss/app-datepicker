@@ -63,8 +63,8 @@ export class Calendar
     return node;
   };
 
-  #focusDateWhenNeeded = async (changedProperties: PropertyValueMap<this>) => {
-    if (changedProperties.has('value') && this.#shouldFocusDate) {
+  #focusDateWhenNeeded = async () => {
+    if (this.#shouldFocusDate) {
       const { value } = this;
       const dayText = toResolvedDate(value).getUTCDate();
 
@@ -252,7 +252,6 @@ export class Calendar
   };
 
   #shouldFocusDate = false;
-
   @state() _formatters!: CalendarProperties['_formatters'];
   @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
   @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
@@ -261,13 +260,14 @@ export class Calendar
   @state() renderFooter: CalendarProperties['renderFooter'];
   @state() renderWeekDay: CalendarProperties['renderWeekDay'];
   @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
+
   @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
 
   constructor() {
     super();
 
     new PropertyChangeController(this, {
-      onChange: (_, locale) => {
+      onUpdate: (_, locale) => {
         this._formatters = {
           dayFormat: new Intl.DateTimeFormat(locale, dayFormatOptions),
           fullDateFormat: new Intl.DateTimeFormat(
@@ -284,17 +284,17 @@ export class Calendar
           ),
         };
       },
+      order: 'update',
       property: 'locale',
+    });
+    new PropertyChangeController(this, {
+      onUpdated: this.#focusDateWhenNeeded,
+      order: 'updated',
+      property: 'value',
     });
   }
 
   protected override render(): TemplateResult | typeof nothing {
     return this.#renderCalendar();
-  }
-
-  protected override async updated(
-    changedProperties: PropertyValueMap<this>
-  ): Promise<void> {
-    await this.#focusDateWhenNeeded(changedProperties);
   }
 }

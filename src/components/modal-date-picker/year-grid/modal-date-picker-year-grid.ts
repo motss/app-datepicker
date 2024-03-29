@@ -107,17 +107,19 @@ export class ModalDatePickerYearGrid
     super();
 
     new PropertyChangeController(this, {
-      onChange: (_, newValue) => {
+      onUpdate: (_, newValue) => {
         this.#focusingYear = toResolvedDate(newValue).getUTCFullYear();
         this.requestUpdate();
       },
+      order: 'update',
       property: 'value',
     });
 
     new PropertyChangeController(this, {
-      onChange: (_, locale) => {
+      onUpdate: (_, locale) => {
         this._yearFormat = new Intl.DateTimeFormat(locale, yearFormatOptions);
       },
+      order: 'update',
       property: 'locale',
     });
   }
@@ -176,10 +178,6 @@ export class ModalDatePickerYearGrid
       });
     })}</div>
     `;
-  }
-
-  protected override updated(_changedProperties: PropertyValueMap<this>): void {
-    this.focusYearWhenNeeded();
   }
 }
 

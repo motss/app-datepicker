@@ -4,51 +4,72 @@ import type {
   ReactiveControllerHost,
 } from 'lit';
 
-interface Init<T extends object, Property extends keyof T> {
+type ExecuteOrder = 'update' | 'updated';
+
+interface Init<T extends LitElement, Property extends keyof T, Order extends ExecuteOrder> {
   compare?: boolean;
-  onChange?(oldValue: T[Property] | undefined, newValue: T[Property]): void;
+  onUpdate?(oldValue: T[Property] | undefined, newValue: T[Property]): void;
+  onUpdated?(oldValue: T[Property] | undefined, newValue: T[Property]): void;
+  order: Order;
   property: Property;
 }
 
 export class PropertyChangeController<
   T extends LitElement,
   Property extends keyof T,
+  Order extends ExecuteOrder,
 > implements ReactiveController
 {
   #compare = true;
   #host: ReactiveControllerHost & T;
   #oldValue?: T[Property];
-  #onChange?: Init<T, Property>['onChange'];
+  #onUpdate?: Init<T, Property, Order>['onUpdate'];
+  #onUpdated?: Init<T, Property, Order>['onUpdated'];
+  #order: ExecuteOrder = 'update';
   #property: Property;
 
-  #update = () => {
+  #update = (from: 'connected' | 'update' | 'updated') => {
     const property = this.#property;
+    const order = this.#order;
 
-    if (property) {
+    const shouldRunAfterOrderCheck = from === 'connected' || order === from;
+
+    if (property && shouldRunAfterOrderCheck) {
       const newValue = this.#host[property];
-      const shouldRun = !this.#compare || this.#oldValue !== newValue;
+      const shouldRunAfterCompareCheck = !this.#compare || this.#oldValue !== newValue;
 
-      if (shouldRun) {
-        this.#onChange?.(this.#oldValue, newValue);
+      if (shouldRunAfterCompareCheck) {
+        (
+          order === 'updated' ? this.#onUpdated : this.#onUpdate
+        )?.(this.#oldValue, newValue);
         this.#oldValue = newValue;
       }
     }
   };
 
-  constructor(host: ReactiveControllerHost & T, init: Init<T, Property>) {
+  constructor(
+    host: ReactiveControllerHost & T,
+    init: Order extends 'updated' ? Omit<Init<T, Property, Order>, 'onUpdate'> : Omit<Init<T, Property, Order>, 'onUpdated'>
+  ) {
     this.#compare = init?.compare ?? true;
     this.#host = host;
-    this.#onChange = init?.onChange;
+    this.#onUpdate = (init as Init<T, Property, 'update'>)?.onUpdate;
+    this.#onUpdated = (init as Init<T, Property, 'updated'>)?.onUpdated;
+    this.#order = init?.order ?? 'update';
     this.#property = init?.property;
 
     host.addController(this);
   }
 
   hostConnected(): void {
-    this.#update();
+    this.#update('connected');
   }
 
   hostUpdate(): void {
-    this.#update();
+    this.#update('update');
+  }
+
+  hostUpdated(): void {
+    this.#update('updated');
   }
 }

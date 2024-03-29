@@ -21,22 +21,24 @@ export class Svg extends RootElement {
     super();
 
     new PropertyChangeController(this, {
-      onChange: (_, height) => {
+      onUpdate: (_, height) => {
         const flooredHeight = Math.floor(height);
         this.style.height = CSS.px
           ? CSS.px(flooredHeight).toString()
           : `${flooredHeight}px`;
       },
+      order: 'update',
       property: 'height',
     });
 
     new PropertyChangeController(this, {
-      onChange: (_, width) => {
+      onUpdate: (_, width) => {
         const flooredWidth = Math.floor(width);
         this.style.width = CSS.px
           ? CSS.px(flooredWidth).toString()
           : `${flooredWidth}px`;
       },
+      order: 'update',
       property: 'width',
     });
   }

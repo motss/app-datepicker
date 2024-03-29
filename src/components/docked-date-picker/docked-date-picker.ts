@@ -7,7 +7,7 @@ import '../md-menu-surface/md-menu-surface.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
-import { html, type PropertyValueMap, type TemplateResult } from 'lit';
+import { html, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -29,6 +29,7 @@ import {
   renderNoop,
 } from '../../constants.js';
 import { DatesController } from '../../controllers/dates-controller/dates-controller.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconCalendar } from '../../icons.js';
@@ -183,36 +184,28 @@ export class DockedDatePicker
     return renderWeekDay(weekday);
   };
 
-  #scrollIntoViewWhenNeeded = async (
-    changedProperties: PropertyValueMap<this>
+  #scrollSelectedMenuListItemIntoView = async (
   ) => {
-    const { startView } = this;
+    const body = this.#bodyRef.value;
+    const listItems =
+      (await this.#menuListRef.value?.getListItems()) ??
+      [];
+    const selectedListItemIdx = listItems.findIndex(
+      (n) => !n.disabled && n.tabIndex > -1
+    );
 
-    if (
-      changedProperties.get('startView') &&
-      changedProperties.get('startView') !== startView
-    ) {
-      const body = this.#bodyRef.value;
-      const listItems =
-        (await this.#menuListRef.value?.getListItems()) ??
-        [];
-      const selectedListItemIdx = listItems.findIndex(
-        (n) => !n.disabled && n.tabIndex > -1
-      );
+    if (body && selectedListItemIdx > -1) {
+      const [firstListItem] = listItems;
 
-      if (body && selectedListItemIdx > -1) {
-        const [firstListItem] = listItems;
+      if (firstListItem) {
+        const containerMarginTop = 8;
+        const offsetToCenter = 3;
 
-        if (firstListItem) {
-          const containerMarginTop = 8;
-          const offsetToCenter = 3;
+        const listItemRect = firstListItem.getBoundingClientRect();
 
-          const listItemRect = firstListItem.getBoundingClientRect();
-
-          body.scrollTop =
-            (selectedListItemIdx - offsetToCenter) * listItemRect.height +
-            containerMarginTop;
-        }
+        body.scrollTop =
+          (selectedListItemIdx - offsetToCenter) * listItemRect.height +
+          containerMarginTop;
       }
     }
   };
@@ -293,6 +286,16 @@ export class DockedDatePicker
     'calendar';
 
   @property({ reflect: true }) supportingText: string = labelSupportingText;
+
+  constructor() {
+    super();
+
+    new PropertyChangeController(this, {
+      onUpdated: this.#scrollSelectedMenuListItemIntoView,
+      order: 'updated',
+      property: 'startView',
+    });
+  }
 
   protected override render(): TemplateResult {
     const {
@@ -440,12 +443,6 @@ export class DockedDatePicker
       </div>
     </div>
     `;
-  }
-
-  protected override async updated(
-    changedProperties: PropertyValueMap<this>
-  ): Promise<void> {
-    this.#scrollIntoViewWhenNeeded(changedProperties);
   }
 }
 

@@ -86,7 +86,7 @@ export class Header
     super();
 
     new PropertyChangeController(this, {
-      onChange: (_, locale) => {
+      onUpdate: (_, locale) => {
         this._formatters = {
           shortMonthFormat: new Intl.DateTimeFormat(
             locale,
@@ -95,6 +95,7 @@ export class Header
           yearFormat: new Intl.DateTimeFormat(locale, yearFormatOptions),
         };
       },
+      order: 'update',
       property: 'locale',
     });
   }

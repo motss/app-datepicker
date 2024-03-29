@@ -188,7 +188,7 @@ export class MenuList
     super();
 
     new PropertyChangeController(this, {
-      onChange: (_, locale) => {
+      onUpdate: (_, locale) => {
         this._formatters = {
           longMonthFormat: new Intl.DateTimeFormat(
             locale,
@@ -197,6 +197,7 @@ export class MenuList
           yearFormat: new Intl.DateTimeFormat(locale, yearFormatOptions),
         };
       },
+      order: 'update',
       property: 'locale',
     });
   }

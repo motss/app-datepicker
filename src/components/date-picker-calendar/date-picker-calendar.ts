@@ -154,12 +154,13 @@ export class DatePickerCalendar
         toResolvedDate(value);
 
     new PropertyChangeController(this, {
-      onChange: (_, newValue) => {
+      onUpdate: (_, newValue) => {
         this._focusedDate =
           this._selectedDate =
           this._tabbableDate =
             toResolvedDate(newValue);
       },
+      order: 'update',
       property: 'value',
     });
   }

@@ -8,7 +8,7 @@ import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import type { MdTextButton } from '@material/web/button/text-button.js';
 import type { MdDialog } from '@material/web/dialog/dialog.js';
-import { html, type PropertyValueMap, type TemplateResult } from 'lit';
+import { html, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -59,16 +59,12 @@ export class ModalDatePicker
 
   #didDateUpdate = false;
 
-  #focusSelectedYear = async (
-    changedProperties: PropertyValueMap<this>
-  ): Promise<void> => {
-    if (changedProperties.has('startView')) {
-      const yearGridElement = this.#yearGridRef.value;
+  #focusSelectedYear = async (): Promise<void> => {
+    const yearGridElement = this.#yearGridRef.value;
 
-      if (yearGridElement) {
-        await yearGridElement.updateComplete;
-        yearGridElement.focusYearWhenNeeded();
-      }
+    if (yearGridElement) {
+      await yearGridElement.updateComplete;
+      yearGridElement.focusYearWhenNeeded();
     }
   };
 
@@ -163,13 +159,14 @@ export class ModalDatePicker
     // this._focusedDate = this._selectedDate = this._tabbableDate = toResolvedDate(value);
 
     new PropertyChangeController(this, {
-      onChange: (_, newValue) => {
+      onUpdate: (_, newValue) => {
         this.#updateFocusedDate(toResolvedDate(newValue));
       },
+      order: 'update',
       property: 'value',
     });
     new PropertyChangeController(this, {
-      onChange: () => {
+      onUpdate: () => {
         const menuButton =
           this.#bodyMenuRef.value?.root.querySelector<MdTextButton>(
             '.menuButton'
@@ -177,6 +174,13 @@ export class ModalDatePicker
 
         menuButton?.focus();
       },
+      order: 'update',
+      property: 'startView',
+    });
+    new PropertyChangeController(this, {
+      compare: false,
+      onUpdated: this.#focusSelectedYear,
+      order: 'updated',
       property: 'startView',
     });
   }
@@ -332,10 +336,6 @@ export class ModalDatePicker
     return this.show();
   }
 
-  protected override updated(changedProperties: PropertyValueMap<this>): void {
-    this.#focusSelectedYear(changedProperties);
-  }
-
   get returnValue(): ModalDatePickerProperties['returnValue'] {
     return (this.#dialogRef.value as MdDialog).returnValue;
   }
@@ -347,5 +347,6 @@ declare global {
   }
 }
 
+// fixme: use app-calendar and datesController, refer to DockedDatePicker
 // fixme: tabindex=0 does not get updated when changing min
 // fixme: selected date but close modal without confirming should not update selected date
