@@ -12,7 +12,7 @@ export const modalDatePickerYearGridStyles = css`
   grid-template-rows: repeat(var(--_rows, auto-fill), 52px);
   place-items: center;
 
-  padding-inline: 13px; /** note: scrollbar's width is 11px when scrollbar-width: thin; is set */
+  padding-inline: 13px; /** NOTE: scrollbar's width is 11px when scrollbar-width: thin; is set */
   padding-block: 8px;
   background-color: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);

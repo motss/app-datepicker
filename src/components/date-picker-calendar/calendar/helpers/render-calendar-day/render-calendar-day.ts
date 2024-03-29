@@ -30,36 +30,36 @@ export function renderCalendarDay({
     const content = html`<abbr title=${label}>${value}</abbr>`;
     const button = selected
       ? html`
-      <md-filled-button
-        ?disabled=${disabled}
-        aria-current=${ifDefined(ariaCurrent)}
-        aria-label=${label}
-        aria-pressed=${ariaSelected}
-        class=${classMap({ calendarDayButton: true, today })}
-        data-day=${value}
-        data-fulldate=${fullDateText}
-        part=calendar-day-button
-        tabindex=${tabindex}
-        title=${label}
-        type=button
-      >${content}</md-filled-button>
-      `
+        <md-filled-button
+          ?disabled=${disabled}
+          aria-current=${ifDefined(ariaCurrent)}
+          aria-label=${label}
+          aria-pressed=${ariaSelected}
+          class=${classMap({ calendarDayButton: true, today })}
+          data-day=${value}
+          data-fulldate=${fullDateText}
+          part=calendar-day-button
+          tabindex=${tabindex}
+          title=${label}
+          type=button
+        >${content}</md-filled-button>
+        `
       : html`
-      <md-outlined-button
-        ?disabled=${disabled}
-        .fullDate=${fullDate}
-        aria-current=${ifDefined(ariaCurrent)}
-        aria-label=${label}
-        aria-pressed=${ariaSelected}
-        class=${classMap({ calendarDayButton: true, today })}
-        data-day=${value}
-        data-fulldate=${fullDateText}
-        part=calendar-day-button
-        tabindex=${tabindex}
-        title=${label}
-        type=button
-      >${content}</md-outlined-button>
-      `;
+        <md-outlined-button
+          ?disabled=${disabled}
+          .fullDate=${fullDate}
+          aria-current=${ifDefined(ariaCurrent)}
+          aria-label=${label}
+          aria-pressed=${ariaSelected}
+          class=${classMap({ calendarDayButton: true, today })}
+          data-day=${value}
+          data-fulldate=${fullDateText}
+          part=calendar-day-button
+          tabindex=${tabindex}
+          title=${label}
+          type=button
+        >${content}</md-outlined-button>
+        `;
 
     return html`
     <td
@@ -74,12 +74,14 @@ export function renderCalendarDay({
     `;
   }
 
-  return html`<td
+  return html`
+  <td
     class=calendarDay--none
     part="calendar-day-none"
     aria-disabled=true
     aria-hidden=true
     aria-selected=false
     role=gridcell
-  ></td>`;
+  ></td>
+  `;
 }

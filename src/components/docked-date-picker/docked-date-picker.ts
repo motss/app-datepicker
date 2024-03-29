@@ -378,58 +378,57 @@ export class DockedDatePicker
             >${
               startView === 'calendar'
                 ? html`
-              <app-calendar
-                ?showWeekNumber=${showWeekNumber}
-                .onDateUpdateByClick=${$datesController_.onDateUpdateByClick}
-                .onDateUpdateByKey=${$datesController_.onDateUpdateByKey}
-                .onUpdated=${() => {
-                  /** todo: */
-                }}
-                .renderCalendarDay=${this.#renderCalendarDay}
-                .renderFooter=${renderNoop}
-                .renderWeekDay=${this.#renderWeekDay}
-                .renderWeekLabel=${renderNoop}
-                .renderWeekNumber=${renderNoop}
-                .value=${focusedValue}
-                class=appCalendar
-                disabledDates=${disabledDates}
-                disabledDays=${disabledDays}
-                firstDayOfWeek=${firstDayOfWeek}
-                locale=${locale}
-                max=${ifDefined(max)}
-                min=${ifDefined(min)}
-                selectedYearTemplate=${selectedYearTemplate}
-                shortWeekLabel=${shortWeekLabel}
-                startView=${this.startView}
-                toyearTemplate=${toyearTemplate}
-                weekLabel=${weekLabel}
-                weekNumberTemplate=${weekNumberTemplate}
-                weekNumberType=${weekNumberType}
-              ></app-calendar>
+                  <app-calendar
+                    ?showWeekNumber=${showWeekNumber}
+                    .onDateUpdateByClick=${
+                      $datesController_.onDateUpdateByClick
+                    }
+                    .onDateUpdateByKey=${$datesController_.onDateUpdateByKey}
+                    .renderCalendarDay=${this.#renderCalendarDay}
+                    .renderFooter=${renderNoop}
+                    .renderWeekDay=${this.#renderWeekDay}
+                    .renderWeekLabel=${renderNoop}
+                    .renderWeekNumber=${renderNoop}
+                    .value=${focusedValue}
+                    class=appCalendar
+                    disabledDates=${disabledDates}
+                    disabledDays=${disabledDays}
+                    firstDayOfWeek=${firstDayOfWeek}
+                    locale=${locale}
+                    max=${ifDefined(max)}
+                    min=${ifDefined(min)}
+                    selectedYearTemplate=${selectedYearTemplate}
+                    shortWeekLabel=${shortWeekLabel}
+                    startView=${this.startView}
+                    toyearTemplate=${toyearTemplate}
+                    weekLabel=${weekLabel}
+                    weekNumberTemplate=${weekNumberTemplate}
+                    weekNumberType=${weekNumberType}
+                  ></app-calendar>
 
-              ${renderActions({
-                confirmText,
-                denyText,
-                onConfirm: this.#onConfirm,
-                onDeny: this.#onDeny,
-              })}
-              `
+                  ${renderActions({
+                    confirmText,
+                    denyText,
+                    onConfirm: this.#onConfirm,
+                    onDeny: this.#onDeny,
+                  })}
+                  `
                 : html`
-              <docked-date-picker-menu-list
-                ${ref(this.#menuListRef)}
-                class=menuList
-                locale=${locale}
-                max=${ifDefined(max)}
-                menuListType=${startView}
-                min=${ifDefined(min)}
-                monthMenuItemTemplate=${labelMonthMenuItemTemplate}
-                selectedMonthMenuItemTemplate=${labelSelectedMonthMenuItemTemplate}
-                selectedYearMenuItemTemplate=${labelSelectedYearMenuItemTemplate}
-                value=${focusedValue}
-                yearMenuItemTemplate=${labelYearMenuItemTemplate}
-                .onMenuChange=${this.#onMenuChange}
-              ></docked-date-picker-menu-list>
-              `
+                  <docked-date-picker-menu-list
+                    ${ref(this.#menuListRef)}
+                    class=menuList
+                    locale=${locale}
+                    max=${ifDefined(max)}
+                    menuListType=${startView}
+                    min=${ifDefined(min)}
+                    monthMenuItemTemplate=${labelMonthMenuItemTemplate}
+                    selectedMonthMenuItemTemplate=${labelSelectedMonthMenuItemTemplate}
+                    selectedYearMenuItemTemplate=${labelSelectedYearMenuItemTemplate}
+                    value=${focusedValue}
+                    yearMenuItemTemplate=${labelYearMenuItemTemplate}
+                    .onMenuChange=${this.#onMenuChange}
+                  ></docked-date-picker-menu-list>
+                  `
             }</div>
           </div>
         </md-menu-surface>

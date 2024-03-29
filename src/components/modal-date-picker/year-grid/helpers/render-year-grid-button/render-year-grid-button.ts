@@ -18,27 +18,27 @@ export function renderYearGridButton({
 
   return selected
     ? html`
-  <md-filled-button
-    aria-label=${ifDefined(maybeLabel)}
-    aria-pressed=${selected ? 'true' : 'false'}
-    class=${classMap({ toyear, yearGridButton: true })}
-    data-year=${year}
-    part=${`year-grid-button${toyear ? ' toyear' : ''}`}
-    tabindex=${tabIndex}
-    title=${ifDefined(maybeLabel)}
-    type=button
-  >${year}</md-filled-button>
-  `
+      <md-filled-button
+        aria-label=${ifDefined(maybeLabel)}
+        aria-pressed=${selected ? 'true' : 'false'}
+        class=${classMap({ toyear, yearGridButton: true })}
+        data-year=${year}
+        part=${`year-grid-button${toyear ? ' toyear' : ''}`}
+        tabindex=${tabIndex}
+        title=${ifDefined(maybeLabel)}
+        type=button
+      >${year}</md-filled-button>
+      `
     : html`
-  <md-outlined-button
-    aria-label=${ifDefined(maybeLabel)}
-    aria-pressed=${selected ? 'true' : 'false'}
-    class=${classMap({ toyear, yearGridButton: true })}
-    data-year=${year}
-    part=${`year-grid-button${toyear ? ' toyear' : ''}`}
-    tabindex=${tabIndex}
-    title=${ifDefined(maybeLabel)}
-    type=button
-  >${year}</md-outlined-button>
-  `;
+      <md-outlined-button
+        aria-label=${ifDefined(maybeLabel)}
+        aria-pressed=${selected ? 'true' : 'false'}
+        class=${classMap({ toyear, yearGridButton: true })}
+        data-year=${year}
+        part=${`year-grid-button${toyear ? ' toyear' : ''}`}
+        tabindex=${tabIndex}
+        title=${ifDefined(maybeLabel)}
+        type=button
+      >${year}</md-outlined-button>
+      `;
 }

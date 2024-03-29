@@ -69,7 +69,7 @@ export class Calendar
       const dayText = toResolvedDate(value).getUTCDate();
 
       /**
-       * note: `lit` requires more time to re-render the `.calendarDayButton`
+       * NOTE: `lit` requires more time to re-render the `.calendarDayButton`
        * when `value` changes. Overriding `getUpdateComplete()` does not have
        * any effect as of writing. This will be revisited later.
        */
@@ -77,6 +77,9 @@ export class Calendar
 
       this.query(`.calendarDayButton[data-day="${dayText}"]`)?.focus();
       this.#shouldFocusDate = false;
+      /**
+       * NOTE: Not sure if this is still needed. To revisit this later.
+       */
       this.onUpdated?.();
     }
   };
@@ -110,7 +113,7 @@ export class Calendar
 
     if (isNavigationKey) {
       /**
-       * note: this prevents keyboard event propagates upwards and
+       * NOTE: this prevents keyboard event propagates upwards and
        * causes a scrollable page to be scrolled downwards via the Space key.
        */
       ev.preventDefault();

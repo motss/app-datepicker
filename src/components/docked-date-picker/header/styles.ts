@@ -66,7 +66,7 @@ ${renderMenuButtonStyle}
   --md-text-button-with-trailing-icon-leading-space: 8px;
   --md-text-button-with-trailing-icon-trailing-space: 4px;
 
-  /** note: this forces the content to render without ellipsis. */
+  /** NOTE: this forces the content to render without ellipsis. */
   width: fit-content;
   height: fit-content;
   font-variant-numeric: tabular-nums;

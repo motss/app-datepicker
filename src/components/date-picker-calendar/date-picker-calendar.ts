@@ -30,6 +30,9 @@ import { datePickerCalendarStyles } from './styles.js';
 import type { DatePickerCalendarProperties } from './types.js';
 
 @customElement(datePickerCalendarName)
+/**
+ * @deprecated To be removed in favor of `AppCalendar` + `DatesController`.
+ */
 export class DatePickerCalendar
   extends DatePickerMixin(
     DatePickerStartViewMixin(MinMaxMixin(ValueMixin(RootElement)))
