@@ -1,6 +1,6 @@
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/textfield/outlined-text-field.js';
-import '../date-picker-calendar/date-picker-calendar.js';
+import '../app-calendar/app-calendar.js';
 import '../md-menu-surface/md-menu-surface.js';
 import '../md-svg/md-svg.js';
 import './header/docked-date-picker-header.js';
@@ -41,9 +41,9 @@ import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { RootElement } from '../../root-element/root-element.js';
 import type { MenuListType } from '../../types.js';
-import { renderCalendarDay } from '../date-picker-calendar/calendar/helpers/render-calendar-day/render-calendar-day.js';
-import { renderWeekDay } from '../date-picker-calendar/calendar/helpers/render-week-day/render-week-day.js';
-import type { CalendarProperties } from '../date-picker-calendar/calendar/types.js';
+import { renderCalendarDay } from '../app-calendar/helpers/render-calendar-day/render-calendar-day.js';
+import { renderWeekDay } from '../app-calendar/helpers/render-week-day/render-week-day.js';
+import type { CalendarProperties } from '../app-calendar/types.js';
 import type { DockedDatePickerHeader } from './header/docked-date-picker-header.js';
 import type { DockedDatePickerMenuList } from './menu-list/docked-date-picker-menu-list.js';
 import type { DatePickerProperties } from './types.js';
@@ -76,20 +76,22 @@ export class DatePicker
 
   #$hot = createRef<this>();
 
+  #$menuList = createRef<DockedDatePickerMenuList>();
+
+  #$textField = createRef<MdOutlinedTextField>();
+
   #didConfirm = false;
 
-  #menuListRef = createRef<DockedDatePickerMenuList>();
-
   #onClosed = () => {
-    const { $datesController_, value } = this;
+    const { _$dates_, value } = this;
 
     if (this.#didConfirm) {
-      this.value = toDateString($datesController_.selectedDate);
+      this.value = toDateString(_$dates_.selectedDate);
       this.#didConfirm = false;
     } else {
       const newDate = toResolvedDate(value);
 
-      this.$datesController_.updateBy({
+      this._$dates_.updateBy({
         focusedDate: newDate,
         selectedDate: newDate,
       });
@@ -116,12 +118,12 @@ export class DatePicker
     type,
     value,
   }) => {
-    const { $datesController_ } = this;
-    const y = $datesController_.focusedDate.getUTCFullYear();
-    const m = $datesController_.focusedDate.getUTCMonth();
-    const d = $datesController_.focusedDate.getUTCDate();
+    const { _$dates_ } = this;
+    const y = _$dates_.focusedDate.getUTCFullYear();
+    const m = _$dates_.focusedDate.getUTCMonth();
+    const d = _$dates_.focusedDate.getUTCDate();
 
-    this.$datesController_.updateBy({
+    this._$dates_.updateBy({
       focusedDate: fromPartsToUtcDate(
         type === 'yearMenu' ? value : y,
         type === 'monthMenu' ? value : m,
@@ -157,12 +159,12 @@ export class DatePicker
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
-    const { $datesController_ } = this;
+    const { _$dates_ } = this;
 
     return renderCalendarDay({
       data,
-      selectedDate: $datesController_.selectedDate,
-      tabbableDate: $datesController_.tabbableDate,
+      selectedDate: _$dates_.selectedDate,
+      tabbableDate: _$dates_.tabbableDate,
       todayDate: this.#todayDate,
     });
   };
@@ -173,7 +175,7 @@ export class DatePicker
 
   #scrollSelectedMenuListItemIntoView = async () => {
     const body = this.#$body.value;
-    const listItems = (await this.#menuListRef.value?.getListItems()) ?? [];
+    const listItems = (await this.#$menuList.value?.getListItems()) ?? [];
     const selectedListItemIdx = listItems.findIndex(
       (n) => !n.disabled && n.tabIndex > -1
     );
@@ -194,8 +196,6 @@ export class DatePicker
     }
   };
 
-  #textFieldRef = createRef<MdOutlinedTextField>();
-
   readonly #todayDate: Date = toResolvedDate();
 
   #toggleMenuSurface = () => {
@@ -214,7 +214,7 @@ export class DatePicker
       case 'monthInc':
       case 'yearDec':
       case 'yearInc': {
-        this.$datesController_.updateBy({ focusedDate: init.date });
+        this._$dates_.updateBy({ focusedDate: init.date });
         break;
       }
       case 'monthMenu':
@@ -243,12 +243,12 @@ export class DatePicker
     }
 
     (
-      this.#textFieldRef.value as unknown as MdOutlinedTextFieldWithFocused
+      this.#$textField.value as unknown as MdOutlinedTextFieldWithFocused
     ).focused = focused;
   };
 
-  $datesController_ = new DatesController(this, {
-    onConfirm: this.#onConfirm,
+  private _$dates_ = new DatesController(this, {
+    onConfirmByKey: this.#onConfirm,
   });
 
   @property() calendarIconLabel: string = labelShowCalendar;
@@ -283,7 +283,7 @@ export class DatePicker
 
   protected override render(): TemplateResult {
     const {
-      $datesController_,
+      _$dates_,
       calendarIconLabel,
       confirmText,
       denyText,
@@ -309,13 +309,13 @@ export class DatePicker
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
-    const focusedValue = toDateString($datesController_.focusedDate);
+    const focusedValue = toDateString(_$dates_.focusedDate);
     const valueValue = toDateString(toResolvedDate(value));
 
     return html`
     <div ${ref(this.#$hot)}>
       <md-outlined-text-field
-        ${ref(this.#textFieldRef)}
+        ${ref(this.#$textField)}
         id=${anchorId}
         label=${label}
         value=${valueValue}
@@ -372,9 +372,9 @@ export class DatePicker
                   <app-calendar
                     ?showWeekNumber=${showWeekNumber}
                     .onDateUpdateByClick=${
-                      $datesController_.onDateUpdateByClick
+                      _$dates_.onDateUpdateByClick
                     }
-                    .onDateUpdateByKey=${$datesController_.onDateUpdateByKey}
+                    .onDateUpdateByKey=${_$dates_.onDateUpdateByKey}
                     .renderCalendarDay=${this.#renderCalendarDay}
                     .renderFooter=${renderNoop}
                     .renderWeekDay=${this.#renderWeekDay}
@@ -406,7 +406,7 @@ export class DatePicker
                   `
                 : html`
                   <docked-date-picker-menu-list
-                    ${ref(this.#menuListRef)}
+                    ${ref(this.#$menuList)}
                     class=menuList
                     locale=${locale}
                     max=${ifDefined(max)}

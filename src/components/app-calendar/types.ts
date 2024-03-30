@@ -5,7 +5,7 @@ import type {
 } from '@ipohjs/calendar/dist/typings.js';
 import type { nothing, TemplateResult } from 'lit';
 
-import type { DatePickerProperties } from '../../../types.js';
+import type { DatePickerProperties } from '../../types.js';
 
 export interface CalendarDayElement extends Omit<HTMLButtonElement, 'dataset'> {
   dataset: Record<'day' | 'fulldate', string>;
@@ -43,11 +43,11 @@ export interface CalendarProperties
     calendarGrid: CalendarGrid
   ): void;
   onUpdated?(): void;
-  renderCalendarDay?(
+  renderCalendarDay(
     init: RenderCalendarDayInit
   ): TemplateResult | typeof nothing;
   renderFooter?(): TemplateResult | typeof nothing;
-  renderWeekDay?(init: RenderWeekDayInit): TemplateResult | typeof nothing;
+  renderWeekDay(init: RenderWeekDayInit): TemplateResult | typeof nothing;
   renderWeekLabel?(init: RenderWeekLabelInit): TemplateResult | typeof nothing;
   renderWeekNumber?(
     init: RenderWeekNumberInit

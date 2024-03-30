@@ -5,7 +5,7 @@ import type {
 } from '@ipohjs/calendar/dist/typings.js';
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type TemplateResult } from 'lit';
-import { state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { map } from 'lit/directives/map.js';
 
 import {
@@ -15,42 +15,33 @@ import {
   longWeekDayFormatOptions,
   narrowWeekDayFormatOptions,
   navigationKeySetGrid,
-  renderNoop,
-} from '../../../constants.js';
-import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
-import { splitString } from '../../../helpers/split-string.js';
-import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
-import { DatePickerMixin } from '../../../mixins/date-picker-mixin.js';
-import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
-import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
-import { RootElement } from '../../../root-element/root-element.js';
-import {
-  baseStyling,
-  resetShadowRoot,
-  resetTableStyle,
-  visuallyHiddenStyle,
-} from '../../../styles.js';
-import type { InferredFromSet } from '../../../types.js';
-import { calendarStyles } from './styles.js';
+} from '../../constants.js';
+import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
+import { splitString } from '../../helpers/split-string.js';
+import { toResolvedDate } from '../../helpers/to-resolved-date.js';
+import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
+import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
+import { RootElement } from '../../root-element/root-element.js';
+import type { InferredFromSet } from '../../types.js';
 import type { CalendarDayElement, CalendarProperties } from './types.js';
+
+function requiredFn(message: string): TemplateResult | typeof nothing {
+  throw new Error(message);
+}
+
+function requiredFnForWeekNumber<T extends Pick<CalendarProperties, 'showWeekNumber'>>(that: T, message: string): TemplateResult | typeof nothing {
+  if (that.showWeekNumber) {
+    return requiredFn(message);
+  }
+
+  return nothing;
+}
 
 export class Calendar
   extends DatePickerMixin(MinMaxMixin(ValueMixin(RootElement)))
   implements CalendarProperties
 {
-  public static override shadowRootOptions = {
-    ...RootElement.shadowRootOptions,
-    delegatesFocus: true,
-  };
-
-  public static override styles = [
-    resetShadowRoot,
-    resetTableStyle,
-    baseStyling,
-    visuallyHiddenStyle,
-    calendarStyles,
-  ];
-
   #findSelectableCalendarDayNode = (ev: UIEvent) => {
     const path = ev.composedPath() as HTMLElement[];
     const node = path.find((n) => {
@@ -218,14 +209,14 @@ export class Calendar
         <tr>
           ${
             weekNumber?.value
-              ? (renderWeekLabel ?? renderNoop)({
+              ? renderWeekLabel?.({
                   label: weekLabel,
                   value: shortWeekLabel,
                 })
               : nothing
           }
           ${map(weekdays, (weekday, ri) => {
-            return (renderWeekDay ?? renderNoop)({ ri, weekday });
+            return renderWeekDay({ ri, weekday });
           })}
         </tr>
       </thead>
@@ -240,31 +231,31 @@ export class Calendar
                 const isWeekNumber = ci === 0 && showWeekNumber;
 
                 return (
-                  (isWeekNumber ? renderWeekNumber : renderCalendarDay) ??
-                  renderNoop
-                )({ ci, data, ri });
+                  (isWeekNumber ? renderWeekNumber : renderCalendarDay)
+                )?.({ ci, data, ri });
               })}
             </tr>
             `;
         })}
       </tbody>
 
-      <tfoot>${(renderFooter ?? renderNoop)()}</tfoot>
+      <tfoot>${renderFooter?.()}</tfoot>
     </table>
     `;
   };
 
   #shouldFocusDate = false;
-  @state() _formatters!: CalendarProperties['_formatters'];
-  @state() onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
-  @state() onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
-  onUpdated?: CalendarProperties['onUpdated'];
-  @state() renderCalendarDay: CalendarProperties['renderCalendarDay'];
-  @state() renderFooter: CalendarProperties['renderFooter'];
-  @state() renderWeekDay: CalendarProperties['renderWeekDay'];
-  @state() renderWeekLabel: CalendarProperties['renderWeekLabel'];
 
-  @state() renderWeekNumber: CalendarProperties['renderWeekNumber'];
+  @state() _formatters!: CalendarProperties['_formatters'];
+
+  @property({ attribute: false }) onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
+  @property({ attribute: false }) onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
+  @property({ attribute: false }) onUpdated?: CalendarProperties['onUpdated'];
+  @property({ attribute: false }) renderCalendarDay: CalendarProperties['renderCalendarDay'] = () => requiredFn('renderCalendar is not defined');
+  @property({ attribute: false }) renderFooter: CalendarProperties['renderFooter'];
+  @property({ attribute: false }) renderWeekDay: CalendarProperties['renderWeekDay'] = () => requiredFn('renderWeekday is not defined');
+  @property({ attribute: false }) renderWeekLabel: CalendarProperties['renderWeekLabel'] = () => requiredFnForWeekNumber(this, 'renderWeekLabel is not defined');
+  @property({ attribute: false }) renderWeekNumber: CalendarProperties['renderWeekNumber'] = () => requiredFnForWeekNumber(this, 'renderWeekNumber is not defined');
 
   constructor() {
     super();

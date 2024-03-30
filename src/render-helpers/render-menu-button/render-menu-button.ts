@@ -4,7 +4,6 @@ import '../../components/md-svg/md-svg.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { ref as refDirective } from 'lit/directives/ref.js';
 
 import { iconArrowDropdown } from '../../icons.js';
 import type { RenderMenuButtonInit } from './types.js';
@@ -16,7 +15,6 @@ export function renderMenuButton({
   label,
   name,
   onClick,
-  ref,
   text,
   type,
   value,
@@ -35,7 +33,6 @@ export function renderMenuButton({
   <md-text-button
     ?disabled=${disabled}
     @click=${onClick}
-    ${refDirective(ref)}
     aria-label=${label}
     class=${classMap({ menuButton: true, ...clsObject })}
     name=${ifDefined(name)}

@@ -1,4 +1,4 @@
-import type { CalendarProperties } from '../../components/date-picker-calendar/calendar/types.js';
+import type { CalendarProperties } from '../../components/app-calendar/types.js';
 
 export interface DatesControllerProperties
   extends Required<

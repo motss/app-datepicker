@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-import { mdSysTypescaleBodyLarge } from '../../../typography.js';
+import { mdSysTypescaleBodyLarge } from '../../typography.js';
 
 export const calendarStyles = css`
 :host {

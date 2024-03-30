@@ -19,7 +19,8 @@ import type {
 import type { DatesControllerProperties } from './types.js';
 
 interface Init {
-  onConfirm?(
+  onConfirmByKey?(
+    ev: KeyboardEvent,
     data: Pick<
       DatesControllerProperties,
       'focusedDate' | 'selectedDate' | 'tabbableDate'
@@ -39,7 +40,7 @@ export class DatesController<
   #maxDate: Date = toResolvedDate(MAX_DATE);
   #min?: string;
   #minDate: Date = toResolvedDate(MIN_DATE);
-  #onConfirm: Init['onConfirm'];
+  #onConfirmByKey: Init['onConfirmByKey'];
 
   #requestHostUpdate = () => {
     this.#host.requestUpdate();
@@ -51,12 +52,12 @@ export class DatesController<
 
     if (max !== this.#max) {
       this.#max = max;
-      this.#maxDate = toResolvedDate(max);
+      this.#maxDate = toResolvedDate(max || MAX_DATE);
     }
 
     if (min !== this.#min) {
       this.#min = min;
-      this.#minDate = toResolvedDate(min);
+      this.#minDate = toResolvedDate(min || MIN_DATE);
     }
 
     if (value !== this.#value) {
@@ -65,7 +66,6 @@ export class DatesController<
     }
 
     if (focusedDate || selectedDate) {
-      console.debug({ focusedDate, selectedDate });
       this.#updateTabbableDate(focusedDate, selectedDate);
     }
   };
@@ -109,7 +109,6 @@ export class DatesController<
     _ev,
     node
   ) => {
-    console.debug({ fulldate: node.dataset.fulldate });
     this.focusedDate = this.selectedDate = toResolvedDate(
       node.dataset.fulldate
     );
@@ -150,7 +149,7 @@ export class DatesController<
     } else if (
       confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
     ) {
-      this.#onConfirm?.(this);
+      this.#onConfirmByKey?.(ev, this);
     }
   };
 
@@ -181,7 +180,7 @@ export class DatesController<
 
   constructor(host: ReactiveControllerHost & T, init?: Init) {
     this.#host = host;
-    this.#onConfirm = init?.onConfirm;
+    this.#onConfirmByKey = init?.onConfirmByKey;
 
     host.addController(this);
   }

@@ -7,13 +7,13 @@ export interface DatePickerProperties
   extends BaseDatePickerProperties,
     DatePickerStates,
     Pick<HTMLElement, 'id'>,
-    Pick<MdDialog, 'returnValue' | 'show' | 'type'>,
+    Pick<MdDialog, 'type'>,
     ValueMixinProperties {
-  close(returnValue: DatePickerPropertiesReturnValue): Promise<void>;
+  close(): void;
   open?: MdDialog['open'];
+  readonly returnValue: '' | 'confirm' | 'deny';
+  show(): void;
 }
-
-export type DatePickerPropertiesReturnValue = 'confirm' | 'deny';
 
 interface DatePickerStates {
   _iconDirection: 'down' | 'up';
