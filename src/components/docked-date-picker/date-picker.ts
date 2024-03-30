@@ -371,9 +371,7 @@ export class DatePicker
                 ? html`
                   <app-calendar
                     ?showWeekNumber=${showWeekNumber}
-                    .onDateUpdateByClick=${
-                      _$dates_.onDateUpdateByClick
-                    }
+                    .onDateUpdateByClick=${_$dates_.onDateUpdateByClick}
                     .onDateUpdateByKey=${_$dates_.onDateUpdateByKey}
                     .renderCalendarDay=${this.#renderCalendarDay}
                     .renderFooter=${renderNoop}

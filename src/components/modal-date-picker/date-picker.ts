@@ -13,7 +13,12 @@ import { property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 
-import { dateFormatOptions, labelConfirm, labelDeny, renderNoop } from '../../constants.js';
+import {
+  dateFormatOptions,
+  labelConfirm,
+  labelDeny,
+  renderNoop,
+} from '../../constants.js';
 import { DatesController } from '../../controllers/dates-controller/dates-controller.js';
 import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { isSameMonth } from '../../helpers/is-same-month.js';
@@ -30,9 +35,7 @@ import { RootElement } from '../../root-element/root-element.js';
 import { renderCalendarDay } from '../app-calendar/helpers/render-calendar-day/render-calendar-day.js';
 import { renderWeekDay } from '../app-calendar/helpers/render-week-day/render-week-day.js';
 import type { CalendarProperties } from '../app-calendar/types.js';
-import type {
-  DatePickerProperties,
-} from './types.js';
+import type { DatePickerProperties } from './types.js';
 import type { ModalDatePickerYearGrid } from './year-grid/modal-date-picker-year-grid.js';
 import type { YearGridProperties } from './year-grid/types.js';
 
@@ -90,7 +93,7 @@ export class DatePicker
     const { _$dates_ } = this;
 
     _$dates_.updateBy({
-      focusedDate: toUTCDate(_$dates_.focusedDate, { month: 1 })
+      focusedDate: toUTCDate(_$dates_.focusedDate, { month: 1 }),
     });
   };
 
@@ -107,7 +110,7 @@ export class DatePicker
     const { _$dates_ } = this;
 
     _$dates_.updateBy({
-      focusedDate: toUTCDate(_$dates_.focusedDate, { month: -1 })
+      focusedDate: toUTCDate(_$dates_.focusedDate, { month: -1 }),
     });
   };
 
@@ -119,7 +122,7 @@ export class DatePicker
         year,
         _$dates_.focusedDate.getUTCMonth(),
         _$dates_.focusedDate.getUTCDate()
-      )
+      ),
     });
     this.startView = 'calendar';
   };
@@ -366,7 +369,7 @@ export class DatePicker
         confirmText,
         denyText,
         formId,
-        slot: 'actions'
+        slot: 'actions',
       })}
     </md-dialog>
     `;
@@ -400,7 +403,8 @@ export class DatePicker
 
   get returnValue() {
     /** NOTE: Do not remove ?. as accessing a custom element too early will result in undefined value */
-    return (this.#$dialog.value as MdDialog)?.returnValue as DatePickerProperties['returnValue'];
+    return (this.#$dialog.value as MdDialog)
+      ?.returnValue as DatePickerProperties['returnValue'];
   }
 }
 

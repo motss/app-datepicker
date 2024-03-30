@@ -30,7 +30,9 @@ function requiredFn(message: string): TemplateResult | typeof nothing {
   throw new Error(message);
 }
 
-function requiredFnForWeekNumber<T extends Pick<CalendarProperties, 'showWeekNumber'>>(that: T, message: string): TemplateResult | typeof nothing {
+function requiredFnForWeekNumber<
+  T extends Pick<CalendarProperties, 'showWeekNumber'>,
+>(that: T, message: string): TemplateResult | typeof nothing {
   if (that.showWeekNumber) {
     return requiredFn(message);
   }
@@ -230,9 +232,11 @@ export class Calendar
               ${map(row.columns, (data, ci) => {
                 const isWeekNumber = ci === 0 && showWeekNumber;
 
-                return (
-                  (isWeekNumber ? renderWeekNumber : renderCalendarDay)
-                )?.({ ci, data, ri });
+                return (isWeekNumber ? renderWeekNumber : renderCalendarDay)?.({
+                  ci,
+                  data,
+                  ri,
+                });
               })}
             </tr>
             `;
@@ -248,14 +252,32 @@ export class Calendar
 
   @state() _formatters!: CalendarProperties['_formatters'];
 
-  @property({ attribute: false }) onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
-  @property({ attribute: false }) onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
+  @property({ attribute: false })
+  onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
+
+  @property({ attribute: false })
+  onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
+
   @property({ attribute: false }) onUpdated?: CalendarProperties['onUpdated'];
-  @property({ attribute: false }) renderCalendarDay: CalendarProperties['renderCalendarDay'] = () => requiredFn('renderCalendar is not defined');
-  @property({ attribute: false }) renderFooter: CalendarProperties['renderFooter'];
-  @property({ attribute: false }) renderWeekDay: CalendarProperties['renderWeekDay'] = () => requiredFn('renderWeekday is not defined');
-  @property({ attribute: false }) renderWeekLabel: CalendarProperties['renderWeekLabel'] = () => requiredFnForWeekNumber(this, 'renderWeekLabel is not defined');
-  @property({ attribute: false }) renderWeekNumber: CalendarProperties['renderWeekNumber'] = () => requiredFnForWeekNumber(this, 'renderWeekNumber is not defined');
+
+  @property({ attribute: false })
+  renderCalendarDay: CalendarProperties['renderCalendarDay'] = () =>
+    requiredFn('renderCalendar is not defined');
+
+  @property({ attribute: false })
+  renderFooter: CalendarProperties['renderFooter'];
+
+  @property({ attribute: false })
+  renderWeekDay: CalendarProperties['renderWeekDay'] = () =>
+    requiredFn('renderWeekday is not defined');
+
+  @property({ attribute: false })
+  renderWeekLabel: CalendarProperties['renderWeekLabel'] = () =>
+    requiredFnForWeekNumber(this, 'renderWeekLabel is not defined');
+
+  @property({ attribute: false })
+  renderWeekNumber: CalendarProperties['renderWeekNumber'] = () =>
+    requiredFnForWeekNumber(this, 'renderWeekNumber is not defined');
 
   constructor() {
     super();

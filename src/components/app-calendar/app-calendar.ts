@@ -1,7 +1,12 @@
 import { customElement } from 'lit/decorators.js';
 
 import { RootElement } from '../../root-element/root-element.js';
-import { baseStyling, resetShadowRoot, resetTableStyle, visuallyHiddenStyle } from '../../styles.js';
+import {
+  baseStyling,
+  resetShadowRoot,
+  resetTableStyle,
+  visuallyHiddenStyle,
+} from '../../styles.js';
 import { Calendar } from './calendar.js';
 import { appCalendarName } from './constants.js';
 import { calendarStyles } from './styles.js';
