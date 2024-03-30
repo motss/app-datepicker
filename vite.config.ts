@@ -7,9 +7,12 @@ const isCi = (CI || 'false') === 'true';
 const isDebug = DEBUG === '1';
 
 /* eslint-disable import/no-default-export */
-// biome-ignore lint/style/noDefaultExport: <explanation>
+// biome-ignore lint/style/noDefaultExport: exception for Vite config
 export default defineConfig({
   plugins: [tsconfigPaths()],
+  server: {
+    open: !isCi,
+  },
   test: {
     browser: {
       enabled: true,

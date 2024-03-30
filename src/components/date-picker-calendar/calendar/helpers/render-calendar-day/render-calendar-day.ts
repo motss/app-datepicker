@@ -38,7 +38,6 @@ export function renderCalendarDay({
           class=${classMap({ calendarDayButton: true, today })}
           data-day=${value}
           data-fulldate=${fullDateText}
-          part=calendar-day-button
           tabindex=${tabindex}
           title=${label}
           type=button
@@ -54,7 +53,6 @@ export function renderCalendarDay({
           class=${classMap({ calendarDayButton: true, today })}
           data-day=${value}
           data-fulldate=${fullDateText}
-          part=calendar-day-button
           tabindex=${tabindex}
           title=${label}
           type=button
@@ -66,7 +64,6 @@ export function renderCalendarDay({
       class=calendarDay
       data-day=${value}
       data-fulldate=${fullDateText}
-      part=calendar-day
       role=gridcell
     >
       ${button}
@@ -77,7 +74,6 @@ export function renderCalendarDay({
   return html`
   <td
     class=calendarDay--none
-    part="calendar-day-none"
     aria-disabled=true
     aria-hidden=true
     aria-selected=false

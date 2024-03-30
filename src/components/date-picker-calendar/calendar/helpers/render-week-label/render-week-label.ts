@@ -11,7 +11,6 @@ export function renderWeekLabel({ label, value }: RenderWeekLabelInit) {
     abbr=${ifDefined(maybeLabel)}
     aria-disabled=true
     class=cell
-    part=week-label
     role=rowheader
     scope=row
   >

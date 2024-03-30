@@ -23,7 +23,6 @@ export function renderYearGridButton({
         aria-pressed=${selected ? 'true' : 'false'}
         class=${classMap({ toyear, yearGridButton: true })}
         data-year=${year}
-        part=${`year-grid-button${toyear ? ' toyear' : ''}`}
         tabindex=${tabIndex}
         title=${ifDefined(maybeLabel)}
         type=button
@@ -35,7 +34,6 @@ export function renderYearGridButton({
         aria-pressed=${selected ? 'true' : 'false'}
         class=${classMap({ toyear, yearGridButton: true })}
         data-year=${year}
-        part=${`year-grid-button${toyear ? ' toyear' : ''}`}
         tabindex=${tabIndex}
         title=${ifDefined(maybeLabel)}
         type=button

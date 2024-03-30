@@ -7,7 +7,6 @@ export function renderWeekDay({ label, value }: RenderWeekDayInit) {
   <th
     aria-label=${label}
     class=weekDay
-    part=week-day
     role=columnheader
   >
     <abbr title=${label}>${value}</abbr>

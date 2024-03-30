@@ -20,7 +20,7 @@ import { renderMenuButton } from '../../../render-helpers/render-menu-button/ren
 import type { RenderMenuButtonInit } from '../../../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import type { MenuListType } from '../../../types.js';
-import type { HeaderDataset, HeaderProperties } from './types.js';
+import type { HeaderMenuType, HeaderProperties } from './types.js';
 
 const offsetByType = {
   monthDec: -1,
@@ -29,15 +29,14 @@ const offsetByType = {
   yearDec: -1,
   yearInc: 1,
   yearMenu: 0,
-} as const;
+} as const satisfies Record<HeaderMenuType, -1 | 0 | 1>;
 
 export class Header
   extends MinMaxMixin(ValueMixin(RootElement))
   implements HeaderProperties
 {
   #onMenuButtonClick: RenderMenuButtonInit['onClick'] = (ev) => {
-    const { type } = (ev.currentTarget as HTMLButtonElement)
-      .dataset as HeaderDataset;
+    const type = (ev.currentTarget as HTMLButtonElement).name as HeaderMenuType;
     const offset = offsetByType[type];
     const date = this._valueDate;
 
@@ -56,7 +55,7 @@ export class Header
       case 'yearMenu': {
         this.onYearMenuClick?.({
           date: toUTCDate(date, { year: offset }),
-          type,
+          type
         });
         break;
       }
@@ -151,39 +150,75 @@ export class Header
     <div class=header>
       ${
         showPrevMonthButton
-          ? html`<md-icon-button class=prevMonth data-type=monthDec @click=${onClick} aria-label=${prevMonthButtonLabel} title=${prevMonthButtonLabel}>${iconChevronLeft}</md-icon-button>`
+          ? html`
+            <md-icon-button
+              class=prevMonth
+              name=monthDec
+              @click=${onClick}
+              aria-label=${prevMonthButtonLabel}
+              title=${prevMonthButtonLabel}
+            >
+              <md-svg .content=${iconChevronLeft}></md-svg>
+            </md-icon-button>`
           : nothing
       }
       ${renderMenuButton({
         className: 'month',
         disabled: isViewYearMenu,
         label: monthLabel,
+        name: 'monthMenu',
         onClick,
         text: monthLabel,
-        type: 'monthMenu',
       })}
       ${
         showNextMonthButton
-          ? html`<md-icon-button class=nextMonth data-type=monthInc @click=${onClick} aria-label=${nextMonthButtonLabel} title=${nextMonthButtonLabel}>${iconChevronRight}</md-icon-button>`
+          ? html`
+            <md-icon-button
+              @click=${onClick}
+              aria-label=${nextMonthButtonLabel}
+              class=nextMonth
+              name=monthInc
+              title=${nextMonthButtonLabel}
+            >
+              <md-svg .content=${iconChevronRight}></md-svg>
+            </md-icon-button>`
           : nothing
       }
 
       ${
         showPrevYearButton
-          ? html`<md-icon-button class=prevYear data-type=yearDec @click=${onClick} aria-label=${prevYearButtonLabel} title=${prevYearButtonLabel}>${iconChevronLeft}</md-icon-button>`
+          ? html`
+            <md-icon-button
+              @click=${onClick}
+              aria-label=${prevYearButtonLabel}
+              class=prevYear
+              name=yearDec
+              title=${prevYearButtonLabel}
+            >
+              <md-svg .content=${iconChevronLeft}></md-svg>
+            </md-icon-button>`
           : nothing
       }
       ${renderMenuButton({
         className: 'year',
         disabled: isViewMonthMenu,
         label: yearLabel,
+        name: 'yearMenu',
         onClick,
         text: yearLabel,
-        type: 'yearMenu',
       })}
       ${
         showNextYearButton
-          ? html`<md-icon-button class=nextYear data-type=yearInc @click=${onClick} aria-label=${nextYearButtonLabel} title=${nextYearButtonLabel}>${iconChevronRight}</md-icon-button>`
+          ? html`
+            <md-icon-button
+              @click=${onClick}
+              aria-label=${nextYearButtonLabel}
+              class=nextYear
+              name=yearInc
+              title=${nextYearButtonLabel}
+            >
+              <md-svg .content=${iconChevronRight}></md-svg>
+            </md-icon-button>`
           : nothing
       }
     </div>

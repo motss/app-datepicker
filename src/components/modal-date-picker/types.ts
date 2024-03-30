@@ -16,5 +16,5 @@ export interface ModalDatePickerProperties
 export type ModalDatePickerPropertiesReturnValue = 'confirm' | 'deny';
 
 interface ModalDatePickerStates {
-  _focusedDate: Date;
+  _iconDirection: 'down' | 'up';
 }

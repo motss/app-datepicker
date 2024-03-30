@@ -1,14 +1,14 @@
 import '@material/web/dialog/dialog.js';
+import '@material/web/iconbutton/icon-button.js';
 import '../date-picker-calendar/date-picker-calendar.js';
-import './body-menu/modal-date-picker-body-menu.js';
-import './header/modal-date-picker-header.js';
+import '../md-svg/md-svg.js';
 import './year-grid/modal-date-picker-year-grid.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
-import type { MdTextButton } from '@material/web/button/text-button.js';
 import type { MdDialog } from '@material/web/dialog/dialog.js';
-import { html, type TemplateResult } from 'lit';
+import type { MdIconButton } from '@material/web/iconbutton/icon-button.js';
+import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -18,26 +18,25 @@ import { PropertyChangeController } from '../../controllers/property-change-cont
 import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
-import { iconEdit } from '../../icons.js';
+import { iconChevronLeft, iconChevronRight, iconEdit } from '../../icons.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
 import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
+import { renderMenuButton } from '../../render-helpers/render-menu-button/render-menu-button.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { baseStyling, resetShadowRoot } from '../../styles.js';
 import type { DatePickerCalendarProperties } from '../date-picker-calendar/types.js';
-import type { ModalDatePickerBodyMenu } from './body-menu/modal-date-picker-body-menu.js';
 import { modalDatePickerName } from './constants.js';
-import type { ModalDatePickerHeaderProperties } from './header/types.js';
 import { modalDatePickerStyles } from './styles.js';
 import type {
   ModalDatePickerProperties,
   ModalDatePickerPropertiesReturnValue,
 } from './types.js';
 import type { ModalDatePickerYearGrid } from './year-grid/modal-date-picker-year-grid.js';
-import type { ModalDatePickerYearGridProperties } from './year-grid/types.js';
+import type { YearGridProperties } from './year-grid/types.js';
 
 @customElement(modalDatePickerName)
 export class ModalDatePicker
@@ -52,8 +51,6 @@ export class ModalDatePicker
     modalDatePickerStyles,
     renderActionsStyle,
   ];
-
-  #bodyMenuRef = createRef<ModalDatePickerBodyMenu>();
 
   #dialogRef: Ref<MdDialog> = createRef();
 
@@ -93,9 +90,7 @@ export class ModalDatePicker
     }
   };
 
-  #onIconButtonClick: NonNullable<
-    ModalDatePickerHeaderProperties['onIconButtonClick']
-  > = () => {
+  #onIconButtonClick: MdIconButton['onclick'] = () => {
     /** fixme: this require new M3 TextField component to edit date */
   };
 
@@ -112,7 +107,7 @@ export class ModalDatePicker
   };
 
   #onYearUpdate: NonNullable<
-    ModalDatePickerYearGridProperties['onYearUpdate']
+    YearGridProperties['onYearUpdate']
   > = (year) => {
     const focusedDate = toResolvedDate(this._focusedDate);
 
@@ -142,6 +137,8 @@ export class ModalDatePicker
 
   @state() _focusedDate: Date;
 
+  @state() _iconDirection: ModalDatePickerProperties['_iconDirection'] = 'down';
+
   @property() confirmText: string = labelConfirm;
 
   @property() denyText: string = labelDeny;
@@ -166,18 +163,6 @@ export class ModalDatePicker
       property: 'value',
     });
     new PropertyChangeController(this, {
-      onUpdate: () => {
-        const menuButton =
-          this.#bodyMenuRef.value?.root.querySelector<MdTextButton>(
-            '.menuButton'
-          );
-
-        menuButton?.focus();
-      },
-      order: 'update',
-      property: 'startView',
-    });
-    new PropertyChangeController(this, {
       compare: false,
       onUpdated: this.#focusSelectedYear,
       order: 'updated',
@@ -193,6 +178,7 @@ export class ModalDatePicker
     // fixme: move logics from body to here!
     const {
       _focusedDate,
+      _iconDirection,
       _maxDate,
       _minDate,
       chooseMonthLabel,
@@ -227,8 +213,6 @@ export class ModalDatePicker
     const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(
       this.#selectedDate
     );
-    const iconButton = iconEdit;
-    const supportingText = selectDateLabel;
 
     const isCalendarView = startView === 'calendar';
     const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
@@ -256,27 +240,59 @@ export class ModalDatePicker
       type=${ifDefined(type)}
     >
       <form method=dialog slot=content id=${formId}>
-        <modal-date-picker-header
-          class=header
-          .headline=${headline}
-          .iconButton=${iconButton}
-          .onIconButtonClick=${this.#onIconButtonClick}
-          .supportingText=${supportingText}
-        ></modal-date-picker-header>
+        <div class=header>
+          <p class="supportingText">${selectDateLabel}</p>
+          <p class="headline">${headline}</p>
+          <!-- fixme: this requires a new view to edit dates -->
+          <md-icon-button
+            class=iconButton
+            hidden
+            @click=${this.#onIconButtonClick}
+          >
+            <md-svg .content=${iconEdit}></md-svg>
+          </md-icon-button>
+        </div>
 
-        <modal-date-picker-body-menu
-          ${ref(this.#bodyMenuRef)}
-          class=menu
-          menuLabel=${menuLabel}
-          menuText=${longMonthYearFormat(_focusedDate)}
-          nextIconButtonLabel=${nextMonthLabel}
-          .onMenuClick=${this.#onMenuClick}
-          .onNextClick=${this.#onNextClick}
-          .onPrevClick=${this.#onPrevClick}
-          .prevIconButtonLabel=${previousMonthLabel}
-          ?showNextButton=${showNextButton}
-          ?showPrevButton=${showPrevButton}
-        ></modal-date-picker-body-menu>
+        <div class=menu>
+          ${renderMenuButton({
+            iconDirection: _iconDirection,
+            label: menuLabel,
+            onClick: this.#onMenuClick,
+            text: longMonthYearFormat(_focusedDate),
+            type: 'button'
+          })}
+
+          ${
+            showPrevButton
+              ? html`
+                <md-icon-button
+                  @click=${this.#onPrevClick}
+                  aria-label=${previousMonthLabel}
+                  class=prevIconButton
+                  form=${formId}
+                  title=${previousMonthLabel}
+                  type=button
+                >
+                  <md-svg .content=${iconChevronLeft}></md-svg>
+                </md-icon-button>`
+              : nothing
+          }
+          ${
+            showNextButton
+              ? html`
+                <md-icon-button
+                  @click=${this.#onNextClick}
+                  aria-label=${nextMonthLabel}
+                  class=nextIconButton
+                  form=${formId}
+                  title=${nextMonthLabel}
+                  type=button
+                >
+                  <md-svg .content=${iconChevronRight}></md-svg>
+                </md-icon-button>`
+              : nothing
+          }
+        </div>
 
         <div class=body>${
           startView === 'calendar'
@@ -347,6 +363,7 @@ declare global {
   }
 }
 
+// fixme: may 31 -> click prev month -> focus on may 1
 // fixme: use app-calendar and datesController, refer to DockedDatePicker
 // fixme: tabindex=0 does not get updated when changing min
 // fixme: selected date but close modal without confirming should not update selected date

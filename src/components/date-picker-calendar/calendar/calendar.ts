@@ -198,7 +198,6 @@ export class Calendar
     return html`
     <table
       class=calendar
-      part=calendar
       @click=${this.#onClickOrKeyUp<'click'>(calendarGrid)}
       @keydown=${this.#onKeyDown}
       @keyup=${this.#onClickOrKeyUp<'key'>(calendarGrid)}

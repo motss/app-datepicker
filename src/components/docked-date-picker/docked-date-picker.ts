@@ -1,9 +1,10 @@
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/textfield/outlined-text-field.js';
 import '../date-picker-calendar/date-picker-calendar.js';
+import '../md-menu-surface/md-menu-surface.js';
+import '../md-svg/md-svg.js';
 import './header/docked-date-picker-header.js';
 import './menu-list/docked-date-picker-menu-list.js';
-import '../md-menu-surface/md-menu-surface.js';
 
 import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
@@ -336,7 +337,7 @@ export class DockedDatePicker
           aria-label=${calendarIconLabel}
           title=${calendarIconLabel}
         >
-          ${iconCalendar}
+          <md-svg .content=${iconCalendar}></md-svg>
         </md-icon-button>
       </md-outlined-text-field>
 

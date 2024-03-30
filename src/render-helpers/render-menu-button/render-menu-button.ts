@@ -4,19 +4,23 @@ import '../../components/md-svg/md-svg.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
+import { ref as refDirective } from 'lit/directives/ref.js';
 
 import { iconArrowDropdown } from '../../icons.js';
 import type { RenderMenuButtonInit } from './types.js';
 
-export function renderMenuButton<T extends string>({
+export function renderMenuButton({
   className,
   disabled,
   iconDirection,
   label,
+  name,
   onClick,
+  ref,
   text,
   type,
-}: RenderMenuButtonInit<T>): TemplateResult {
+  value,
+}: RenderMenuButtonInit): TemplateResult {
   const clsObject = className
     ? Object.fromEntries(
         className
@@ -31,11 +35,14 @@ export function renderMenuButton<T extends string>({
   <md-text-button
     ?disabled=${disabled}
     @click=${onClick}
+    ${refDirective(ref)}
     aria-label=${label}
     class=${classMap({ menuButton: true, ...clsObject })}
-    data-type=${ifDefined(type as string)}
+    name=${ifDefined(name)}
     title=${label}
     trailing-icon
+    type=${ifDefined(type)}
+    value=${ifDefined(value)}
   >
     ${text}
     ${

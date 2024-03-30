@@ -1,10 +1,6 @@
 import type { ValueMixinProperties } from '../../../mixins/value-mixin/types.js';
 import type { DatePickerProperties, MenuListType } from '../../../types.js';
 
-export interface HeaderDataset extends DOMStringMap {
-  type: HeaderMenuType;
-}
-
 interface HeaderFormatters {
   shortMonthFormat: Intl.DateTimeFormat;
   yearFormat: Intl.DateTimeFormat;

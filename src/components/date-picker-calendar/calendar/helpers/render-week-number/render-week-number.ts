@@ -10,7 +10,6 @@ export function renderWeekNumber({ label, value }: RenderWeekNumberInit) {
   <th
     aria-disabled=true
     class=cell
-    part=week-number
     role=rowheader
     scope=row
   >

@@ -4,9 +4,9 @@ import type {
 } from '../../../mixins/types.js';
 import type { ValueMixinProperties } from '../../../mixins/value-mixin/types.js';
 
-export interface ModalDatePickerYearGridProperties
+export interface YearGridProperties
   extends MinMaxMixinProperties,
-    ModalDatePickerYearGridStates,
+    YearGridStates,
     Pick<
       DatePickerMixinProperties,
       'locale' | 'selectedYearTemplate' | 'toyearTemplate'
@@ -16,6 +16,6 @@ export interface ModalDatePickerYearGridProperties
   onYearUpdate?(year: number): void;
 }
 
-interface ModalDatePickerYearGridStates {
+interface YearGridStates {
   _yearFormat: Intl.DateTimeFormat;
 }
