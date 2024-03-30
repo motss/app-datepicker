@@ -149,32 +149,27 @@ export class YearGrid
       ${ref(this.#$yearGrid)}
       class=yearGrid
       style=${`--_rows:${rows};`}
-    >${
-      map(
-        yearList,
-        (year) => {
-          const selected = year === selectedDateYear;
-          const tabIndex = year === this._focusingYear ? 0 : -1;
-          const toyear = this.#todayYear === year;
-          const yearLabel = this._yearFormat.format(new Date(`${year}-01-01`));
+    >${map(yearList, (year) => {
+      const selected = year === selectedDateYear;
+      const tabIndex = year === this._focusingYear ? 0 : -1;
+      const toyear = this.#todayYear === year;
+      const yearLabel = this._yearFormat.format(new Date(`${year}-01-01`));
 
-          const template = selected
-            ? selectedYearTemplate
-            : toyear
-              ? toyearTemplate
-              : defaultYearGridButtonYearTemplate;
-          const label = templateReplacer(template, [yearLabel]);
+      const template = selected
+        ? selectedYearTemplate
+        : toyear
+          ? toyearTemplate
+          : defaultYearGridButtonYearTemplate;
+      const label = templateReplacer(template, [yearLabel]);
 
-          return renderYearGridButton({
-            label,
-            selected,
-            tabIndex,
-            toyear,
-            year,
-          });
-        }
-      )
-    }</div>
+      return renderYearGridButton({
+        label,
+        selected,
+        tabIndex,
+        toyear,
+        year,
+      });
+    })}</div>
     `;
   }
 }

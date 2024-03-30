@@ -55,7 +55,7 @@ export class Header
       case 'yearMenu': {
         this.onYearMenuClick?.({
           date: toUTCDate(date, { year: offset }),
-          type
+          type,
         });
         break;
       }

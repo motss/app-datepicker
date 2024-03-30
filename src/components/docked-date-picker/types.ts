@@ -1,15 +1,16 @@
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
 
-import type { DatePickerProperties, MenuListType } from '../../types.js';
+import type {
+  DatePickerProperties as BaseDatePickerProperties,
+  MenuListType,
+} from '../../types.js';
 import type { OmitKey } from '../../utility.types.js';
 
-export interface DockedDatePickerProperties
-  extends OmitKey<DatePickerProperties, 'startView'>,
-    Partial<PickMdOutlinedTextField> {
+export interface DatePickerProperties
+  extends OmitKey<BaseDatePickerProperties, 'startView'>,
+    Partial<Pick<MdOutlinedTextField, 'supportingText'>> {
   open?: boolean;
-  startView?: MenuListType | NonNullable<DatePickerProperties['startView']>;
+  startView?: MenuListType | NonNullable<BaseDatePickerProperties['startView']>;
 }
 
-export type DockedDatePickerPropertiesReturnValue = 'confirm' | 'deny';
-
-type PickMdOutlinedTextField = Pick<MdOutlinedTextField, 'supportingText'>;
+export type DatePickerPropertiesReturnValue = 'confirm' | 'deny';

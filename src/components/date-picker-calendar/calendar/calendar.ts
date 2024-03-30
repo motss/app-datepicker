@@ -6,6 +6,7 @@ import type {
 import { getWeekdays } from '@ipohjs/calendar/get-weekdays';
 import { html, nothing, type TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
+import { map } from 'lit/directives/map.js';
 
 import {
   dayFormatOptions,
@@ -209,7 +210,7 @@ export class Calendar
       <caption class="sr-only">${caption}</caption>
 
       <colgroup>${weekNumber?.value ? html`<col />` : nothing}
-        ${weekdays.map(() => html`<col />`)}
+        ${map(weekdays, () => html`<col />`)}
       </colgroup>
 
       <!-- Wk | S M T W T F S -->
@@ -223,7 +224,7 @@ export class Calendar
                 })
               : nothing
           }
-          ${weekdays.map((weekday, ri) => {
+          ${map(weekdays, (weekday, ri) => {
             return (renderWeekDay ?? renderNoop)({ ri, weekday });
           })}
         </tr>
@@ -232,10 +233,10 @@ export class Calendar
       <!-- 1 | x x x 1 2  3  4 -->
       <!-- 2 | 5 6 7 8 9 10 11 -->
       <tbody>
-        ${datesGrid.map((row, ri) => {
+        ${map(datesGrid, (row, ri) => {
           return html`
             <tr>
-              ${row.columns.map((data, ci) => {
+              ${map(row.columns, (data, ci) => {
                 const isWeekNumber = ci === 0 && showWeekNumber;
 
                 return (

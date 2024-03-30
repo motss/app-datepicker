@@ -4,7 +4,12 @@ import {
   includeScrollbarStyles,
   includeSeparatorStyles,
 } from '../../styles.js';
-import { mdRefTypefacePlain, mdSysTypescaleBodyLarge, mdSysTypescaleHeadlineLarge, mdSysTypescaleLabelLarge } from '../../typography.js';
+import {
+  mdRefTypefacePlain,
+  mdSysTypescaleBodyLarge,
+  mdSysTypescaleHeadlineLarge,
+  mdSysTypescaleLabelLarge,
+} from '../../typography.js';
 
 const headerStyles = css`
 .header {
