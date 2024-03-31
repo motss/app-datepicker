@@ -16,5 +16,9 @@ export interface DatePickerProperties
 }
 
 interface DatePickerStates {
+  _formatters: Record<
+    'dateFormat' | 'longMonthYearFormat',
+    Intl.DateTimeFormat
+  >;
   _iconDirection: 'down' | 'up';
 }

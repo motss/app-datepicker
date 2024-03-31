@@ -120,7 +120,9 @@ export const includeSeparatorStyles = (
     ? unsafeCSS('::before')
     : unsafeCSS('::after');
   const positionValue = offset || 0;
-  const position = isBlockStart ? unsafeCSS(`top:${positionValue}px`) : unsafeCSS(`bottom:${positionValue}px`);
+  const position = isBlockStart
+    ? unsafeCSS(`top:${positionValue}px`)
+    : unsafeCSS(`bottom:${positionValue}px`);
 
   return css`
   ${selector}${pseudoSelector} {

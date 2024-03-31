@@ -15,7 +15,6 @@ import {
 } from './key-values.js';
 
 export const confirmKeySet = new Set([keyEnter, keySpace]);
-export const DateTimeFormat = Intl.DateTimeFormat;
 export const emptyReadonlyArray = [] as const satisfies readonly unknown[];
 export const labelChooseMonth = 'Choose month' as const;
 export const labelChooseYear = 'Choose year' as const;

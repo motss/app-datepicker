@@ -12,5 +12,3 @@ export interface DatePickerProperties
   open?: boolean;
   startView?: MenuListType | NonNullable<BaseDatePickerProperties['startView']>;
 }
-
-export type DatePickerPropertiesReturnValue = 'confirm' | 'deny';

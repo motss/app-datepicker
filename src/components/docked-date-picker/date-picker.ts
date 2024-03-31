@@ -66,21 +66,23 @@ export class DatePicker
 
   #didConfirm = false;
 
-  #onClosed = () => {
-    const { _$dates_, reset } = this;
+  #onClosed = (ev: CustomEvent<object>) => {
+    const { _$dates_ } = this;
 
     if (this.#didConfirm) {
       this.value = toDateString(_$dates_.selectedDate);
       this.#didConfirm = false;
     } else {
-      reset();
+      this.reset();
     }
 
     this.startView = 'calendar';
+    this.#propagateCustomEvent(ev);
   };
 
-  #onClosing = () => {
+  #onClosing = (ev: CustomEvent<object>) => {
     this.close();
+    this.#propagateCustomEvent(ev);
   };
 
   #onConfirm = () => {
@@ -111,7 +113,7 @@ export class DatePicker
     this.startView = 'calendar';
   };
 
-  #onOpened = async () => {
+  #onOpened = async (ev: CustomEvent<object>) => {
     if (this.startView === 'calendar') {
       await this.updateComplete;
 
@@ -129,10 +131,17 @@ export class DatePicker
         }
       }
     }
+
+    this.#propagateCustomEvent(ev);
   };
 
-  #onOpening = () => {
+  #onOpening = (ev: CustomEvent<object>) => {
     this.show();
+    this.#propagateCustomEvent(ev);
+  };
+
+  #propagateCustomEvent = (ev: CustomEvent<object>) => {
+    this.fire({ detail: ev.detail, type: ev.type });
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
@@ -176,9 +185,11 @@ export class DatePicker
   readonly #todayDate: Date = toResolvedDate();
 
   #toggleMenuSurface = () => {
-    const { close, open, show } = this;
-
-    (open ? close : show)();
+    if (this.open) {
+      this.close();
+    } else {
+      this.show();
+    }
   };
 
   #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (
@@ -254,12 +265,6 @@ export class DatePicker
       order: 'updated',
       property: 'startView',
     });
-
-    const { close, reset, show } = this;
-
-    this.close = close.bind(this);
-    this.reset = reset.bind(this);
-    this.show = show.bind(this);
   }
 
   close(): void {
@@ -271,6 +276,8 @@ export class DatePicker
     const {
       _$dates_,
       calendarIconLabel,
+      chooseMonthLabel,
+      chooseYearLabel,
       confirmText,
       denyText,
       disabledDates,
@@ -280,13 +287,18 @@ export class DatePicker
       locale,
       max,
       min,
+      nextMonthLabel,
       open,
+      previousMonthLabel,
       quick,
+      selectDateLabel,
+      selectedDateLabel,
       selectedYearTemplate,
       shortWeekLabel,
       showWeekNumber,
       startView,
       supportingText,
+      todayLabel,
       toyearTemplate,
       value,
       weekLabel,
@@ -357,6 +369,8 @@ export class DatePicker
                 ? html`
                   <app-calendar
                     ?showWeekNumber=${showWeekNumber}
+                    .max=${max}
+                    .min=${min}
                     .onDateUpdateByClick=${_$dates_.onDateUpdateByClick}
                     .onDateUpdateByKey=${_$dates_.onDateUpdateByKey}
                     .renderCalendarDay=${this.#renderCalendarDay}
@@ -365,16 +379,21 @@ export class DatePicker
                     .renderWeekLabel=${renderNoop}
                     .renderWeekNumber=${renderNoop}
                     .value=${focusedValue}
+                    chooseMonthLabel=${chooseMonthLabel}
+                    chooseYearLabel=${chooseYearLabel}
                     class=appCalendar
                     disabledDates=${disabledDates}
                     disabledDays=${disabledDays}
                     firstDayOfWeek=${firstDayOfWeek}
                     locale=${locale}
-                    max=${ifDefined(max)}
-                    min=${ifDefined(min)}
+                    nextMonthLabel=${nextMonthLabel}
+                    previousMonthLabel=${previousMonthLabel}
+                    selectDateLabel=${selectDateLabel}
+                    selectedDateLabel=${selectedDateLabel}
                     selectedYearTemplate=${selectedYearTemplate}
                     shortWeekLabel=${shortWeekLabel}
                     startView=${startView}
+                    todayLabel=${todayLabel}
                     toyearTemplate=${toyearTemplate}
                     weekLabel=${weekLabel}
                     weekNumberTemplate=${weekNumberTemplate}
@@ -413,14 +432,7 @@ export class DatePicker
   }
 
   reset(): void {
-    const { _$dates_, value } = this;
-
-    const newDate = toResolvedDate(value);
-
-    _$dates_.updateBy({
-      focusedDate: newDate,
-      selectedDate: newDate,
-    });
+    this._$dates_.reset();
   }
 
   show(): void {

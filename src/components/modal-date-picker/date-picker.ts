@@ -11,12 +11,13 @@ import type { MdIconButton } from '@material/web/iconbutton/icon-button.js';
 import { html, nothing, type TemplateResult } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
-import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { createRef, ref } from 'lit/directives/ref.js';
 
 import {
   dateFormatOptions,
   labelConfirm,
   labelDeny,
+  longMonthYearFormatOptions,
   renderNoop,
 } from '../../constants.js';
 import { DatesController } from '../../controllers/dates-controller/dates-controller.js';
@@ -45,7 +46,7 @@ export class DatePicker
   )
   implements DatePickerProperties
 {
-  #$dialog: Ref<MdDialog> = createRef();
+  #$dialog = createRef<MdDialog>();
 
   #didConfirmByKey = false;
 
@@ -59,8 +60,7 @@ export class DatePicker
   };
 
   #onCancel = (ev: CustomEvent<object>) => {
-    this._open = false;
-    this.#propagateCustomEvent(ev);
+    this.#onClose(ev);
   };
 
   #onClose = (ev: CustomEvent<object>) => {
@@ -76,6 +76,8 @@ export class DatePicker
       // todo: add custom formatter
       this.value = toDateString(this._$dates_.focusedDate);
       this.#didConfirmByKey = false;
+    } else {
+      this.reset();
     }
 
     this.#propagateCustomEvent(ev);
@@ -98,7 +100,7 @@ export class DatePicker
   };
 
   #onOpen = (ev: CustomEvent<object>) => {
-    this.open = true;
+    this._open = true;
     this.#propagateCustomEvent(ev);
   };
 
@@ -147,14 +149,16 @@ export class DatePicker
   };
 
   readonly #todayDate = toResolvedDate();
-
   #yearGridRef = createRef<ModalDatePickerYearGrid>();
+
   private _$dates_ = new DatesController(this, {
     onConfirmByKey: (ev) => {
       this.#didConfirmByKey = true;
       this.#onClose(ev as unknown as CustomEvent<object>);
     },
   });
+
+  @state() _formatters!: DatePickerProperties['_formatters'];
 
   @state() _iconDirection: DatePickerProperties['_iconDirection'] = 'down';
 
@@ -165,7 +169,6 @@ export class DatePicker
   @property() denyText: string = labelDeny;
 
   @property() type?: MdDialog['type'];
-
   constructor() {
     super();
 
@@ -187,15 +190,29 @@ export class DatePicker
       order: 'updated',
       property: 'startView',
     });
+    new PropertyChangeController(this, {
+      onUpdate: (_, locale) => {
+        this._formatters = {
+          dateFormat: new Intl.DateTimeFormat(locale, dateFormatOptions),
+          longMonthYearFormat: new Intl.DateTimeFormat(
+            locale,
+            longMonthYearFormatOptions
+          ),
+        };
+      },
+      order: 'update',
+      property: 'locale',
+    });
   }
 
-  close() {
-    this._open = false;
+  close(returnValue?: DatePickerProperties['returnValue']): Promise<void> {
+    return this.#$dialog.value?.close(returnValue) as Promise<void>;
   }
 
   protected override render(): TemplateResult {
     const {
       _$dates_,
+      _formatters,
       _iconDirection,
       _maxDate,
       _minDate,
@@ -227,28 +244,21 @@ export class DatePicker
       weekNumberType,
     } = this;
     const { focusedDate, selectedDate } = _$dates_;
+    const { dateFormat, longMonthYearFormat } = _formatters;
 
+    const focusedValue = toDateString(focusedDate);
     const formId = id || 'modalDatePicker';
-    const headline = new Intl.DateTimeFormat(locale, dateFormatOptions).format(
-      selectedDate
-    );
-
+    const headline = dateFormat.format(selectedDate);
     const isCalendarView = startView === 'calendar';
-    const longMonthYearFormat = new Intl.DateTimeFormat(locale, {
-      month: 'long',
-      timeZone: 'UTC',
-      year: 'numeric',
-    }).format;
     const menuLabel = isCalendarView ? chooseMonthLabel : chooseYearLabel;
+    const menuText = longMonthYearFormat.format(focusedDate);
     const showNextButton =
       isCalendarView && !isSameMonth(focusedDate, _maxDate);
     const showPrevButton =
       isCalendarView && !isSameMonth(focusedDate, _minDate);
-    const valueValue = toDateString(focusedDate);
 
     return html`
     <md-dialog
-      ?open=${_open}
       @cancel=${this.#onCancel}
       @close=${this.#onClose}
       @closed=${this.#onClosed}
@@ -259,7 +269,7 @@ export class DatePicker
       type=${ifDefined(type)}
     >
       ${
-        this.open
+        _open
           ? html`
             <form method=dialog slot=content id=${formId}>
               <div class=header>
@@ -280,7 +290,7 @@ export class DatePicker
                   iconDirection: _iconDirection,
                   label: menuLabel,
                   onClick: this.#onMenuClick,
-                  text: longMonthYearFormat(focusedDate),
+                  text: menuText,
                   type: 'button',
                 })}
 
@@ -322,13 +332,14 @@ export class DatePicker
                     ?showWeekNumber=${showWeekNumber}
                     .max=${max}
                     .min=${min}
-                    .onDateUpdateByClick=${this._$dates_.onDateUpdateByClick}
-                    .onDateUpdateByKey=${this._$dates_.onDateUpdateByKey}
+                    .onDateUpdateByClick=${_$dates_.onDateUpdateByClick}
+                    .onDateUpdateByKey=${_$dates_.onDateUpdateByKey}
                     .renderCalendarDay=${this.#renderCalendarDay}
                     .renderFooter=${renderNoop}
                     .renderWeekDay=${this.#renderWeekDay}
                     .renderWeekLabel=${renderNoop}
                     .renderWeekNumber=${renderNoop}
+                    .value=${focusedValue}
                     chooseMonthLabel=${chooseMonthLabel}
                     chooseYearLabel=${chooseYearLabel}
                     disabledDates=${disabledDates}
@@ -343,7 +354,6 @@ export class DatePicker
                     shortWeekLabel=${shortWeekLabel}
                     todayLabel=${todayLabel}
                     toyearTemplate=${toyearTemplate}
-                    value=${valueValue}
                     weekLabel=${weekLabel}
                     weekNumberTemplate=${weekNumberTemplate}
                     weekNumberType=${weekNumberType}
@@ -353,10 +363,10 @@ export class DatePicker
                     .max=${max}
                     .min=${min}
                     .onYearUpdate=${this.#onYearUpdate}
+                    .value=${focusedValue}
                     locale=${locale}
                     selectedYearTemplate=${selectedYearTemplate}
                     toyearTemplate=${toyearTemplate}
-                    value=${valueValue}
                   ></modal-date-picker-year-grid>`
               }</div>
             </form>
@@ -374,22 +384,16 @@ export class DatePicker
     `;
   }
 
-  async reset(): Promise<boolean> {
-    const { _$dates_, updateComplete, value } = this;
-
-    _$dates_.updateBy({
-      focusedDate: toResolvedDate(value),
-    });
-
-    return updateComplete;
+  reset(): void {
+    this._$dates_.reset();
   }
 
-  async show() {
-    this._open = true;
+  show(): Promise<void> {
+    return this.#$dialog.value?.show() as Promise<void>;
   }
 
-  showPicker() {
-    this.show();
+  get dialog() {
+    return this.#$dialog.value;
   }
 
   get open(): boolean {
@@ -402,15 +406,15 @@ export class DatePicker
 
   get returnValue() {
     /** NOTE: Do not remove ?. as accessing a custom element too early will result in undefined value */
-    return (this.#$dialog.value as MdDialog)
+    return this.#$dialog.value
       ?.returnValue as DatePickerProperties['returnValue'];
   }
 }
 
-// fixme: selected date changes but deny modal should reset value
 // fixme: may 31 -> click prev month -> focus on may 1
 // fixme: tabindex=0 does not get updated when changing min
 //
 // done: use app-calendar and datesController, refer to DockedDatePicker
 // done: focus last calendar day will cause overflow
 // done: selected date but close modal without confirming should not update selected date
+// done: selected date changes but deny modal should reset value

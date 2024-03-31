@@ -176,9 +176,7 @@ export class DemoApp extends RootElement {
             @closed=${this.#onClosed}
             @open=${this.#debugCustomEvent}
             @opened=${this.#debugCustomEvent}
-          >
-            modal date picker
-          </modal-date-picker>
+          ></modal-date-picker>
         </div>
       </section>
     </div>
@@ -191,6 +189,10 @@ export class DemoApp extends RootElement {
             value=${'2020-05-05'}
           ></md-outlined-text-field>
           <docked-date-picker
+            @closing=${this.#debugCustomEvent}
+            @closed=${this.#debugCustomEvent}
+            @opening=${this.#debugCustomEvent}
+            @opened=${this.#debugCustomEvent}
             label=${'Select date'}
             value=${'2020-05-05'}
           ></docked-date-picker>
@@ -240,9 +242,7 @@ export class DemoApp extends RootElement {
             .weekLabel=${labelWeek}
             .weekNumberTemplate=${weekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
-          >
-            app-calendar
-          </app-calendar>
+          ></app-calendar>
         </div>
       </section>
     </div>

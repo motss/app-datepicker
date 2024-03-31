@@ -2,7 +2,6 @@ import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
 import { property } from 'lit/decorators.js';
 
 import {
-  DateTimeFormat,
   labelChooseMonth,
   labelChooseYear,
   labelNextMonth,
@@ -35,7 +34,7 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public disabledDays = '';
     @property({ reflect: true, type: Number }) public firstDayOfWeek = 0;
     @property() public locale: string =
-      DateTimeFormat().resolvedOptions().locale;
+      Intl.DateTimeFormat().resolvedOptions().locale;
     @property() public nextMonthLabel: string = labelNextMonth;
     @property() public previousMonthLabel: string = labelPreviousMonth;
     @property() public selectDateLabel: string = labelSelectDate;

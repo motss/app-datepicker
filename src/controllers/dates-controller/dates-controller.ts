@@ -192,4 +192,13 @@ export class DatesController<
   hostUpdate(): void {
     this.#update();
   }
+
+  reset() {
+    const newValue = toResolvedDate(this.#value);
+
+    this.updateBy({
+      focusedDate: newValue,
+      selectedDate: newValue,
+    });
+  }
 }
