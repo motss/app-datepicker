@@ -54,22 +54,6 @@ export class DatePicker
   extends DatePickerMixin(ElementMixin(MinMaxMixin(ValueMixin(RootElement))))
   implements DatePickerProperties
 {
-  // close(returnValue: DockedDatePickerPropertiesReturnValue): Promise<void> {
-
-  // }
-
-  // show(): Promise<void> {
-
-  // }
-
-  // reset(): Promise<boolean> {
-
-  // }
-
-  // get returnValue(): ModalDatePickerProperties['returnValue'] {
-  //   return (this.#dialogRef.value as MdDialog).returnValue;
-  // }
-
   #$body = createRef<HTMLDivElement>();
 
   #$header = createRef<DockedDatePickerHeader>();
@@ -83,35 +67,29 @@ export class DatePicker
   #didConfirm = false;
 
   #onClosed = () => {
-    const { _$dates_, value } = this;
+    const { _$dates_, reset } = this;
 
     if (this.#didConfirm) {
       this.value = toDateString(_$dates_.selectedDate);
       this.#didConfirm = false;
     } else {
-      const newDate = toResolvedDate(value);
-
-      this._$dates_.updateBy({
-        focusedDate: newDate,
-        selectedDate: newDate,
-      });
+      reset();
     }
 
     this.startView = 'calendar';
   };
 
   #onClosing = () => {
-    this.open = false;
-    this.#updateTextFieldFocusedTo(false);
+    this.close();
   };
 
   #onConfirm = () => {
     this.#didConfirm = true;
-    this.#onClosing();
+    this.close();
   };
 
   #onDeny = () => {
-    this.#onClosing();
+    this.close();
   };
 
   #onMenuChange: DockedDatePickerMenuList['onMenuChange'] = ({
@@ -154,8 +132,7 @@ export class DatePicker
   };
 
   #onOpening = () => {
-    this.open = true;
-    this.#updateTextFieldFocusedTo(true);
+    this.show();
   };
 
   #renderCalendarDay: CalendarProperties['renderCalendarDay'] = ({ data }) => {
@@ -199,11 +176,9 @@ export class DatePicker
   readonly #todayDate: Date = toResolvedDate();
 
   #toggleMenuSurface = () => {
-    if (this.open) {
-      this.#onClosing();
-    } else {
-      this.#onOpening();
-    }
+    const { close, open, show } = this;
+
+    (open ? close : show)();
   };
 
   #updateStartViewByMenuListType: DockedDatePickerHeader['onMonthMenuClick'] = (
@@ -279,6 +254,17 @@ export class DatePicker
       order: 'updated',
       property: 'startView',
     });
+
+    const { close, reset, show } = this;
+
+    this.close = close.bind(this);
+    this.reset = reset.bind(this);
+    this.show = show.bind(this);
+  }
+
+  close(): void {
+    this.open = false;
+    this.#updateTextFieldFocusedTo(false);
   }
 
   protected override render(): TemplateResult {
@@ -388,7 +374,7 @@ export class DatePicker
                     min=${ifDefined(min)}
                     selectedYearTemplate=${selectedYearTemplate}
                     shortWeekLabel=${shortWeekLabel}
-                    startView=${this.startView}
+                    startView=${startView}
                     toyearTemplate=${toyearTemplate}
                     weekLabel=${weekLabel}
                     weekNumberTemplate=${weekNumberTemplate}
@@ -425,10 +411,28 @@ export class DatePicker
     </div>
     `;
   }
+
+  reset(): void {
+    const { _$dates_, value } = this;
+
+    const newDate = toResolvedDate(value);
+
+    _$dates_.updateBy({
+      focusedDate: newDate,
+      selectedDate: newDate,
+    });
+  }
+
+  show(): void {
+    this.open = true;
+    this.#updateTextFieldFocusedTo(true);
+  }
+
+  showPicker() {
+    this.show();
+  }
 }
 
-// fixme: create more controllers to share code to update properties
-// fixme: add showPicker(), show(), close(), reset()
 //
 // done: Esc does not close menu
 // done: update tabbale date
@@ -437,3 +441,5 @@ export class DatePicker
 // done: focus menulist when opened
 // done: update focused, selected date
 // done: navigate month and year in calendar view
+// done: create more controllers to share code to update properties
+// done: add showPicker(), show(), close(), reset()
