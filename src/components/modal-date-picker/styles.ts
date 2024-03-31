@@ -18,6 +18,7 @@ const headerStyles = css`
   grid-template-columns: minmax(1px, 1fr) 48px;
   gap: 0 8px;
 
+  position: relative;
   width: 100%;
   height: 120px;
   padding-block: 16px 12px;
@@ -155,13 +156,13 @@ ${menuStyles}
 }
 
 .body {
-  --_padding-inline-start: 12px;
-  --_padding-inline-end: 12px;
-
   grid-area: body;
+
+  padding-block: 0 8px;
+  padding-inline: 12px;
   overflow-y: var(--_bo);
 }
 ${includeScrollbarStyles(':host([startview=yearGrid]) .body', true)}
 
-${includeSeparatorStyles(':host([startview=yearGrid]) .actions', 'start')}
+${includeSeparatorStyles(':host([startview=yearGrid]) .actions', 'start', -8)}
 `;

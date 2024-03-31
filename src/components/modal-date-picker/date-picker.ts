@@ -331,7 +331,6 @@ export class DatePicker
                     .renderWeekNumber=${renderNoop}
                     chooseMonthLabel=${chooseMonthLabel}
                     chooseYearLabel=${chooseYearLabel}
-                    class=body
                     disabledDates=${disabledDates}
                     disabledDays=${disabledDays}
                     firstDayOfWeek=${firstDayOfWeek}
@@ -408,8 +407,10 @@ export class DatePicker
   }
 }
 
-// fixme: focus last calendar day will cause overflow
+// fixme: selected date changes but deny modal should reset value
 // fixme: may 31 -> click prev month -> focus on may 1
-// fixme: use app-calendar and datesController, refer to DockedDatePicker
 // fixme: tabindex=0 does not get updated when changing min
-// fixme: selected date but close modal without confirming should not update selected date
+//
+// done: use app-calendar and datesController, refer to DockedDatePicker
+// done: focus last calendar day will cause overflow
+// done: selected date but close modal without confirming should not update selected date

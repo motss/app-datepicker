@@ -111,14 +111,16 @@ export const includeScrollbarStyles = (
 
 export const includeSeparatorStyles = (
   prefix: string,
-  block: 'end' | 'start'
+  block: 'end' | 'start',
+  offset?: number
 ) => {
   const selector = unsafeCSS(prefix);
   const isBlockStart = block === 'start';
   const pseudoSelector = isBlockStart
     ? unsafeCSS('::before')
     : unsafeCSS('::after');
-  const position = isBlockStart ? unsafeCSS('top: 0') : unsafeCSS('bottom: 0');
+  const positionValue = offset || 0;
+  const position = isBlockStart ? unsafeCSS(`top:${positionValue}px`) : unsafeCSS(`bottom:${positionValue}px`);
 
   return css`
   ${selector}${pseudoSelector} {
