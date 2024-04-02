@@ -16,8 +16,6 @@ import {
   weekNumberTemplate,
 } from '../constants.js';
 import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
-import { toDateString } from '../helpers/to-date-string.js';
-import { toResolvedDate } from '../helpers/to-resolved-date.js';
 import type { LitConstructor } from '../types.js';
 import type { DatePickerMixinProperties, MixinReturnType } from './types.js';
 
@@ -42,16 +40,8 @@ export const DatePickerMixin = <BaseConstructor extends LitConstructor>(
     @property() public selectedYearTemplate: string = selectedYearTemplate;
     @property() public shortWeekLabel: string = labelShortWeek;
     @property({ reflect: true, type: Boolean }) public showWeekNumber = false;
-
     @property() public todayLabel: string = labelToday;
     @property() public toyearTemplate: string = toyearTemplate;
-
-    /**
-     * NOTE: `null` or `''` will always reset to the old valid date. In order to reset to
-     * today's date, set `value` undefined.
-     */
-    @property() public value = toDateString(toResolvedDate());
-
     @property() public weekLabel: string = labelWeek;
     @property() public weekNumberTemplate: string = weekNumberTemplate;
     @property({
