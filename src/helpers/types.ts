@@ -1,4 +1,4 @@
-import type { ElementMixinProperties } from '../mixins/types.js';
+import type { ElementMixinProperties } from '../mixins/element-mixin/types.js';
 import type {
   CustomEventDetail,
   DatePickerProperties,

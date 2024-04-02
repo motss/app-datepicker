@@ -15,13 +15,7 @@ export function toResolvedDate(date?: MaybeDate): Date {
     typeof date === 'string' && !Number.isNaN(Number(date))
       ? Number(date)
       : date;
-  /**
-   * FIXME(motss): Temporarily disabling the code coverage for this line as it is caused by
-   * `wtr` not being able to generate the correct coverage report for this line which might be
-   * caused by wrong sourcemap generated during the tests. But it is 100% covered by all the
-   * written tests.
-   */
-  /* c8 ignore start */
+
   const dateDate =
     tryDate === undefined ? new Date() : new Date(tryDate || Number.NaN);
   const isUtcDateFormat =

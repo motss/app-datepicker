@@ -14,12 +14,10 @@ import type {
   keySpace,
   keyTab,
 } from './key-values.js';
-import type {
-  DatePickerMixinProperties,
-  DatePickerStartViewProperties,
-  ElementMixinProperties,
-  MinMaxMixinProperties,
-} from './mixins/types.js';
+import type { ElementMixinProperties } from './mixins/element-mixin/types.js';
+import type { MinMaxMixinProperties } from './mixins/min-max-mixin/types.js';
+import type { StartViewMixinProperties } from './mixins/start-view-mixin/types.js';
+import type { DatePickerMixinProperties } from './mixins/types.js';
 import type { ValueMixinProperties } from './mixins/value-mixin/types.js';
 import type { Constructor } from './utility.types.js';
 
@@ -60,11 +58,11 @@ interface CustomEventDetailYearUpdated {
 }
 
 export interface DatePickerProperties
-  extends ElementMixinProperties,
-    ValueMixinProperties,
+  extends DatePickerMixinProperties,
+    ElementMixinProperties,
     MinMaxMixinProperties,
-    DatePickerMixinProperties,
-    DatePickerStartViewProperties {}
+    StartViewMixinProperties,
+    ValueMixinProperties {}
 
 type DatePickerValues = Required<Pick<DatePickerProperties, 'value'>>;
 
@@ -83,6 +81,11 @@ export interface LabelValue<V = string> {
 export type LitConstructor = Constructor<LitElement>;
 
 export type MenuListType = 'monthMenu' | 'yearMenu';
+
+export interface MinMaxProperties {
+  max?: string;
+  min?: string;
+}
 
 export type StartView = StartViewTuple[number];
 

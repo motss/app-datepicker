@@ -1,6 +1,6 @@
-import { emptyReadonlyArray } from '../constants.js';
-import type { CustomEventAction, LitConstructor } from '../types.js';
-import type { ElementMixinProperties, MixinReturnType } from './types.js';
+import type { CustomEventAction, LitConstructor } from '../../types.js';
+import type { MixinReturnType } from '../types.js';
+import type { ElementMixinProperties } from './types.js';
 
 export const ElementMixin = <BaseConstructor extends LitConstructor>(
   superClass: BaseConstructor
@@ -23,10 +23,8 @@ export const ElementMixin = <BaseConstructor extends LitConstructor>(
       return this.root.querySelector(selector) as T;
     }
 
-    public queryAll<T extends HTMLElement>(selector: string): T[] {
-      return Array.from(
-        this.root.querySelectorAll(selector) ?? emptyReadonlyArray
-      );
+    public queryAll<T extends HTMLElement>(selector: string): readonly T[] {
+      return Array.from(this.root.querySelectorAll(selector));
     }
 
     public get root(): ShadowRoot {

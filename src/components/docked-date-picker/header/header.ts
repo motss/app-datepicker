@@ -14,7 +14,7 @@ import {
 } from '../../../constants.js';
 import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
 import { iconChevronLeft, iconChevronRight } from '../../../icons.js';
-import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { renderMenuButton } from '../../../render-helpers/render-menu-button/render-menu-button.js';
 import type { RenderMenuButtonInit } from '../../../render-helpers/render-menu-button/types.js';

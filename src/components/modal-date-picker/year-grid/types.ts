@@ -1,7 +1,5 @@
-import type {
-  DatePickerMixinProperties,
-  MinMaxMixinProperties,
-} from '../../../mixins/types.js';
+import type { MinMaxMixinProperties } from '../../../mixins/min-max-mixin/types.js';
+import type { DatePickerMixinProperties } from '../../../mixins/types.js';
 import type { ValueMixinProperties } from '../../../mixins/value-mixin/types.js';
 
 export interface YearGridProperties

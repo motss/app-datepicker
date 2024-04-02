@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { describe, expect, it } from 'vitest';
 
 import { MAX_DATE, MIN_DATE } from '../../constants.js';
-import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 

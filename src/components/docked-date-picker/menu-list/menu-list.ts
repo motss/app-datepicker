@@ -23,7 +23,7 @@ import { PropertyChangeController } from '../../../controllers/property-change-c
 import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { iconCheck } from '../../../icons.js';
-import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import type { MenuListType } from '../../../types.js';

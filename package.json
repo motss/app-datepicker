@@ -145,6 +145,7 @@
     "check": "biome check",
     "clean": "sh $(npm root)/@reallyland/tools/cleanup.sh",
     "dev": "vite",
+    "tc": "tsc --noEmit --watch",
     "lint": "sh $(npm root)/@reallyland/tools/lint-build.sh -c ./.eslintrc.json",
     "lint-commit": "sh $(npm root)/@reallyland/tools/lint-commit.sh",
     "lint:build": "sh $(npm root)/@reallyland/tools/lint-build.sh -c ./.build.eslintrc.json",

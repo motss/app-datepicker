@@ -1,9 +1,10 @@
 import { property, state } from 'lit/decorators.js';
 
-import { MinMaxController } from '../controllers/min-max-controller/min-max-controller.js';
-import { nullishAttributeConverter } from '../helpers/nullish-attribute-converter.js';
-import type { LitConstructor } from '../types.js';
-import type { MinMaxMixinProperties, MixinReturnType } from './types.js';
+import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
+import { nullishAttributeConverter } from '../../helpers/nullish-attribute-converter.js';
+import type { LitConstructor } from '../../types.js';
+import type { MixinReturnType } from '../types.js';
+import type { MinMaxMixinProperties } from './types.js';
 
 export const MinMaxMixin = <BaseConstructor extends LitConstructor>(
   superClass: BaseConstructor

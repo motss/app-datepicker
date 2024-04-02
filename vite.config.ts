@@ -16,11 +16,16 @@ export default defineConfig({
   test: {
     browser: {
       enabled: true,
-      fileParallelism: true,
+      fileParallelism: false, // this disables clicking or hovering
       headless: isDebug || true,
       isolate: true,
       name: 'chromium', // pw
       provider: 'playwright',
+      providerOptions: {
+        launch: {
+          devtools: true,
+        },
+      },
       slowHijackESM: true,
       // ...{
       //   name: 'chrome', // wdio

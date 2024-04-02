@@ -1,17 +1,7 @@
 import type { WeekNumberType } from '@ipohjs/calendar/dist/typings.js';
 
-import type { CustomEventAction, LitConstructor, StartView } from '../types.js';
+import type { LitConstructor } from '../types.js';
 import type { Constructor } from '../utility.types.js';
-
-export interface MinMaxProperties {
-  max?: string;
-  min?: string;
-}
-
-export interface MinMaxMixinProperties extends MinMaxProperties {
-  _maxDate: Date;
-  _minDate: Date;
-}
 
 export interface DatePickerMixinProperties {
   chooseMonthLabel: string;
@@ -32,17 +22,6 @@ export interface DatePickerMixinProperties {
   weekLabel: string;
   weekNumberTemplate: string;
   weekNumberType: WeekNumberType;
-}
-
-export interface DatePickerStartViewProperties {
-  startView?: StartView;
-}
-
-export interface ElementMixinProperties {
-  fire<T extends CustomEventAction<string, unknown>>(action: T): void;
-  query<T extends HTMLElement>(selector: string): T | null;
-  queryAll<T extends HTMLElement>(selector: string): T[];
-  root: ShadowRoot;
 }
 
 export type MixinReturnType<

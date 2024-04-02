@@ -14,7 +14,7 @@ import { templateReplacer } from '../../../helpers/template-replacer.js';
 import { toClosestTarget } from '../../../helpers/to-closest-target.js';
 import { toResolvedDate } from '../../../helpers/to-resolved-date.js';
 import { toYearList } from '../../../helpers/to-year-list.js';
-import { MinMaxMixin } from '../../../mixins/min-max-mixin.js';
+import { MinMaxMixin } from '../../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../../root-element/root-element.js';
 import type { InferredFromSet } from '../../../types.js';

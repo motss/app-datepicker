@@ -27,8 +27,8 @@ import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconChevronLeft, iconChevronRight, iconEdit } from '../../icons.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
-import { DatePickerStartViewMixin } from '../../mixins/date-picker-start-view-mixin.js';
-import { MinMaxMixin } from '../../mixins/min-max-mixin.js';
+import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
+import { StartViewMixin } from '../../mixins/start-view-mixin/start-view-mixin.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
 import { renderMenuButton } from '../../render-helpers/render-menu-button/render-menu-button.js';
@@ -41,9 +41,7 @@ import type { ModalDatePickerYearGrid } from './year-grid/modal-date-picker-year
 import type { YearGridProperties } from './year-grid/types.js';
 
 export class DatePicker
-  extends DatePickerMixin(
-    DatePickerStartViewMixin(MinMaxMixin(ValueMixin(RootElement)))
-  )
+  extends DatePickerMixin(MinMaxMixin(StartViewMixin(ValueMixin(RootElement))))
   implements DatePickerProperties
 {
   #$dialog = createRef<MdDialog>();
