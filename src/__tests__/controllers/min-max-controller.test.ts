@@ -81,4 +81,24 @@ describe(MinMaxController.name, () => {
     expect(getMax()).toHaveValue(new Date(max).toJSON());
     expect(getMin()).toHaveValue(new Date(min).toJSON());
   });
+
+  it(`resets min & max correctly by setting them ot ''`, async () => {
+    const max = '2023-02-02';
+    const min = '2020-02-02';
+    const { element, getMax, getMin, updated } = await render();
+
+    element.max = max;
+    element.min = min;
+    await updated();
+
+    expect(getMax()).toHaveValue(new Date(max).toJSON());
+    expect(getMin()).toHaveValue(new Date(min).toJSON());
+
+    element.max = '';
+    element.min = '';
+    await updated();
+
+    expect(getMax()).toHaveValue(MAX_DATE.toJSON());
+    expect(getMin()).toHaveValue(MIN_DATE.toJSON());
+  });
 });

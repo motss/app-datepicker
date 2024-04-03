@@ -65,7 +65,7 @@ export class PropertyChangeController<
     this.#host = host;
     this.#onUpdate = (init as Init<T, Property, 'update'>)?.onUpdate;
     this.#onUpdated = (init as Init<T, Property, 'updated'>)?.onUpdated;
-    this.#order = init?.order ?? 'update';
+    this.#order = init?.order;
     this.#property = init?.property;
 
     host.addController(this);

@@ -37,6 +37,7 @@ export default defineConfig({
       enabled: true,
       exclude: ['**/*{benchmarks,demo,mocks,tests}*/**', '**/swipe-tracker/**'],
       provider: 'istanbul',
+      reportOnFailure: true,
       reporter: ['lcov', 'text'],
       thresholds: {
         '100': false,
@@ -47,6 +48,7 @@ export default defineConfig({
     globals: true,
     include: [
       '**/controllers/**/**.test.ts',
+      '**/helpers/**/**.test.ts',
       '**/mixins/**/**.test.ts',
       '**/root-element/**/**.test.ts',
       // '**/*test*/date-picker/**.test.ts',
