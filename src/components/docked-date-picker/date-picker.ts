@@ -34,7 +34,7 @@ import { PropertyChangeController } from '../../controllers/property-change-cont
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconCalendar } from '../../icons.js';
-import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
+import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixin.js';
 import { ElementMixin } from '../../mixins/element-mixin/element-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';

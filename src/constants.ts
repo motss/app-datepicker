@@ -36,8 +36,8 @@ export const labelSupportingText = 'YYYY-MM-DD';
 export const labelToday = 'Today' as const;
 export const labelWeek = 'Week' as const;
 export const labelYearMenuItemTemplate = 'current year is %s' as const;
-export const selectedYearTemplate = 'Selected year is %s' as const;
-export const toyearTemplate = 'Toyear is %s' as const;
+export const labelSelectedYearTemplate = 'Selected year is %s' as const;
+export const labelToyearTemplate = 'Toyear is %s' as const;
 export const MAX_DATE = fromPartsToUtcDate(2100, 11, 31);
 export const MIN_DATE = fromPartsToUtcDate(1900, 1, 1);
 export const navigationKeyListNext = [keyArrowDown, keyPageDown, keyEnd];
@@ -55,7 +55,7 @@ export const navigationKeySetGrid = new Set([
   ...navigationKeySetDayPrevious,
 ]);
 export const startViews = ['calendar', 'yearGrid'] as const;
-export const weekNumberTemplate = 'Week %s' as const;
+export const labelWeekNumberTemplate = 'Week %s' as const;
 export const noop = () => {
   /** no-op */
 };

@@ -26,7 +26,7 @@ import { isSameMonth } from '../../helpers/is-same-month.js';
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconChevronLeft, iconChevronRight, iconEdit } from '../../icons.js';
-import { DatePickerMixin } from '../../mixins/date-picker-mixin.js';
+import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
 import { StartViewMixin } from '../../mixins/start-view-mixin/start-view-mixin.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
@@ -271,8 +271,8 @@ export class DatePicker
           ? html`
             <form method=dialog slot=content id=${formId}>
               <div class=header>
-                <p class="supportingText">${selectDateLabel}</p>
-                <p class="headline">${headline}</p>
+                <blockquote class="supportingText">${selectDateLabel}</blockquote>
+                <blockquote class="headline">${headline}</blockquote>
                 <!-- fixme: this requires a new view to edit dates -->
                 <md-icon-button
                   class=iconButton

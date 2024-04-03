@@ -19,12 +19,12 @@ import {
   labelPreviousMonth,
   labelSelectDate,
   labelSelectedDate,
+  labelSelectedYearTemplate,
   labelShortWeek,
   labelToday,
+  labelToyearTemplate,
   labelWeek,
-  selectedYearTemplate,
-  toyearTemplate,
-  weekNumberTemplate,
+  labelWeekNumberTemplate,
 } from '../constants.js';
 import { toDateString } from '../helpers/to-date-string.js';
 import { toResolvedDate } from '../helpers/to-resolved-date.js';
@@ -161,15 +161,15 @@ export class DemoApp extends RootElement {
             .previousMonthLabel=${labelPreviousMonth}
             .selectDateLabel=${labelSelectDate}
             .selectedDateLabel=${labelSelectedDate}
-            .selectedYearTemplate=${selectedYearTemplate}
+            .selectedYearTemplate=${labelSelectedYearTemplate}
             .shortWeekLabel=${labelShortWeek}
             .showWeekNumber=${false}
             .startView=${'calendar'}
             .todayLabel=${labelToday}
-            .toyearTemplate=${toyearTemplate}
+            .toyearTemplate=${labelToyearTemplate}
             .value=${'2020-05-05'}
             .weekLabel=${labelWeek}
-            .weekNumberTemplate=${weekNumberTemplate}
+            .weekNumberTemplate=${labelWeekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
             @cancel=${this.#debugCustomEvent}
             @close=${this.#debugCustomEvent}
@@ -230,17 +230,17 @@ export class DemoApp extends RootElement {
             .previousMonthLabel=${labelPreviousMonth}
             .selectDateLabel=${labelSelectDate}
             .selectedDateLabel=${labelSelectedDate}
-            .selectedYearTemplate=${selectedYearTemplate}
+            .selectedYearTemplate=${labelSelectedYearTemplate}
             .shortWeekLabel=${labelShortWeek}
             .showWeekNumber=${false}
             .startView=${'calendar'}
             .todayLabel=${labelToday}
             .renderWeekDay=${this.#renderWeekday}
             .renderCalendarDay=${this.#renderCalendarDay}
-            .toyearTemplate=${toyearTemplate}
+            .toyearTemplate=${labelToyearTemplate}
             .value=${this._datePickerCalendarValue}
             .weekLabel=${labelWeek}
-            .weekNumberTemplate=${weekNumberTemplate}
+            .weekNumberTemplate=${labelWeekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
           ></app-calendar>
         </div>

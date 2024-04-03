@@ -4,9 +4,9 @@ import { map } from 'lit/directives/map.js';
 import { createRef, ref } from 'lit/directives/ref.js';
 
 import {
+  labelSelectedYearTemplate,
+  labelToyearTemplate,
   navigationKeySetGrid,
-  selectedYearTemplate,
-  toyearTemplate,
   yearFormatOptions,
 } from '../../../constants.js';
 import { PropertyChangeController } from '../../../controllers/property-change-controller/property-change-controller.js';
@@ -92,9 +92,9 @@ export class YearGrid
   @queryAsync('button[data-year][aria-pressed="true"]')
   selectedYearGridButton!: Promise<HTMLButtonElement | null>;
 
-  @property() selectedYearTemplate: string = selectedYearTemplate;
+  @property() selectedYearTemplate: string = labelSelectedYearTemplate;
 
-  @property() toyearTemplate: string = toyearTemplate;
+  @property() toyearTemplate: string = labelToyearTemplate;
 
   constructor() {
     super();
