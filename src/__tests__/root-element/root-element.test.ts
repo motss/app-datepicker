@@ -1,12 +1,11 @@
 import { html } from 'lit';
 import { describe, expect, it } from 'vitest';
 
-import { ElementMixin } from '../../mixins/element-mixin/element-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 import { eventOnce } from '../test-utils/event-once.js';
 
-class TestComponent extends ElementMixin(RootElement) {
+class TestComponent extends RootElement {
   protected override render() {
     return html`
     <p>1</p>
@@ -15,39 +14,43 @@ class TestComponent extends ElementMixin(RootElement) {
   }
 }
 
-describe(ElementMixin.name, () => {
-  const render = createFixture(() => TestComponent);
+describe(RootElement.name, () => {
+  const render = createFixture(() => TestComponent, {
+    getP(n) {
+      return n.root.querySelector<HTMLButtonElement>('button');
+    }
+  });
 
-  it('applies mixin correctly', async () => {
+  it('renders correctly', async () => {
     const { element } = await render();
 
-    expect(element.root).toBeDefined();
     expect(element.fire).toEqual(expect.any(Function));
     expect(element.query).toEqual(expect.any(Function));
     expect(element.queryAll).toEqual(expect.any(Function));
-
     expect(element.root).toEqual(element.shadowRoot);
   });
 
-  it('fires an event correctly', async () => {
-    const testEvent = 'test';
-
+  it('fires event correctly', async () => {
     const { element } = await render();
 
-    const task = eventOnce(element, testEvent);
+    const task = eventOnce(element, 'test');
 
     element.fire({
       detail: {},
-      type: testEvent,
+      type: 'test',
     });
 
-    expect((await task)?.detail).toEqual({});
+    const ev = await task;
+
+    expect(ev?.detail).toEqual({});
+    expect(ev?.type).toEqual('test');
   });
 
-  it('queries an element correctly', async () => {
+  it('queries single element correctly', async () => {
     const { element } = await render();
 
     expect(element.query('p')).toBeInTheDocument();
+    expect(element.query('p')).toHaveTextContent('1');
   });
 
   it('queries multiple elements correctly', async () => {
