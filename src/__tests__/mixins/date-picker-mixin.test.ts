@@ -1,7 +1,20 @@
 import { html } from 'lit';
 import { describe, expect, it } from 'vitest';
 
-import { labelChooseMonth, labelChooseYear, labelNextMonth, labelPreviousMonth, labelSelectDate, labelSelectedDate, labelSelectedYearMenuItemTemplate, labelSelectedYearTemplate, labelShortWeek, labelToday, labelToyearTemplate, labelWeek, labelWeekNumberTemplate } from '../../constants.js';
+import {
+  labelChooseMonth,
+  labelChooseYear,
+  labelNextMonth,
+  labelPreviousMonth,
+  labelSelectDate,
+  labelSelectedDate,
+  labelSelectedYearTemplate,
+  labelShortWeek,
+  labelToday,
+  labelToyearTemplate,
+  labelWeek,
+  labelWeekNumberTemplate,
+} from '../../constants.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
@@ -30,30 +43,26 @@ class TestComponent extends DatePickerMixin(RootElement) {
     } = this;
 
     return html`
-    <blockquote>${
-      JSON.stringify(
-        {
-          chooseMonthLabel,
-          chooseYearLabel,
-          disabledDates,
-          disabledDays,
-          firstDayOfWeek,
-          locale,
-          nextMonthLabel,
-          previousMonthLabel,
-          selectDateLabel,
-          selectedDateLabel,
-          selectedYearTemplate,
-          shortWeekLabel,
-          showWeekNumber,
-          todayLabel,
-          toyearTemplate,
-          weekLabel,
-          weekNumberTemplate,
-          weekNumberType,
-        }
-      )
-    }</blockquote>
+    <blockquote>${JSON.stringify({
+      chooseMonthLabel,
+      chooseYearLabel,
+      disabledDates,
+      disabledDays,
+      firstDayOfWeek,
+      locale,
+      nextMonthLabel,
+      previousMonthLabel,
+      selectDateLabel,
+      selectedDateLabel,
+      selectedYearTemplate,
+      shortWeekLabel,
+      showWeekNumber,
+      todayLabel,
+      toyearTemplate,
+      weekLabel,
+      weekNumberTemplate,
+      weekNumberType,
+    })}</blockquote>
     `;
   }
 }
@@ -62,7 +71,7 @@ describe(DatePickerMixin.name, () => {
   const render = createFixture(() => TestComponent, {
     getBlockquote(n) {
       return n.root.querySelector<HTMLQuoteElement>('blockquote');
-    }
+    },
   });
 
   it('mixes with a superclass correctly', async () => {

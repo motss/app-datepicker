@@ -18,7 +18,7 @@ describe(RootElement.name, () => {
   const render = createFixture(() => TestComponent, {
     getP(n) {
       return n.root.querySelector<HTMLButtonElement>('button');
-    }
+    },
   });
 
   it('renders correctly', async () => {

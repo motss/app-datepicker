@@ -35,7 +35,6 @@ import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { iconCalendar } from '../../icons.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixin.js';
-import { ElementMixin } from '../../mixins/element-mixin/element-mixin.js';
 import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { renderActions } from '../../render-helpers/render-actions/render-actions.js';
@@ -51,7 +50,7 @@ import type { DatePickerProperties } from './types.js';
 const yOffset = 7;
 
 export class DatePicker
-  extends DatePickerMixin(ElementMixin(MinMaxMixin(ValueMixin(RootElement))))
+  extends DatePickerMixin(MinMaxMixin(ValueMixin(RootElement)))
   implements DatePickerProperties
 {
   #$body = createRef<HTMLDivElement>();

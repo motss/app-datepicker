@@ -14,11 +14,11 @@ import type {
   keySpace,
   keyTab,
 } from './key-values.js';
-import type { ElementMixinProperties } from './mixins/element-mixin/types.js';
+import type { DatePickerMixinProperties } from './mixins/date-picker-mixin/types.js';
 import type { MinMaxMixinProperties } from './mixins/min-max-mixin/types.js';
 import type { StartViewMixinProperties } from './mixins/start-view-mixin/types.js';
-import type { DatePickerMixinProperties } from './mixins/types.js';
 import type { ValueMixinProperties } from './mixins/value-mixin/types.js';
+import type { RootElementProperties } from './root-element/types.js';
 import type { Constructor } from './utility.types.js';
 
 export type ChangedProperties<T = Record<string, unknown>> = PropertyValues &
@@ -59,8 +59,8 @@ interface CustomEventDetailYearUpdated {
 
 export interface DatePickerProperties
   extends DatePickerMixinProperties,
-    ElementMixinProperties,
     MinMaxMixinProperties,
+    RootElementProperties,
     StartViewMixinProperties,
     ValueMixinProperties {}
 

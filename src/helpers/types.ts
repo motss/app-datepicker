@@ -1,10 +1,4 @@
-import type { ElementMixinProperties } from '../mixins/element-mixin/types.js';
-import type {
-  CustomEventDetail,
-  DatePickerProperties,
-  SupportedKey,
-} from '../types.js';
-import type { OmitKey } from '../utility.types.js';
+import type { SupportedKey } from '../types.js';
 
 export interface DateValidatorResult {
   date: Date;
@@ -12,17 +6,6 @@ export interface DateValidatorResult {
 }
 
 export type MaybeDate = Date | null | number | string;
-
-export interface SlotDatePickerInit
-  extends OmitKey<DatePickerProperties, keyof ElementMixinProperties>,
-    Partial<Pick<HTMLElement, 'slot'>> {
-  onDatePickerDateUpdated(
-    event: CustomEvent<CustomEventDetail['date-updated']['detail']>
-  ): Promise<void> | void;
-  onDatePickerFirstUpdated(
-    event: CustomEvent<CustomEventDetail['first-updated']['detail']>
-  ): Promise<void> | void;
-}
 
 export interface ToNextSelectableDateInit {
   date: Date;
