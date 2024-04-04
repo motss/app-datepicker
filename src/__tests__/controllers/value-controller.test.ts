@@ -11,7 +11,7 @@ import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
 class TestComponent extends RootElement {
   #value_ = new ValueController(this, {
     onChange: (_, value) => {
-      this.value = value;
+      this.value = value ?? undefined;
     },
   });
 
@@ -52,5 +52,23 @@ describe(ValueMixin.name, () => {
 
     expect(getValue()).toHaveValue(new Date(value).toJSON());
     expect(element.value).toBe(value);
+  });
+
+  it('returns value correctly when value changes to undefined', async () => {
+    const value = '2020-02-02';
+
+    const { element, getValue, updated } = await render();
+
+    element.value = value;
+    await updated();
+
+    expect(getValue()).toHaveValue(toResolvedDate(value).toJSON());
+    expect(element.value).toBe(value);
+
+    element.value = undefined;
+    await updated();
+
+    expect(getValue()).toHaveValue(toResolvedDate().toJSON());
+    expect(element.value).toBeUndefined();
   });
 });

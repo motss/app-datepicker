@@ -58,7 +58,7 @@ interface CustomEventDetailYearUpdated {
 }
 
 export interface DatePickerProperties
-  extends DatePickerMixinProperties,
+  extends Partial<DatePickerMixinProperties>,
     MinMaxMixinProperties,
     RootElementProperties,
     StartViewMixinProperties,

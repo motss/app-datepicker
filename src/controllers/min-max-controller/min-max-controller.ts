@@ -2,14 +2,13 @@ import type { ReactiveController, ReactiveControllerHost } from 'lit';
 
 import { MAX_DATE, MIN_DATE } from '../../constants.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
-import type { MinMaxProperties } from '../../types.js';
-import type { MinMaxControllerProperties } from './types.js';
+import type { MinMaxControllerHostProperties, MinMaxControllerProperties } from './types.js';
 
 interface Init {
   onChange(data: Pick<MinMaxControllerProperties, 'maxDate' | 'minDate'>): void;
 }
 
-export class MinMaxController<T extends MinMaxProperties>
+export class MinMaxController<T extends MinMaxControllerHostProperties>
   implements MinMaxControllerProperties, ReactiveController
 {
   #host: ReactiveControllerHost & T;

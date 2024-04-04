@@ -1,7 +1,7 @@
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
 
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
-import type { ValueControllerProperties } from './types.js';
+import type { ValueControllerHostProperties, ValueControllerProperties } from './types.js';
 
 interface Init {
   onChange(
@@ -10,7 +10,7 @@ interface Init {
   ): void;
 }
 
-export class ValueController<T extends Pick<ValueControllerProperties, 'value'>>
+export class ValueController<T extends ValueControllerHostProperties>
   implements ValueControllerProperties, ReactiveController
 {
   #host: ReactiveControllerHost & T;
@@ -22,7 +22,7 @@ export class ValueController<T extends Pick<ValueControllerProperties, 'value'>>
 
     if (oldValue !== value) {
       this.valueDate = toResolvedDate(value);
-      this.#value = value;
+      this.#value = value ?? undefined;
       this.#onChange?.(oldValue, value);
     }
   };

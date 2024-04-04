@@ -128,7 +128,69 @@ export class Calendar
     }
   };
 
-  #renderCalendar = (): TemplateResult => {
+  #shouldFocusDate = false;
+
+  @state() _formatters!: CalendarProperties['_formatters'];
+
+  @property({ attribute: false })
+  onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
+
+  @property({ attribute: false })
+  onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
+
+  @property({ attribute: false }) onUpdated?: CalendarProperties['onUpdated'];
+
+  @property({ attribute: false })
+  renderCalendarDay: CalendarProperties['renderCalendarDay'] = () =>
+    requiredFn('renderCalendar is not defined');
+
+  @property({ attribute: false })
+  renderFooter: CalendarProperties['renderFooter'];
+
+  @property({ attribute: false })
+  renderWeekDay: CalendarProperties['renderWeekDay'] = () =>
+    requiredFn('renderWeekday is not defined');
+
+  @property({ attribute: false })
+  renderWeekLabel: CalendarProperties['renderWeekLabel'] = () =>
+    requiredFnForWeekNumber(this, 'renderWeekLabel is not defined');
+
+  @property({ attribute: false })
+  renderWeekNumber: CalendarProperties['renderWeekNumber'] = () =>
+    requiredFnForWeekNumber(this, 'renderWeekNumber is not defined');
+
+  constructor() {
+    super();
+
+    new PropertyChangeController(this, {
+      onUpdate: (_, locale) => {
+        this._formatters = {
+          dayFormat: new Intl.DateTimeFormat(locale, dayFormatOptions),
+          fullDateFormat: new Intl.DateTimeFormat(
+            locale,
+            fullDateFormatOptions
+          ),
+          longWeekdayFormat: new Intl.DateTimeFormat(
+            locale,
+            longWeekDayFormatOptions
+          ),
+          narrowWeekdayFormat: new Intl.DateTimeFormat(
+            locale,
+            narrowWeekDayFormatOptions
+          ),
+        };
+      },
+      order: 'update',
+      property: 'locale',
+    });
+    new PropertyChangeController(this, {
+      onUpdated: this.#focusDateWhenNeeded,
+      order: 'updated',
+      property: 'value',
+    });
+  }
+
+  protected override render(): TemplateResult | typeof nothing {
     const {
       _formatters: {
         dayFormat,
@@ -246,71 +308,5 @@ export class Calendar
       <tfoot>${renderFooter?.()}</tfoot>
     </table>
     `;
-  };
-
-  #shouldFocusDate = false;
-
-  @state() _formatters!: CalendarProperties['_formatters'];
-
-  @property({ attribute: false })
-  onDateUpdateByClick: CalendarProperties['onDateUpdateByClick'];
-
-  @property({ attribute: false })
-  onDateUpdateByKey: CalendarProperties['onDateUpdateByKey'];
-
-  @property({ attribute: false }) onUpdated?: CalendarProperties['onUpdated'];
-
-  @property({ attribute: false })
-  renderCalendarDay: CalendarProperties['renderCalendarDay'] = () =>
-    requiredFn('renderCalendar is not defined');
-
-  @property({ attribute: false })
-  renderFooter: CalendarProperties['renderFooter'];
-
-  @property({ attribute: false })
-  renderWeekDay: CalendarProperties['renderWeekDay'] = () =>
-    requiredFn('renderWeekday is not defined');
-
-  @property({ attribute: false })
-  renderWeekLabel: CalendarProperties['renderWeekLabel'] = () =>
-    requiredFnForWeekNumber(this, 'renderWeekLabel is not defined');
-
-  @property({ attribute: false })
-  renderWeekNumber: CalendarProperties['renderWeekNumber'] = () =>
-    requiredFnForWeekNumber(this, 'renderWeekNumber is not defined');
-
-  constructor() {
-    super();
-
-    new PropertyChangeController(this, {
-      onUpdate: (_, locale) => {
-        this._formatters = {
-          dayFormat: new Intl.DateTimeFormat(locale, dayFormatOptions),
-          fullDateFormat: new Intl.DateTimeFormat(
-            locale,
-            fullDateFormatOptions
-          ),
-          longWeekdayFormat: new Intl.DateTimeFormat(
-            locale,
-            longWeekDayFormatOptions
-          ),
-          narrowWeekdayFormat: new Intl.DateTimeFormat(
-            locale,
-            narrowWeekDayFormatOptions
-          ),
-        };
-      },
-      order: 'update',
-      property: 'locale',
-    });
-    new PropertyChangeController(this, {
-      onUpdated: this.#focusDateWhenNeeded,
-      order: 'updated',
-      property: 'value',
-    });
-  }
-
-  protected override render(): TemplateResult | typeof nothing {
-    return this.#renderCalendar();
   }
 }

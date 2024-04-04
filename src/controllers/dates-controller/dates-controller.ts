@@ -12,11 +12,10 @@ import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { keyHome } from '../../key-values.js';
 import type {
-  DatePickerProperties,
   InferredFromSet,
   SupportedKey,
 } from '../../types.js';
-import type { DatesControllerProperties } from './types.js';
+import type { DatesControllerHostProperties, DatesControllerProperties } from './types.js';
 
 interface Init {
   onConfirmByKey?(
@@ -29,10 +28,7 @@ interface Init {
 }
 
 export class DatesController<
-  T extends Pick<
-    DatePickerProperties,
-    'disabledDates' | 'disabledDays' | 'max' | 'min' | 'value'
-  >,
+  T extends DatesControllerHostProperties,
 > implements DatesControllerProperties, ReactiveController
 {
   #host: ReactiveControllerHost & T;
@@ -42,13 +38,8 @@ export class DatesController<
   #minDate: Date = toResolvedDate(MIN_DATE);
   #onConfirmByKey: Init['onConfirmByKey'];
 
-  #requestHostUpdate = () => {
-    this.#host.requestUpdate();
-  };
-
   #update = () => {
     const { max, min, value } = this.#host;
-    const { focusedDate, selectedDate } = this;
 
     if (max !== this.#max) {
       this.#max = max;
@@ -61,12 +52,14 @@ export class DatesController<
     }
 
     if (value !== this.#value) {
-      this.#value = value ?? '';
-      this.focusedDate = this.selectedDate = toResolvedDate(value);
-    }
+      this.#value = value ?? undefined;
 
-    if (focusedDate || selectedDate) {
-      this.#updateTabbableDate(focusedDate, selectedDate);
+      const valueDate = toResolvedDate(value);
+
+      this.updateBy({
+         focusedDate: valueDate,
+         selectedDate: valueDate,
+      });
     }
   };
 
@@ -83,13 +76,13 @@ export class DatesController<
        * the first day of month when navigating away from the current month
        * where the focused/ selected date is no longer in the new current month.
        */
-      const disabledDateList = splitString(disabledDates, toResolvedDate);
-      const disabledDayList = splitString(disabledDays, Number);
+      const disabledDateList = splitString(disabledDates ?? '', toResolvedDate);
+      const disabledDayList = splitString(disabledDays ?? '', Number);
 
       this.tabbableDate = toNextSelectedDate({
         currentDate: focusedDate,
         date: selectedDate,
-        disabledDatesSet: new Set(disabledDateList?.map((d) => d.getTime())),
+        disabledDatesSet: new Set(disabledDateList.map((d) => d.getTime())),
         disabledDaysSet: new Set(disabledDayList),
         hasAltKey: false,
         key: keyHome,
@@ -98,7 +91,7 @@ export class DatesController<
       });
     }
 
-    this.#requestHostUpdate();
+    this.#host.requestUpdate();
   };
 
   #value?: string;
@@ -109,10 +102,14 @@ export class DatesController<
     _ev,
     node
   ) => {
-    this.focusedDate = this.selectedDate = toResolvedDate(
+    const fullDate = toResolvedDate(
       node.dataset.fulldate
     );
-    this.#requestHostUpdate();
+
+    this.updateBy({
+      focusedDate: fullDate,
+      selectedDate: fullDate,
+    });
   };
 
   onDateUpdateByKey: DatesControllerProperties['onDateUpdateByKey'] = (
@@ -140,16 +137,37 @@ export class DatesController<
       const nextDateTime = nextDate.getTime();
 
       if (
-        nextDateTime !== focusedDate.getTime() ||
-        nextDateTime !== selectedDate.getTime()
+        /**
+         * TODO: Add the following back if anything breaks because of the removal:
+         *
+         * ```ts
+         * || nextDateTime !== selectedDate.getTime()
+         * ```
+         *
+         * Why removing this as of writing?
+         * It is because it seems like it is not possible to update selected date
+         * without updating focused date. Focused date will always be updated
+         * especially updating it with a `KeyboardEvent`. When selected date is
+         * updated, focused date will be updated as well. Checking focused date
+         * here should suffice.
+        */
+        nextDateTime !== focusedDate.getTime()
       ) {
-        this.focusedDate = this.selectedDate = nextDate;
-        this.#requestHostUpdate();
+        this.updateBy({
+          focusedDate: nextDate,
+          selectedDate: nextDate,
+        });
       }
     } else if (
       confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
     ) {
-      this.#onConfirmByKey?.(ev, this);
+      const { focusedDate, selectedDate, tabbableDate } = this;
+
+      this.#onConfirmByKey?.(ev, {
+        focusedDate,
+        selectedDate,
+        tabbableDate,
+      });
     }
   };
 
@@ -174,7 +192,7 @@ export class DatesController<
     }
 
     if (didUpdate) {
-      this.#requestHostUpdate();
+      this.#updateTabbableDate(this.focusedDate, this.selectedDate);
     }
   };
 

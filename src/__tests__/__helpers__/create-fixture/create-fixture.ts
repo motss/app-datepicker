@@ -10,7 +10,7 @@ type InputHelpers<T extends RootElement> = {
 };
 
 type OutputHelpers<H> = {
-  [K in keyof H as K extends GetFnTemplate ? K : never]: () => unknown;
+  [K in keyof H as K extends GetFnTemplate ? K : never]: () => H[K] extends (...args: infer _Args) => infer R ? R : never;
 };
 
 type Result<T extends RootElement, H extends InputHelpers<T>> = {
@@ -23,7 +23,7 @@ export function createFixture<
   H extends InputHelpers<T> = InputHelpers<T>,
 >(
   templateFn: () => Constructor<T>,
-  maybHelpers?: H
+  maybeHelpers?: H
 ): () => Promise<Result<T, H>> {
   let registered = false;
   let testComponentName = '';
@@ -39,7 +39,7 @@ export function createFixture<
       `<${testComponentName}></${testComponentName}>`
     );
     const helpers = Object.fromEntries(
-      Object.entries(maybHelpers ?? {}).map(([k, v]) => {
+      Object.entries(maybeHelpers ?? {}).map(([k, v]) => {
         return [k, () => v(element)];
       })
     ) as OutputHelpers<H>;
