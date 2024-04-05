@@ -1,7 +1,5 @@
 import { css, type CSSResult, unsafeCSS } from 'lit';
 
-import { renderMenuButtonStyle } from '../../../templates/render-menu-button/styles.js';
-
 const areas = [
   'prevMonth',
   'month',
@@ -20,8 +18,6 @@ const buttons = unsafeCSS(
 );
 
 export const dockedDatePickerHeaderStyles = css`
-${renderMenuButtonStyle}
-
 :host {
   display: block;
 }

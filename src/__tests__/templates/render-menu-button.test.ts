@@ -4,10 +4,15 @@ import { describe, expect, it, vi } from 'vitest';
 import { iconArrowDropdown } from '../../icons.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { renderMenuButton } from '../../templates/render-menu-button/render-menu-button.js';
+import { renderMenuButtonStyles } from '../../templates/render-menu-button/styles.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
 const toTestComponent = (...[init]: Partial<Parameters<typeof renderMenuButton>>) => {
   class TestComponent extends RootElement {
+    static override styles = [
+      renderMenuButtonStyles,
+    ];
+
     protected override render() {
       return html`
       ${renderMenuButton({

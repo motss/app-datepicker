@@ -4,12 +4,17 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { RootElement } from '../../root-element/root-element.js';
 import { renderActions } from '../../templates/render-actions/render-actions.js';
+import { renderActionsStyles } from '../../templates/render-actions/styles.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
 const onConfirm = vi.fn();
 const onDeny = vi.fn();
 const toTestComponent = (...[init]: Partial<Parameters<typeof renderActions>>) => {
   class TestComponent extends RootElement {
+    static override styles = [
+      renderActionsStyles
+    ];
+
     protected override render() {
       return html`
       ${renderActions({

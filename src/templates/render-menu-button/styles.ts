@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const renderMenuButtonStyle = css`
+export const renderMenuButtonStyles = css`
 .menuButton {
   --md-text-button-icon-size: 18px;
 }

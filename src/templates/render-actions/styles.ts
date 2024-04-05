@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-export const renderActionsStyle = css`
+export const renderActionsStyles = css`
 .actions {
   position: relative;
   padding-inline: 12px;
