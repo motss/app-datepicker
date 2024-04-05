@@ -1,10 +1,10 @@
 export interface RenderMenuButtonInit
   extends Partial<
-    Pick<HTMLButtonElement, 'className' | 'name' | 'type' | 'value'>
+    Pick<HTMLButtonElement, 'className' | 'name' | 'type'>
   > {
   disabled?: boolean;
   iconDirection?: 'down' | 'up';
-  label: string;
+  label?: string;
   onClick?(ev: MouseEvent): void;
   text: string;
 }

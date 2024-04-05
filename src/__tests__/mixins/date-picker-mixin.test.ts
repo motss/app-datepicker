@@ -17,7 +17,7 @@ import {
 } from '../../constants.js';
 import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 class TestComponent extends DatePickerMixin(RootElement) {
   protected override render() {

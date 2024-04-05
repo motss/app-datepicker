@@ -16,9 +16,9 @@ import { PropertyChangeController } from '../../../controllers/property-change-c
 import { iconChevronLeft, iconChevronRight } from '../../../icons.js';
 import { MinMaxMixin } from '../../../mixins/min-max-mixin/min-max-mixin.js';
 import { ValueMixin } from '../../../mixins/value-mixin/value-mixin.js';
-import { renderMenuButton } from '../../../render-helpers/render-menu-button/render-menu-button.js';
-import type { RenderMenuButtonInit } from '../../../render-helpers/render-menu-button/types.js';
 import { RootElement } from '../../../root-element/root-element.js';
+import { renderMenuButton } from '../../../templates/render-menu-button/render-menu-button.js';
+import type { RenderMenuButtonInit } from '../../../templates/render-menu-button/types.js';
 import type { MenuListType } from '../../../types.js';
 import type { HeaderMenuType, HeaderProperties } from './types.js';
 

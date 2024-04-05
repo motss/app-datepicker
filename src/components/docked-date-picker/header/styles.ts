@@ -1,6 +1,6 @@
 import { css, type CSSResult, unsafeCSS } from 'lit';
 
-import { renderMenuButtonStyle } from '../../../render-helpers/render-menu-button/styles.js';
+import { renderMenuButtonStyle } from '../../../templates/render-menu-button/styles.js';
 
 const areas = [
   'prevMonth',

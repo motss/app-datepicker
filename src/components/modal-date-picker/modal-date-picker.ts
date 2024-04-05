@@ -1,7 +1,7 @@
 import { customElement } from 'lit/decorators.js';
 
-import { renderActionsStyle } from '../../render-helpers/render-actions/styles.js';
 import { baseStyling, resetShadowRoot } from '../../styles.js';
+import { renderActionsStyle } from '../../templates/render-actions/styles.js';
 import { modalDatePickerName } from './constants.js';
 import { DatePicker } from './date-picker.js';
 import { modalDatePickerStyles } from './styles.js';

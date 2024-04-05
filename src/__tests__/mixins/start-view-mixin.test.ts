@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { StartViewMixin } from '../../mixins/start-view-mixin/start-view-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 class TestComponent extends StartViewMixin(RootElement) {
   protected override render() {

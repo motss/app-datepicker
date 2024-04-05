@@ -6,7 +6,7 @@ import { MAX_DATE, MIN_DATE } from '../../constants.js';
 import { MinMaxController } from '../../controllers/min-max-controller/min-max-controller.js';
 import { RootElement } from '../../root-element/root-element.js';
 import type { MinMaxProperties } from '../../types.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 interface TestComponentProperties extends RootElement, MinMaxProperties {}
 

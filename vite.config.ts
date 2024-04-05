@@ -51,6 +51,7 @@ export default defineConfig({
       '**/helpers/**/**.test.ts',
       '**/mixins/**/**.test.ts',
       '**/root-element/**/**.test.ts',
+      '**/templates/**/**.test.ts',
       // '**/*test*/date-picker/**.test.ts',
       // '**/*test*/date-picker-dialog/**.test.ts',
       // '**/*test*/date-picker-input/**.test.ts',

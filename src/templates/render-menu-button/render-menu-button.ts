@@ -17,7 +17,6 @@ export function renderMenuButton({
   onClick,
   text,
   type,
-  value,
 }: RenderMenuButtonInit): TemplateResult {
   const clsObject = className
     ? Object.fromEntries(
@@ -27,27 +26,30 @@ export function renderMenuButton({
           .map((cls) => [cls, true])
       )
     : undefined;
-  const menuIcon = html`<md-svg height=18 width=18 .content=${iconArrowDropdown}></md-svg>`;
 
   return html`
   <md-text-button
     ?disabled=${disabled}
     @click=${onClick}
-    aria-label=${label}
+    aria-label=${ifDefined(label)}
     class=${classMap({ menuButton: true, ...clsObject })}
     name=${ifDefined(name)}
-    title=${label}
+    title=${ifDefined(label)}
     trailing-icon
     type=${ifDefined(type)}
-    value=${ifDefined(value)}
   >
     ${text}
     ${
       disabled
         ? nothing
-        : html`<div class=icon style="--_state:${
-            iconDirection === 'up' ? 180 : 0
-          }deg;" slot=icon>${menuIcon}</div>`
+        : html`
+          <div
+            class=icon
+            slot=icon
+            style="--_state:${iconDirection === 'up' ? 180 : 0}deg;"
+          >
+            <md-svg height=18 width=18 .content=${iconArrowDropdown}></md-svg>
+          </div>`
     }
   </md-text-button>
   `;

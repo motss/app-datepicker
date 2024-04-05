@@ -5,7 +5,7 @@ import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 class TestComponent extends ValueMixin(RootElement) {
   protected override render() {

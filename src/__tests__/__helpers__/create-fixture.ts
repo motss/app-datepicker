@@ -1,7 +1,7 @@
 import { defineCE, elementUpdated, fixture } from '@open-wc/testing-helpers';
 
-import type { RootElement } from '../../../root-element/root-element.js';
-import type { Constructor } from '../../../utility.types.js';
+import type { RootElement } from '../../root-element/root-element.js';
+import type { Constructor } from '../../utility.types.js';
 
 type GetFnTemplate = `get${Capitalize<string>}${string}`;
 

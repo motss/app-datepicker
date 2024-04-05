@@ -8,7 +8,7 @@ import type { DatesControllerHostProperties } from '../../controllers/dates-cont
 import { toDateString } from '../../helpers/to-date-string.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 const onConfirmByKey = vi.fn();
 class TestComponent extends RootElement implements DatesControllerHostProperties {

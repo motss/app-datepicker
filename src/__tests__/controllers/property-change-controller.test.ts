@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { PropertyChangeController } from '../../controllers/property-change-controller/property-change-controller.js';
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
 
 type ToTestComponentInit = Pick<
   ConstructorParameters<typeof PropertyChangeController>[1],

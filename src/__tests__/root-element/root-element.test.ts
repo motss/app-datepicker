@@ -2,8 +2,8 @@ import { html } from 'lit';
 import { describe, expect, it } from 'vitest';
 
 import { RootElement } from '../../root-element/root-element.js';
-import { createFixture } from '../__helpers__/create-fixture/create-fixture.js';
-import { eventOnce } from '../test-utils/event-once.js';
+import { createFixture } from '../__helpers__/create-fixture.js';
+import { eventOnce } from '../__helpers__/event-once.js';
 
 class TestComponent extends RootElement {
   protected override render() {
