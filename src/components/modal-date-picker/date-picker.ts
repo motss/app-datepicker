@@ -271,8 +271,8 @@ export class DatePicker
           ? html`
             <form method=dialog slot=content id=${formId}>
               <div class=header>
-                <blockquote class="supportingText">${selectDateLabel}</blockquote>
-                <blockquote class="headline">${headline}</blockquote>
+                <p class="supportingText">${selectDateLabel}</p>
+                <p class="headline">${headline}</p>
                 <!-- fixme: this requires a new view to edit dates -->
                 <md-icon-button
                   class=iconButton
