@@ -10,7 +10,11 @@ type InputHelpers<T extends RootElement> = {
 };
 
 type OutputHelpers<H> = {
-  [K in keyof H as K extends GetFnTemplate ? K : never]: () => H[K] extends (...args: infer _Args) => infer R ? R : never;
+  [K in keyof H as K extends GetFnTemplate ? K : never]: () => H[K] extends (
+    ...args: infer _Args
+  ) => infer R
+    ? R
+    : never;
 };
 
 type Result<T extends RootElement, H extends InputHelpers<T>> = {
@@ -21,23 +25,21 @@ type Result<T extends RootElement, H extends InputHelpers<T>> = {
 export function createFixture<
   T extends RootElement = RootElement,
   H extends InputHelpers<T> = InputHelpers<T>,
+  I extends object = object,
 >(
-  templateFn: () => Constructor<T>,
+  templateFn: (init?: Partial<I>) => Constructor<T>,
   maybeHelpers?: H
-): () => Promise<Result<T, H>> {
-  let registered = false;
-  let testComponentName = '';
-
-  async function render(): Promise<Result<T, H>> {
-    if (!registered) {
-      registered = true;
-      const testComponent = templateFn();
-      testComponentName = defineCE(testComponent);
-    }
+): (init?: Partial<I>) => Promise<Result<T, H>> {
+  async function render(init?: Partial<I>): Promise<Result<T, H>> {
+    const templateClass = templateFn(init);
+    const testComponentName = defineCE(
+      class TestComponent extends templateClass {}
+    );
 
     const element = await fixture<T>(
       `<${testComponentName}></${testComponentName}>`
     );
+
     const helpers = Object.fromEntries(
       Object.entries(maybeHelpers ?? {}).map(([k, v]) => {
         return [k, () => v(element)];

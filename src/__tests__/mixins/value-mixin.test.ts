@@ -7,24 +7,29 @@ import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-class TestComponent extends ValueMixin(RootElement) {
-  protected override render() {
-    return html`
-    <input id=value value=${this.value ?? ''} readonly />
-    <input id=valueDate value=${this._valueDate.toJSON()} readonly />
-    `;
-  }
-}
-
 describe(ValueMixin.name, () => {
-  const render = createFixture(() => TestComponent, {
-    getValue(el) {
-      return el.root.querySelector<HTMLInputElement>('input#value');
+  const render = createFixture(
+    () => {
+      class TestComponent extends ValueMixin(RootElement) {
+        protected override render() {
+          return html`
+        <input id=value value=${this.value ?? ''} readonly />
+        <input id=valueDate value=${this._valueDate.toJSON()} readonly />
+        `;
+        }
+      }
+
+      return TestComponent;
     },
-    getValueDate(el) {
-      return el.root.querySelector<HTMLInputElement>('input#valueDate');
-    },
-  });
+    {
+      getValue(el) {
+        return el.root.querySelector<HTMLInputElement>('input#value');
+      },
+      getValueDate(el) {
+        return el.root.querySelector<HTMLInputElement>('input#valueDate');
+      },
+    }
+  );
   const todayDate = toResolvedDate();
 
   it('applies mixin correctly', async () => {

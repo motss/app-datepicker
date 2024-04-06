@@ -6,28 +6,33 @@ import { MinMaxMixin } from '../../mixins/min-max-mixin/min-max-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-class TestComponent extends MinMaxMixin(RootElement) {
-  protected override render() {
-    const { _maxDate, _minDate } = this;
-
-    return html`
-    <input id=max value=${_maxDate?.toJSON()} />
-    <input id=min value=${_minDate?.toJSON()} />
-    `;
-  }
-}
-
 describe(MinMaxMixin.name, () => {
   const maxJson = new Date(MAX_DATE).toJSON();
   const minJson = new Date(MIN_DATE).toJSON();
-  const render = createFixture(() => TestComponent, {
-    getMax(n) {
-      return n.root.querySelector<HTMLInputElement>('input#max');
+  const render = createFixture(
+    () => {
+      class TestComponent extends MinMaxMixin(RootElement) {
+        protected override render() {
+          const { _maxDate, _minDate } = this;
+
+          return html`
+        <input id=max value=${_maxDate?.toJSON()} />
+        <input id=min value=${_minDate?.toJSON()} />
+        `;
+        }
+      }
+
+      return TestComponent;
     },
-    getMin(n) {
-      return n.root.querySelector<HTMLInputElement>('input#min');
-    },
-  });
+    {
+      getMax(n) {
+        return n.root.querySelector<HTMLInputElement>('input#max');
+      },
+      getMin(n) {
+        return n.root.querySelector<HTMLInputElement>('input#min');
+      },
+    }
+  );
 
   it('mixes with a superclass correctly', async () => {
     const { getMax, getMin } = await render();

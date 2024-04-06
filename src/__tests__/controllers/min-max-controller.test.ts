@@ -8,35 +8,38 @@ import { RootElement } from '../../root-element/root-element.js';
 import type { MinMaxProperties } from '../../types.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-interface TestComponentProperties extends RootElement, MinMaxProperties {}
-
-class TestComponent extends RootElement implements TestComponentProperties {
-  #minMax_ = new MinMaxController(this);
-
-  @property() max?: string;
-  @property() min?: string;
-
-  protected override render(): TemplateResult {
-    const { maxDate, minDate } = this.#minMax_;
-
-    return html`<div>
-      <input id=max value=${maxDate?.toJSON()} readonly />
-      <input id=min value=${minDate?.toJSON()} readonly />
-    </div>`;
-  }
-}
-
 describe(MinMaxController.name, () => {
   const maxJson = new Date(MAX_DATE).toJSON();
   const minJson = new Date(MIN_DATE).toJSON();
-  const render = createFixture(() => TestComponent, {
-    getMax(el) {
-      return el.root.querySelector<HTMLInputElement>('input#max');
+  const render = createFixture(
+    () => {
+      class TestComponent extends RootElement implements MinMaxProperties {
+        #minMax_ = new MinMaxController(this);
+
+        @property() max?: string;
+        @property() min?: string;
+
+        protected override render(): TemplateResult {
+          const { maxDate, minDate } = this.#minMax_;
+
+          return html`<div>
+          <input id=max value=${maxDate?.toJSON()} readonly />
+          <input id=min value=${minDate?.toJSON()} readonly />
+        </div>`;
+        }
+      }
+
+      return TestComponent;
     },
-    getMin(el) {
-      return el.root.querySelector<HTMLInputElement>('input#min');
-    },
-  });
+    {
+      getMax(el) {
+        return el.root.querySelector<HTMLInputElement>('input#max');
+      },
+      getMin(el) {
+        return el.root.querySelector<HTMLInputElement>('input#min');
+      },
+    }
+  );
 
   it('returns min & max correctly', async () => {
     const { element, getMax, getMin } = await render();

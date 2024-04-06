@@ -11,11 +11,11 @@ import { splitString } from '../../helpers/split-string.js';
 import { toNextSelectedDate } from '../../helpers/to-next-selected-date.js';
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { keyHome } from '../../key-values.js';
+import type { InferredFromSet, SupportedKey } from '../../types.js';
 import type {
-  InferredFromSet,
-  SupportedKey,
-} from '../../types.js';
-import type { DatesControllerHostProperties, DatesControllerProperties } from './types.js';
+  DatesControllerHostProperties,
+  DatesControllerProperties,
+} from './types.js';
 
 interface Init {
   onConfirmByKey?(
@@ -27,9 +27,8 @@ interface Init {
   ): void;
 }
 
-export class DatesController<
-  T extends DatesControllerHostProperties,
-> implements DatesControllerProperties, ReactiveController
+export class DatesController<T extends DatesControllerHostProperties>
+  implements DatesControllerProperties, ReactiveController
 {
   #host: ReactiveControllerHost & T;
   #max?: string;
@@ -57,8 +56,8 @@ export class DatesController<
       const valueDate = toResolvedDate(value);
 
       this.updateBy({
-         focusedDate: valueDate,
-         selectedDate: valueDate,
+        focusedDate: valueDate,
+        selectedDate: valueDate,
       });
     }
   };
@@ -102,9 +101,7 @@ export class DatesController<
     _ev,
     node
   ) => {
-    const fullDate = toResolvedDate(
-      node.dataset.fulldate
-    );
+    const fullDate = toResolvedDate(node.dataset.fulldate);
 
     this.updateBy({
       focusedDate: fullDate,
@@ -150,7 +147,7 @@ export class DatesController<
          * especially updating it with a `KeyboardEvent`. When selected date is
          * updated, focused date will be updated as well. Checking focused date
          * here should suffice.
-        */
+         */
         nextDateTime !== focusedDate.getTime()
       ) {
         this.updateBy({

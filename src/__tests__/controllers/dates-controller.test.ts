@@ -11,88 +11,101 @@ import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
 const onConfirmByKey = vi.fn();
-class TestComponent extends RootElement implements DatesControllerHostProperties {
-  #onConfirmByKey = (ev: KeyboardEvent) => {
-    this.dates_.onDateUpdateByKey(
-      ...[
-        new KeyboardEvent('keydown', { altKey: false, key: ' ' }),
-        ev.currentTarget,
-        {
-          disabledDatesSet: new Set(),
-          disabledDaysSet: new Set(),
-        }] as Parameters<typeof this.dates_.onDateUpdateByKey>
-    );
-  };
-
-  #onDateUpdateByClick = (ev: MouseEvent) => {
-    this.dates_.onDateUpdateByClick(
-      ...[ev, ev.currentTarget, {}] as Parameters<typeof this.dates_.onDateUpdateByClick>
-    );
-  };
-
-  #onDateUpdateByKey = (ev: KeyboardEvent) => {
-    this.dates_.onDateUpdateByKey(
-      ...[
-        new KeyboardEvent('keydown', { altKey: false, key: 'ArrowLeft' }),
-        ev.currentTarget,
-        {
-          disabledDatesSet: new Set(),
-          disabledDaysSet: new Set(),
-        }] as Parameters<typeof this.dates_.onDateUpdateByKey>
-    );
-  };
-
-  #onDateUpdateByKeyA = (ev: KeyboardEvent) => {
-    this.dates_.onDateUpdateByKey(
-      ...[
-        new KeyboardEvent('keydown', { altKey: false, key: 'a' }),
-        ev.currentTarget,
-        {
-          disabledDatesSet: new Set(),
-          disabledDaysSet: new Set(),
-        }] as Parameters<typeof this.dates_.onDateUpdateByKey>
-    );
-  };
-
-  dates_ = new DatesController(this, {
-    onConfirmByKey,
-  });
-
-  @property() disabledDates?: string = '';
-
-  @property() disabledDays?: string = '';
-
-  @property() max?: string = '';
-
-  @property() min?: string = '';
-
-  @property() value?: string = toDateString(toResolvedDate());
-
-  protected override render(): TemplateResult {
-    return html`
-    <button id=byClick type=button @click=${this.#onDateUpdateByClick} data-day=1 data-fulldate=2020-02-01>1</button>
-    <button id=byKey type=button @click=${this.#onDateUpdateByKey} data-day=2 data-fulldate=2020-02-02>2</button>
-    <button id=byKeyA type=button @click=${this.#onDateUpdateByKeyA} data-day=2 data-fulldate=2020-02-02>2</button>
-    <button id=confirm type=button @click=${this.#onConfirmByKey} data-day=2 data-fulldate=2020-02-02>2</button>
-    `;
-  }
-}
 
 describe(DatesController.name, () => {
-  const render = createFixture(() => TestComponent, {
-    getByClick(n) {
-      return n.root.querySelector<HTMLButtonElement>('#byClick');
+  const render = createFixture(
+    () => {
+      class TestComponent
+        extends RootElement
+        implements DatesControllerHostProperties
+      {
+        #onConfirmByKey = (ev: KeyboardEvent) => {
+          this.dates_.onDateUpdateByKey(
+            ...([
+              new KeyboardEvent('keydown', { altKey: false, key: ' ' }),
+              ev.currentTarget,
+              {
+                disabledDatesSet: new Set(),
+                disabledDaysSet: new Set(),
+              },
+            ] as Parameters<typeof this.dates_.onDateUpdateByKey>)
+          );
+        };
+
+        #onDateUpdateByClick = (ev: MouseEvent) => {
+          this.dates_.onDateUpdateByClick(
+            ...([ev, ev.currentTarget, {}] as Parameters<
+              typeof this.dates_.onDateUpdateByClick
+            >)
+          );
+        };
+
+        #onDateUpdateByKey = (ev: KeyboardEvent) => {
+          this.dates_.onDateUpdateByKey(
+            ...([
+              new KeyboardEvent('keydown', { altKey: false, key: 'ArrowLeft' }),
+              ev.currentTarget,
+              {
+                disabledDatesSet: new Set(),
+                disabledDaysSet: new Set(),
+              },
+            ] as Parameters<typeof this.dates_.onDateUpdateByKey>)
+          );
+        };
+
+        #onDateUpdateByKeyA = (ev: KeyboardEvent) => {
+          this.dates_.onDateUpdateByKey(
+            ...([
+              new KeyboardEvent('keydown', { altKey: false, key: 'a' }),
+              ev.currentTarget,
+              {
+                disabledDatesSet: new Set(),
+                disabledDaysSet: new Set(),
+              },
+            ] as Parameters<typeof this.dates_.onDateUpdateByKey>)
+          );
+        };
+
+        dates_ = new DatesController(this, {
+          onConfirmByKey,
+        });
+
+        @property() disabledDates?: string = '';
+
+        @property() disabledDays?: string = '';
+
+        @property() max?: string = '';
+
+        @property() min?: string = '';
+
+        @property() value?: string = toDateString(toResolvedDate());
+
+        protected override render(): TemplateResult {
+          return html`
+          <button id=byClick type=button @click=${this.#onDateUpdateByClick} data-day=1 data-fulldate=2020-02-01>1</button>
+          <button id=byKey type=button @click=${this.#onDateUpdateByKey} data-day=2 data-fulldate=2020-02-02>2</button>
+          <button id=byKeyA type=button @click=${this.#onDateUpdateByKeyA} data-day=2 data-fulldate=2020-02-02>2</button>
+          <button id=confirm type=button @click=${this.#onConfirmByKey} data-day=2 data-fulldate=2020-02-02>2</button>
+          `;
+        }
+      }
+      return TestComponent;
     },
-    getByKey(n) {
-      return n.root.querySelector<HTMLButtonElement>('#byKey');
-    },
-    getByKeyA(n) {
-      return n.root.querySelector<HTMLButtonElement>('#byKeyA');
-    },
-    getConfirm(n) {
-      return n.root.querySelector<HTMLButtonElement>('#confirm');
-    },
-  });
+    {
+      getByClick(n) {
+        return n.root.querySelector<HTMLButtonElement>('#byClick');
+      },
+      getByKey(n) {
+        return n.root.querySelector<HTMLButtonElement>('#byKey');
+      },
+      getByKeyA(n) {
+        return n.root.querySelector<HTMLButtonElement>('#byKeyA');
+      },
+      getConfirm(n) {
+        return n.root.querySelector<HTMLButtonElement>('#confirm');
+      },
+    }
+  );
 
   it('returns dates correctly', async () => {
     const { element } = await render();
@@ -230,9 +243,15 @@ describe(DatesController.name, () => {
     getByKey()?.click();
     await updated();
 
-    expect(element.dates_.focusedDate).toEqual(toUTCDate(toResolvedDate(), { date: -1 }));
-    expect(element.dates_.selectedDate).toEqual(toUTCDate(toResolvedDate(), { date: -1 }));
-    expect(element.dates_.tabbableDate).toEqual(toUTCDate(toResolvedDate(), { date: -1 }));
+    expect(element.dates_.focusedDate).toEqual(
+      toUTCDate(toResolvedDate(), { date: -1 })
+    );
+    expect(element.dates_.selectedDate).toEqual(
+      toUTCDate(toResolvedDate(), { date: -1 })
+    );
+    expect(element.dates_.tabbableDate).toEqual(
+      toUTCDate(toResolvedDate(), { date: -1 })
+    );
   });
 
   it('calls onDateUpdateByKey() but focused date not change because it is the min date', async () => {
@@ -284,14 +303,11 @@ describe(DatesController.name, () => {
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate());
 
-    expect(onConfirmByKey).toBeCalledWith(
-      expect.any(KeyboardEvent),
-      {
-        focusedDate: toResolvedDate(),
-        selectedDate: toResolvedDate(),
-        tabbableDate: toResolvedDate(),
-      }
-    );
+    expect(onConfirmByKey).toBeCalledWith(expect.any(KeyboardEvent), {
+      focusedDate: toResolvedDate(),
+      selectedDate: toResolvedDate(),
+      tabbableDate: toResolvedDate(),
+    });
   });
 
   it('calls reset()', async () => {
@@ -315,5 +331,4 @@ describe(DatesController.name, () => {
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate());
   });
-
 });

@@ -7,41 +7,37 @@ import { renderMenuButton } from '../../templates/render-menu-button/render-menu
 import { renderMenuButtonStyles } from '../../templates/render-menu-button/styles.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-const toTestComponent = (...[init]: Partial<Parameters<typeof renderMenuButton>>) => {
-  class TestComponent extends RootElement {
-    static override styles = [
-      renderMenuButtonStyles,
-    ];
-
-    protected override render() {
-      return html`
-      ${renderMenuButton({
-        ...init,
-        text: 'text',
-      })}
-      `;
-    }
-  }
-
-  return TestComponent;
-};
-
 describe(renderMenuButton.name, () => {
   const onClick = vi.fn();
-  const  render = (...[init]: Partial<Parameters<typeof renderMenuButton>>) => createFixture(() => toTestComponent(init), {
-    getIcon(n) {
-      return n.root.querySelector<HTMLDivElement>('.icon');
+  const render = createFixture(
+    (init?: Partial<Parameters<typeof renderMenuButton>[0]>) => {
+      class TestComponent extends RootElement {
+        static override styles = [renderMenuButtonStyles];
+
+        protected override render() {
+          return html`
+          ${renderMenuButton({
+            ...init,
+            text: 'text',
+          })}
+          `;
+        }
+      }
+
+      return TestComponent;
     },
-    getMenuButton(n) {
-      return n.root.querySelector<HTMLDivElement>('.menuButton');
-    },
-  });
+    {
+      getIcon(n) {
+        return n.root.querySelector<HTMLDivElement>('.icon');
+      },
+      getMenuButton(n) {
+        return n.root.querySelector<HTMLDivElement>('.menuButton');
+      },
+    }
+  );
 
   it('renders correctly', async () => {
-    const {
-      getIcon,
-      getMenuButton,
-    } = await render()();
+    const { getIcon, getMenuButton } = await render();
 
     expect(getMenuButton()).toBeInTheDocument();
     expect(getIcon()).toBeInTheDocument();
@@ -60,14 +56,13 @@ describe(renderMenuButton.name, () => {
 
     expect(getIcon()?.querySelector('md-svg')).toHaveAttribute('width', '18');
     expect(getIcon()?.querySelector('md-svg')).toHaveAttribute('height', '18');
-    expect(getIcon()?.querySelector('md-svg')?.content).toEqual(iconArrowDropdown);
+    expect(getIcon()?.querySelector('md-svg')?.content).toEqual(
+      iconArrowDropdown
+    );
   });
 
   it('renders correctly with optional parameters', async () => {
-    const {
-      getIcon,
-      getMenuButton,
-    } = await render({
+    const { getIcon, getMenuButton } = await render({
       className: 'test',
       disabled: true,
       iconDirection: 'up',
@@ -75,7 +70,7 @@ describe(renderMenuButton.name, () => {
       name: 'test',
       text: 'test',
       type: 'button',
-    })();
+    });
 
     expect(getMenuButton()).toBeInTheDocument();
     expect(getIcon()).not.toBeInTheDocument();
@@ -89,13 +84,10 @@ describe(renderMenuButton.name, () => {
   });
 
   it('renders correctly with optional iconDirection', async () => {
-    const {
-      getIcon,
-      getMenuButton,
-    } = await render({
+    const { getIcon, getMenuButton } = await render({
       iconDirection: 'up',
       text: 'test',
-    })();
+    });
 
     expect(getMenuButton()).toBeInTheDocument();
     expect(getIcon()).toBeInTheDocument();
@@ -107,17 +99,16 @@ describe(renderMenuButton.name, () => {
 
     expect(getIcon()?.querySelector('md-svg')).toHaveAttribute('width', '18');
     expect(getIcon()?.querySelector('md-svg')).toHaveAttribute('height', '18');
-    expect(getIcon()?.querySelector('md-svg')?.content).toEqual(iconArrowDropdown);
+    expect(getIcon()?.querySelector('md-svg')?.content).toEqual(
+      iconArrowDropdown
+    );
   });
 
   it('calls onClick()', async () => {
-    const {
-      getMenuButton,
-      updated,
-    } = await render({
+    const { getMenuButton, updated } = await render({
       onClick,
       text: 'test',
-    })();
+    });
 
     expect(getMenuButton()).toBeInTheDocument();
 
@@ -126,5 +117,4 @@ describe(renderMenuButton.name, () => {
 
     expect(onClick).toBeCalledWith(expect.any(MouseEvent));
   });
-
 });

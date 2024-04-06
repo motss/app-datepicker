@@ -1,7 +1,10 @@
 import type { ReactiveController, ReactiveControllerHost } from 'lit';
 
 import { toResolvedDate } from '../../helpers/to-resolved-date.js';
-import type { ValueControllerHostProperties, ValueControllerProperties } from './types.js';
+import type {
+  ValueControllerHostProperties,
+  ValueControllerProperties,
+} from './types.js';
 
 interface Init {
   onChange(

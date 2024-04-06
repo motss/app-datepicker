@@ -8,30 +8,35 @@ import { ValueMixin } from '../../mixins/value-mixin/value-mixin.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-class TestComponent extends RootElement {
-  #value_ = new ValueController(this, {
-    onChange: (_, value) => {
-      this.value = value ?? undefined;
-    },
-  });
-
-  @property() value?: string;
-
-  protected override render() {
-    const { valueDate } = this.#value_;
-
-    return html`
-    <input id=value value=${valueDate.toJSON()} readonly />
-    `;
-  }
-}
-
 describe(ValueMixin.name, () => {
-  const render = createFixture(() => TestComponent, {
-    getValue(n) {
-      return n.root.querySelector('input#value');
+  const render = createFixture(
+    () => {
+      class TestComponent extends RootElement {
+        #value_ = new ValueController(this, {
+          onChange: (_, value) => {
+            this.value = value ?? undefined;
+          },
+        });
+
+        @property() value?: string;
+
+        protected override render() {
+          const { valueDate } = this.#value_;
+
+          return html`
+        <input id=value value=${valueDate.toJSON()} readonly />
+        `;
+        }
+      }
+
+      return TestComponent;
     },
-  });
+    {
+      getValue(n) {
+        return n.root.querySelector('input#value');
+      },
+    }
+  );
 
   it('returns value correctly', async () => {
     const { element, getValue, updated } = await render();

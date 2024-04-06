@@ -7,49 +7,45 @@ import { renderActions } from '../../templates/render-actions/render-actions.js'
 import { renderActionsStyles } from '../../templates/render-actions/styles.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-const onConfirm = vi.fn();
-const onDeny = vi.fn();
-const toTestComponent = (...[init]: Partial<Parameters<typeof renderActions>>) => {
-  class TestComponent extends RootElement {
-    static override styles = [
-      renderActionsStyles
-    ];
-
-    protected override render() {
-      return html`
-      ${renderActions({
-        ...init,
-        confirmText: init?.confirmText ?? 'confirm',
-        denyText: init?.denyText ?? 'deny',
-        onConfirm,
-        onDeny,
-      })}
-      `;
-    }
-  }
-
-  return TestComponent;
-};
-
 describe(renderActions.name, () => {
-  const  render = (...[init]: Partial<Parameters<typeof renderActions>>) => createFixture(() => toTestComponent(init), {
-    getActions(n) {
-      return n.root.querySelector<HTMLDivElement>('.actions');
+  const onConfirm = vi.fn();
+  const onDeny = vi.fn();
+
+  const render = createFixture(
+    (init?: Partial<Parameters<typeof renderActions>[0]>) => {
+      class TestComponent extends RootElement {
+        static override styles = [renderActionsStyles];
+
+        protected override render() {
+          return html`
+          ${renderActions({
+            ...init,
+            confirmText: init?.confirmText ?? 'confirm',
+            denyText: init?.denyText ?? 'deny',
+            onConfirm,
+            onDeny,
+          })}
+          `;
+        }
+      }
+
+      return TestComponent;
     },
-    getConfirmText(n) {
-      return n.root.querySelector<MdTextButton>('.confirmText');
-    },
-    getDenyText(n) {
-      return n.root.querySelector<MdTextButton>('.denyText');
+    {
+      getActions(n) {
+        return n.root.querySelector<HTMLDivElement>('.actions');
+      },
+      getConfirmText(n) {
+        return n.root.querySelector<MdTextButton>('.confirmText');
+      },
+      getDenyText(n) {
+        return n.root.querySelector<MdTextButton>('.denyText');
+      },
     }
-  });
+  );
 
   it('renders correctly', async () => {
-    const {
-      getActions,
-      getConfirmText,
-      getDenyText,
-    } = await render()();
+    const { getActions, getConfirmText, getDenyText } = await render();
 
     expect(getActions()).toBeInTheDocument();
     expect(getConfirmText()).toBeInTheDocument();
@@ -64,17 +60,12 @@ describe(renderActions.name, () => {
   });
 
   it('renders with optional parameters correctly', async () => {
-
-    const {
-      getActions,
-      getConfirmText,
-      getDenyText,
-    } = await render({
+    const { getActions, getConfirmText, getDenyText } = await render({
       confirmText: 'confirm',
       denyText: 'deny',
       formId: 'test-form-id',
       slot: 'test-slot-id',
-    })();
+    });
 
     expect(getActions()).toBeInTheDocument();
     expect(getConfirmText()).toBeInTheDocument();
@@ -86,10 +77,7 @@ describe(renderActions.name, () => {
   });
 
   it('calls onConfirm()', async () => {
-    const {
-      getConfirmText,
-      updated,
-    } = await render()();
+    const { getConfirmText, updated } = await render();
 
     getConfirmText()?.click();
     await updated();
@@ -98,10 +86,7 @@ describe(renderActions.name, () => {
   });
 
   it('calls onDeny()', async () => {
-    const {
-      getDenyText,
-      updated,
-    } = await render()();
+    const { getDenyText, updated } = await render();
 
     getDenyText()?.click();
     await updated();

@@ -47,6 +47,7 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     include: [
+      '**/components/**/**.test.ts',
       '**/controllers/**/**.test.ts',
       '**/helpers/**/**.test.ts',
       '**/mixins/**/**.test.ts',

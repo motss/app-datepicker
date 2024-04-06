@@ -6,20 +6,25 @@ import { StartViewMixin } from '../../mixins/start-view-mixin/start-view-mixin.j
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-class TestComponent extends StartViewMixin(RootElement) {
-  protected override render() {
-    return html`
-    <input id=startView value=${ifDefined(this.startView)} readonly />
-    `;
-  }
-}
-
 describe(StartViewMixin.name, () => {
-  const render = createFixture(() => TestComponent, {
-    getStartView(n) {
-      return n.root.querySelector<HTMLInputElement>('input#startView');
+  const render = createFixture(
+    () => {
+      class TestComponent extends StartViewMixin(RootElement) {
+        protected override render() {
+          return html`
+        <input id=startView value=${ifDefined(this.startView)} readonly />
+        `;
+        }
+      }
+
+      return TestComponent;
     },
-  });
+    {
+      getStartView(n) {
+        return n.root.querySelector<HTMLInputElement>('input#startView');
+      },
+    }
+  );
 
   it('applies mixin correctly', async () => {
     const { getStartView } = await render();

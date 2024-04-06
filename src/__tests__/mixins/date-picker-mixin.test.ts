@@ -19,60 +19,65 @@ import { DatePickerMixin } from '../../mixins/date-picker-mixin/date-picker-mixi
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-class TestComponent extends DatePickerMixin(RootElement) {
-  protected override render() {
-    const {
-      chooseMonthLabel,
-      chooseYearLabel,
-      disabledDates,
-      disabledDays,
-      firstDayOfWeek,
-      locale,
-      nextMonthLabel,
-      previousMonthLabel,
-      selectDateLabel,
-      selectedDateLabel,
-      selectedYearTemplate,
-      shortWeekLabel,
-      showWeekNumber,
-      todayLabel,
-      toyearTemplate,
-      weekLabel,
-      weekNumberTemplate,
-      weekNumberType,
-    } = this;
-
-    return html`
-    <blockquote>${JSON.stringify({
-      chooseMonthLabel,
-      chooseYearLabel,
-      disabledDates,
-      disabledDays,
-      firstDayOfWeek,
-      locale,
-      nextMonthLabel,
-      previousMonthLabel,
-      selectDateLabel,
-      selectedDateLabel,
-      selectedYearTemplate,
-      shortWeekLabel,
-      showWeekNumber,
-      todayLabel,
-      toyearTemplate,
-      weekLabel,
-      weekNumberTemplate,
-      weekNumberType,
-    })}</blockquote>
-    `;
-  }
-}
-
 describe(DatePickerMixin.name, () => {
-  const render = createFixture(() => TestComponent, {
-    getBlockquote(n) {
-      return n.root.querySelector<HTMLQuoteElement>('blockquote');
+  const render = createFixture(
+    () => {
+      class TestComponent extends DatePickerMixin(RootElement) {
+        protected override render() {
+          const {
+            chooseMonthLabel,
+            chooseYearLabel,
+            disabledDates,
+            disabledDays,
+            firstDayOfWeek,
+            locale,
+            nextMonthLabel,
+            previousMonthLabel,
+            selectDateLabel,
+            selectedDateLabel,
+            selectedYearTemplate,
+            shortWeekLabel,
+            showWeekNumber,
+            todayLabel,
+            toyearTemplate,
+            weekLabel,
+            weekNumberTemplate,
+            weekNumberType,
+          } = this;
+
+          return html`
+        <blockquote>${JSON.stringify({
+          chooseMonthLabel,
+          chooseYearLabel,
+          disabledDates,
+          disabledDays,
+          firstDayOfWeek,
+          locale,
+          nextMonthLabel,
+          previousMonthLabel,
+          selectDateLabel,
+          selectedDateLabel,
+          selectedYearTemplate,
+          shortWeekLabel,
+          showWeekNumber,
+          todayLabel,
+          toyearTemplate,
+          weekLabel,
+          weekNumberTemplate,
+          weekNumberType,
+        })}</blockquote>
+        `;
+        }
+      }
+
+      return TestComponent;
     },
-  });
+    {
+      getBlockquote(n) {
+        return n.root.querySelector<HTMLQuoteElement>('blockquote');
+      },
+    }
+  );
 
   it('mixes with a superclass correctly', async () => {
     const { getBlockquote } = await render();

@@ -6,7 +6,7 @@ import { PropertyChangeController } from '../../controllers/property-change-cont
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-type ToTestComponentInit = Pick<
+type Init = Pick<
   ConstructorParameters<typeof PropertyChangeController>[1],
   'compare' | 'order'
 >;
@@ -14,52 +14,51 @@ type ToTestComponentInit = Pick<
 describe(PropertyChangeController.name, () => {
   const onUpdate = vi.fn();
   const onUpdated = vi.fn();
-  const toTestComponent = (init?: ToTestComponentInit) => {
-    class TestComponent extends RootElement {
-      #handleInput: HTMLInputElement['oninput'] = (ev) => {
-        const target = ev.currentTarget as HTMLInputElement;
+  const render = createFixture(
+    (init?: Partial<Init>) => {
+      class TestComponent extends RootElement {
+        #handleInput: HTMLInputElement['oninput'] = (ev) => {
+          const target = ev.currentTarget as HTMLInputElement;
 
-        this.value = target.value;
-      };
+          this.value = target.value;
+        };
 
-      @property() value = '';
+        @property() value = '';
 
-      constructor() {
-        super();
+        constructor() {
+          super();
 
-        new PropertyChangeController(this, {
-          compare: init?.compare,
-          onUpdate: (_, value) => {
-            onUpdate(_, value);
-          },
-          onUpdated: (_, value) => {
-            onUpdated(_, value);
-          },
-          order: init?.order ?? 'update',
-          property: 'value',
-        });
+          new PropertyChangeController(this, {
+            compare: init?.compare,
+            onUpdate: (_, value) => {
+              onUpdate(_, value);
+            },
+            onUpdated: (_, value) => {
+              onUpdated(_, value);
+            },
+            order: init?.order ?? 'update',
+            property: 'value',
+          });
+        }
+
+        protected override render() {
+          return html`
+          <input id=value @input=${this.#handleInput} value=${this.value} />
+          `;
+        }
       }
 
-      protected override render() {
-        return html`
-        <input id=value @input=${this.#handleInput} value=${this.value} />
-        `;
-      }
-    }
-
-    return TestComponent;
-  };
-  const helpers = {
-    getValue(n) {
-      return n.root.querySelector<HTMLInputElement>('input#value');
+      return TestComponent;
     },
-  } satisfies Parameters<typeof createFixture>[1];
+    {
+      getValue(n) {
+        return n.root.querySelector<HTMLInputElement>('input#value');
+      },
+    }
+  );
 
   it('calls onUpdate correctly', async () => {
-    const { element, getValue, updated } = await createFixture(
-      toTestComponent,
-      helpers
-    )();
+    const { element, getValue, updated } = await render();
 
     await updated();
 
@@ -74,10 +73,7 @@ describe(PropertyChangeController.name, () => {
   it('calls onUpdate correctly when value changes', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await createFixture(
-      toTestComponent,
-      helpers
-    )();
+    const { element, getValue, updated } = await render();
 
     element.value = value;
     await updated();
@@ -92,10 +88,7 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdate correctly when value changes to null', async () => {
-    const { element, getValue, updated } = await createFixture(
-      toTestComponent,
-      helpers
-    )();
+    const { element, getValue, updated } = await render();
 
     // @ts-expect-error Test null
     element.value = null;
@@ -113,10 +106,7 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdate correctly when value changes to undefined', async () => {
-    const { element, getValue, updated } = await createFixture(
-      toTestComponent,
-      helpers
-    )();
+    const { element, getValue, updated } = await render();
 
     // @ts-expect-error Test undefined
     element.value = undefined;
@@ -134,10 +124,10 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdate correctly without comparing old value', async () => {
-    const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({ compare: false, order: 'update' }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({
+      compare: false,
+      order: 'update',
+    });
 
     await updated();
 
@@ -152,10 +142,10 @@ describe(PropertyChangeController.name, () => {
   it('calls onUpdate correctly without comparing old value when value gets updated', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({ compare: false, order: 'update' }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({
+      compare: false,
+      order: 'update',
+    });
 
     element.value = value;
     await updated();
@@ -170,10 +160,7 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdated correctly during <host>.updated phase', async () => {
-    const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({ order: 'updated' }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({ order: 'updated' });
 
     await updated();
 
@@ -186,10 +173,10 @@ describe(PropertyChangeController.name, () => {
   });
 
   it('calls onUpdated correctly during <host>.updated phase without comparing old value', async () => {
-    const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({ compare: false, order: 'updated' }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({
+      compare: false,
+      order: 'updated',
+    });
 
     await updated();
 
@@ -204,10 +191,7 @@ describe(PropertyChangeController.name, () => {
   it('calls onUpdated correctly during <host>.updated phase with value updated', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await createFixture(
-      () => toTestComponent({ order: 'updated' }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({ order: 'updated' });
 
     element.value = value;
     await updated();
@@ -224,14 +208,10 @@ describe(PropertyChangeController.name, () => {
   it('calls onUpdated correctly during <host>.updated phase without comparing old value', async () => {
     const value = 'abc';
 
-    const { element, getValue, updated } = await createFixture(
-      () =>
-        toTestComponent({
-          compare: false,
-          order: 'updated',
-        }),
-      helpers
-    )();
+    const { element, getValue, updated } = await render({
+      compare: false,
+      order: 'updated',
+    });
 
     element.value = value;
     await updated();
