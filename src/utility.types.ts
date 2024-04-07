@@ -1,5 +1,4 @@
 import type { AllowedAny } from './forbidden.types.js';
-import type { RootElement } from './root-element/root-element.js';
 
 type Cloned<T> = DeepExecWith<
   T,
@@ -9,13 +8,6 @@ type Cloned<T> = DeepExecWith<
 >;
 
 export type Constructor<T> = new (..._args: AllowedAny) => T;
-
-export type CustomElementProperties<T extends RootElement> = Omit<
-  {
-    [K in keyof T]: T[K];
-  },
-  keyof HTMLElement | keyof RootElement
->;
 
 type DeepExecWith<T, Condition> = T extends Record<infer _Key, unknown>
   ? Condition
@@ -45,4 +37,4 @@ type DeepRequired<T> = Cloned<
 
 export type OmitKey<T, K extends keyof T> = Omit<T, K>;
 
-export type Option<T> = T | undefined;
+export type Option<T> = NonNullable<T> | undefined;
