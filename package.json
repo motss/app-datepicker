@@ -163,13 +163,13 @@
     "wtr": "node --max-old-space-size=8192 --trace-deprecation ./node_modules/.bin/wtr --config wtr.config.mjs"
   },
   "dependencies": {
-    "@biomejs/biome": "^1.6.4",
     "@ipohjs/calendar": "0.1.0-rc.7",
     "@material/web": "^1.4.0",
     "lit": "^3.1.2",
     "tslib": "^2.6.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.4",
     "@lit-labs/testing": "^0.2.4",
     "@open-wc/testing-helpers": "^3.0.0",
     "@reallyland/tools": "^0.9.7",

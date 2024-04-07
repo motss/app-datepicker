@@ -42,7 +42,8 @@ describe(MdSvg.name, () => {
       getTitle(n) {
         return n.root
           .querySelector<MdSvg>('md-svg')
-          ?.root.querySelector<SVGSVGElement>('svg')?.querySelector<SVGTitleElement>('title');
+          ?.root.querySelector<SVGSVGElement>('svg')
+          ?.querySelector<SVGTitleElement>('title');
       },
     }
   );
@@ -123,7 +124,7 @@ describe(MdSvg.name, () => {
       stroke: 'red',
       strokeWidth: '2',
       viewBox: '0 0 18 18',
-      width: 18
+      width: 18,
     });
 
     expect(getHost()).toBeInTheDocument();
@@ -150,7 +151,10 @@ describe(MdSvg.name, () => {
 
     expect(getSvg()).toHaveAttribute('aria-hidden', 'false');
     expect(getSvg()).toHaveAttribute('aria-label', 'test');
-    expect(getSvg()).toHaveAttribute('aria-labelledby', expect.stringMatching(/^labelled-by-(\w)+-(\w)+$/));
+    expect(getSvg()).toHaveAttribute(
+      'aria-labelledby',
+      expect.stringMatching(/^labelled-by-(\w)+-(\w)+$/)
+    );
     expect(getSvg()).toHaveAttribute('fill', 'red');
     expect(getSvg()).toHaveAttribute('height', '18');
     expect(getSvg()).toHaveAttribute('role', 'img');
@@ -159,7 +163,10 @@ describe(MdSvg.name, () => {
     expect(getSvg()).toHaveAttribute('viewBox', '0 0 18 18');
     expect(getSvg()).toHaveAttribute('width', '18');
 
-    expect(getTitle()).toHaveAttribute('id', expect.stringMatching(/^labelled-by-(\w)+-(\w)+$/));
+    expect(getTitle()).toHaveAttribute(
+      'id',
+      expect.stringMatching(/^labelled-by-(\w)+-(\w)+$/)
+    );
     expect(getTitle()).toHaveTextContent('test');
   });
 });

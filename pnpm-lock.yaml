@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
-  '@biomejs/biome':
-    specifier: ^1.6.4
-    version: 1.6.4
   '@ipohjs/calendar':
     specifier: 0.1.0-rc.7
     version: 0.1.0-rc.7
@@ -22,6 +19,9 @@ dependencies:
     version: 2.6.2
 
 devDependencies:
+  '@biomejs/biome':
+    specifier: ^1.6.4
+    version: 1.6.4
   '@lit-labs/testing':
     specifier: ^0.2.4
     version: 0.2.4
@@ -298,6 +298,7 @@ packages:
       '@biomejs/cli-linux-x64-musl': 1.6.4
       '@biomejs/cli-win32-arm64': 1.6.4
       '@biomejs/cli-win32-x64': 1.6.4
+    dev: true
 
   /@biomejs/cli-darwin-arm64@1.6.4:
     resolution: {integrity: sha512-2WZef8byI9NRzGajGj5RTrroW9BxtfbP9etigW1QGAtwu/6+cLkdPOWRAs7uFtaxBNiKFYA8j/BxV5zeAo5QOQ==}
@@ -305,6 +306,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-darwin-x64@1.6.4:
@@ -313,6 +315,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-linux-arm64-musl@1.6.4:
@@ -321,6 +324,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-linux-arm64@1.6.4:
@@ -329,6 +333,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-linux-x64-musl@1.6.4:
@@ -337,6 +342,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-linux-x64@1.6.4:
@@ -345,6 +351,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-win32-arm64@1.6.4:
@@ -353,6 +360,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@biomejs/cli-win32-x64@1.6.4:
@@ -361,6 +369,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@commitlint/config-conventional@17.8.1:

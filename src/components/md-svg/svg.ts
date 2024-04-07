@@ -29,9 +29,23 @@ export class Svg extends RootElement implements SvgProperties {
   @property({ type: Number }) width: Option<number>;
 
   protected override render(): TemplateResult<2> | typeof nothing {
-    const { ariaLabel, content, fill, height, role, stroke, strokeWidth, viewBox, width } = this;
+    const {
+      ariaLabel,
+      content,
+      fill,
+      height,
+      role,
+      stroke,
+      strokeWidth,
+      viewBox,
+      width,
+    } = this;
 
-    const ariaLabelledBy = ariaLabel ? `labelled-by-01HTW8130BTX50Y28XJX9S6CQA-${Math.random().toString(36).slice(-7)}` : undefined;
+    const ariaLabelledBy = ariaLabel
+      ? `labelled-by-01HTW8130BTX50Y28XJX9S6CQA-${Math.random()
+          .toString(36)
+          .slice(-7)}`
+      : undefined;
     const ariaHidden = ariaLabel ? 'false' : 'true';
 
     return content
@@ -48,7 +62,11 @@ export class Svg extends RootElement implements SvgProperties {
           viewBox=${ifDefined(viewBox || defaultViewBox)}
           width=${ifDefined(width || defaultIconSize)}
         >
-          ${ariaLabel && ariaLabelledBy ? svg`<title id=${ariaLabelledBy}>${ariaLabel}</title>` : svg``}
+          ${
+            ariaLabel && ariaLabelledBy
+              ? svg`<title id=${ariaLabelledBy}>${ariaLabel}</title>`
+              : svg``
+          }
           ${content}
         </svg>
         `
