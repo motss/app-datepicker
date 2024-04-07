@@ -1,5 +1,3 @@
-import { supportsPassiveEventListener } from '@material/mwc-base/utils.js';
-
 import type {
   FirstTouch,
   PointerHandler,
@@ -8,6 +6,23 @@ import type {
   SupportedEventKey,
   TrackerHandlers,
 } from './types.js';
+
+function supportsPassiveEventListener() {
+  let supportsPassive = false;
+  const fn = () => {
+    /** no op */
+  };
+  const optionsBlock: AddEventListenerOptions = {
+    get passive() {
+      supportsPassive = true;
+      return false;
+    },
+  };
+  document.addEventListener('x', fn, optionsBlock);
+  document.removeEventListener('x', fn);
+
+  return supportsPassive;
+}
 
 function toPointer(ev: PointerType): ResolvedPointer {
   const { clientX, clientY, pageX, pageY } = ev as PointerEvent;
@@ -51,7 +66,7 @@ function addPassiveEventListener<
   node.addEventListener<T>(
     event,
     callback,
-    supportsPassiveEventListener ? { passive: true } : false
+    supportsPassiveEventListener() ? { passive: true } : false
   );
 }
 

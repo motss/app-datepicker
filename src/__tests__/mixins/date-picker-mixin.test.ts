@@ -90,7 +90,7 @@ describe(DatePickerMixin.name, () => {
         disabledDates: '',
         disabledDays: '',
         firstDayOfWeek: 0,
-        locale: 'en-US',
+        locale: Intl.DateTimeFormat().resolvedOptions().locale,
         nextMonthLabel: labelNextMonth,
         previousMonthLabel: labelPreviousMonth,
         selectDateLabel: labelSelectDate,
@@ -115,7 +115,7 @@ describe(DatePickerMixin.name, () => {
     element.disabledDates = '2020-02-02';
     element.disabledDays = '2020-02-02';
     element.firstDayOfWeek = 2;
-    element.locale = 'en-SG';
+    element.locale = 'en-GB';
     element.nextMonthLabel = 'test';
     element.previousMonthLabel = 'test';
     element.selectDateLabel = 'test';
@@ -138,7 +138,7 @@ describe(DatePickerMixin.name, () => {
         disabledDates: '2020-02-02',
         disabledDays: '2020-02-02',
         firstDayOfWeek: 2,
-        locale: 'en-SG',
+        locale: 'en-GB',
         nextMonthLabel: 'test',
         previousMonthLabel: 'test',
         selectDateLabel: 'test',
