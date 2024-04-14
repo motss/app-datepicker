@@ -14,18 +14,9 @@ import { keyHome } from '../../key-values.js';
 import type { InferredFromSet, SupportedKey } from '../../types.js';
 import type {
   DatesControllerHostProperties,
+  DatesControllerInit,
   DatesControllerProperties,
 } from './types.js';
-
-interface Init {
-  onConfirmByKey?(
-    ev: KeyboardEvent,
-    data: Pick<
-      DatesControllerProperties,
-      'focusedDate' | 'selectedDate' | 'tabbableDate'
-    >
-  ): void;
-}
 
 export class DatesController<T extends DatesControllerHostProperties>
   implements DatesControllerProperties, ReactiveController
@@ -35,7 +26,8 @@ export class DatesController<T extends DatesControllerHostProperties>
   #maxDate: Date = toResolvedDate(MAX_DATE);
   #min?: string;
   #minDate: Date = toResolvedDate(MIN_DATE);
-  #onConfirmByKey: Init['onConfirmByKey'];
+  #onConfirmByKey: DatesControllerInit['onConfirmByKey'];
+  #onUpdate: DatesControllerInit['onUpdate'];
 
   #update = () => {
     const { max, min, value } = this.#host;
@@ -55,9 +47,58 @@ export class DatesController<T extends DatesControllerHostProperties>
 
       const valueDate = toResolvedDate(value);
 
-      this.updateBy({
-        focusedDate: valueDate,
-        selectedDate: valueDate,
+      this.#updateBy(valueDate, valueDate, true);
+    }
+  };
+
+  #updateBy = (
+    focusedDate: Date | undefined,
+    selectedDate: Date | undefined,
+    isInternal: boolean
+  ) => {
+    let didUpdate = 0;
+
+    if (focusedDate) {
+      this.focusedDate = new Date(
+        /**
+         * NOTE: `isInternal` refers to an update that is managed internally
+         * within a controller. This can occur due to:
+         *
+         * 1. A change in the `min`, `max`, or `value` property, or
+         * 1. A trigger from `onDateUpdateByClick()`, or
+         * 1. A trigger from `onDateUpdateByKey()`,
+         *
+         * These triggers reset the milliseconds to `0`.
+         * However, navigation actions like an external trigger to `.updateBy()`
+         * primarily update only the `focusedDate`. Therefore, it is safe to
+         * increment the date by 1ms.
+         *
+         *
+         * Q: But why 1ms to the focused date?
+         * A: `AppCalendar` updates the focused date during navigation. If the
+         * updated date is clicked, it doesn’t re-render unless
+         * the date changes. Incrementing the date by 1ms forces a re-render.
+         * We can’t use .requestUpdate() as it de-focuses the new date and
+         * we can’t programmatically refocus. Hence, adding 1ms to the date
+         * for each navigation.
+         */
+        toResolvedDate(focusedDate).setMilliseconds(isInternal ? 0 : 1)
+      );
+      didUpdate ||= 1;
+    }
+
+    if (selectedDate) {
+      this.selectedDate = toResolvedDate(selectedDate);
+      didUpdate ||= 1;
+    }
+
+    if (didUpdate) {
+      this.#updateTabbableDate(this.focusedDate, this.selectedDate);
+      this.#host.requestUpdate();
+      this.#onUpdate?.({
+        focusedDate: this.focusedDate,
+        selectedDate: this.selectedDate,
+        tabbableDate: this.tabbableDate,
       });
     }
   };
@@ -89,8 +130,6 @@ export class DatesController<T extends DatesControllerHostProperties>
         minTime: this.#minDate.getTime(),
       });
     }
-
-    this.#host.requestUpdate();
   };
 
   #value?: string;
@@ -103,10 +142,7 @@ export class DatesController<T extends DatesControllerHostProperties>
   ) => {
     const fullDate = toResolvedDate(node.dataset.fulldate);
 
-    this.updateBy({
-      focusedDate: fullDate,
-      selectedDate: fullDate,
-    });
+    this.#updateBy(fullDate, fullDate, true);
   };
 
   onDateUpdateByKey: DatesControllerProperties['onDateUpdateByKey'] = (
@@ -150,10 +186,7 @@ export class DatesController<T extends DatesControllerHostProperties>
          */
         nextDateTime !== focusedDate.getTime()
       ) {
-        this.updateBy({
-          focusedDate: nextDate,
-          selectedDate: nextDate,
-        });
+        this.#updateBy(nextDate, nextDate, true);
       }
     } else if (
       confirmKeySet.has(ev.key as InferredFromSet<typeof confirmKeySet>)
@@ -174,28 +207,15 @@ export class DatesController<T extends DatesControllerHostProperties>
 
   updateBy: DatesControllerProperties['updateBy'] = ({
     focusedDate,
-    selectedDate,
+    selectedDate /** TODO: Revisit if `selectedDate` still needed */,
   }) => {
-    let didUpdate = 0;
-
-    if (focusedDate) {
-      this.focusedDate = toResolvedDate(focusedDate);
-      didUpdate ||= 1;
-    }
-
-    if (selectedDate) {
-      this.selectedDate = toResolvedDate(selectedDate);
-      didUpdate ||= 1;
-    }
-
-    if (didUpdate) {
-      this.#updateTabbableDate(this.focusedDate, this.selectedDate);
-    }
+    return this.#updateBy(focusedDate, selectedDate, false);
   };
 
-  constructor(host: ReactiveControllerHost & T, init?: Init) {
+  constructor(host: ReactiveControllerHost & T, init?: DatesControllerInit) {
     this.#host = host;
     this.#onConfirmByKey = init?.onConfirmByKey;
+    this.#onUpdate = init?.onUpdate;
 
     host.addController(this);
   }
@@ -211,9 +231,6 @@ export class DatesController<T extends DatesControllerHostProperties>
   reset() {
     const newValue = toResolvedDate(this.#value);
 
-    this.updateBy({
-      focusedDate: newValue,
-      selectedDate: newValue,
-    });
+    this.#updateBy(newValue, newValue, true);
   }
 }

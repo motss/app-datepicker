@@ -171,18 +171,6 @@ export class DatePicker
     super();
 
     new PropertyChangeController(this, {
-      onUpdate: (_, newValue) => {
-        const newDate = toResolvedDate(newValue);
-
-        this._$dates_.updateBy({
-          focusedDate: newDate,
-          selectedDate: newDate,
-        });
-      },
-      order: 'update',
-      property: 'value',
-    });
-    new PropertyChangeController(this, {
       compare: false,
       onUpdated: this.#focusSelectedYear,
       order: 'updated',
@@ -244,7 +232,7 @@ export class DatePicker
     const { focusedDate, selectedDate } = _$dates_;
     const { dateFormat, longMonthYearFormat } = _formatters;
 
-    const focusedValue = toDateString(focusedDate);
+    const focusedValue = focusedDate.toJSON();
     const formId = id || 'modalDatePicker';
     const headline = dateFormat.format(selectedDate);
     const isCalendarView = startView === 'calendar';
@@ -409,10 +397,10 @@ export class DatePicker
   }
 }
 
-// fixme: may 31 -> click prev month -> focus on may 1
-// fixme: tabindex=0 does not get updated when changing min
+// fixme: tabindex=0 does not get updated when changing min and min >= selected date or date with [tabindex=0]
 //
 // done: use app-calendar and datesController, refer to DockedDatePicker
 // done: focus last calendar day will cause overflow
 // done: selected date but close modal without confirming should not update selected date
 // done: selected date changes but deny modal should reset value
+// done: may 31 -> click prev month -> focus on may 1

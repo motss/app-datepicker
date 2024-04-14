@@ -6,7 +6,7 @@ import '../md-svg/md-svg.js';
 import './header/docked-date-picker-header.js';
 import './menu-list/docked-date-picker-menu-list.js';
 
-import { fromPartsToUtcDate } from '@ipohjs/calendar/from-parts-to-utc-date';
+import { toUTCDate } from '@ipohjs/calendar/to-utc-date';
 import type { MdOutlinedTextField } from '@material/web/textfield/outlined-text-field.js';
 import { html, type TemplateResult } from 'lit';
 import { property } from 'lit/decorators.js';
@@ -57,8 +57,6 @@ export class DatePicker
 
   #$header = createRef<DockedDatePickerHeader>();
 
-  #$hot = createRef<this>();
-
   #$menuList = createRef<DockedDatePickerMenuList>();
 
   #$textField = createRef<MdOutlinedTextField>();
@@ -100,14 +98,12 @@ export class DatePicker
     const { _$dates_ } = this;
     const y = _$dates_.focusedDate.getUTCFullYear();
     const m = _$dates_.focusedDate.getUTCMonth();
-    const d = _$dates_.focusedDate.getUTCDate();
 
     this._$dates_.updateBy({
-      focusedDate: fromPartsToUtcDate(
-        type === 'yearMenu' ? value : y,
-        type === 'monthMenu' ? value : m,
-        d
-      ),
+      focusedDate: toUTCDate(_$dates_.focusedDate, {
+        ...(type === 'yearMenu' && { year: value - y }),
+        ...(type === 'monthMenu' && { month: value - m }),
+      }),
     });
     this.startView = 'calendar';
   };
@@ -306,16 +302,16 @@ export class DatePicker
     } = this;
 
     const anchorId = 'field_01HQDDHBZFASJH3XSA4GJC0TZA';
-    const focusedValue = toDateString(_$dates_.focusedDate);
-    const valueValue = toDateString(toResolvedDate(value));
+    const focusedValue = _$dates_.focusedDate.toJSON();
+    const textFieldValue = toDateString(toResolvedDate(value));
 
     return html`
-    <div ${ref(this.#$hot)}>
+    <div>
       <md-outlined-text-field
         ${ref(this.#$textField)}
         id=${anchorId}
         label=${label}
-        value=${valueValue}
+        value=${textFieldValue}
         supporting-text=${supportingText}
       >
         <md-icon-button

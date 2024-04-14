@@ -10,9 +10,10 @@ import { toResolvedDate } from '../../helpers/to-resolved-date.js';
 import { RootElement } from '../../root-element/root-element.js';
 import { createFixture } from '../__helpers__/create-fixture.js';
 
-const onConfirmByKey = vi.fn();
-
 describe(DatesController.name, () => {
+  const onConfirmByKey = vi.fn();
+  const onUpdate = vi.fn();
+
   const render = createFixture(
     () => {
       class TestComponent
@@ -68,6 +69,7 @@ describe(DatesController.name, () => {
 
         dates_ = new DatesController(this, {
           onConfirmByKey,
+          onUpdate,
         });
 
         @property() disabledDates?: string = '';
@@ -78,7 +80,7 @@ describe(DatesController.name, () => {
 
         @property() min?: string = '';
 
-        @property() value?: string = toDateString(toResolvedDate());
+        @property() value?: string = toResolvedDate().toJSON();
 
         protected override render(): TemplateResult {
           return html`
@@ -114,7 +116,7 @@ describe(DatesController.name, () => {
     expect(element.max).toBe('');
     expect(element.disabledDates).toBe('');
     expect(element.disabledDays).toBe('');
-    expect(element.value).toBe(toDateString(toResolvedDate()));
+    expect(element.value).toBe(toResolvedDate().toJSON());
 
     expect(element.dates_).toBeDefined();
     expect(element.dates_.focusedDate).toEqual(toResolvedDate());
@@ -124,6 +126,13 @@ describe(DatesController.name, () => {
     expect(element.dates_.onDateUpdateByKey).toEqual(expect.any(Function));
     expect(element.dates_.reset).toEqual(expect.any(Function));
     expect(element.dates_.updateBy).toEqual(expect.any(Function));
+
+    expect(onConfirmByKey).not.toBeCalled();
+    expect(onUpdate).nthCalledWith(1, {
+      focusedDate: toResolvedDate(),
+      selectedDate: toResolvedDate(),
+      tabbableDate: toResolvedDate(),
+    });
   });
 
   it('updates dates correctly when host properties changes', async () => {
@@ -159,7 +168,9 @@ describe(DatesController.name, () => {
     await updated();
 
     expect(element.dates_).toBeDefined();
-    expect(element.dates_.focusedDate).toEqual(toResolvedDate('2020-02-02'));
+    expect(element.dates_.focusedDate).toEqual(
+      new Date('2020-02-02T00:00:00.001Z')
+    );
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate('2020-02-01'));
   });
@@ -175,7 +186,9 @@ describe(DatesController.name, () => {
     await updated();
 
     expect(element.dates_).toBeDefined();
-    expect(element.dates_.focusedDate).toEqual(toResolvedDate('2020-02-02'));
+    expect(element.dates_.focusedDate).toEqual(
+      new Date('2020-02-02T00:00:00.001Z')
+    );
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate('2020-02-01'));
   });
@@ -204,9 +217,18 @@ describe(DatesController.name, () => {
     await updated();
 
     expect(element.dates_).toBeDefined();
-    expect(element.dates_.focusedDate).toEqual(toResolvedDate('2020-02-02'));
+    expect(element.dates_.focusedDate).toEqual(
+      new Date('2020-02-02T00:00:00.001Z')
+    );
     expect(element.dates_.selectedDate).toEqual(toResolvedDate('2020-02-04'));
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate('2020-02-04'));
+
+    expect(onUpdate).toBeCalledTimes(2);
+    expect(onUpdate).lastCalledWith({
+      focusedDate: new Date('2020-02-02T00:00:00.001Z'),
+      selectedDate: toResolvedDate('2020-02-04'),
+      tabbableDate: toResolvedDate('2020-02-04'),
+    });
   });
 
   it('calls updateBy() without any new dates', async () => {
@@ -219,6 +241,8 @@ describe(DatesController.name, () => {
     expect(element.dates_.focusedDate).toEqual(toResolvedDate());
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate());
+
+    expect(onUpdate).toBeCalledTimes(1);
   });
 
   it('calls onDateUpdateByClick()', async () => {
@@ -244,13 +268,13 @@ describe(DatesController.name, () => {
     await updated();
 
     expect(element.dates_.focusedDate).toEqual(
-      toUTCDate(toResolvedDate(), { date: -1 })
+      toUTCDate(toResolvedDate(), { day: -1 })
     );
     expect(element.dates_.selectedDate).toEqual(
-      toUTCDate(toResolvedDate(), { date: -1 })
+      toUTCDate(toResolvedDate(), { day: -1 })
     );
     expect(element.dates_.tabbableDate).toEqual(
-      toUTCDate(toResolvedDate(), { date: -1 })
+      toUTCDate(toResolvedDate(), { day: -1 })
     );
   });
 
@@ -303,7 +327,7 @@ describe(DatesController.name, () => {
     expect(element.dates_.selectedDate).toEqual(toResolvedDate());
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate());
 
-    expect(onConfirmByKey).toBeCalledWith(expect.any(KeyboardEvent), {
+    expect(onConfirmByKey).nthCalledWith(1, expect.any(KeyboardEvent), {
       focusedDate: toResolvedDate(),
       selectedDate: toResolvedDate(),
       tabbableDate: toResolvedDate(),
@@ -320,7 +344,9 @@ describe(DatesController.name, () => {
     await updated();
 
     expect(element.dates_).toBeDefined();
-    expect(element.dates_.focusedDate).toEqual(toResolvedDate('2020-02-02'));
+    expect(element.dates_.focusedDate).toEqual(
+      new Date('2020-02-02T00:00:00.001Z')
+    );
     expect(element.dates_.selectedDate).toEqual(toResolvedDate('2020-02-02'));
     expect(element.dates_.tabbableDate).toEqual(toResolvedDate('2020-02-02'));
 

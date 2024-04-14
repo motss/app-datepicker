@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.6.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.6.4/schema.json",
   "formatter": {
     "attributePosition": "multiline",
     "enabled": true,
@@ -88,5 +88,30 @@
         "useAwait": "off"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "include": [
+        "**/clamp-value.test.ts",
+        "**/is-same-month.test.ts",
+        "**/nullish-attribute-converter.test.ts",
+        "**/split-string.test.ts",
+        "**/to-closest-target.test.ts",
+        "**/to-day-diff-inclusive.test.ts",
+        "**/to-next-selectable-date.test.ts",
+        "**/to-next-selected-date.test.ts",
+        "**/to-resolved-date.test.ts",
+        "**/to-year-list.test.ts"
+      ],
+      "linter": {
+        "enabled": true,
+        "rules": {
+          "nursery": {
+            /** FIXME: Remove this override when https://github.com/biomejs/biome/issues/2443 is fixed */
+            "noMisplacedAssertion": "off"
+          }
+        }
+      }
+    }
+  ]
 }

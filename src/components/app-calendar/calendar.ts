@@ -85,8 +85,8 @@ export class Calendar
 
       if (node) {
         const typedEvent = ev as
-          | (KeyboardEvent & { type: `key${string}` })
-          | (MouseEvent & { type: 'click' });
+          | ({ type: 'click' } & MouseEvent)
+          | ({ type: `key${string}` } & KeyboardEvent);
 
         if (typedEvent.type === 'click') {
           this.onDateUpdateByClick?.(typedEvent, node, calendarGrid);

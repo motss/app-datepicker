@@ -167,7 +167,7 @@ export class DemoApp extends RootElement {
             .startView=${'calendar'}
             .todayLabel=${labelToday}
             .toyearTemplate=${labelToyearTemplate}
-            .value=${'2020-05-05'}
+            .value=${'2020-02-29'}
             .weekLabel=${labelWeek}
             .weekNumberTemplate=${labelWeekNumberTemplate}
             .weekNumberType=${'first-4-day-week'}
@@ -186,7 +186,7 @@ export class DemoApp extends RootElement {
         <div class=io>
           <md-outlined-text-field
             label=${'Select date'}
-            value=${'2020-05-05'}
+            value=${'2020-02-29'}
           ></md-outlined-text-field>
           <docked-date-picker
             @closing=${this.#debugCustomEvent}
@@ -194,7 +194,7 @@ export class DemoApp extends RootElement {
             @opening=${this.#debugCustomEvent}
             @opened=${this.#debugCustomEvent}
             label=${'Select date'}
-            value=${'2020-05-05'}
+            value=${'2020-02-29'}
           ></docked-date-picker>
         </div>
 
